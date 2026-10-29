@@ -1,11 +1,10 @@
 import { Request } from 'express';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { LegacyLogger } from '@infra/logger';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
-import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
+import { VideoConferenceCreateUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
 import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
 import {
 	VideoConferenceCreateParams,
@@ -21,12 +20,8 @@ export class VideoConferenceController {
 	constructor(
 		private readonly videoConferenceCreateUc: VideoConferenceCreateUc,
 		private readonly videoConferenceJoinUc: VideoConferenceJoinUc,
-		private readonly videoConferenceEndUc: VideoConferenceEndUc,
-		private readonly videoConferenceInfoUc: VideoConferenceInfoUc,
-		private readonly logger: LegacyLogger
-	) {
-		this.logger.setContext(VideoConferenceController.name);
-	}
+		private readonly videoConferenceInfoUc: VideoConferenceInfoUc
+	) {}
 
 	@Put(':scope/:scopeId/start')
 	@ApiOperation({
@@ -50,7 +45,6 @@ export class VideoConferenceController {
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
-		this.logger.error(`Starting video conference for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`);
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
 
@@ -79,7 +73,6 @@ export class VideoConferenceController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceJoinResponse> {
-		this.logger.log(`Joining video conference for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`);
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const dto: VideoConferenceJoin = await this.videoConferenceJoinUc.join(currentUser.userId, scopeRef);
 
@@ -108,53 +101,11 @@ export class VideoConferenceController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceInfoResponse> {
-		this.logger.error(
-			`Fetching info for video conference for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`
-		);
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const dto: VideoConferenceInfo = await this.videoConferenceInfoUc.getMeetingInfo(currentUser.userId, scopeRef);
 
 		const resp: VideoConferenceInfoResponse = VideoConferenceMapper.toVideoConferenceInfoResponse(dto);
 
 		return resp;
-	}
-
-	@Post(':scope/:scopeId/end')
-	@HttpCode(HttpStatus.OK)
-	@ApiOperation({
-		summary: 'Ends a running video conference.',
-		description: 'Use this endpoint to end a running video conference.',
-	})
-	@ApiResponse({
-		status: HttpStatus.OK,
-		description: 'Returns the status of the operation.',
-	})
-	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid parameters.' })
-	@ApiResponse({
-		status: HttpStatus.FORBIDDEN,
-		description: 'User does not have the permission to end this conference.',
-	})
-	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
-	public async end(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() scopeParams: VideoConferenceScopeParams
-	): Promise<void> {
-		this.logger.error(
-			`Ending video conference [POST] for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`
-		);
-		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
-
-		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
-	}
-
-	@Post(':scope/:scopeId/end')
-	public async endGet(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() scopeParams: VideoConferenceScopeParams
-	): Promise<void> {
-		this.logger.error(`Ending video conference [GET] for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`);
-		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
-
-		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
 	}
 }

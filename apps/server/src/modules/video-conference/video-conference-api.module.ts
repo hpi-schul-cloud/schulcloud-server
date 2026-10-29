@@ -7,7 +7,6 @@ import { Module } from '@nestjs/common';
 import { VideoConferenceController } from './controller';
 import {
 	VideoConferenceCreateUc,
-	VideoConferenceEndUc,
 	VideoConferenceFeatureService,
 	VideoConferenceInfoUc,
 	VideoConferenceJoinUc,
@@ -27,12 +26,6 @@ import { LoggerModule } from '@infra/logger';
 		LoggerModule,
 	],
 	controllers: [VideoConferenceController],
-	providers: [
-		VideoConferenceCreateUc,
-		VideoConferenceJoinUc,
-		VideoConferenceEndUc,
-		VideoConferenceInfoUc,
-		VideoConferenceFeatureService,
-	],
+	providers: [VideoConferenceCreateUc, VideoConferenceJoinUc, VideoConferenceInfoUc, VideoConferenceFeatureService],
 })
 export class VideoConferenceApiModule {}
