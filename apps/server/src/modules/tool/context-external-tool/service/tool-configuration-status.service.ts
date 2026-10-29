@@ -1,5 +1,3 @@
-import { Group, GroupService } from '@modules/group';
-import { MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
@@ -24,9 +22,7 @@ export class ToolConfigurationStatusService {
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
 		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
-		private readonly userService: UserService,
-		private readonly mediaGroupLicenseService: MediaGroupLicenseService,
-		private readonly groupService: GroupService
+		private readonly userService: UserService
 	) {}
 
 	public async determineToolConfigurationStatus(
@@ -100,9 +96,8 @@ export class ToolConfigurationStatusService {
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		const user = await this.userService.findById(userId);
 		const isToolLicensedForUser = await this.isToolLicensedForUser(externalTool, userId);
-		const isToolLicensedForGroup = await this.isToolLicensedForGroup(externalTool, userId, user.schoolId);
 		const isToolLicensedForSchool = await this.isToolLicensedForSchool(externalTool, user.schoolId);
-		const isToolLicensed = isToolLicensedForUser || isToolLicensedForGroup || isToolLicensedForSchool;
+		const isToolLicensed = isToolLicensedForUser || isToolLicensedForSchool;
 
 		return isToolLicensed;
 	}
@@ -141,32 +136,6 @@ export class ToolConfigurationStatusService {
 			}
 		}
 		return true;
-	}
-
-	private async isToolLicensedForGroup(
-		externalTool: ExternalTool,
-		userId: EntityId,
-		schoolId: EntityId
-	): Promise<boolean> {
-		if (!this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled) {
-			return false;
-		}
-
-		const externalToolMedium = externalTool.medium;
-		if (!externalToolMedium?.mediumId) {
-			return false;
-		}
-
-		const userGroups = await this.groupService.findGroups({ userId, schoolId });
-		const userGroupIds = userGroups.data.map((group: Group) => group.id);
-		if (userGroupIds.length === 0) {
-			return false;
-		}
-
-		const mediaGroupLicenses: MediaGroupLicense[] =
-			await this.mediaGroupLicenseService.findMediaGroupLicensesByGroupIds(userGroupIds);
-
-		return this.mediaGroupLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaGroupLicenses);
 	}
 
 	private isMandatoryValueMissing(errors: ValidationError[]): boolean {
