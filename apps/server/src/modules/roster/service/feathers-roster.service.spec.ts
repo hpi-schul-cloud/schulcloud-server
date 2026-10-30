@@ -35,7 +35,7 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
@@ -354,11 +354,22 @@ describe('FeathersRosterService', () => {
 		});
 
 		describe('when the tool is active in a column board of a course', () => {
-			const setup = () => {
+			const setup = (
+				membership: 'student' | 'teacher' | 'substitutionTeacher' | 'none' = 'student',
+				isVisible = true,
+				hasTeacher = true
+			) => {
 				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
 
-				const courseA = courseEntityFactory.buildWithId();
+				const member = userFactory.buildWithId();
+				user.id = member.id;
+				const teacher = membership === 'teacher' ? member : userFactory.buildWithId();
+				const courseA = courseEntityFactory.buildWithId({
+					students: membership === 'student' ? [member] : [],
+					teachers: hasTeacher ? [teacher] : [],
+					substitutionTeachers: membership === 'substitutionTeacher' ? [member] : [],
+				});
 				const courseB = courseEntityFactory.buildWithId();
 				const courseC = courseEntityFactory.buildWithId();
 				const courses = [courseA, courseB, courseC];
@@ -388,6 +399,7 @@ describe('FeathersRosterService', () => {
 				const columnBoard = columnBoardFactory.build({
 					children: [column],
 					context: { id: courseA.id, type: BoardExternalReferenceType.Course },
+					isVisible,
 				});
 
 				const contextExternalTool = contextExternalToolFactory
@@ -457,6 +469,43 @@ describe('FeathersRosterService', () => {
 					},
 				});
 			});
+
+			it.each([
+				{ membership: 'teacher', isVisible: false },
+				{ membership: 'substitutionTeacher', isVisible: false },
+				{ membership: 'teacher', isVisible: true },
+				{ membership: 'substitutionTeacher', isVisible: true },
+			] as const)(
+				'should include a board for $membership when isVisible=$isVisible',
+				async ({ membership, isVisible }) => {
+					const { pseudonym, clientId, courseA } = setup(membership, isVisible);
+
+					const result = await service.getUserGroups(pseudonym.pseudonym, clientId);
+
+					expect(result.data.groups).toEqual([
+						{ group_id: courseA.id, name: courseA.name, student_count: courseA.students.count() },
+					]);
+				}
+			);
+
+			it.each([
+				{ membership: 'student', isVisible: false, hasTeacher: true },
+				{ membership: 'none', isVisible: true, hasTeacher: true },
+				{ membership: 'none', isVisible: false, hasTeacher: true },
+				{ membership: 'student', isVisible: true, hasTeacher: false },
+				{ membership: 'substitutionTeacher', isVisible: true, hasTeacher: false },
+				{ membership: 'substitutionTeacher', isVisible: false, hasTeacher: false },
+			] as const)(
+				'should exclude a board for $membership when isVisible=$isVisible and hasTeacher=$hasTeacher',
+				async ({ membership, isVisible, hasTeacher }) => {
+					const { pseudonym, clientId } = setup(membership, isVisible, hasTeacher);
+
+					await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(
+						new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': clientId })
+					);
+					expect(contextExternalToolService.findById).not.toHaveBeenCalled();
+				}
+			);
 		});
 
 		describe('when the tool is active in a column board of a room', () => {

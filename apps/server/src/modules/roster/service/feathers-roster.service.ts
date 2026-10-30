@@ -178,7 +178,7 @@ export class FeathersRosterService {
 		const coursesUserGroups = (
 			await Promise.all(
 				courses.map(async (course) => {
-					const isExternalToolReferenced = await this.isExternalToolReferenced(course, schoolExternalTool.id);
+					const isExternalToolReferenced = await this.isExternalToolReferenced(course, schoolExternalTool.id, userId);
 					if (!isExternalToolReferenced) return undefined;
 
 					const courseUserGroup: UserGroup = {
@@ -297,9 +297,16 @@ export class FeathersRosterService {
 	}
 
 	/**
-	 * In-memory equivalent of BoardNodeAuthorizableService for room boards:
-	 * board roles are derived from the room permissions (see RoomBoardContext)
-	 * and mapped to board permissions (see BoardNodeAuthorizable.getUserPermissions).
+	 * Architecture exception: roster aggregation performs authorization here rather
+	 * than in a use case, using already-loaded room memberships and boards to avoid
+	 * per-board authorization queries.
+	 *
+	 * This duplicates room-to-board authorization rules owned by RoomBoardContext
+	 * and BoardNodeAuthorizable.getUserPermissions. Keep this logic aligned with
+	 * those rules until it can be replaced.
+	 *
+	 * TODO: Delegate to a shared, batch-capable authorization API owned by the
+	 * room/board modules once available, preserving the bulk-loading behavior.
 	 */
 	private hasBoardAccess(
 		userId: EntityId,
@@ -487,7 +494,8 @@ export class FeathersRosterService {
 
 	private async isExternalToolReferenced(
 		context: CourseEntity | Room,
-		schoolExternalToolId: EntityId
+		schoolExternalToolId: EntityId,
+		userId?: EntityId
 	): Promise<boolean> {
 		if (context instanceof CourseEntity) {
 			// directly attached to course
@@ -513,9 +521,13 @@ export class FeathersRosterService {
 				type: context instanceof CourseEntity ? BoardExternalReferenceType.Course : BoardExternalReferenceType.Room,
 				id: context.id,
 			});
+			const accessibleBoards =
+				context instanceof CourseEntity && userId !== undefined
+					? await this.getAccessibleCourseBoards(userId, context, columnBoards)
+					: columnBoards;
 
 			const isExternalToolReferencedInColumnBoard: boolean[] = await Promise.all(
-				columnBoards.map((columnBoard: ColumnBoard): Promise<boolean> =>
+				accessibleBoards.map((columnBoard: ColumnBoard): Promise<boolean> =>
 					this.isExternalToolReferencedInColumnBoard(columnBoard, schoolExternalToolId)
 				)
 			);
@@ -526,6 +538,23 @@ export class FeathersRosterService {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Architecture exception: uses course membership to avoid per-board authorization
+	 * queries. Keep aligned with CourseBoardContext, BoardNodeAuthorizable.getUserPermissions
+	 * and BoardNodeRule's findBoard operation.
+	 *
+	 * TODO: Replace with a shared, batch-capable authorization API owned by the board module.
+	 */
+	private getAccessibleCourseBoards(userId: EntityId, course: CourseEntity, boards: ColumnBoard[]): ColumnBoard[] {
+		const teacherIds = course.getTeacherIds();
+		if (teacherIds.length === 0) return [];
+
+		const isEditor = teacherIds.includes(userId) || course.getSubstitutionTeacherIds().includes(userId);
+		const isReader = course.getStudentIds().includes(userId);
+
+		return boards.filter((board) => isEditor || (isReader && board.isVisible));
 	}
 
 	private async isExternalToolReferencedInColumnBoard(
