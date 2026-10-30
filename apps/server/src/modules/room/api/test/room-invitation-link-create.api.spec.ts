@@ -94,13 +94,6 @@ describe('Room Invitation Link Controller (API)', () => {
 				]);
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
-
-				return { loggedInClient, teacherUser, roomEntity };
-			};
-
-			it('should create a room invitation link and return 201', async () => {
-				const { loggedInClient, roomEntity, teacherUser } = await setup();
-
 				const params: CreateRoomInvitationLinkBodyParams = {
 					roomId: roomEntity.id,
 					title: 'Room invitation link for teachers',
@@ -111,9 +104,16 @@ describe('Room Invitation Link Controller (API)', () => {
 					requiresConfirmation: false,
 				};
 
-				const suppliedToken = 'a'.repeat(21);
-				const response = await loggedInClient.post(undefined, { ...params, invitationToken: suppliedToken });
+				return { loggedInClient, teacherUser, params };
+			};
+
+			it('should create a room invitation link with a server-generated token and return 201', async () => {
+				const { loggedInClient, teacherUser, params } = await setup();
+
+				const response = await loggedInClient.post(undefined, params);
 				const { body }: { body: RoomInvitationLinkResponse } = response;
+				em.clear();
+				const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, body.id);
 
 				expect(response.status).toBe(HttpStatus.CREATED);
 				expect(response.body).toMatchObject({
@@ -125,9 +125,21 @@ describe('Room Invitation Link Controller (API)', () => {
 				});
 				expect(ObjectId.isValid(body.id)).toBe(true);
 				expect(body.invitationToken).toMatch(/^[A-Za-z0-9_-]{21}$/);
-				expect(body.invitationToken).not.toBe(suppliedToken);
+				expect(persisted.invitationToken).toBe(body.invitationToken);
+			});
+
+			it('should ignore a client-supplied invitationToken and persist a server-generated token instead', async () => {
+				const { loggedInClient, params } = await setup();
+				const suppliedToken = 'a'.repeat(21);
+
+				const response = await loggedInClient.post(undefined, { ...params, invitationToken: suppliedToken });
+				const { body }: { body: RoomInvitationLinkResponse } = response;
 				em.clear();
 				const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, body.id);
+
+				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(body.invitationToken).toMatch(/^[A-Za-z0-9_-]{21}$/);
+				expect(body.invitationToken).not.toBe(suppliedToken);
 				expect(persisted.invitationToken).toBe(body.invitationToken);
 			});
 		});
