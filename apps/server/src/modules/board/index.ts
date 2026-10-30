@@ -22,6 +22,7 @@ export {
 	isColumnBoard,
 	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
 	MediaBoard,
+	ExternalToolElement,
 } from './domain';
 
 export { BoardCommonToolService, BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from './service';

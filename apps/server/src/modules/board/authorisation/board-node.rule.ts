@@ -358,6 +358,8 @@ const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthor
 	return isBoard && canCreateExternalToolElement;
 };
 
+// FeathersRosterService.getAccessibleCourseBoards mirrors these checks for course roster queries.
+// Review it when changing board access rules.
 const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
 	if (authorizable.boardConfiguration.isLocked) {
 		return false;
