@@ -707,6 +707,18 @@ describe('VideoConferenceController (API)', () => {
 							url: expect.any(String),
 						});
 					});
+
+					it.each(['join', 'end'])('should reject the legacy GET /%s route', async (action) => {
+						const { loggedInClient, scope, scopeId } = await setup();
+						axiosMock.resetHistory();
+
+						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/${action}`);
+
+						expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+						// Rejected GET requests must not trigger outgoing calls to BBB.
+						expect(axiosMock.history.get).toHaveLength(0);
+						expect(axiosMock.history.post).toHaveLength(0);
+					});
 				});
 
 				describe('when conference is not running', () => {
