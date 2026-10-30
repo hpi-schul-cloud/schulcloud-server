@@ -5,6 +5,15 @@ export class RoomInvitationLinkResponse {
 	@ApiProperty()
 	id: EntityId;
 
+	@ApiPropertyOptional({
+		description:
+			'Secret invitation credential used in share URLs. Only legacy invitations omit this field; use id for those.',
+		minLength: 21,
+		maxLength: 21,
+		pattern: '^[A-Za-z0-9_-]{21}$',
+	})
+	invitationToken?: string;
+
 	@ApiProperty()
 	roomId: EntityId;
 
@@ -34,6 +43,7 @@ export class RoomInvitationLinkResponse {
 
 	constructor(roomInvitationLink: RoomInvitationLinkResponse) {
 		this.id = roomInvitationLink.id;
+		this.invitationToken = roomInvitationLink.invitationToken;
 		this.roomId = roomInvitationLink.roomId;
 		this.title = roomInvitationLink.title;
 		this.restrictedToCreatorSchool = roomInvitationLink.restrictedToCreatorSchool;

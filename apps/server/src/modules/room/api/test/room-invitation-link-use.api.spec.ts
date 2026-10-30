@@ -20,6 +20,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import { ObjectId } from 'mongodb';
 import { type RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
 import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
+import { RoomInvitationLinkEntity } from '../../repo/entity/room-invitation-link.entity';
+import { RoomInvitationLinkService } from '../../domain/service/room-invitation-link.service';
 
 type RoomInvitationLinkConfig = {
 	requiresConfirmation?: boolean;
@@ -80,6 +82,7 @@ describe('Room Invitation Link Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
+		jest.restoreAllMocks();
 		await cleanupCollections(em);
 		config.featureRoomLinkInvitationExternalPersonsEnabled = true;
 		em.clear();
@@ -193,7 +196,7 @@ describe('Room Invitation Link Controller (API)', () => {
 							fromSameSchool
 						);
 
-						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+						const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 						expect(response.status).toBe(httpStatus);
 					});
@@ -205,7 +208,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			it('should return 201 and the roomId', async () => {
 				const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
 
-				const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+				const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 				expect(response.status).toBe(HttpStatus.CREATED);
 				expect(response.body).toEqual({
@@ -228,6 +231,74 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
+		describe('when using a token-backed invitation internal id', () => {
+			it('should return INVALID_LINK without adding a member', async () => {
+				const { loggedInClient, roomInvitationLink, user } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+
+				const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+				const membershipService = app.get(RoomMembershipService);
+				const authorizable = await membershipService.getRoomAuthorizable(roomInvitationLink.roomId);
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+				expect(response.body).toMatchObject({
+					details: { validationMessage: RoomInvitationLinkValidationError.INVALID_LINK },
+				});
+				expect(authorizable.getRoleOfUser(user.id)).toBeNull();
+			});
+		});
+
+		describe('when using a legacy invitation without a token', () => {
+			it('should still accept its original id URL', async () => {
+				const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+				await em.nativeUpdate(RoomInvitationLinkEntity, roomInvitationLink.id, { invitationToken: null });
+				em.clear();
+
+				const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(response.body).toEqual({ id: roomInvitationLink.roomId });
+			});
+		});
+
+		describe('when the credential is malformed', () => {
+			it.each(['invalid-token', 'a'.repeat(20), 'a'.repeat(22), 'a'.repeat(43), `${'a'.repeat(20)}+`])(
+				'should reject %s with 400',
+				async (credential) => {
+					const { loggedInClient } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+
+					const response = await loggedInClient.post(`/${encodeURIComponent(credential)}`);
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				}
+			);
+		});
+
+		describe('when the token does not exist', () => {
+			it('should return INVALID_LINK', async () => {
+				const { loggedInClient } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+				const unknownLink = roomInvitationLinkEntityFactory.build();
+
+				const response = await loggedInClient.post(`/${unknownLink.invitationToken}`);
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+				expect(response.body).toMatchObject({
+					details: { validationMessage: RoomInvitationLinkValidationError.INVALID_LINK },
+				});
+			});
+		});
+
+		describe('when the database lookup fails', () => {
+			it('should surface a server error rather than INVALID_LINK', async () => {
+				const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+				const service = app.get(RoomInvitationLinkService);
+				jest.spyOn(service, 'findByInvitationCredential').mockRejectedValueOnce(new Error('Database unavailable'));
+
+				const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+
+				expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+			});
+		});
+
 		describe('when external person link feature is disabled', () => {
 			beforeEach(() => {
 				config.featureRoomLinkInvitationExternalPersonsEnabled = false;
@@ -241,7 +312,7 @@ describe('Room Invitation Link Controller (API)', () => {
 						UserSchool.SAME_SCHOOL
 					);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
@@ -251,7 +322,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				it('should return http status 201', async () => {
 					const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 					expect(response.status).toBe(HttpStatus.CREATED);
 					expect(response.body).toEqual({
@@ -264,7 +335,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				it('should return http status 201', async () => {
 					const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.STUDENT, UserSchool.SAME_SCHOOL);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 					expect(response.status).toBe(HttpStatus.CREATED);
 					expect(response.body).toEqual({
@@ -387,7 +458,7 @@ describe('Room Invitation Link Controller (API)', () => {
 							featureEnabled === 'true'
 						);
 
-						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+						const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 						expect(response.status).toBe(httpStatus);
 					});
@@ -412,7 +483,7 @@ describe('Room Invitation Link Controller (API)', () => {
 						fromSameSchool
 					);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 					expect(response.status).toBe(httpStatus);
 				});
@@ -438,7 +509,7 @@ describe('Room Invitation Link Controller (API)', () => {
 						fromSameSchool
 					);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 					expect(response.status).toBe(httpStatus);
 					expect(response.body).toEqual(expect.objectContaining(body));
@@ -467,7 +538,7 @@ describe('Room Invitation Link Controller (API)', () => {
 						prevRole
 					);
 
-					await loggedInClient.post(`/${roomInvitationLink.id}`);
+					await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
 					const roomMembership = await em.findOneOrFail(RoomMembershipEntity, {
 						roomId: roomInvitationLink.roomId,
