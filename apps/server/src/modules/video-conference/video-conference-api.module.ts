@@ -7,13 +7,13 @@ import { Module } from '@nestjs/common';
 import { VideoConferenceController } from './controller';
 import {
 	VideoConferenceCreateUc,
-	VideoConferenceEndUc,
 	VideoConferenceFeatureService,
 	VideoConferenceInfoUc,
 	VideoConferenceJoinUc,
 } from './uc';
 import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-conference-config';
 import { VideoConferenceModule } from './video-conference.module';
+import { LoggerModule } from '@infra/logger';
 
 @Module({
 	imports: [
@@ -23,14 +23,9 @@ import { VideoConferenceModule } from './video-conference.module';
 		BoardContextApiHelperModule,
 		LegacySchoolModule,
 		ConfigurationModule.register(VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig),
+		LoggerModule,
 	],
 	controllers: [VideoConferenceController],
-	providers: [
-		VideoConferenceCreateUc,
-		VideoConferenceJoinUc,
-		VideoConferenceEndUc,
-		VideoConferenceInfoUc,
-		VideoConferenceFeatureService,
-	],
+	providers: [VideoConferenceCreateUc, VideoConferenceJoinUc, VideoConferenceInfoUc, VideoConferenceFeatureService],
 })
 export class VideoConferenceApiModule {}
