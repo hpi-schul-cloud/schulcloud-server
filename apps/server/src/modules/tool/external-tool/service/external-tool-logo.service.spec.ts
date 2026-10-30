@@ -4,6 +4,10 @@ import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import axios from 'axios';
+import { createServer, type Server } from 'node:http';
+import { type AddressInfo } from 'node:net';
+import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { of, throwError } from 'rxjs';
 import { TOOL_CONFIG_TOKEN, type ToolConfig } from '../../tool-config';
 import { type ExternalTool } from '../domain';
@@ -229,7 +233,15 @@ describe(ExternalToolLogoService.name, () => {
 
 				await service.fetchLogo(externalTool);
 
-				expect(httpService.get).toHaveBeenCalledWith(logoUrl, { responseType: 'arraybuffer' });
+				expect(httpService.get).toHaveBeenCalledWith(logoUrl, {
+					responseType: 'arraybuffer',
+					httpAgent: expect.any(RequestFilteringHttpAgent),
+					httpsAgent: expect.any(RequestFilteringHttpsAgent),
+					proxy: false,
+					maxRedirects: 3,
+					timeout: 10000,
+					maxContentLength: config.ctlToolsExternalToolMaxLogoSizeInBytes,
+				});
 			});
 
 			it('should log the fetched url', async () => {
@@ -246,6 +258,53 @@ describe(ExternalToolLogoService.name, () => {
 				const logo: string | undefined = await service.fetchLogo(externalTool);
 
 				expect(logo).toBe(`data:image/png;base64,${base64TestLogo}`);
+			});
+		});
+
+		describe('when the logo url points to an internal address', () => {
+			let server: Server;
+			let requestReceived: boolean;
+
+			beforeEach(async () => {
+				requestReceived = false;
+				server = createServer((_req, res) => {
+					requestReceived = true;
+					res.writeHead(200, { 'content-type': 'image/png' }).end(Buffer.from(base64TestLogo, 'base64'));
+				});
+				await new Promise<void>((resolve) => {
+					server.listen(0, '127.0.0.1', resolve);
+				});
+			});
+
+			afterEach(async () => {
+				await new Promise<void>((resolve) => {
+					server.close(() => resolve());
+				});
+			});
+
+			const setup = () => {
+				const { port } = server.address() as AddressInfo;
+				const logoUrl = `http://127.0.0.1:${port}/logo.png`;
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ logoUrl });
+
+				const serviceWithRealHttp = new ExternalToolLogoService(
+					config,
+					logger,
+					new HttpService(axios.create()),
+					externalToolService,
+					externalToolImageSanitizerService
+				);
+
+				return { externalTool, serviceWithRealHttp };
+			};
+
+			it('should reject the url without sending a request to it', async () => {
+				const { externalTool, serviceWithRealHttp } = setup();
+
+				await expect(serviceWithRealHttp.fetchLogo(externalTool)).rejects.toThrow(
+					ExternalToolLogoFetchFailedLoggableException
+				);
+				expect(requestReceived).toBe(false);
 			});
 		});
 
