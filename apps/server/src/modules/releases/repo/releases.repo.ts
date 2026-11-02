@@ -1,7 +1,7 @@
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { Counted } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { ReleaseEntity } from '../entity';
 
@@ -28,7 +28,28 @@ export class ReleasesRepo extends BaseRepo<ReleaseEntity> {
 		return [releases, count];
 	}
 
-	public async deleteAll(): Promise<void> {
-		await this._em.nativeDelete(this.entityName, {});
+	/** inserts the release or updates the one with the same github id, so concurrent fetches cannot create duplicates */
+	public async upsertByGithubId(release: ReleaseEntity): Promise<void> {
+		const { githubId, name, body, url, author, authorUrl, createdAt, publishedAt, zipUrl, imageIds } = release;
+
+		await this._em.upsert(
+			ReleaseEntity,
+			{ githubId, name, body, url, author, authorUrl, createdAt, publishedAt, zipUrl, imageIds },
+			{ onConflictFields: ['githubId'] }
+		);
+	}
+
+	/** also removes legacy releases without a github id */
+	public async deleteAllExceptGithubIds(githubIdsToKeep: number[]): Promise<number> {
+		const deletedCount = await this._em.nativeDelete(this.entityName, { githubId: { $nin: githubIdsToKeep } });
+
+		return deletedCount;
+	}
+
+	public async findAllImageIds(): Promise<EntityId[]> {
+		const releases = await this._em.find(this.entityName, {}, { fields: ['imageIds'] });
+		const imageIds = [...new Set(releases.flatMap((release) => release.imageIds))];
+
+		return imageIds;
 	}
 }

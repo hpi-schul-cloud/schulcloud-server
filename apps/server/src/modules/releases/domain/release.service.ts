@@ -17,6 +17,8 @@ export class ReleasesService {
 
 	private static readonly MAX_IMAGE_REDIRECTS = 3;
 
+	private static readonly UNUSED_IMAGE_GRACE_PERIOD_MS = 60 * 60 * 1000;
+
 	// groups: 1 = prefix, 2 = image url, 3 = suffix
 	private static readonly HTML_IMAGE_REGEX = /(<img[^>]+src=")([^">]+)(")/g;
 
@@ -41,29 +43,39 @@ export class ReleasesService {
 		return image;
 	}
 
+	/**
+	 * Safe to run concurrently (also across instances): releases are upserted by their github id and
+	 * unused images are determined from all stored releases instead of only the ones of this fetch.
+	 */
 	public async fetchReleases(): Promise<void> {
 		const githubReleases = await this.fetchFromRepository(this.config.releaseNotesRepoUrl);
-
-		await this.releasesRepo.deleteAll();
 
 		// source url -> image id (or null if the image could not be stored); avoids repeated lookups within one fetch
 		const imageIdsBySourceUrl = new Map<string, EntityId | null>();
 
 		// sequential on purpose: keeps memory and db load low
 		for (const githubRelease of githubReleases) {
-			const body = await this.replaceImagesWithBackendUrls(githubRelease.body ?? '', imageIdsBySourceUrl);
-			const entity = this.createReleaseEntity(githubRelease, body);
+			const { body, imageIds } = await this.replaceImagesWithBackendUrls(githubRelease.body ?? '', imageIdsBySourceUrl);
+			const entity = this.createReleaseEntity(githubRelease, body, imageIds);
 
-			await this.releasesRepo.save(entity);
+			await this.releasesRepo.upsertByGithubId(entity);
 		}
 
-		// images are kept between fetches; only remove those no longer referenced by any release
-		const usedImageIds = [...imageIdsBySourceUrl.values()].filter((id): id is EntityId => id !== null);
-		await this.releaseImagesRepo.deleteAllExcept(usedImageIds);
+		await this.releasesRepo.deleteAllExceptGithubIds(githubReleases.map((release) => release.id));
+		await this.deleteUnusedImages();
 	}
 
-	private createReleaseEntity(release: GithubRelease, body: string): ReleaseEntity {
+	private async deleteUnusedImages(): Promise<void> {
+		const usedImageIds = await this.releasesRepo.findAllImageIds();
+		// recently used images may belong to a concurrent fetch whose release is not saved yet
+		const unusedSince = new Date(Date.now() - ReleasesService.UNUSED_IMAGE_GRACE_PERIOD_MS);
+
+		await this.releaseImagesRepo.deleteUnusedImages(usedImageIds, unusedSince);
+	}
+
+	private createReleaseEntity(release: GithubRelease, body: string, imageIds: EntityId[]): ReleaseEntity {
 		const entity = new ReleaseEntity({
+			githubId: release.id,
 			name: release.name,
 			body,
 			url: release.html_url,
@@ -72,6 +84,7 @@ export class ReleasesService {
 			createdAt: new Date(release.created_at),
 			publishedAt: new Date(release.published_at),
 			zipUrl: release.zipball_url,
+			imageIds,
 		});
 
 		return entity;
@@ -80,7 +93,7 @@ export class ReleasesService {
 	private async replaceImagesWithBackendUrls(
 		body: string,
 		imageIdsBySourceUrl: Map<string, EntityId | null>
-	): Promise<string> {
+	): Promise<{ body: string; imageIds: EntityId[] }> {
 		const urls = new Set(
 			[ReleasesService.HTML_IMAGE_REGEX, ReleasesService.MARKDOWN_IMAGE_REGEX].flatMap((regex) =>
 				[...body.matchAll(regex)].map((match) => match[2])
@@ -105,8 +118,11 @@ export class ReleasesService {
 		const result = body
 			.replace(ReleasesService.HTML_IMAGE_REGEX, replaceDestination)
 			.replace(ReleasesService.MARKDOWN_IMAGE_REGEX, replaceDestination);
+		const imageIds = [...urls]
+			.map((url) => imageIdsBySourceUrl.get(url))
+			.filter((id): id is EntityId => typeof id === 'string');
 
-		return result;
+		return { body: result, imageIds: [...new Set(imageIds)] };
 	}
 
 	/**
@@ -115,7 +131,7 @@ export class ReleasesService {
 	 */
 	private async safeGetOrStoreImage(sourceUrl: string): Promise<EntityId | null> {
 		try {
-			const existingImageId = await this.releaseImagesRepo.findImageIdBySourceUrl(sourceUrl);
+			const existingImageId = await this.releaseImagesRepo.markImageUsed(sourceUrl);
 			const imageId = existingImageId ?? (await this.storeImage(sourceUrl));
 
 			return imageId;

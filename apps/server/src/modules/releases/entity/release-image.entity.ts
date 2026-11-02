@@ -22,6 +22,10 @@ export class ReleaseImageEntity extends BaseEntity {
 	@Unique()
 	sourceUrl: string;
 
+	/** refreshed whenever a fetch reuses the image; protects it from cleanup until its release is saved */
+	@Property({ type: Date })
+	lastUsedAt = new Date();
+
 	constructor(props: ReleaseImageEntityProps) {
 		super();
 		this.data = props.data;

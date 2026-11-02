@@ -16,16 +16,27 @@ export class ReleaseImagesRepo extends BaseRepo<ReleaseImageEntity> {
 		return image;
 	}
 
-	/** returns only the id of an existing image, without loading the binary data */
-	public async findImageIdBySourceUrl(sourceUrl: string): Promise<EntityId | null> {
-		const image = await this._em.findOne(ReleaseImageEntity, { sourceUrl }, { fields: ['id'] });
+	/**
+	 * Refreshes lastUsedAt of an existing image and returns its id (without loading the binary data), or null if there is none.
+	 * The update happens first, so a concurrent cleanup either deleted the image already or will skip it.
+	 */
+	public async markImageUsed(sourceUrl: string, usedAt = new Date()): Promise<EntityId | null> {
+		const updatedCount = await this._em.nativeUpdate(this.entityName, { sourceUrl }, { lastUsedAt: usedAt });
+		if (updatedCount === 0) {
+			return null;
+		}
+
+		const image = await this._em.findOne(this.entityName, { sourceUrl }, { fields: ['id'] });
 		const imageId = image ? image.id : null;
 
 		return imageId;
 	}
 
-	public async deleteAllExcept(idsToKeep: EntityId[]): Promise<number> {
-		const deletedCount = await this._em.nativeDelete(this.entityName, { id: { $nin: idsToKeep } });
+	public async deleteUnusedImages(idsToKeep: EntityId[], unusedSince: Date): Promise<number> {
+		const deletedCount = await this._em.nativeDelete(this.entityName, {
+			id: { $nin: idsToKeep },
+			lastUsedAt: { $lt: unusedSince },
+		});
 
 		return deletedCount;
 	}

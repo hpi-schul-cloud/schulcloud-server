@@ -1,8 +1,10 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Property, Unique } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 
 export interface ReleaseEntityProps {
 	id?: string;
+	githubId: number;
 	name: string;
 	body?: string;
 	url: string;
@@ -11,10 +13,16 @@ export interface ReleaseEntityProps {
 	createdAt?: Date;
 	publishedAt: Date;
 	zipUrl?: string;
+	imageIds?: EntityId[];
 }
 
 @Entity({ tableName: 'releases' })
 export class ReleaseEntity extends BaseEntity {
+	// sparse: documents of the legacy feathers service have no githubId and are removed on the next fetch
+	@Property()
+	@Unique({ options: { sparse: true } })
+	githubId: number;
+
 	@Property()
 	name: string;
 
@@ -39,6 +47,10 @@ export class ReleaseEntity extends BaseEntity {
 	@Property({ type: String, nullable: true })
 	zipUrl?: string;
 
+	/** ids of the release images referenced in the body */
+	@Property()
+	imageIds: EntityId[] = [];
+
 	constructor(props: ReleaseEntityProps) {
 		super();
 
@@ -46,6 +58,7 @@ export class ReleaseEntity extends BaseEntity {
 			this.id = props.id;
 		}
 
+		this.githubId = props.githubId;
 		this.name = props.name;
 		this.body = props.body ?? '';
 		this.url = props.url;
@@ -54,5 +67,6 @@ export class ReleaseEntity extends BaseEntity {
 		this.createdAt = props.createdAt ?? new Date();
 		this.publishedAt = props.publishedAt;
 		this.zipUrl = props.zipUrl;
+		this.imageIds = props.imageIds ?? [];
 	}
 }

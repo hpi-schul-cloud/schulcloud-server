@@ -59,55 +59,61 @@ describe(ReleaseImagesRepo.name, () => {
 		});
 	});
 
-	describe('findImageIdBySourceUrl', () => {
+	describe('markImageUsed', () => {
 		describe('when an image with the source url exists', () => {
-			it('should return its id', async () => {
+			it('should refresh lastUsedAt and return its id', async () => {
 				const image = buildImage('https://example.com/a.png');
-				await em.persist([image, buildImage('https://example.com/b.png')]).flush();
+				image.lastUsedAt = new Date('2024-01-01T00:00:00Z');
+				const other = buildImage('https://example.com/b.png');
+				other.lastUsedAt = new Date('2024-01-01T00:00:00Z');
+				await em.persist([image, other]).flush();
 				em.clear();
+				const usedAt = new Date('2024-06-01T00:00:00Z');
 
-				const result = await repo.findImageIdBySourceUrl('https://example.com/a.png');
+				const result = await repo.markImageUsed('https://example.com/a.png', usedAt);
 
 				expect(result).toBe(image.id);
+				const [updated, untouched] = await em.find(ReleaseImageEntity, {}, { orderBy: { sourceUrl: 'asc' } });
+				expect(updated.lastUsedAt).toEqual(usedAt);
+				expect(untouched.lastUsedAt).toEqual(new Date('2024-01-01T00:00:00Z'));
 			});
 		});
 
 		describe('when no image with the source url exists', () => {
 			it('should return null', async () => {
-				const result = await repo.findImageIdBySourceUrl('https://example.com/unknown.png');
+				const result = await repo.markImageUsed('https://example.com/unknown.png');
 
 				expect(result).toBeNull();
 			});
 		});
 	});
 
-	describe('deleteAllExcept', () => {
-		describe('when ids to keep are given', () => {
-			it('should delete all other images', async () => {
-				const keep = buildImage('https://example.com/keep.png');
-				const remove1 = buildImage('https://example.com/remove1.png');
-				const remove2 = buildImage('https://example.com/remove2.png');
-				await em.persist([keep, remove1, remove2]).flush();
-				em.clear();
+	describe('deleteUnusedImages', () => {
+		const setup = async () => {
+			const unusedSince = new Date('2024-06-01T00:00:00Z');
+			const buildImageUsedAt = (name: string, lastUsedAt: Date): ReleaseImageEntity => {
+				const image = buildImage(`https://example.com/${name}.png`);
+				image.lastUsedAt = lastUsedAt;
 
-				const deletedCount = await repo.deleteAllExcept([keep.id]);
+				return image;
+			};
+			const keptOld = buildImageUsedAt('kept-old', new Date('2024-01-01T00:00:00Z'));
+			const unreferencedOld = buildImageUsedAt('unreferenced-old', new Date('2024-01-01T00:00:00Z'));
+			const unreferencedRecent = buildImageUsedAt('unreferenced-recent', new Date('2024-07-01T00:00:00Z'));
+			await em.persist([keptOld, unreferencedOld, unreferencedRecent]).flush();
+			em.clear();
 
-				const remaining = await em.find(ReleaseImageEntity, {});
-				expect(deletedCount).toBe(2);
-				expect(remaining.map((image) => image.id)).toEqual([keep.id]);
-			});
-		});
+			return { unusedSince, keptOld, unreferencedRecent };
+		};
 
-		describe('when no ids to keep are given', () => {
-			it('should delete all images', async () => {
-				await em.persist([buildImage('https://example.com/a.png'), buildImage('https://example.com/b.png')]).flush();
-				em.clear();
+		it('should delete only unreferenced images that were not used since the given date', async () => {
+			const { unusedSince, keptOld, unreferencedRecent } = await setup();
 
-				const deletedCount = await repo.deleteAllExcept([]);
+			const deletedCount = await repo.deleteUnusedImages([keptOld.id], unusedSince);
 
-				expect(deletedCount).toBe(2);
-				expect(await em.count(ReleaseImageEntity, {})).toBe(0);
-			});
+			const remaining = await em.find(ReleaseImageEntity, {});
+			expect(deletedCount).toBe(1);
+			expect(remaining.map((image) => image.id).sort()).toEqual([keptOld.id, unreferencedRecent.id].sort());
 		});
 	});
 });

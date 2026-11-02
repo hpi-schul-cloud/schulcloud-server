@@ -55,11 +55,9 @@ describe(ReleasesService.name, () => {
 		};
 	};
 
-	const getSavedReleaseBody = (): string => {
-		const savedRelease = releasesRepo.save.mock.calls[0][0] as ReleaseEntity;
+	const getSavedRelease = (): ReleaseEntity => releasesRepo.upsertByGithubId.mock.calls[0][0];
 
-		return savedRelease.body;
-	};
+	const getSavedReleaseBody = (): string => getSavedRelease().body;
 
 	describe('getReleases', () => {
 		it('should return the releases from the repo', async () => {
@@ -96,8 +94,8 @@ describe(ReleasesService.name, () => {
 
 				await expect(service.fetchReleases()).rejects.toThrow('Unexpected response format when fetching releases');
 
-				expect(releasesRepo.deleteAll).not.toHaveBeenCalled();
-				expect(releaseImagesRepo.deleteAllExcept).not.toHaveBeenCalled();
+				expect(releasesRepo.deleteAllExceptGithubIds).not.toHaveBeenCalled();
+				expect(releaseImagesRepo.deleteUnusedImages).not.toHaveBeenCalled();
 			});
 		});
 
@@ -113,7 +111,7 @@ describe(ReleasesService.name, () => {
 				await service.fetchReleases();
 
 				expect(getSavedReleaseBody()).toBe('');
-				expect(releaseImagesRepo.findImageIdBySourceUrl).not.toHaveBeenCalled();
+				expect(releaseImagesRepo.markImageUsed).not.toHaveBeenCalled();
 			});
 		});
 
@@ -124,7 +122,7 @@ describe(ReleasesService.name, () => {
 				httpService.get
 					.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })))
 					.mockReturnValueOnce(of(axiosResponseFactory.build({ data: Buffer.from([1]), headers: {} })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 
 				return { imageUrl };
 			};
@@ -144,7 +142,7 @@ describe(ReleasesService.name, () => {
 				const imageUrl = 'https://github.com/user-attachments/assets/shared';
 				const releases = [buildGithubRelease(`<img src="${imageUrl}">`), buildGithubRelease(`![alt](${imageUrl})`)];
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: releases })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce('sharedImageId');
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce('sharedImageId');
 			};
 
 			it('should look the image up only once and link it in all releases', async () => {
@@ -152,13 +150,14 @@ describe(ReleasesService.name, () => {
 
 				await service.fetchReleases();
 
-				expect(releaseImagesRepo.findImageIdBySourceUrl).toHaveBeenCalledTimes(1);
-				const savedBodies = releasesRepo.save.mock.calls.map((call) => (call[0] as ReleaseEntity).body);
+				expect(releaseImagesRepo.markImageUsed).toHaveBeenCalledTimes(1);
+				const savedBodies = releasesRepo.upsertByGithubId.mock.calls.map((call) => call[0].body);
 				expect(savedBodies).toEqual([
 					'<img src="/api/v3/releases/images/sharedImageId">',
 					'![alt](/api/v3/releases/images/sharedImageId)',
 				]);
-				expect(releaseImagesRepo.deleteAllExcept).toHaveBeenCalledWith(['sharedImageId']);
+				const savedImageIds = releasesRepo.upsertByGithubId.mock.calls.map((call) => call[0].imageIds);
+				expect(savedImageIds).toEqual([['sharedImageId'], ['sharedImageId']]);
 			});
 		});
 
@@ -172,8 +171,8 @@ describe(ReleasesService.name, () => {
 
 				await expect(service.fetchReleases()).rejects.toThrow('network error');
 
-				expect(releasesRepo.deleteAll).not.toHaveBeenCalled();
-				expect(releaseImagesRepo.deleteAllExcept).not.toHaveBeenCalled();
+				expect(releasesRepo.deleteAllExceptGithubIds).not.toHaveBeenCalled();
+				expect(releaseImagesRepo.deleteUnusedImages).not.toHaveBeenCalled();
 			});
 		});
 
@@ -182,7 +181,7 @@ describe(ReleasesService.name, () => {
 				const imageUrl = 'https://github.com/user-attachments/assets/existing';
 				const githubRelease = buildGithubRelease(`text <img src="${imageUrl}"> and again ![alt](${imageUrl})`);
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce('existingImageId');
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce('existingImageId');
 
 				return { imageUrl };
 			};
@@ -194,8 +193,8 @@ describe(ReleasesService.name, () => {
 
 				expect(httpService.get).toHaveBeenCalledTimes(1);
 				expect(httpService.get).toHaveBeenCalledWith(repoUrl);
-				expect(releaseImagesRepo.findImageIdBySourceUrl).toHaveBeenCalledTimes(1);
-				expect(releaseImagesRepo.findImageIdBySourceUrl).toHaveBeenCalledWith(imageUrl);
+				expect(releaseImagesRepo.markImageUsed).toHaveBeenCalledTimes(1);
+				expect(releaseImagesRepo.markImageUsed).toHaveBeenCalledWith(imageUrl);
 				expect(releaseImagesRepo.save).not.toHaveBeenCalled();
 			});
 
@@ -209,13 +208,36 @@ describe(ReleasesService.name, () => {
 				);
 			});
 
-			it('should keep the used image and delete only unreferenced ones', async () => {
+			it('should save the release by its github id with the referenced image', async () => {
 				setup();
 
 				await service.fetchReleases();
 
-				expect(releasesRepo.deleteAll).toHaveBeenCalledTimes(1);
-				expect(releaseImagesRepo.deleteAllExcept).toHaveBeenCalledWith(['existingImageId']);
+				expect(releasesRepo.upsertByGithubId).toHaveBeenCalledTimes(1);
+				expect(getSavedRelease()).toEqual(expect.objectContaining({ githubId: 1, imageIds: ['existingImageId'] }));
+			});
+
+			it('should delete releases that no longer exist upstream', async () => {
+				setup();
+
+				await service.fetchReleases();
+
+				expect(releasesRepo.deleteAllExceptGithubIds).toHaveBeenCalledWith([1]);
+			});
+
+			it('should delete images not referenced by any stored release and not used within the grace period', async () => {
+				setup();
+				releasesRepo.findAllImageIds.mockResolvedValueOnce(['existingImageId', 'concurrentImageId']);
+				const now = new Date('2024-06-01T12:00:00Z');
+				jest.useFakeTimers({ now, doNotFake: ['nextTick', 'setImmediate'] });
+
+				await service.fetchReleases();
+
+				jest.useRealTimers();
+				expect(releaseImagesRepo.deleteUnusedImages).toHaveBeenCalledWith(
+					['existingImageId', 'concurrentImageId'],
+					new Date('2024-06-01T11:00:00Z')
+				);
 			});
 		});
 
@@ -225,7 +247,7 @@ describe(ReleasesService.name, () => {
 				const longUrl = `${shortUrl}?size=large`;
 				const githubRelease = buildGithubRelease(`<img src="${shortUrl}"> ![alt](${longUrl})`);
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockImplementation((url) =>
+				releaseImagesRepo.markImageUsed.mockImplementation((url) =>
 					Promise.resolve(url === shortUrl ? 'shortImageId' : 'longImageId')
 				);
 			};
@@ -246,7 +268,7 @@ describe(ReleasesService.name, () => {
 				const imageUrl = 'https://github.com/user-attachments/assets/linked';
 				const githubRelease = buildGithubRelease(`[![alt](${imageUrl})](${imageUrl}) <a href="${imageUrl}">full</a>`);
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce('linkedImageId');
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce('linkedImageId');
 
 				return { imageUrl };
 			};
@@ -272,7 +294,7 @@ describe(ReleasesService.name, () => {
 					.mockReturnValueOnce(
 						of(axiosResponseFactory.build({ data: imageData, headers: { 'content-type': 'image/png' } }))
 					);
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 				releaseImagesRepo.save.mockImplementationOnce((image) => {
 					(image as ReleaseImageEntity).id = 'newImageId';
 
@@ -296,7 +318,7 @@ describe(ReleasesService.name, () => {
 					expect.objectContaining({ data: imageData, mimeType: 'image/png', sourceUrl: imageUrl, size: 3 })
 				);
 				expect(getSavedReleaseBody()).toBe('<img src="/api/v3/releases/images/newImageId">');
-				expect(releaseImagesRepo.deleteAllExcept).toHaveBeenCalledWith(['newImageId']);
+				expect(getSavedRelease().imageIds).toEqual(['newImageId']);
 			});
 		});
 
@@ -307,7 +329,7 @@ describe(ReleasesService.name, () => {
 				httpService.get
 					.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })))
 					.mockReturnValueOnce(throwError(() => new Error('image not found')));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 
 				return { imageUrl };
 			};
@@ -319,7 +341,7 @@ describe(ReleasesService.name, () => {
 
 				expect(releaseImagesRepo.save).not.toHaveBeenCalled();
 				expect(getSavedReleaseBody()).toBe(`<img src="${imageUrl}">`);
-				expect(releaseImagesRepo.deleteAllExcept).toHaveBeenCalledWith([]);
+				expect(getSavedRelease().imageIds).toEqual([]);
 			});
 		});
 
@@ -332,7 +354,7 @@ describe(ReleasesService.name, () => {
 					.mockReturnValueOnce(
 						of(axiosResponseFactory.build({ data: Buffer.from('<html>'), headers: { 'content-type': 'text/html' } }))
 					);
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 
 				return { imageUrl };
 			};
@@ -351,7 +373,7 @@ describe(ReleasesService.name, () => {
 			const setup = (imageUrl: string) => {
 				const githubRelease = buildGithubRelease(`<img src="${imageUrl}">`);
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 			};
 
 			it.each([
@@ -388,7 +410,7 @@ describe(ReleasesService.name, () => {
 					.mockReturnValueOnce(
 						of(axiosResponseFactory.build({ data: Buffer.from([1]), headers: { 'content-type': 'image/png' } }))
 					);
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 				releaseImagesRepo.save.mockImplementationOnce((image) => {
 					(image as ReleaseImageEntity).id = 'redirectedImageId';
 
@@ -424,7 +446,7 @@ describe(ReleasesService.name, () => {
 							})
 						)
 					);
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 
 				return { imageUrl };
 			};
@@ -447,7 +469,7 @@ describe(ReleasesService.name, () => {
 				httpService.get
 					.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })))
 					.mockReturnValueOnce(of(axiosResponseFactory.build({ status: 302, headers: {} })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 			};
 
 			it('should not store the image', async () => {
@@ -467,7 +489,7 @@ describe(ReleasesService.name, () => {
 				httpService.get
 					.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })))
 					.mockReturnValue(of(axiosResponseFactory.build({ status: 302, headers: { location: imageUrl } })));
-				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce(null);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
 			};
 
 			it('should stop after the redirect limit and not store the image', async () => {

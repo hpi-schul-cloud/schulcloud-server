@@ -29,8 +29,9 @@ describe(ReleasesRepo.name, () => {
 		em.clear();
 	});
 
-	const buildRelease = (name: string, publishedAt: Date): ReleaseEntity =>
+	const buildRelease = (name: string, publishedAt: Date, githubId = publishedAt.getTime()): ReleaseEntity =>
 		new ReleaseEntity({
+			githubId,
 			name,
 			url: `https://example.com/${name}`,
 			author: 'JohnDoe',
@@ -86,14 +87,63 @@ describe(ReleasesRepo.name, () => {
 		});
 	});
 
-	describe('deleteAll', () => {
-		it('should delete all releases', async () => {
-			await setup();
+	describe('upsertByGithubId', () => {
+		describe('when no release with the github id exists', () => {
+			it('should insert the release', async () => {
+				const release = buildRelease('new', new Date('2024-01-01T00:00:00Z'), 1);
+				release.imageIds = ['imageId'];
 
-			await repo.deleteAll();
+				await repo.upsertByGithubId(release);
+				em.clear();
 
-			const count = await em.count(ReleaseEntity, {});
-			expect(count).toBe(0);
+				const stored = await em.findOneOrFail(ReleaseEntity, { githubId: 1 });
+				expect(stored).toEqual(expect.objectContaining({ name: 'new', imageIds: ['imageId'] }));
+			});
+		});
+
+		describe('when a release with the github id exists', () => {
+			it('should update it instead of creating a duplicate', async () => {
+				const existing = buildRelease('old name', new Date('2024-01-01T00:00:00Z'), 1);
+				await em.persist(existing).flush();
+				em.clear();
+
+				await repo.upsertByGithubId(buildRelease('new name', new Date('2024-01-01T00:00:00Z'), 1));
+				await repo.upsertByGithubId(buildRelease('new name', new Date('2024-01-01T00:00:00Z'), 1));
+				em.clear();
+
+				const releases = await em.find(ReleaseEntity, {});
+				expect(releases).toHaveLength(1);
+				expect(releases[0]).toEqual(expect.objectContaining({ id: existing.id, name: 'new name' }));
+			});
+		});
+	});
+
+	describe('deleteAllExceptGithubIds', () => {
+		it('should delete all releases with other or no github id', async () => {
+			const { middle } = await setup();
+			await em.getCollection('releases').insertOne({ _id: '42', name: 'legacy release without githubId' } as never);
+
+			const deletedCount = await repo.deleteAllExceptGithubIds([middle.githubId]);
+
+			const remaining = await em.find(ReleaseEntity, {});
+			expect(deletedCount).toBe(3);
+			expect(remaining.map((release) => release.name)).toEqual(['middle']);
+		});
+	});
+
+	describe('findAllImageIds', () => {
+		it('should return the distinct image ids of all releases', async () => {
+			const first = buildRelease('first', new Date('2024-01-01T00:00:00Z'));
+			first.imageIds = ['a', 'b'];
+			const second = buildRelease('second', new Date('2024-02-01T00:00:00Z'));
+			second.imageIds = ['b', 'c'];
+			const third = buildRelease('third', new Date('2024-03-01T00:00:00Z'));
+			await em.persist([first, second, third]).flush();
+			em.clear();
+
+			const result = await repo.findAllImageIds();
+
+			expect(result.sort()).toEqual(['a', 'b', 'c']);
 		});
 	});
 });

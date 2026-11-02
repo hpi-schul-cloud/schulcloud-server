@@ -58,6 +58,7 @@ describe('Releases Controller (API)', () => {
 			const setup = async () => {
 				const releases = [
 					new ReleaseEntity({
+						githubId: 1,
 						name: 'Release 1',
 						body: 'Description for release 1',
 						url: 'https://example.com/releases/tag/release-1',
@@ -68,6 +69,7 @@ describe('Releases Controller (API)', () => {
 						zipUrl: 'https://example.com/zipball/1',
 					}),
 					new ReleaseEntity({
+						githubId: 2,
 						name: 'Release 2',
 						body: 'Description for release 2',
 						url: 'https://example.com/releases/tag/release-2',
@@ -196,6 +198,7 @@ describe('Releases Controller (API)', () => {
 					const { loggedInClient } = await setupUser();
 
 					const oldRelease = new ReleaseEntity({
+						githubId: 99,
 						name: 'Old release',
 						url: 'https://example.com/old',
 						author: 'JohnDoe',
@@ -208,6 +211,7 @@ describe('Releases Controller (API)', () => {
 						mimeType: 'image/png',
 						sourceUrl: 'https://github.com/user-attachments/assets/unused',
 					});
+					unusedImage.lastUsedAt = new Date('2023-01-01T00:00:00Z');
 					await em.persist([oldRelease, unusedImage]).flush();
 					em.clear();
 
@@ -244,6 +248,19 @@ describe('Releases Controller (API)', () => {
 					expect(releases.map((release) => release.name)).toEqual(['Release 1', 'Release 2']);
 				});
 
+				it('should not create duplicates when fetching repeatedly', async () => {
+					const { loggedInClient } = await setup();
+					httpService.get.mockReturnValueOnce(
+						of(axiosResponseFactory.build({ data: [githubRelease(1, 'no images'), githubRelease(2, 'no images')] }))
+					);
+
+					await loggedInClient.get('fetch');
+					await loggedInClient.get('fetch');
+
+					const releases = await em.find(ReleaseEntity, {}, { orderBy: { publishedAt: 'asc' } });
+					expect(releases.map((release) => release.githubId)).toEqual([1, 2]);
+				});
+
 				it('should store the image, link it in the body and remove unreferenced images', async () => {
 					const { loggedInClient, imageUrl, unusedImage } = await setup();
 
@@ -264,6 +281,7 @@ describe('Releases Controller (API)', () => {
 					const { loggedInClient } = await setupUser();
 
 					const existingRelease = new ReleaseEntity({
+						githubId: 99,
 						name: 'Existing release',
 						url: 'https://example.com/existing',
 						author: 'JohnDoe',

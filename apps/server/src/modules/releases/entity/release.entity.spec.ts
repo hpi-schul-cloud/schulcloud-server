@@ -4,6 +4,7 @@ import { ReleaseEntity, type ReleaseEntityProps } from './release.entity';
 describe(ReleaseEntity.name, () => {
 	const buildProps = (overrides: Partial<ReleaseEntityProps> = {}): ReleaseEntityProps => {
 		return {
+			githubId: 1,
 			name: 'Release 1',
 			url: 'https://example.com/releases/1',
 			author: 'JohnDoe',
@@ -18,13 +19,20 @@ describe(ReleaseEntity.name, () => {
 			it('should set all properties', () => {
 				const id = new ObjectId().toHexString();
 				const createdAt = new Date('2024-01-01T00:00:00Z');
-				const props = buildProps({ id, body: 'body', createdAt, zipUrl: 'https://example.com/zip' });
+				const props = buildProps({
+					id,
+					body: 'body',
+					createdAt,
+					zipUrl: 'https://example.com/zip',
+					imageIds: ['imageId'],
+				});
 
 				const entity = new ReleaseEntity(props);
 
 				expect(entity).toEqual(
 					expect.objectContaining({
 						id,
+						githubId: 1,
 						name: props.name,
 						body: 'body',
 						url: props.url,
@@ -33,6 +41,7 @@ describe(ReleaseEntity.name, () => {
 						createdAt,
 						publishedAt: props.publishedAt,
 						zipUrl: 'https://example.com/zip',
+						imageIds: ['imageId'],
 					})
 				);
 			});
@@ -46,6 +55,7 @@ describe(ReleaseEntity.name, () => {
 				expect(entity.body).toBe('');
 				expect(entity.createdAt).toBeInstanceOf(Date);
 				expect(entity.zipUrl).toBeUndefined();
+				expect(entity.imageIds).toEqual([]);
 			});
 		});
 	});
