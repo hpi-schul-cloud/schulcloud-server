@@ -41,7 +41,7 @@ describe('Admin API - Accounts', () => {
 		expect(response.status).toBe(401);
 	});
 
-	it('searches, reads, updates, and deletes accounts', async () => {
+	it('searches, reads, and deletes accounts', async () => {
 		const school = schoolEntityFactory.buildWithId();
 		const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 		await em.persist([school, studentUser, studentAccount]).flush();
@@ -55,11 +55,6 @@ describe('Admin API - Accounts', () => {
 		const detail = await api.get(`/${studentAccount.id}`);
 		expect(detail.status).toBe(200);
 		expect(detail.body).toEqual(expect.objectContaining({ id: studentAccount.id, username: studentAccount.username }));
-
-		const update = await api.patch(`/${studentAccount.id}`, { activated: false });
-		expect(update.status).toBe(200);
-		const updateBody = update.body as unknown as { activated: boolean };
-		expect(updateBody.activated).toBe(false);
 
 		const deletion = await api.delete(`/${studentAccount.id}`);
 		expect(deletion.status).toBe(200);

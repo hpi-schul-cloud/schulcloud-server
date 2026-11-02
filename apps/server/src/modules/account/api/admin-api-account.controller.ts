@@ -1,13 +1,7 @@
 import { XApiKeyAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-	AccountByIdBodyParams,
-	AccountByIdParams,
-	AccountResponse,
-	AccountSearchListResponse,
-	AccountSearchQueryParams,
-} from './dto';
+import { AccountByIdParams, AccountResponse, AccountSearchListResponse, AccountSearchQueryParams } from './dto';
 import { AdminApiAccountUc } from './admin-api-account.uc';
 
 @ApiTags('Admin API Accounts')
@@ -26,15 +20,6 @@ export class AdminApiAccountController {
 	@ApiOperation({ summary: 'Get an account for internal administration.' })
 	public findAccount(@Param() params: AccountByIdParams): Promise<AccountResponse> {
 		return this.uc.findAccount(params.id);
-	}
-
-	@Patch(':id')
-	@ApiOperation({ summary: 'Update an account for internal administration.' })
-	public updateAccount(
-		@Param() params: AccountByIdParams,
-		@Body() body: AccountByIdBodyParams
-	): Promise<AccountResponse> {
-		return this.uc.updateAccount(params.id, body);
 	}
 
 	@Delete(':id')
