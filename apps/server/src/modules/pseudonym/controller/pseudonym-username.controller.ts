@@ -3,6 +3,7 @@ import {
 	Controller,
 	ForbiddenException,
 	Get,
+	Inject,
 	NotFoundException,
 	Param,
 	Req,
@@ -14,7 +15,9 @@ import { JwtExtractor } from '@shared/common/utils';
 import { randomBytes } from 'node:crypto';
 import { parse as parseCookie } from 'cookie';
 import { type Request, type Response } from 'express';
+import { PSEUDONYM_CONFIG_TOKEN, PseudonymConfig } from '../pseudonym.config';
 import { PseudonymUc } from '../uc';
+import { usernameLogos } from './pseudonym-username.logos';
 import { PseudonymParams } from './dto/pseudonym-params';
 import { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 
@@ -55,7 +58,10 @@ const labels: Record<string, { showName: string; explanation: string; loginExpla
 
 @Controller('pseudonyms/username')
 export class PseudonymUsernameController {
-	constructor(private readonly pseudonymUc: PseudonymUc) {}
+	constructor(
+		private readonly pseudonymUc: PseudonymUc,
+		@Inject(PSEUDONYM_CONFIG_TOKEN) private readonly config: PseudonymConfig
+	) {}
 
 	@Get(':pseudonym')
 	@UseGuards(OptionalJwtAuthGuard)
@@ -87,6 +93,7 @@ export class PseudonymUsernameController {
 		}
 
 		const nonce = randomBytes(16).toString('base64');
+		const logo = usernameLogos[this.config.scTheme];
 		const script = hasJwt
 			? ''
 			: `<script nonce="${nonce}">
@@ -117,16 +124,47 @@ if (document.hasStorageAccess && document.requestStorageAccess) {
 		response.setHeader('X-Content-Type-Options', 'nosniff');
 		response.setHeader(
 			'Content-Security-Policy',
-			`default-src 'self'; script-src 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; frame-ancestors *`
+			`default-src 'none'; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}'; img-src data:; frame-ancestors *`
 		);
 		const content = hasJwt
-			? `<div class="depseudo"><div class="cloud-logo"></div><a style="color: inherit; text-decoration: none" title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</a></div>`
-			: `<div class="depseudo"><div class="cloud-logo"></div><button type="button" hidden style="background: none; border: 0; color: inherit; cursor: pointer; font: inherit; padding: 0" title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</button><a href="/login/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none" title="${escapeHtml(localized.loginExplanation)}" aria-label="${escapeHtml(localized.loginExplanation)}">${escapeHtml(name)}</a></div>`;
+			? `<div class="depseudo"><span title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</span></div>`
+			: `<div class="depseudo"><button type="button" hidden title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</button><a href="/login/" target="_blank" rel="noopener noreferrer" title="${escapeHtml(localized.loginExplanation)}" aria-label="${escapeHtml(localized.loginExplanation)}">${escapeHtml(name)}</a></div>`;
 
 		response.status(status).type('html').send(`<!doctype html>
 <html lang="${language}"><head><meta charset="utf-8">
-<link rel="stylesheet" href="/styles/fonts/ptsans.css">
-<link rel="stylesheet" href="/styles/oauth2/username.css">
+<style nonce="${nonce}">
+body { margin: 0; }
+.depseudo {
+  /* Bettermarks is available only in BRB, N21 and THR; all three use blue. */
+  background: #2876d0 url("${logo}") no-repeat 4px center / 28px 28px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #fff;
+  font: 14px/20px Arial, sans-serif;
+  height: 20px;
+  overflow: hidden;
+  padding: 2px 4px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 170px;
+}
+.depseudo a, .depseudo button, .depseudo span {
+  box-sizing: border-box;
+  color: inherit;
+  display: block;
+  font: inherit;
+  height: 100%;
+  overflow: hidden;
+  padding-left: 28px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+.depseudo [hidden] { display: none; }
+.depseudo a { text-decoration: none; }
+.depseudo button { background: none; border: 0; cursor: pointer; padding: 0 0 0 28px; }
+</style>
 </head><body>${content}${script}</body></html>`);
 	}
 }

@@ -1,18 +1,22 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { type ICurrentUser } from '@infra/auth-guard';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { SchulcloudTheme } from '@shared/domain/types';
 import type { Request, Response } from 'express';
+import { PseudonymConfig } from '../pseudonym.config';
 import type { PseudonymUc } from '../uc';
 import { PseudonymUsernameController } from './pseudonym-username.controller';
 
 describe(PseudonymUsernameController.name, () => {
 	let uc: DeepMocked<PseudonymUc>;
 	let controller: PseudonymUsernameController;
+	let config: PseudonymConfig;
 	let response: DeepMocked<Response>;
 
 	beforeEach(() => {
 		uc = createMock<PseudonymUc>();
-		controller = new PseudonymUsernameController(uc);
+		config = new PseudonymConfig();
+		controller = new PseudonymUsernameController(uc, config);
 		response = createMock<Response>();
 		response.status.mockReturnValue(response);
 		response.type.mockReturnValue(response);
@@ -33,11 +37,36 @@ describe(PseudonymUsernameController.name, () => {
 		expect(response.send).toHaveBeenCalledWith(expect.stringContaining("nameButton.addEventListener('click'"));
 		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('catch(showLoginLink)'));
 		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('Bitte melden Sie sich in der Schulcloud an'));
+		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('<style nonce="'));
+		expect(response.send).not.toHaveBeenCalledWith(expect.stringContaining('/styles/'));
+		expect(response.send).not.toHaveBeenCalledWith(expect.stringContaining('/images/'));
+		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('background: #2876d0'));
+		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('data:image/png;base64,'));
 		expect(response.setHeader).toHaveBeenCalledWith('Cache-Control', 'no-store');
 		expect(response.setHeader).toHaveBeenCalledWith(
 			'Content-Security-Policy',
-			expect.stringContaining("default-src 'self'")
+			expect.stringContaining("default-src 'none'")
 		);
+		expect(response.setHeader).toHaveBeenCalledWith(
+			'Content-Security-Policy',
+			expect.stringContaining('img-src data:')
+		);
+	});
+
+	it('inlines a distinct logo for each Bettermarks theme', async () => {
+		const request = { headers: {} } as unknown as Request;
+		const logoUris: string[] = [];
+
+		for (const theme of [SchulcloudTheme.BRANDENBURG, SchulcloudTheme.NIEDERSACHSEN, SchulcloudTheme.THUERINGEN]) {
+			config.scTheme = theme;
+			await controller.showName({ pseudonym: 'opaque' }, request, response);
+			const html = response.send.mock.calls.at(-1)?.[0] as string;
+			const logoUri = html.match(/data:image\/png;base64,[A-Za-z0-9+/=]+/)?.[0];
+			expect(logoUri).toBeDefined();
+			logoUris.push(logoUri as string);
+		}
+
+		expect(new Set(logoUris).size).toBe(3);
 	});
 
 	it('uses the language cookie for the unauthenticated prompt', async () => {
@@ -77,7 +106,7 @@ describe(PseudonymUsernameController.name, () => {
 
 			expect(response.status).toHaveBeenCalledWith(error.getStatus());
 			expect(response.type).toHaveBeenCalledWith('html');
-			expect(response.send).toHaveBeenCalledWith(expect.stringContaining('>???</a>'));
+			expect(response.send).toHaveBeenCalledWith(expect.stringContaining('>???</span>'));
 		}
 	);
 
