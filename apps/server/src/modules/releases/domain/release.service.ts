@@ -143,6 +143,7 @@ export class ReleasesService {
 					maxContentLength: ReleasesService.MAX_IMAGE_SIZE_BYTES,
 					maxRedirects: 0,
 					validateStatus: (status) => status >= 200 && status < 400,
+					timeout: 10_000,
 				})
 			);
 

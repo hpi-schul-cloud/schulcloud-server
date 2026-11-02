@@ -61,6 +61,7 @@ export class ReleasesController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	// stored images are never updated, only created or deleted, so the content behind an id never changes
 	@Header('Cache-Control', 'private, max-age=31536000, immutable')
+	@Header('Content-Security-Policy', "default-src 'none'; sandbox")
 	@Get('images/:imageId')
 	public async getImage(
 		@CurrentUser() currentUser: ICurrentUser,
