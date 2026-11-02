@@ -523,7 +523,7 @@ export class FeathersRosterService {
 			});
 			const accessibleBoards =
 				context instanceof CourseEntity && userId !== undefined
-					? await this.getAccessibleCourseBoards(userId, context, columnBoards)
+					? this.getAccessibleCourseBoards(userId, context, columnBoards)
 					: columnBoards;
 
 			const isExternalToolReferencedInColumnBoard: boolean[] = await Promise.all(
