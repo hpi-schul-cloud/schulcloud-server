@@ -19,10 +19,21 @@ export class RoomInvitationLinkRepo {
 	}
 
 	public async findByInvitationCredential(credential: string): Promise<RoomInvitationLink | null> {
-		const query = ObjectId.isValid(credential)
-			? { id: credential, invitationToken: null }
-			: { invitationToken: credential };
-		const entity = await this.em.findOne(RoomInvitationLinkEntity, query);
+		const isValidObjectId = ObjectId.isValid(credential);
+		let entity: RoomInvitationLinkEntity | null = null;
+
+		if (isValidObjectId) {
+			const fetchedEntity = await this.em.findOne(RoomInvitationLinkEntity, { id: credential, invitationToken: null });
+			if (fetchedEntity && fetchedEntity.invitationToken !== null) {
+				// entry searched for by objectID should only be returned if it has no invitationToken
+				entity = fetchedEntity;
+			}
+		} else {
+			const entityByToken = await this.em.findOne(RoomInvitationLinkEntity, { invitationToken: credential });
+			if (entityByToken) {
+				entity = entityByToken;
+			}
+		}
 
 		return entity ? this.roomInvitationLinkDomainMapper.mapEntityToDo(entity) : null;
 	}
