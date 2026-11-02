@@ -7,6 +7,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roomInvitationLinkEntityFactory } from '../testing/room-invitation-link-entity.factory';
 import { roomInvitationLinkTestFactory } from '../testing/room-invitation-link.test.factory';
 import { RoomInvitationLinkDomainMapper } from './room-invitation-link-domain.mapper';
+import { FlushMode } from '@mikro-orm/core';
 
 describe('RoomInvitationLinkRepo', () => {
 	let module: TestingModule;
@@ -30,6 +31,8 @@ describe('RoomInvitationLinkRepo', () => {
 	});
 
 	afterEach(async () => {
+		em.setFlushMode(FlushMode.AUTO);
+		em.clear();
 		await cleanupCollections(em);
 	});
 
@@ -63,26 +66,70 @@ describe('RoomInvitationLinkRepo', () => {
 
 	describe('findByInvitationCredential', () => {
 		describe('when the invitation has a token', () => {
-			const setup = async () => {
+			const setup = async (preload = false) => {
 				const token = 'A_0-'.repeat(5) + 'z';
 				const link = roomInvitationLinkEntityFactory.build({ invitationToken: token });
 				await em.persist(link).flush();
 				em.clear();
+				if (preload) {
+					await repo.findById(link.id);
+				}
 
 				return { link, token };
 			};
 
-			it('should find the token but reject the internal id and a differently cased token', async () => {
+			it('should find the invitation by its invitationToken', async () => {
 				const { link, token } = await setup();
 
-				const found = await repo.findByInvitationCredential(token);
-				const byId = await repo.findByInvitationCredential(link.id);
-				const byChangedCase = await repo.findByInvitationCredential(token.toLowerCase());
+				const result = await repo.findByInvitationCredential(token);
 
-				expect(found?.invitationToken).toBe(token);
-				expect(found?.id).toBe(link.id);
-				expect(byId).toBeNull();
-				expect(byChangedCase).toBeNull();
+				expect(result?.id).toBe(link.id);
+				expect(result?.invitationToken).toBe(token);
+			});
+
+			it('should not find the invitation by its ObjectId', async () => {
+				const { link } = await setup();
+
+				const result = await repo.findByInvitationCredential(link.id);
+
+				expect(result).toBeNull();
+			});
+
+			it('should not find the invitation using a differently cased token', async () => {
+				const { token } = await setup();
+
+				const result = await repo.findByInvitationCredential(token.toLowerCase());
+
+				expect(result).toBeNull();
+			});
+
+			it('should reject its ObjectId even when the invitation was already loaded', async () => {
+				const { link } = await setup(true);
+
+				const result = await repo.findByInvitationCredential(link.id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when a loaded legacy entity has been assigned a token', () => {
+			const setup = async () => {
+				const link = roomInvitationLinkEntityFactory.build({ invitationToken: undefined });
+				await em.persist(link).flush();
+				em.clear();
+				const loaded = await em.findOneOrFail(RoomInvitationLinkEntity, link.id);
+				loaded.invitationToken = 'A_0-'.repeat(5) + 'z';
+				em.setFlushMode(FlushMode.COMMIT);
+
+				return { link };
+			};
+
+			it('should not return the token-bearing entity by id before it is flushed', async () => {
+				const { link } = await setup();
+
+				const result = await repo.findByInvitationCredential(link.id);
+
+				expect(result).toBeNull();
 			});
 		});
 
@@ -101,8 +148,17 @@ describe('RoomInvitationLinkRepo', () => {
 				return { link };
 			};
 
-			it.each([false, true])('should accept its id when nullToken=%s', async (nullToken) => {
-				const { link } = await setup(nullToken);
+			it('should find the invitation by its ObjectId when invitationToken is missing', async () => {
+				const { link } = await setup(false);
+
+				const result = await repo.findByInvitationCredential(link.id);
+
+				expect(result?.id).toBe(link.id);
+				expect(result?.invitationToken).toBeUndefined();
+			});
+
+			it('should find the invitation by its ObjectId when invitationToken is null', async () => {
+				const { link } = await setup(true);
 
 				const result = await repo.findByInvitationCredential(link.id);
 

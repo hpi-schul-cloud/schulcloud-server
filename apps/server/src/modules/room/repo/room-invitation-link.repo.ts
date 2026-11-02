@@ -24,8 +24,8 @@ export class RoomInvitationLinkRepo {
 
 		if (isValidObjectId) {
 			const fetchedEntity = await this.em.findOne(RoomInvitationLinkEntity, { id: credential, invitationToken: null });
-			if (fetchedEntity && fetchedEntity.invitationToken !== null) {
-				// entry searched for by objectID should only be returned if it has no invitationToken
+			if (fetchedEntity && (fetchedEntity.invitationToken === undefined || fetchedEntity.invitationToken === null)) {
+				// Also reject tokens on an entity already loaded in the ORM identity map.
 				entity = fetchedEntity;
 			}
 		} else {
