@@ -47,8 +47,6 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 		const roomCopied = await this.roomService.createRoom({
 			name: copyName,
 			color: originalRoom.color,
-			startDate: originalRoom.startDate,
-			endDate: originalRoom.endDate,
 			schoolId: user.school.id,
 			features: [],
 		});

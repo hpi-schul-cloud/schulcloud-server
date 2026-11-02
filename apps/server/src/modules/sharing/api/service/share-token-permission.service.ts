@@ -4,7 +4,7 @@ import { CourseEntity } from '@modules/course/repo';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -81,6 +81,15 @@ export class ShareTokenPermissionService {
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
 		this.authorizationService.checkPermission(user, roomAuthorizable, AuthorizationContextBuilder.write(permissions));
+	}
+
+	public async checkRoomImportPermission(user: User, roomId: EntityId): Promise<void> {
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		this.authorizationService.checkPermission(user, roomAuthorizable, AuthorizationContextBuilder.write([]));
+		if (roomAuthorizable.isArchived) {
+			throw new ForbiddenException('Content cannot be imported into archived rooms');
+		}
 	}
 
 	public async checkContextReadPermission(userId: EntityId, context: ShareTokenContext): Promise<void> {
