@@ -219,6 +219,49 @@ describe(ReleasesService.name, () => {
 			});
 		});
 
+		describe('when one image url is a prefix of another', () => {
+			const setup = () => {
+				const shortUrl = 'https://github.com/user-attachments/assets/image.png';
+				const longUrl = `${shortUrl}?size=large`;
+				const githubRelease = buildGithubRelease(`<img src="${shortUrl}"> ![alt](${longUrl})`);
+				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })));
+				releaseImagesRepo.findImageIdBySourceUrl.mockImplementation((url) =>
+					Promise.resolve(url === shortUrl ? 'shortImageId' : 'longImageId')
+				);
+			};
+
+			it('should replace each destination with its own backend url', async () => {
+				setup();
+
+				await service.fetchReleases();
+
+				expect(getSavedReleaseBody()).toBe(
+					'<img src="/api/v3/releases/images/shortImageId"> ![alt](/api/v3/releases/images/longImageId)'
+				);
+			});
+		});
+
+		describe('when an image url is also used in a regular link', () => {
+			const setup = () => {
+				const imageUrl = 'https://github.com/user-attachments/assets/linked';
+				const githubRelease = buildGithubRelease(`[![alt](${imageUrl})](${imageUrl}) <a href="${imageUrl}">full</a>`);
+				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })));
+				releaseImagesRepo.findImageIdBySourceUrl.mockResolvedValueOnce('linkedImageId');
+
+				return { imageUrl };
+			};
+
+			it('should replace only the image destination and keep the links', async () => {
+				const { imageUrl } = setup();
+
+				await service.fetchReleases();
+
+				expect(getSavedReleaseBody()).toBe(
+					`[![alt](/api/v3/releases/images/linkedImageId)](${imageUrl}) <a href="${imageUrl}">full</a>`
+				);
+			});
+		});
+
 		describe('when an image does not exist yet', () => {
 			const setup = () => {
 				const imageUrl = 'https://github.com/user-attachments/assets/new';

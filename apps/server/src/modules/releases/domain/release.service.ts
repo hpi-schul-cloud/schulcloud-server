@@ -17,6 +17,11 @@ export class ReleasesService {
 
 	private static readonly MAX_IMAGE_REDIRECTS = 3;
 
+	// groups: 1 = prefix, 2 = image url, 3 = suffix
+	private static readonly HTML_IMAGE_REGEX = /(<img[^>]+src=")([^">]+)(")/g;
+
+	private static readonly MARKDOWN_IMAGE_REGEX = /(!\[[^\]]*\]\()(\S+?)((?:\s+"[^"]*")?\))/g;
+
 	constructor(
 		private readonly releasesRepo: ReleasesRepo,
 		private readonly releaseImagesRepo: ReleaseImagesRepo,
@@ -76,22 +81,30 @@ export class ReleasesService {
 		body: string,
 		imageIdsBySourceUrl: Map<string, EntityId | null>
 	): Promise<string> {
-		const htmlImageUrls = [...body.matchAll(/<img[^>]+src="([^">]+)"/g)].map((match) => match[1]);
-		const markdownImageUrls = [...body.matchAll(/!\[[^\]]*\]\((\S+?)(?:\s+"[^"]*")?\)/g)].map((match) => match[1]);
-		const urls = new Set([...htmlImageUrls, ...markdownImageUrls]);
+		const urls = new Set(
+			[ReleasesService.HTML_IMAGE_REGEX, ReleasesService.MARKDOWN_IMAGE_REGEX].flatMap((regex) =>
+				[...body.matchAll(regex)].map((match) => match[2])
+			)
+		);
 
-		let result = body;
 		for (const url of urls) {
-			let imageId = imageIdsBySourceUrl.get(url);
-			if (imageId === undefined) {
-				imageId = await this.safeGetOrStoreImage(url);
-				imageIdsBySourceUrl.set(url, imageId);
+			if (!imageIdsBySourceUrl.has(url)) {
+				imageIdsBySourceUrl.set(url, await this.safeGetOrStoreImage(url));
 			}
+		}
 
+		// only the captured image destinations are replaced, so links and urls sharing a prefix stay untouched
+		const replaceDestination = (_match: string, prefix: string, url: string, suffix: string): string => {
+			const imageId = imageIdsBySourceUrl.get(url);
 			// keep the original url if the image could not be stored
 			const imageUrl = imageId ? `${ReleasesService.IMAGE_BASE_PATH}/${imageId}` : url;
-			result = result.split(url).join(imageUrl);
-		}
+
+			return `${prefix}${imageUrl}${suffix}`;
+		};
+
+		const result = body
+			.replace(ReleasesService.HTML_IMAGE_REGEX, replaceDestination)
+			.replace(ReleasesService.MARKDOWN_IMAGE_REGEX, replaceDestination);
 
 		return result;
 	}
