@@ -34,6 +34,7 @@ import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { AdminApiAuthenticationModule } from '@modules/authentication';
+import { AuthorizationRulesModule } from '@modules/authorization-rules';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
@@ -43,6 +44,7 @@ import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 const serverModules = [
 	ConfigurationModule.register(ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig),
 	ValidationModule,
+	AuthorizationRulesModule,
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
