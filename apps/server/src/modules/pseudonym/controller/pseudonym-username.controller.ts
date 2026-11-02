@@ -71,19 +71,24 @@ export class PseudonymUsernameController {
 		const script = hasJwt
 			? ''
 			: `<script nonce="${nonce}">
+const nameButton = document.querySelector('.depseudo button');
+const loginLink = document.querySelector('.depseudo a');
+const showLoginLink = () => {
+  const wasFocused = document.activeElement === nameButton;
+  nameButton.hidden = true;
+  loginLink.hidden = false;
+  if (wasFocused) loginLink.focus();
+};
+
+nameButton.addEventListener('click', () => {
+  document.requestStorageAccess().then(() => window.location.reload()).catch(showLoginLink);
+});
+
 if (document.hasStorageAccess && document.requestStorageAccess) {
   document.hasStorageAccess().then((hasAccess) => {
-    if (hasAccess) {
-      const nameLink = document.querySelector('.depseudo a');
-      nameLink.href = '/login/';
-      nameLink.target = '_blank';
-      nameLink.rel = 'noopener noreferrer';
-      nameLink.title = ${JSON.stringify(localized.loginExplanation)};
-      nameLink.setAttribute('aria-label', nameLink.title);
-    } else {
-      document.addEventListener('click', () => {
-        document.requestStorageAccess().then(() => window.location.reload()).catch(() => {});
-      });
+    if (!hasAccess) {
+      loginLink.hidden = true;
+      nameButton.hidden = false;
     }
   }).catch(() => {});
 }
@@ -95,10 +100,14 @@ if (document.hasStorageAccess && document.requestStorageAccess) {
 			'Content-Security-Policy',
 			`default-src 'self'; script-src 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; frame-ancestors *`
 		);
+		const content = hasJwt
+			? `<div class="depseudo"><div class="cloud-logo"></div><a style="color: inherit; text-decoration: none" title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</a></div>`
+			: `<div class="depseudo"><div class="cloud-logo"></div><button type="button" hidden style="background: none; border: 0; color: inherit; cursor: pointer; font: inherit; padding: 0" title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</button><a href="/login/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none" title="${escapeHtml(localized.loginExplanation)}" aria-label="${escapeHtml(localized.loginExplanation)}">${escapeHtml(name)}</a></div>`;
+
 		response.type('html').send(`<!doctype html>
 <html lang="${language}"><head><meta charset="utf-8">
 <link rel="stylesheet" href="/styles/fonts/ptsans.css">
 <link rel="stylesheet" href="/styles/oauth2/username.css">
-</head><body><div class="depseudo"${hasJwt ? '' : ' style="cursor: pointer"'}><div class="cloud-logo"></div><a style="color: inherit; text-decoration: none" title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</a></div>${script}</body></html>`);
+</head><body>${content}${script}</body></html>`);
 	}
 }

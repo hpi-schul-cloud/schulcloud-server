@@ -24,8 +24,13 @@ describe(PseudonymUsernameController.name, () => {
 
 		expect(uc.resolveNameForUser).not.toHaveBeenCalled();
 		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('Namen zeigen'));
+		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('<button type="button" hidden'));
+		expect(response.send).toHaveBeenCalledWith(
+			expect.stringContaining('<a href="/login/" target="_blank" rel="noopener noreferrer"')
+		);
 		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('document.requestStorageAccess()'));
-		expect(response.send).toHaveBeenCalledWith(expect.stringContaining("nameLink.href = '/login/'"));
+		expect(response.send).toHaveBeenCalledWith(expect.stringContaining("nameButton.addEventListener('click'"));
+		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('catch(showLoginLink)'));
 		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('Bitte melden Sie sich in der Schulcloud an'));
 		expect(response.setHeader).toHaveBeenCalledWith('Cache-Control', 'no-store');
 		expect(response.setHeader).toHaveBeenCalledWith(
