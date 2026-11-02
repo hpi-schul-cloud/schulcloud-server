@@ -322,6 +322,41 @@ describe(ReleasesService.name, () => {
 			});
 		});
 
+		describe('when an image is requested', () => {
+			const setup = async () => {
+				const imageUrl = 'https://github.com/user-attachments/assets/status';
+				const githubRelease = buildGithubRelease(`<img src="${imageUrl}">`);
+				httpService.get
+					.mockReturnValueOnce(of(axiosResponseFactory.build({ data: [githubRelease] })))
+					.mockReturnValueOnce(
+						of(axiosResponseFactory.build({ data: Buffer.from([1]), headers: { 'content-type': 'image/png' } }))
+					);
+				releaseImagesRepo.markImageUsed.mockResolvedValueOnce(null);
+
+				await service.fetchReleases();
+
+				const config = httpService.get.mock.calls[1][1];
+				const validateStatus = config?.validateStatus;
+				if (!validateStatus) {
+					throw new Error('validateStatus not passed to image request');
+				}
+
+				return { validateStatus };
+			};
+
+			it.each([200, 204, 299, 301, 302, 307, 308, 399])('should accept status %i', async (status) => {
+				const { validateStatus } = await setup();
+
+				expect(validateStatus(status)).toBe(true);
+			});
+
+			it.each([100, 199, 400, 404, 500, 503])('should reject status %i', async (status) => {
+				const { validateStatus } = await setup();
+
+				expect(validateStatus(status)).toBe(false);
+			});
+		});
+
 		describe('when an image cannot be downloaded', () => {
 			const setup = () => {
 				const imageUrl = 'https://github.com/user-attachments/assets/broken';

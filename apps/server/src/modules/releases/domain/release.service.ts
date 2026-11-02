@@ -15,6 +15,10 @@ export class ReleasesService {
 
 	private static readonly IMAGE_BASE_PATH = '/api/v3/releases/images';
 
+	/**
+	 * Redirects must be supported because images added via drag & drop in the GitHub release editor
+	 * (https://github.com/user-attachments/assets/...) respond with a 302 to a S3 url
+	 */
 	private static readonly MAX_IMAGE_REDIRECTS = 3;
 
 	private static readonly UNUSED_IMAGE_GRACE_PERIOD_MS = 60 * 60 * 1000;
@@ -154,10 +158,6 @@ export class ReleasesService {
 		return image.id;
 	}
 
-	/**
-	 * Redirects are followed manually so that every hop is validated against the allowed sources
-	 * before any request is sent to it.
-	 */
 	private async downloadImage(sourceUrl: string): Promise<AxiosResponse<ArrayBuffer>> {
 		let url = new URL(sourceUrl);
 
@@ -171,6 +171,7 @@ export class ReleasesService {
 					responseType: 'arraybuffer',
 					maxContentLength: ReleasesService.MAX_IMAGE_SIZE_BYTES,
 					maxRedirects: 0,
+					// accept 3xx so redirects are returned to the loop below instead of being thrown by axios
 					validateStatus: (status) => status >= 200 && status < 400,
 					timeout: 10_000,
 				})
