@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RoomStatsItemResponse {
 	@ApiProperty({ type: String })
@@ -31,6 +31,9 @@ export class RoomStatsItemResponse {
 	@ApiProperty({ type: Date })
 	updatedAt: Date;
 
+	@ApiPropertyOptional({ type: Date })
+	archivedAt?: Date;
+
 	constructor(room: RoomStatsItemResponse) {
 		this.roomId = room.roomId;
 		this.name = room.name;
@@ -42,5 +45,6 @@ export class RoomStatsItemResponse {
 		this.externalMembers = room.externalMembers;
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
+		this.archivedAt = room.archivedAt;
 	}
 }

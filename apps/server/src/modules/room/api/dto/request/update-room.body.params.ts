@@ -1,8 +1,8 @@
 import { RoomUpdateProps } from '@modules/room/domain';
 import { RoomColor, RoomFeatures } from '@modules/room/domain/type';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { NullToUndefined, SanitizeHtml } from '@shared/controller/transformer';
-import { IsArray, IsDate, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller/transformer';
+import { IsArray, IsEnum, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateRoomBodyParams implements RoomUpdateProps {
 	@ApiProperty({
@@ -22,26 +22,6 @@ export class UpdateRoomBodyParams implements RoomUpdateProps {
 	})
 	@IsEnum(RoomColor)
 	color!: RoomColor;
-
-	@IsDate()
-	@IsOptional()
-	@NullToUndefined()
-	@ApiPropertyOptional({
-		description: 'Start date of the room',
-		required: false,
-		type: Date,
-	})
-	startDate?: Date;
-
-	@IsDate()
-	@IsOptional()
-	@NullToUndefined()
-	@ApiPropertyOptional({
-		description: 'Start date of the room',
-		required: false,
-		type: Date,
-	})
-	endDate?: Date;
 
 	@IsArray()
 	@IsEnum(RoomFeatures, { each: true })

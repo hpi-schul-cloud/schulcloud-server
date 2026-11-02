@@ -157,8 +157,6 @@ describe('VideoConferenceController (API)', () => {
 
 					const room = roomEntityFactory.build({
 						schoolId: school.id,
-						startDate: new Date('2024-10-01'),
-						endDate: new Date('2024-10-20'),
 					});
 					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -223,8 +221,6 @@ describe('VideoConferenceController (API)', () => {
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 					const room = roomEntityFactory.build({
 						schoolId: school.id,
-						startDate: new Date('2024-10-01'),
-						endDate: new Date('2025-10-20'),
 					});
 					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
@@ -289,8 +285,6 @@ describe('VideoConferenceController (API)', () => {
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 					const room = roomEntityFactory.build({
 						schoolId: school.id,
-						startDate: new Date('2024-10-01'),
-						endDate: new Date('2025-10-20'),
 					});
 					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -356,8 +350,6 @@ describe('VideoConferenceController (API)', () => {
 
 					const room = roomEntityFactory.build({
 						schoolId: school.id,
-						startDate: new Date('2024-10-01'),
-						endDate: new Date('2024-10-20'),
 						features: [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE],
 					});
 					const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -423,8 +415,6 @@ describe('VideoConferenceController (API)', () => {
 
 					const room = roomEntityFactory.build({
 						schoolId: school.id,
-						startDate: new Date('2024-10-01'),
-						endDate: new Date('2024-10-20'),
 						features: [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE],
 					});
 					const { roomAdminRole, roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -492,8 +482,6 @@ describe('VideoConferenceController (API)', () => {
 
 				const room = roomEntityFactory.build({
 					schoolId: school.id,
-					startDate: new Date('2024-10-01'),
-					endDate: new Date('2024-10-20'),
 				});
 				const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -574,8 +562,6 @@ describe('VideoConferenceController (API)', () => {
 
 						const room = roomEntityFactory.build({
 							schoolId: school.id,
-							startDate: new Date('2024-10-01'),
-							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -643,8 +629,6 @@ describe('VideoConferenceController (API)', () => {
 
 						const room = roomEntityFactory.build({
 							schoolId: school.id,
-							startDate: new Date('2024-10-01'),
-							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -727,8 +711,6 @@ describe('VideoConferenceController (API)', () => {
 
 						const room = roomEntityFactory.build({
 							schoolId: school.id,
-							startDate: new Date('2024-10-01'),
-							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -808,8 +790,6 @@ describe('VideoConferenceController (API)', () => {
 
 						const room = roomEntityFactory.build({
 							schoolId: school.id,
-							startDate: new Date('2024-10-01'),
-							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -877,8 +857,6 @@ describe('VideoConferenceController (API)', () => {
 
 						const room = roomEntityFactory.build({
 							schoolId: school.id,
-							startDate: new Date('2024-10-01'),
-							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -947,8 +925,6 @@ describe('VideoConferenceController (API)', () => {
 
 						const room = roomEntityFactory.build({
 							schoolId: school.id,
-							startDate: new Date('2024-10-01'),
-							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const externalPersonRole = roleFactory.buildWithId({
@@ -1028,8 +1004,6 @@ describe('VideoConferenceController (API)', () => {
 
 						const room = roomEntityFactory.build({
 							schoolId: school.id,
-							startDate: new Date('2024-10-01'),
-							endDate: new Date('2024-10-20'),
 						});
 						const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
