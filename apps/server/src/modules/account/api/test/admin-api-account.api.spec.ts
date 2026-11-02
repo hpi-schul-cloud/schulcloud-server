@@ -4,6 +4,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { AccountSearchType } from '../../domain/type/account-search-type';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
@@ -59,5 +60,55 @@ describe('Admin API - Accounts', () => {
 		const deletion = await api.delete(`/${studentAccount.id}`);
 		expect(deletion.status).toBe(200);
 		await expect(em.findOne(AccountEntity, { id: studentAccount.id })).resolves.toBeNull();
+	});
+
+	it('searches usernames with pagination and reports the total number of matches', async () => {
+		const school = schoolEntityFactory.buildWithId();
+		const first = UserAndAccountTestFactory.buildStudent({ school, username: 'zebra.alpha@example.org' });
+		const second = UserAndAccountTestFactory.buildStudent({ school, username: 'zebra.beta@example.org' });
+		const unrelated = UserAndAccountTestFactory.buildStudent({ school, username: 'other@example.org' });
+		await em
+			.persist([
+				school,
+				first.studentUser,
+				first.studentAccount,
+				second.studentUser,
+				second.studentAccount,
+				unrelated.studentUser,
+				unrelated.studentAccount,
+			])
+			.flush();
+
+		const response = await client().get(`?type=${AccountSearchType.USERNAME}&value=zebra&skip=1&limit=1`);
+
+		expect(response.status).toBe(200);
+		expect(response.body).toEqual(
+			expect.objectContaining({
+				total: 2,
+				skip: 1,
+				limit: 1,
+				data: [expect.objectContaining({ username: expect.stringMatching(/^zebra\./) })],
+			})
+		);
+	});
+
+	it('returns an empty result for a user ID without an account', async () => {
+		const response = await client().get(`?type=${AccountSearchType.USER_ID}&value=000000000000000000000000`);
+
+		expect(response.status).toBe(200);
+		expect(response.body).toEqual(expect.objectContaining({ total: 0, data: [] }));
+	});
+
+	it('rejects an unsupported search type', async () => {
+		const response = await client().get('?type=unsupported&value=learner');
+
+		expect(response.status).toBe(400);
+	});
+
+	it('returns not found for a missing account on detail and delete routes', async () => {
+		const api = client();
+
+		await expect(api.get('/000000000000000000000000')).resolves.toMatchObject({ status: 404 });
+		await expect(api.delete('/000000000000000000000000')).resolves.toMatchObject({ status: 404 });
 	});
 });
