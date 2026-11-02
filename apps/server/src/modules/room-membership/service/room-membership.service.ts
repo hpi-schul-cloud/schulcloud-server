@@ -169,6 +169,13 @@ export class RoomMembershipService {
 		return page;
 	}
 
+	public async getRoomIdByUserGroupId(userGroupId: EntityId): Promise<EntityId | null> {
+		const roomMemberships = await this.roomMembershipRepo.findByGroupId(userGroupId);
+		const [roomMembership] = roomMemberships;
+
+		return roomMembership?.roomId ?? null;
+	}
+
 	public async getRoomAuthorizablesByUserId(userId: EntityId): Promise<RoomAuthorizable[]> {
 		const groups = await this.getAllRoomGroupsOfUser(userId);
 		const groupIds = groups.map((group) => group.id);
