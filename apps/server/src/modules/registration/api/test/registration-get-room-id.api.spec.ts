@@ -44,9 +44,12 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('GET /registrations/by-room/:roomId', () => {
-		const setup = async () => {
+		const setup = async (options: { isArchived?: boolean } = {}) => {
 			const school = schoolEntityFactory.buildWithId();
-			const roomOne = roomEntityFactory.buildWithId({ schoolId: school.id });
+			const roomOne = roomEntityFactory.buildWithId({
+				schoolId: school.id,
+				archivedAt: options.isArchived ? new Date() : undefined,
+			});
 			const roomTwo = roomEntityFactory.buildWithId({ schoolId: school.id });
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -134,6 +137,21 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.get(`/by-room/${roomOne.id}`);
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when the room is archived', () => {
+			it('should still return the registrations of the room to its owner', async () => {
+				const { roomOne, teacherAccount, registrationOne, registrationTwo } = await setup({ isArchived: true });
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				const response = await loggedInClient.get(`/by-room/${roomOne.id}`);
+
+				expect(response.status).toBe(HttpStatus.OK);
+				const body = response.body as RegistrationListResponse;
+				expect(body.data.map((registration) => registration.id).sort()).toEqual(
+					[registrationOne.id, registrationTwo.id].sort()
+				);
 			});
 		});
 

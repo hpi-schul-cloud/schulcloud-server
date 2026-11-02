@@ -18,10 +18,7 @@ export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
 	schoolId!: EntityId;
 
 	@Property({ nullable: true })
-	startDate?: Date;
-
-	@Property({ nullable: true })
-	endDate?: Date;
+	archivedAt?: Date;
 
 	@Property({ persist: false })
 	domainObject: Room | undefined;
