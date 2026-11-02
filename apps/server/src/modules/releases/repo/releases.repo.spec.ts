@@ -12,7 +12,7 @@ describe(ReleasesRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ReleaseEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ReleaseEntity], ensureIndexes: true })],
 			providers: [ReleasesRepo],
 		}).compile();
 
@@ -88,16 +88,19 @@ describe(ReleasesRepo.name, () => {
 	});
 
 	describe('upsertByGithubId', () => {
+		const olderSync = new Date('2024-06-01T10:00:00Z');
+		const newerSync = new Date('2024-06-01T11:00:00Z');
+
 		describe('when no release with the github id exists', () => {
 			it('should insert the release', async () => {
 				const release = buildRelease('new', new Date('2024-01-01T00:00:00Z'), 1);
 				release.imageIds = ['imageId'];
 
-				await repo.upsertByGithubId(release);
+				await repo.upsertByGithubId(release, newerSync);
 				em.clear();
 
 				const stored = await em.findOneOrFail(ReleaseEntity, { githubId: 1 });
-				expect(stored).toEqual(expect.objectContaining({ name: 'new', imageIds: ['imageId'] }));
+				expect(stored).toEqual(expect.objectContaining({ name: 'new', imageIds: ['imageId'], syncedAt: newerSync }));
 			});
 		});
 
@@ -107,13 +110,54 @@ describe(ReleasesRepo.name, () => {
 				await em.persist(existing).flush();
 				em.clear();
 
-				await repo.upsertByGithubId(buildRelease('new name', new Date('2024-01-01T00:00:00Z'), 1));
-				await repo.upsertByGithubId(buildRelease('new name', new Date('2024-01-01T00:00:00Z'), 1));
+				await repo.upsertByGithubId(buildRelease('new name', new Date('2024-01-01T00:00:00Z'), 1), olderSync);
+				await repo.upsertByGithubId(buildRelease('new name', new Date('2024-01-01T00:00:00Z'), 1), olderSync);
 				em.clear();
 
 				const releases = await em.find(ReleaseEntity, {});
 				expect(releases).toHaveLength(1);
-				expect(releases[0]).toEqual(expect.objectContaining({ id: existing.id, name: 'new name' }));
+				expect(releases[0]).toEqual(
+					expect.objectContaining({ id: existing.id, name: 'new name', syncedAt: olderSync })
+				);
+			});
+		});
+
+		describe('when the release was written by a newer refresh', () => {
+			it('should not overwrite it', async () => {
+				await repo.upsertByGithubId(buildRelease('newer', new Date('2024-01-01T00:00:00Z'), 1), newerSync);
+
+				await repo.upsertByGithubId(buildRelease('stale', new Date('2024-01-01T00:00:00Z'), 1), olderSync);
+				em.clear();
+
+				const releases = await em.find(ReleaseEntity, {});
+				expect(releases).toHaveLength(1);
+				expect(releases[0]).toEqual(expect.objectContaining({ name: 'newer', syncedAt: newerSync }));
+			});
+		});
+
+		describe('when the release was written by an older refresh', () => {
+			it('should overwrite it', async () => {
+				await repo.upsertByGithubId(buildRelease('older', new Date('2024-01-01T00:00:00Z'), 1), olderSync);
+
+				await repo.upsertByGithubId(buildRelease('newer', new Date('2024-01-01T00:00:00Z'), 1), newerSync);
+				em.clear();
+
+				const releases = await em.find(ReleaseEntity, {});
+				expect(releases).toHaveLength(1);
+				expect(releases[0]).toEqual(expect.objectContaining({ name: 'newer', syncedAt: newerSync }));
+			});
+		});
+
+		describe('when an unexpected error occurs', () => {
+			it('should rethrow it', async () => {
+				const error = new Error('db error');
+				jest.spyOn(em, 'getCollection').mockReturnValueOnce({
+					updateOne: jest.fn().mockRejectedValueOnce(error),
+				} as never);
+
+				await expect(
+					repo.upsertByGithubId(buildRelease('new', new Date('2024-01-01T00:00:00Z'), 1), newerSync)
+				).rejects.toThrow(error);
 			});
 		});
 	});
@@ -123,11 +167,29 @@ describe(ReleasesRepo.name, () => {
 			const { middle } = await setup();
 			await em.getCollection('releases').insertOne({ _id: '42', name: 'legacy release without githubId' } as never);
 
-			const deletedCount = await repo.deleteAllExceptGithubIds([middle.githubId]);
+			const deletedCount = await repo.deleteAllExceptGithubIds([middle.githubId], new Date());
 
 			const remaining = await em.find(ReleaseEntity, {});
 			expect(deletedCount).toBe(3);
 			expect(remaining.map((release) => release.name)).toEqual(['middle']);
+		});
+
+		describe('when a stale refresh finishes after a newer one', () => {
+			it('should not delete the releases written by the newer refresh', async () => {
+				const staleSync = new Date('2024-06-01T10:00:00Z');
+				const newerSync = new Date('2024-06-01T11:00:00Z');
+				// the stale refresh only knew release 1, the newer one also saved the meanwhile published release 2
+				await repo.upsertByGithubId(buildRelease('first', new Date('2024-01-01T00:00:00Z'), 1), newerSync);
+				await repo.upsertByGithubId(buildRelease('second', new Date('2024-02-01T00:00:00Z'), 2), newerSync);
+				await repo.upsertByGithubId(buildRelease('first', new Date('2024-01-01T00:00:00Z'), 1), staleSync);
+
+				const deletedCount = await repo.deleteAllExceptGithubIds([1], staleSync);
+				em.clear();
+
+				const remaining = await em.find(ReleaseEntity, {}, { orderBy: { githubId: 'asc' } });
+				expect(deletedCount).toBe(0);
+				expect(remaining.map((release) => release.name)).toEqual(['first', 'second']);
+			});
 		});
 	});
 

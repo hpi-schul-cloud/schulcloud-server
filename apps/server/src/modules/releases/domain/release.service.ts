@@ -48,10 +48,14 @@ export class ReleasesService {
 	}
 
 	/**
-	 * Safe to run concurrently (also across instances): releases are upserted by their github id and
-	 * unused images are determined from all stored releases instead of only the ones of this fetch.
+	 * Safe to run concurrently, e.g. when a timed out request is retried while the first
+	 * one still runs: releases are upserted by their github id and tagged with the start time of the refresh, so a
+	 * slower, older refresh can neither overwrite nor delete releases written by a newer one.
+	 * Unused images are determined from all stored releases instead of only the ones of this fetch.
 	 */
 	public async fetchReleases(): Promise<void> {
+		// taken before fetching, so it orders the github snapshots and not the (variable) end of the image downloads
+		const syncedAt = new Date();
 		const githubReleases = await this.fetchFromRepository(this.config.releaseNotesRepoUrl);
 
 		// source url -> image id (or null if the image could not be stored); avoids repeated lookups within one fetch
@@ -62,10 +66,13 @@ export class ReleasesService {
 			const { body, imageIds } = await this.replaceImagesWithBackendUrls(githubRelease.body ?? '', imageIdsBySourceUrl);
 			const entity = this.createReleaseEntity(githubRelease, body, imageIds);
 
-			await this.releasesRepo.upsertByGithubId(entity);
+			await this.releasesRepo.upsertByGithubId(entity, syncedAt);
 		}
 
-		await this.releasesRepo.deleteAllExceptGithubIds(githubReleases.map((release) => release.id));
+		await this.releasesRepo.deleteAllExceptGithubIds(
+			githubReleases.map((release) => release.id),
+			syncedAt
+		);
 		await this.deleteUnusedImages();
 	}
 

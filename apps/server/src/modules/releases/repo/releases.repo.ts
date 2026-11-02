@@ -7,6 +7,8 @@ import { ReleaseEntity } from '../entity';
 
 @Injectable()
 export class ReleasesRepo extends BaseRepo<ReleaseEntity> {
+	private static readonly DUPLICATE_KEY_ERROR_CODE = 11000;
+
 	get entityName(): EntityName<ReleaseEntity> {
 		return ReleaseEntity;
 	}
@@ -28,22 +30,48 @@ export class ReleasesRepo extends BaseRepo<ReleaseEntity> {
 		return [releases, count];
 	}
 
-	/** inserts the release or updates the one with the same github id, so concurrent fetches cannot create duplicates */
-	public async upsertByGithubId(release: ReleaseEntity): Promise<void> {
+	/**
+	 * Inserts the release or updates the one with the same github id, unless it was already written by a newer refresh.
+	 * The unique github id index prevents duplicates when concurrent refreshes insert the same release.
+	 */
+	public async upsertByGithubId(release: ReleaseEntity, syncedAt: Date): Promise<void> {
 		const { githubId, name, body, url, author, authorUrl, createdAt, publishedAt, zipUrl, imageIds } = release;
+		const collection = this._em.getCollection(this.entityName);
+		const filter = { githubId, ...this.notSyncedAfter(syncedAt, true) };
+		const update = {
+			$set: { githubId, name, body, url, author, authorUrl, createdAt, publishedAt, zipUrl, imageIds, syncedAt },
+		};
 
-		await this._em.upsert(
-			ReleaseEntity,
-			{ githubId, name, body, url, author, authorUrl, createdAt, publishedAt, zipUrl, imageIds },
-			{ onConflictFields: ['githubId'] }
-		);
+		try {
+			await collection.updateOne(filter, update, { upsert: true });
+		} catch (error) {
+			if ((error as { code?: unknown }).code !== ReleasesRepo.DUPLICATE_KEY_ERROR_CODE) {
+				throw error;
+			}
+
+			// the release exists but did not match: it is newer (skipped here) or was inserted concurrently (updated here)
+			await collection.updateOne(filter, update);
+		}
 	}
 
-	/** also removes legacy releases without a github id */
-	public async deleteAllExceptGithubIds(githubIdsToKeep: number[]): Promise<number> {
-		const deletedCount = await this._em.nativeDelete(this.entityName, { githubId: { $nin: githubIdsToKeep } });
+	/** also removes legacy releases without a github id, but keeps releases written by a newer refresh */
+	public async deleteAllExceptGithubIds(githubIdsToKeep: number[], syncedAt: Date): Promise<number> {
+		const deletedCount = await this._em.nativeDelete(this.entityName, {
+			githubId: { $nin: githubIdsToKeep },
+			...this.notSyncedAfter(syncedAt, false),
+		});
 
 		return deletedCount;
+	}
+
+	private notSyncedAfter(
+		syncedAt: Date,
+		includeSame: boolean
+	): { $or: [{ syncedAt: { $lte: Date } | { $lt: Date } }, { syncedAt: { $exists: false } }] } {
+		const syncedBefore = includeSame ? { $lte: syncedAt } : { $lt: syncedAt };
+
+		// releases stored before the field existed have no syncedAt
+		return { $or: [{ syncedAt: syncedBefore }, { syncedAt: { $exists: false } }] };
 	}
 
 	public async findAllImageIds(): Promise<EntityId[]> {

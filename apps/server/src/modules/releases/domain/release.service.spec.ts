@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of, throwError } from 'rxjs';
-import { type ReleaseEntity, ReleaseImageEntity } from '../entity';
+import { ReleaseEntity, ReleaseImageEntity } from '../entity';
 import { RELEASES_CONFIG_TOKEN, ReleasesConfig } from '../releases.config';
 import { ReleaseImagesRepo, ReleasesRepo } from '../repo';
 import { ReleasesService } from './release.service';
@@ -222,7 +222,19 @@ describe(ReleasesService.name, () => {
 
 				await service.fetchReleases();
 
-				expect(releasesRepo.deleteAllExceptGithubIds).toHaveBeenCalledWith([1]);
+				expect(releasesRepo.deleteAllExceptGithubIds).toHaveBeenCalledWith([1], expect.any(Date));
+			});
+
+			it('should tag the saved releases and the deletion with the same refresh start time', async () => {
+				setup();
+				const now = new Date('2024-06-01T12:00:00Z');
+				jest.useFakeTimers({ now, doNotFake: ['nextTick', 'setImmediate'] });
+
+				await service.fetchReleases();
+
+				jest.useRealTimers();
+				expect(releasesRepo.upsertByGithubId).toHaveBeenCalledWith(expect.any(ReleaseEntity), now);
+				expect(releasesRepo.deleteAllExceptGithubIds).toHaveBeenCalledWith([1], now);
 			});
 
 			it('should delete images not referenced by any stored release and not used within the grace period', async () => {

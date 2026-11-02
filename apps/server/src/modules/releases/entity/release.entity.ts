@@ -51,6 +51,10 @@ export class ReleaseEntity extends BaseEntity {
 	@Property()
 	imageIds: EntityId[] = [];
 
+	/** start time of the refresh that wrote this release, so an older (stale) refresh cannot overwrite or delete it */
+	@Property({ type: Date, nullable: true })
+	syncedAt?: Date;
+
 	constructor(props: ReleaseEntityProps) {
 		super();
 
