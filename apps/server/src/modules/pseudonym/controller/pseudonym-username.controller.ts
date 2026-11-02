@@ -1,5 +1,15 @@
 import { type ICurrentUser } from '@infra/auth-guard';
-import { Controller, Get, Param, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+	Controller,
+	ForbiddenException,
+	Get,
+	NotFoundException,
+	Param,
+	Req,
+	Res,
+	UnauthorizedException,
+	UseGuards,
+} from '@nestjs/common';
 import { JwtExtractor } from '@shared/common/utils';
 import { randomBytes } from 'node:crypto';
 import { parse as parseCookie } from 'cookie';
@@ -59,12 +69,21 @@ export class PseudonymUsernameController {
 		const language = requestedLanguage && Object.hasOwn(labels, requestedLanguage) ? requestedLanguage : 'de';
 		const localized = labels[language];
 		let name = localized.showName;
+		let status = 200;
 		if (hasJwt) {
 			const currentUser = request.user as ICurrentUser | undefined;
 			if (!currentUser) {
 				throw new UnauthorizedException();
 			}
-			name = await this.pseudonymUc.resolveNameForUser(currentUser.userId, params.pseudonym);
+			try {
+				name = await this.pseudonymUc.resolveNameForUser(currentUser.userId, params.pseudonym);
+			} catch (error) {
+				if (!(error instanceof NotFoundException || error instanceof ForbiddenException)) {
+					throw error;
+				}
+				status = error.getStatus();
+				name = '???';
+			}
 		}
 
 		const nonce = randomBytes(16).toString('base64');
@@ -104,7 +123,7 @@ if (document.hasStorageAccess && document.requestStorageAccess) {
 			? `<div class="depseudo"><div class="cloud-logo"></div><a style="color: inherit; text-decoration: none" title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</a></div>`
 			: `<div class="depseudo"><div class="cloud-logo"></div><button type="button" hidden style="background: none; border: 0; color: inherit; cursor: pointer; font: inherit; padding: 0" title="${escapeHtml(localized.explanation)}">${escapeHtml(name)}</button><a href="/login/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none" title="${escapeHtml(localized.loginExplanation)}" aria-label="${escapeHtml(localized.loginExplanation)}">${escapeHtml(name)}</a></div>`;
 
-		response.type('html').send(`<!doctype html>
+		response.status(status).type('html').send(`<!doctype html>
 <html lang="${language}"><head><meta charset="utf-8">
 <link rel="stylesheet" href="/styles/fonts/ptsans.css">
 <link rel="stylesheet" href="/styles/oauth2/username.css">

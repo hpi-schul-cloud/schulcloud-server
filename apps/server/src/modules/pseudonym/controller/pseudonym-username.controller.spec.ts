@@ -1,6 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { type ICurrentUser } from '@infra/auth-guard';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import type { PseudonymUc } from '../uc';
 import { PseudonymUsernameController } from './pseudonym-username.controller';
@@ -14,6 +14,7 @@ describe(PseudonymUsernameController.name, () => {
 		uc = createMock<PseudonymUc>();
 		controller = new PseudonymUsernameController(uc);
 		response = createMock<Response>();
+		response.status.mockReturnValue(response);
 		response.type.mockReturnValue(response);
 	});
 
@@ -60,6 +61,36 @@ describe(PseudonymUsernameController.name, () => {
 		expect(uc.resolveNameForUser).toHaveBeenCalledWith('requesting-user', 'opaque');
 		expect(response.send).toHaveBeenCalledWith(expect.stringContaining('&lt;Ada&gt; &amp; Lovelace'));
 		expect(response.send).not.toHaveBeenCalledWith(expect.stringContaining('document.requestStorageAccess()'));
+		expect(response.status).toHaveBeenCalledWith(200);
+	});
+
+	it.each([new NotFoundException(), new ForbiddenException()])(
+		'keeps HTTP status %s while rendering a readable placeholder',
+		async (error) => {
+			const request = {
+				headers: { authorization: 'Bearer valid-token' },
+				user: { userId: 'requesting-user' } as ICurrentUser,
+			} as unknown as Request;
+			uc.resolveNameForUser.mockRejectedValueOnce(error);
+
+			await controller.showName({ pseudonym: 'opaque' }, request, response);
+
+			expect(response.status).toHaveBeenCalledWith(error.getStatus());
+			expect(response.type).toHaveBeenCalledWith('html');
+			expect(response.send).toHaveBeenCalledWith(expect.stringContaining('>???</a>'));
+		}
+	);
+
+	it('lets unexpected lookup errors reach the normal error handler', async () => {
+		const request = {
+			headers: { authorization: 'Bearer valid-token' },
+			user: { userId: 'requesting-user' } as ICurrentUser,
+		} as unknown as Request;
+		const error = new Error('lookup failed');
+		uc.resolveNameForUser.mockRejectedValueOnce(error);
+
+		await expect(controller.showName({ pseudonym: 'opaque' }, request, response)).rejects.toBe(error);
+		expect(response.send).not.toHaveBeenCalled();
 	});
 
 	it('rejects a JWT that did not authenticate', async () => {
