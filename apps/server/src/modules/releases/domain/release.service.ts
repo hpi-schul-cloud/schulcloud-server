@@ -113,6 +113,7 @@ export class ReleasesService {
 			this.httpService.get<ArrayBuffer>(imageUrl, {
 				responseType: 'arraybuffer',
 				maxContentLength: ReleasesService.MAX_IMAGE_SIZE_BYTES,
+				timeout: 10_000,
 			})
 		);
 
