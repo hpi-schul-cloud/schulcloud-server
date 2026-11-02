@@ -1,10 +1,10 @@
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, HttpStatus, Param, Put, Req } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Req } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
-import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
+import { VideoConferenceCreateUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
 import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
 import {
 	VideoConferenceCreateParams,
@@ -20,7 +20,6 @@ export class VideoConferenceController {
 	constructor(
 		private readonly videoConferenceCreateUc: VideoConferenceCreateUc,
 		private readonly videoConferenceJoinUc: VideoConferenceJoinUc,
-		private readonly videoConferenceEndUc: VideoConferenceEndUc,
 		private readonly videoConferenceInfoUc: VideoConferenceInfoUc
 	) {}
 
@@ -52,7 +51,8 @@ export class VideoConferenceController {
 		await this.videoConferenceCreateUc.createIfNotRunning(currentUser.userId, scopeRef, videoConferenceOptions);
 	}
 
-	@Get(':scope/:scopeId/join')
+	@Post(':scope/:scopeId/join')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Creates a join link for a video conference, if it has started.',
 		description:
@@ -107,29 +107,5 @@ export class VideoConferenceController {
 		const resp: VideoConferenceInfoResponse = VideoConferenceMapper.toVideoConferenceInfoResponse(dto);
 
 		return resp;
-	}
-
-	@Get(':scope/:scopeId/end')
-	@ApiOperation({
-		summary: 'Ends a running video conference.',
-		description: 'Use this endpoint to end a running video conference.',
-	})
-	@ApiResponse({
-		status: HttpStatus.OK,
-		description: 'Returns the status of the operation.',
-	})
-	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid parameters.' })
-	@ApiResponse({
-		status: HttpStatus.FORBIDDEN,
-		description: 'User does not have the permission to end this conference.',
-	})
-	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
-	public async end(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() scopeParams: VideoConferenceScopeParams
-	): Promise<void> {
-		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
-
-		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
 	}
 }
