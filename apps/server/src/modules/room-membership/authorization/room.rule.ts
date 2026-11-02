@@ -11,6 +11,7 @@ export const RoomOperationValues = [
 	'addAllStudents',
 	'addExternalPersonByEmail',
 	'addMembers',
+	'archiveRoom',
 	'arrangeRooms',
 	'changeRolesOfMembers',
 	'copyRoom',
@@ -33,6 +34,13 @@ export const RoomOperationValues = [
 ] as const;
 
 export type RoomOperation = (typeof RoomOperationValues)[number]; // turn string list to type union of strings
+
+const MEMBER_MANAGEMENT_PERMISSIONS: Permission[] = [
+	Permission.ROOM_ADD_MEMBERS,
+	Permission.ROOM_REMOVE_MEMBERS,
+	Permission.ROOM_CHANGE_ROLES,
+	Permission.ROOM_MANAGE_INVITATIONLINKS,
+];
 
 type OperationFn = (user: User, authorizable: RoomAuthorizable) => boolean;
 
@@ -63,6 +71,11 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		if (action === Action.read) {
 			return roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
 		}
+
+		if (object.isArchived && !this.isMemberManagement(requiredPermissions)) {
+			return false;
+		}
+
 		return roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
 	}
 
@@ -74,6 +87,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			addAllStudents: canAddAllStudents,
 			addExternalPersonByEmail: canAddExternalPersonByEmail,
 			addMembers: canAddMembers,
+			archiveRoom: canArchiveRoom,
 			arrangeRooms: canAccessRoom,
 			changeRolesOfMembers: canChangeRolesOfMembers,
 			copyRoom: canCopyRoom,
@@ -127,6 +141,11 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		}
 
 		return true;
+	}
+
+	// archived rooms are read-only for content, but their members can still be managed
+	private isMemberManagement(requiredPermissions: Permission[]): boolean {
+		return requiredPermissions.some((permission) => MEMBER_MANAGEMENT_PERMISSIONS.includes(permission));
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
@@ -244,7 +263,7 @@ const canAddMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 };
 
 const canEditContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLockedRoom(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable) || roomAuthorizable.isArchived) {
 		return false;
 	}
 
@@ -301,6 +320,21 @@ const canUpdateRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 const canDeleteRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_DELETE_ROOM);
+	const isOwnSchool = roomAuthorizable.schoolId === user.school.id;
+	const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+
+	if (!canAdministrateSchoolRooms && isLockedRoom(roomAuthorizable)) {
+		return false;
+	}
+
+	const result = hasRoomPermission || (isOwnSchool && canAdministrateSchoolRooms);
+
+	return result;
+};
+
+const canArchiveRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ARCHIVE_ROOM);
 	const isOwnSchool = roomAuthorizable.schoolId === user.school.id;
 	const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 

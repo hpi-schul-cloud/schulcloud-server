@@ -151,5 +151,56 @@ describe(ColumnUc.name, () => {
 				await expect(uc.moveCard(user.id, card.id, column.id)).rejects.toThrow('Card has no parent column');
 			});
 		});
+
+		describe('when moving a card into a different board context', () => {
+			const setupCrossBoardMove = () => {
+				const { user } = setup();
+				const fromBoard = columnBoardFactory.build();
+				const toBoard = columnBoardFactory.build();
+				const fromColumn = columnFactory.build({ path: fromBoard.id });
+				const toColumn = columnFactory.build({ path: toBoard.id });
+				const card = cardFactory.build({ path: `${fromBoard.id},${fromColumn.id}` });
+
+				boardNodeService.findByClassAndId
+					.mockResolvedValueOnce(card)
+					.mockResolvedValueOnce(fromColumn)
+					.mockResolvedValueOnce(toColumn);
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const fromBoardNodeAuthorizable = boardNodeAuthorizableFactory.build();
+				const toBoardNodeAuthorizable = boardNodeAuthorizableFactory.build();
+				boardNodeAuthorizableService.getBoardAuthorizable
+					.mockResolvedValueOnce(fromBoardNodeAuthorizable)
+					.mockResolvedValueOnce(toBoardNodeAuthorizable);
+
+				columnBoardService.findById.mockResolvedValueOnce(fromBoard).mockResolvedValueOnce(toBoard);
+
+				return { user, card, toColumn };
+			};
+
+			describe('when the target board denies content creation (e.g. an archived room)', () => {
+				it('should throw forbidden', async () => {
+					const { user, card, toColumn } = setupCrossBoardMove();
+
+					boardNodeRule.can.mockImplementation((operation) => operation !== 'createCard');
+
+					await expect(uc.moveCard(user.id, card.id, toColumn.id)).rejects.toThrow();
+					expect(boardNodeService.move).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when the target board allows content creation', () => {
+				it('should move the card', async () => {
+					const { user, card, toColumn } = setupCrossBoardMove();
+
+					boardNodeRule.can.mockReturnValue(true);
+
+					await uc.moveCard(user.id, card.id, toColumn.id);
+
+					expect(boardNodeService.move).toHaveBeenCalledWith(card, toColumn, undefined);
+				});
+			});
+		});
 	});
 });

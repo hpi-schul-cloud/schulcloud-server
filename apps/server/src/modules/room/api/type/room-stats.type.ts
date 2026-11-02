@@ -11,4 +11,5 @@ export type RoomStats = {
 	schoolName: string;
 	createdAt: Date;
 	updatedAt: Date;
+	archivedAt?: Date;
 };
