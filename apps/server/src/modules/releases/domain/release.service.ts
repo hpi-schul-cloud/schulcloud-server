@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
+import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { ReleaseEntity, ReleaseImageEntity } from '../entity';
 import { RELEASES_CONFIG_TOKEN, ReleasesConfig } from '../releases.config';
@@ -13,6 +14,8 @@ export class ReleasesService {
 	private static readonly MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
 
 	private static readonly IMAGE_BASE_PATH = '/api/v3/releases/images';
+
+	private static readonly MAX_IMAGE_REDIRECTS = 3;
 
 	constructor(
 		private readonly releasesRepo: ReleasesRepo,
@@ -109,12 +112,7 @@ export class ReleasesService {
 	}
 
 	private async storeImage(imageUrl: string): Promise<EntityId> {
-		const response = await firstValueFrom(
-			this.httpService.get<ArrayBuffer>(imageUrl, {
-				responseType: 'arraybuffer',
-				maxContentLength: ReleasesService.MAX_IMAGE_SIZE_BYTES,
-			})
-		);
+		const response = await this.downloadImage(imageUrl);
 
 		const mimeType = String(response.headers['content-type'] ?? '');
 		if (!mimeType.startsWith('image/')) {
@@ -125,6 +123,55 @@ export class ReleasesService {
 		await this.releaseImagesRepo.save(image);
 
 		return image.id;
+	}
+
+	/**
+	 * Redirects are followed manually so that every hop is validated against the allowed sources
+	 * before any request is sent to it.
+	 */
+	private async downloadImage(sourceUrl: string): Promise<AxiosResponse<ArrayBuffer>> {
+		let url = new URL(sourceUrl);
+
+		for (let redirects = 0; redirects <= ReleasesService.MAX_IMAGE_REDIRECTS; redirects++) {
+			if (!this.isAllowedImageUrl(url)) {
+				throw new Error(`Release image source not allowed: ${url.origin}${url.pathname}`);
+			}
+
+			const response = await firstValueFrom(
+				this.httpService.get<ArrayBuffer>(url.toString(), {
+					responseType: 'arraybuffer',
+					maxContentLength: ReleasesService.MAX_IMAGE_SIZE_BYTES,
+					maxRedirects: 0,
+					validateStatus: (status) => status >= 200 && status < 400,
+				})
+			);
+
+			if (response.status < 300) {
+				return response;
+			}
+
+			const { location } = response.headers as { location?: unknown };
+			if (typeof location !== 'string' || location === '') {
+				throw new Error('Release image redirect without location');
+			}
+
+			url = new URL(location, url);
+		}
+
+		throw new Error('Too many redirects for release image');
+	}
+
+	private isAllowedImageUrl(url: URL): boolean {
+		if (url.username || url.password) {
+			return false;
+		}
+
+		// URL parsing normalizes the path (e.g. "..", "%2e%2e"), so prefix matching cannot be escaped via traversal
+		const isAllowed = this.config.releaseImageAllowedSources
+			.map((source) => new URL(source))
+			.some((allowed) => url.origin === allowed.origin && url.pathname.startsWith(allowed.pathname));
+
+		return isAllowed;
 	}
 
 	private async fetchFromRepository(url: string): Promise<GithubRelease[]> {
