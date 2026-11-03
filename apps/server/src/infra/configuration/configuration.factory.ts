@@ -46,7 +46,11 @@ export class ConfigurationFactory {
 		const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
 		if (errors.length > 0) {
-			throw new Error(errors.toString());
+			// toString() only names the failed constraints, the messages explain what is expected
+			const messages = errors
+				.flatMap((error) => Object.values(error.constraints ?? {}))
+				.map((message) => ` - ${message}`);
+			throw new Error([errors.toString(), ...messages].join('\n'));
 		}
 
 		return validatedConfig;
