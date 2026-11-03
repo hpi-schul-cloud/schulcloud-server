@@ -65,6 +65,12 @@ describe(SecretRegistry.name, () => {
 		expect(SecretRegistry.getSecrets().size).toBe(0);
 	});
 
+	it('should register every value of a list, e.g. several API keys', () => {
+		SecretRegistry.register(['first-api-key-value', 'second-api-key-value']);
+
+		expect([...SecretRegistry.getSecrets()]).toEqual(['first-api-key-value', 'second-api-key-value']);
+	});
+
 	it('should ignore values that are not strings', () => {
 		SecretRegistry.register(12345678901);
 

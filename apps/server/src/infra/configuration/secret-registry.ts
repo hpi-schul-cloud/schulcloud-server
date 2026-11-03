@@ -11,6 +11,11 @@ export class SecretRegistry {
 	private static version = 0;
 
 	public static register(value: unknown): void {
+		if (Array.isArray(value)) {
+			value.forEach((item) => SecretRegistry.register(item));
+			return;
+		}
+
 		if (typeof value !== 'string' || value.length < SecretRegistry.MIN_LENGTH || SecretRegistry.secrets.has(value)) {
 			return;
 		}
