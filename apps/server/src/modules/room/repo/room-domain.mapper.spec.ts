@@ -12,8 +12,6 @@ describe('RoomDomainMapper', () => {
 				id: '1',
 				name: 'Test Room',
 				color: RoomColor.RED,
-				startDate: new Date('2023-01-01'),
-				endDate: new Date('2023-12-31'),
 			} as RoomEntity;
 
 			const result = RoomDomainMapper.mapEntityToDo(roomEntity);
@@ -23,8 +21,6 @@ describe('RoomDomainMapper', () => {
 				id: '1',
 				name: 'Test Room',
 				color: RoomColor.RED,
-				startDate: new Date('2023-01-01'),
-				endDate: new Date('2023-12-31'),
 			});
 		});
 
@@ -34,8 +30,6 @@ describe('RoomDomainMapper', () => {
 				name: 'Existing Room',
 				color: RoomColor.GREEN,
 				schoolId: new ObjectId().toHexString(),
-				startDate: new Date('2023-01-01'),
-				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 				features: [],
@@ -46,8 +40,6 @@ describe('RoomDomainMapper', () => {
 				name: 'Test Room',
 				color: RoomColor.RED,
 				schoolId: new ObjectId().toHexString(),
-				startDate: new Date('2023-02-01'),
-				endDate: new Date('2023-11-30'),
 				domainObject: existingRoom,
 			} as RoomEntity;
 
@@ -60,8 +52,6 @@ describe('RoomDomainMapper', () => {
 				name: 'Existing Room',
 				color: RoomColor.GREEN,
 				schoolId: existingRoom.schoolId,
-				startDate: new Date('2023-01-01'),
-				endDate: new Date('2023-12-31'),
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 				features: [],
@@ -76,8 +66,6 @@ describe('RoomDomainMapper', () => {
 				name: 'Test Room',
 				color: RoomColor.RED,
 				schoolId: new ObjectId().toHexString(),
-				startDate: new Date('2023-01-01'),
-				endDate: new Date('2023-12-31'),
 			} as RoomEntity;
 
 			const result = RoomDomainMapper.mapEntityToDo(roomEntity);
@@ -107,8 +95,6 @@ describe('RoomDomainMapper', () => {
 					name: 'Test Room #1',
 					color: RoomColor.RED,
 					schoolId: new ObjectId().toHexString(),
-					startDate: new Date('2023-01-01'),
-					endDate: new Date('2023-12-31'),
 					createdAt: new Date('2024-10-1'),
 					updatedAt: new Date('2024-10-1'),
 					features: [],
