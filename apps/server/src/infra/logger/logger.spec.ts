@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Module } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -51,10 +51,13 @@ describe('Logger', () => {
 			constructor(public readonly logger: Logger) {}
 		}
 
+		@Module({
+			providers: [UserService, Logger, { provide: WINSTON_MODULE_PROVIDER, useFactory: () => winstonLogger }],
+		})
+		class UserModule {}
+
 		const setup = async () => {
-			const testModule = await Test.createTestingModule({
-				providers: [UserService, Logger, { provide: WINSTON_MODULE_PROVIDER, useValue: winstonLogger }],
-			}).compile();
+			const testModule = await Test.createTestingModule({ imports: [UserModule] }).compile();
 			const userService = testModule.get(UserService);
 
 			return { testModule, userService };
@@ -66,6 +69,15 @@ describe('Logger', () => {
 			userService.logger.info('User created');
 
 			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: 'UserService' }));
+			await testModule.close();
+		});
+
+		it('should add the module providing that class', async () => {
+			const { testModule, userService } = await setup();
+
+			userService.logger.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ module: 'UserModule' }));
 			await testModule.close();
 		});
 
@@ -100,6 +112,7 @@ describe('Logger', () => {
 
 			logger.info('App started');
 
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.not.objectContaining({ module: expect.anything() }));
 			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: '' }));
 		});
 	});

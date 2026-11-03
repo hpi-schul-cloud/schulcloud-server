@@ -44,6 +44,7 @@ describe('createLogFormat', () => {
 				error: { message: 'boom' },
 				data: { userId: '123' },
 				message: 'user created',
+				module: 'UserModule',
 				context: 'UserService',
 			});
 
@@ -51,6 +52,7 @@ describe('createLogFormat', () => {
 				'timestamp',
 				'level',
 				'context',
+				'module',
 				'message',
 				'data',
 				'error',
@@ -106,6 +108,17 @@ describe('createLogFormat', () => {
 			expect(output).toContain('[UserService]');
 			expect(output).toContain('user created');
 			expect(() => JSON.parse(output) as unknown).toThrow();
+		});
+
+		it('should show the module together with the context', () => {
+			const output = render(LogFormat.PRETTY, {
+				message: 'user created',
+				context: 'UserService',
+				module: 'UserModule',
+			});
+
+			expect(output).toContain('[UserModule/UserService]');
+			expect(output).not.toContain('"module"');
 		});
 	});
 });
