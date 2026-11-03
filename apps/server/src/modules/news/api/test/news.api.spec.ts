@@ -3,8 +3,6 @@ import { FeathersAuthorizationService } from '@modules/authorization';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { TeamEntity } from '@modules/team/repo';
-import { teamFactory } from '@modules/team/testing';
 import { type User } from '@modules/user/repo';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -54,7 +52,6 @@ describe('News Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(TeamEntity, {});
 		await em.nativeDelete(CourseEntity, {});
 		await em.nativeDelete(News, {});
 	});

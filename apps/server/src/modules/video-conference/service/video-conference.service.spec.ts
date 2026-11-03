@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
@@ -86,10 +87,6 @@ describe(VideoConferenceService.name, () => {
 				{
 					provide: RoomService,
 					useValue: createMock<RoomService>(),
-				},
-				{
-					provide: TeamRepo,
-					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: UserService,

@@ -436,7 +436,6 @@ describe('VideoConferenceUc', () => {
 			expect(result.url).toEqual(joinUrl);
 		});
 
-
 		it('should successfully join as guest in courses, without moderator rights', async () => {
 			// Arrange
 			authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -461,8 +460,6 @@ describe('VideoConferenceUc', () => {
 			expect(result.permission).toEqual(Permission.JOIN_MEETING);
 			expect(result.url).toEqual(joinUrl);
 		});
-
-
 
 		it('should throw on unknown scope', async () => {
 			// Act & Assert
@@ -617,4 +614,4 @@ describe('VideoConferenceUc', () => {
 			expect(result.options).toEqual({});
 		});
 	});
-	});
+});
