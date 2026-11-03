@@ -30,41 +30,13 @@ export class ExternalToolsSeedDataService {
 	public async import(): Promise<number> {
 		const externalTools: ExternalTool[] = [];
 
-		const nextcloudName: string | undefined = this.config.nextcloudSocialloginOidcInternalName;
 		const {
 			ctlSeedBiloLtiKey: biloLtiKey,
 			ctlSeedBiloLtiSecret: biloLtiSecret,
 			ctlSeedSecretOnlineDiaDeutsch: onlineDiaDeutschSecret,
 			ctlSeedSecretOnlineDiaMathe: onlineDiaMatheSecret,
 			ctlSeedSecretMerlin: merlinSecret,
-			nextcloudBaseUrl,
-			nextcloudClientId,
-			nextcloudClientSecret,
-			nextcloudScopes,
 		} = this.config;
-		if (nextcloudBaseUrl && nextcloudClientId && nextcloudClientSecret) {
-			externalTools.push(
-				new ExternalTool({
-					id: '65f958bdd8b35469f14032b1',
-					name: nextcloudName || 'SchulcloudNextcloud',
-					config: new Oauth2ToolConfig({
-						baseUrl: nextcloudBaseUrl,
-						clientId: nextcloudClientId,
-						clientSecret: nextcloudClientSecret,
-						skipConsent: true,
-						scope: nextcloudScopes || 'openid offline profile email groups',
-						redirectUris: [`${nextcloudBaseUrl}/apps/user_oidc/code`],
-						frontchannelLogoutUri: `${nextcloudBaseUrl}/apps/schulcloud/logout`,
-						tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
-					}),
-					openNewTab: true,
-					isHidden: true,
-					isDeactivated: false,
-					isPreferred: false,
-				})
-			);
-		}
-
 		if (biloLtiKey && biloLtiSecret) {
 			externalTools.push(
 				new ExternalTool({

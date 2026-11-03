@@ -53,28 +53,6 @@ export class ManagementSeedDataConfig {
 	@IsOptional()
 	public ctlSeedBiloLtiSecret?: string;
 
-	@ConfigProperty('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME')
-	@IsString()
-	public nextcloudSocialloginOidcInternalName = 'SchulcloudNextcloud';
-
-	@ConfigProperty('NEXTCLOUD_BASE_URL')
-	@IsUrl({ require_tld: false })
-	public nextcloudBaseUrl = 'http://nextcloud.localhost:9090';
-
-	@ConfigProperty('NEXTCLOUD_CLIENT_ID')
-	@IsString()
-	@IsOptional()
-	public nextcloudClientId?: string;
-
-	@ConfigProperty('NEXTCLOUD_CLIENT_SECRET')
-	@IsString()
-	@IsOptional()
-	public nextcloudClientSecret?: string;
-
-	@ConfigProperty('NEXTCLOUD_SCOPES')
-	@IsString()
-	public nextcloudScopes = 'openid offline profile email groups';
-
 	@ConfigProperty('CTL_SEED_SECRET_ONLINE_DIA_MATHE')
 	@IsString()
 	@IsOptional()

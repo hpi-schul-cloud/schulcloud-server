@@ -73,75 +73,21 @@ describe(ExternalToolsSeedDataService.name, () => {
 	});
 
 	describe('import', () => {
-		describe('when the nextcloud variables are defined', () => {
+		describe('when the bilo variables are defined', () => {
 			const setup = () => {
-				const clientId = 'Nextcloud_id';
-				config.nextcloudSocialloginOidcInternalName = 'SchulcloudNextcloud';
-				config.nextcloudBaseUrl = 'https://nextcloud.localhost:9090';
-				config.nextcloudClientId = clientId;
-				config.nextcloudClientSecret = 'Nextcloud_secret';
-				config.nextcloudScopes = 'openid';
 				config.ctlSeedSecretOnlineDiaDeutsch = 'deutsch_secret';
 				config.ctlSeedSecretOnlineDiaMathe = 'mathe_secret';
 				config.ctlSeedSecretMerlin = 'merlin_secret';
 				config.ctlSeedBiloLtiKey = 'bilo_lti_key';
 				config.ctlSeedBiloLtiSecret = 'bilo_lti_secret';
 
-				const error = new Error('Client not found');
-				oauthProviderService.deleteOAuth2Client.mockRejectedValueOnce(error);
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_bilo_lti_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_deutsch_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_mathe_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_merlin_secret');
 
-				return {
-					clientId,
-					error,
-				};
+				return {};
 			};
-
-			it('should should delete any remaining oauth2 nextcloud clients', async () => {
-				const { clientId } = setup();
-
-				await service.import();
-
-				expect(oauthProviderService.deleteOAuth2Client).toHaveBeenCalledWith(clientId);
-			});
-
-			it('should should log an error if no client had to be deleted', async () => {
-				const { error } = setup();
-
-				await service.import();
-
-				expect(logger.debug).toHaveBeenCalledWith(new ErrorLoggable(error));
-			});
-
-			it('should import nextcloud', async () => {
-				setup();
-
-				await service.import();
-
-				expect(externalToolService.createExternalTool).toHaveBeenCalledWith<[ExternalTool]>(
-					new ExternalTool({
-						id: '65f958bdd8b35469f14032b1',
-						name: 'SchulcloudNextcloud',
-						config: new Oauth2ToolConfig({
-							baseUrl: 'https://nextcloud.localhost:9090',
-							clientId: 'Nextcloud_id',
-							clientSecret: 'Nextcloud_secret',
-							skipConsent: true,
-							scope: 'openid',
-							redirectUris: ['https://nextcloud.localhost:9090/apps/user_oidc/code'],
-							frontchannelLogoutUri: 'https://nextcloud.localhost:9090/apps/schulcloud/logout',
-							tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
-						}),
-						openNewTab: true,
-						isHidden: true,
-						isDeactivated: false,
-						isPreferred: false,
-					})
-				);
-			});
 
 			it('should import the Bildungslogin template', async () => {
 				setup();

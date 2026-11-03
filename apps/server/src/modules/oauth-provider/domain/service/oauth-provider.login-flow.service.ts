@@ -17,11 +17,4 @@ export class OauthProviderLoginFlowService {
 
 		throw new NotFoundException(`Unable to find ExternalTool for clientId: ${clientId}`);
 	}
-
-	// TODO N21-91. Magic Strings are not desireable
-	public isNextcloudTool(tool: ExternalTool): boolean {
-		const isNextcloud: boolean = tool.name === 'SchulcloudNextcloud';
-
-		return isNextcloud;
-	}
 }

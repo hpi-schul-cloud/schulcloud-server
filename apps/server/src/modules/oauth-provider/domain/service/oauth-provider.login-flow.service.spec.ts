@@ -38,7 +38,7 @@ describe(OauthProviderLoginFlowService.name, () => {
 	describe('findToolByClientId', () => {
 		describe('when it finds a tool', () => {
 			const setup = () => {
-				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'TestTool' });
 
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(tool);
 
@@ -67,44 +67,6 @@ describe(OauthProviderLoginFlowService.name, () => {
 				const func = () => service.findToolByClientId('clientId');
 
 				await expect(func).rejects.toThrow(new NotFoundException('Unable to find ExternalTool for clientId: clientId'));
-			});
-		});
-	});
-
-	describe('isNextcloudTool', () => {
-		describe('when it is Nextcloud', () => {
-			const setup = () => {
-				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
-
-				return {
-					tool,
-				};
-			};
-
-			it('should return true', () => {
-				const { tool } = setup();
-
-				const result: boolean = service.isNextcloudTool(tool);
-
-				expect(result).toEqual(true);
-			});
-		});
-
-		describe('when it is not Nextcloud', () => {
-			const setup = () => {
-				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
-
-				return {
-					tool,
-				};
-			};
-
-			it('should return false', () => {
-				const { tool } = setup();
-
-				const result: boolean = service.isNextcloudTool(tool);
-
-				expect(result).toEqual(false);
 			});
 		});
 	});

@@ -138,7 +138,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
 				userService.findById.mockResolvedValue(user);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
@@ -189,56 +188,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 				const result = await uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
 
 				expect(result).toEqual(redirectResponse);
-			});
-		});
-
-		describe('when the tool is Nextcloud', () => {
-			const setup = () => {
-				const query = { accept: true };
-
-				const loginRequestBodyMock = {
-					remember: true,
-					remember_for: 0,
-				};
-
-				const providerLoginResponse = providerLoginResponseFactory.build({
-					challenge: 'challenge',
-					client: {
-						client_id: 'clientId',
-					},
-					oidc_context: {},
-					request_url: 'request_url',
-					requested_access_token_audience: ['requested_access_token_audience'],
-					requested_scope: ['requested_scope'],
-					session_id: 'session_id',
-					skip: true,
-					subject: 'subject',
-				});
-
-				const tool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
-
-				const user = userFactory.buildWithId();
-
-				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
-				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(true);
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
-				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
-
-				return {
-					query,
-					loginRequestBodyMock,
-					user,
-				};
-			};
-
-			it('should check for NEXTCLOUD_USER permission', async () => {
-				const { query, loginRequestBodyMock, user } = setup();
-
-				await uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
-
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.NEXTCLOUD_USER]);
 			});
 		});
 
@@ -312,7 +261,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 
 				return {

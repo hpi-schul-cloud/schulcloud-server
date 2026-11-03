@@ -56,11 +56,6 @@ export class OauthProviderLoginFlowUc {
 			throw new InternalServerErrorException('Tool has no id');
 		}
 
-		if (this.oauthProviderLoginFlowService.isNextcloudTool(tool)) {
-			const user = await this.authorizationService.getUserWithPermissions(currentUserId);
-			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
-		}
-
 		const user = await this.userService.findById(currentUserId);
 		const pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, tool);
 
