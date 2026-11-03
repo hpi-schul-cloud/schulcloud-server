@@ -2,6 +2,8 @@ import { ValidationModule } from '@core/validation';
 import {
 	AuthGuardModule,
 	AuthGuardOptions,
+	JWT_AUTH_GUARD_CONFIG_TOKEN,
+	JwtAuthGuardConfig,
 	X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
 	XApiKeyAuthGuardConfig,
 } from '@infra/auth-guard';
@@ -54,6 +56,11 @@ const serverModules = [
 			option: AuthGuardOptions.X_API_KEY,
 			configInjectionToken: X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
 			configConstructor: XApiKeyAuthGuardConfig,
+		},
+		{
+			option: AuthGuardOptions.JWT,
+			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: JwtAuthGuardConfig,
 		},
 	]),
 	AccountApiModule,
