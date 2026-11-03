@@ -13,3 +13,4 @@ export { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
 export { LoggerModule } from './logger.module';
 export { LoggingUtils } from './logging.utils';
 export { createRequestLoggerMiddleware } from './request-logger-middleware';
+export { type LogData } from './types';

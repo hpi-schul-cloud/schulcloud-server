@@ -44,6 +44,51 @@ describe('Logger', () => {
 		await module.close();
 	});
 
+	describe('when logging a message with data', () => {
+		it.each([
+			['warning', 'warning'],
+			['notice', 'notice'],
+			['info', 'info'],
+			['debug', 'debug'],
+		] as const)('should log message and data with %s', (method, winstonMethod) => {
+			service.setContext('UserService');
+
+			service[method]('User created', { userId: '123' });
+
+			expect(winstonLogger[winstonMethod]).toHaveBeenCalledWith({
+				message: 'User created',
+				context: 'UserService',
+				data: { userId: '123' },
+			});
+		});
+
+		it('should log a message without data', () => {
+			service.setContext('UserService');
+
+			service.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith({ message: 'User created', context: 'UserService' });
+		});
+
+		it('should redact sensitive data', () => {
+			service.info('Token refreshed', { accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload' });
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ data: { accessToken: 'eyJh...ad [REDACTED]' } })
+			);
+		});
+
+		it('should log errors in data with message and stack', () => {
+			service.info('Retrying request', { error: new Error('timeout') });
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(
+				expect.objectContaining({
+					data: { error: expect.objectContaining({ name: 'Error', message: 'timeout', stack: expect.any(String) }) },
+				})
+			);
+		});
+	});
+
 	describe('info', () => {
 		it('should call info method of WinstonLogger with appropriate message', () => {
 			const loggable = new SampleLoggable();
