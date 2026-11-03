@@ -132,10 +132,11 @@ export class LoggingUtils {
 			return url;
 		}
 
-		const placeholderOrigin = 'http://relative.invalid';
+		// A relative URL without base URL can only be parsed against a placeholder; only its path, query and hash are logged.
+		const isRelativeWithoutBase = !baseUrl && !URL.canParse(url);
 		let parsedUrl: URL;
 		try {
-			parsedUrl = new URL(url, baseUrl ?? placeholderOrigin);
+			parsedUrl = new URL(url, baseUrl ?? 'https://relative.invalid');
 		} catch {
 			return '[REDACTED]';
 		}
@@ -148,9 +149,11 @@ export class LoggingUtils {
 			}
 		}
 
-		const redactedUrl = parsedUrl.toString().replaceAll('REDACTED_VALUE', '[REDACTED]');
+		const redactedUrl = isRelativeWithoutBase
+			? `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`
+			: parsedUrl.toString();
 
-		return redactedUrl.startsWith(placeholderOrigin) ? redactedUrl.slice(placeholderOrigin.length) : redactedUrl;
+		return redactedUrl.replaceAll('REDACTED_VALUE', '[REDACTED]');
 	}
 
 	private static redactSensitiveArray(value: unknown[], visited: WeakSet<object>): unknown {

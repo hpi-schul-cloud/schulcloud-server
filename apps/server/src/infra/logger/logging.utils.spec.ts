@@ -414,6 +414,48 @@ describe(LoggingUtils.name, () => {
 				expect(render(result)).toContain("url: 'https://idp.example.org/token?access_token=[REDACTED]'");
 			});
 
+			it('should keep a relative axios url without base url relative', () => {
+				const axiosError = buildAxiosError('/token?access_token=abc123secret');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: '/token?access_token=[REDACTED]'");
+			});
+
+			it('should keep an absolute axios url on a host similar to the placeholder', () => {
+				const axiosError = buildAxiosError('https://relative.invalid.example.org/token');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: 'https://relative.invalid.example.org/token'");
+			});
+
+			it('should redact an axios url that cannot be parsed', () => {
+				const axiosError = buildAxiosError('/token');
+				if (axiosError.config) {
+					axiosError.config.baseURL = 'not a url';
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: '[REDACTED]'");
+			});
+
+			it('should leave out the url of an axios error without url', () => {
+				const axiosError = buildAxiosError();
+				if (axiosError.config) {
+					axiosError.config.url = undefined;
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain('url: undefined');
+			});
+
 			it('should not log credentials of an axios error used as cause', () => {
 				const error = new Error('token request failed', { cause: buildAxiosError() });
 				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
