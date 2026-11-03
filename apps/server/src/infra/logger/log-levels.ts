@@ -37,3 +37,18 @@ export const getMostVerboseLevel = ({ defaultLevel, overrides }: LogLevels): Sys
 	[defaultLevel, ...overrides.values()].reduce((mostVerbose, level) =>
 		severity(level) > severity(mostVerbose) ? level : mostVerbose
 	);
+
+/**
+ * Drops entries below the level configured for their class (context) or module, or the default level.
+ * A class rule wins over a module rule.
+ */
+export const createLevelFilter = ({ defaultLevel, overrides }: LogLevels): winston.Logform.Format =>
+	winston.format((info) => {
+		const { context, module } = info;
+		const threshold =
+			(typeof context === 'string' ? overrides.get(context) : undefined) ??
+			(typeof module === 'string' ? overrides.get(module) : undefined) ??
+			defaultLevel;
+
+		return severity(info.level) <= severity(threshold) ? info : false;
+	})();

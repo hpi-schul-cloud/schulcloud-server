@@ -1,5 +1,5 @@
 import { validateSync } from 'class-validator';
-import { getMostVerboseLevel, parseLogLevels } from './log-levels';
+import { createLevelFilter, getMostVerboseLevel, parseLogLevels } from './log-levels';
 import { LoggerConfig, SyslogLevel } from './logger.config';
 
 describe('parseLogLevels', () => {
@@ -64,5 +64,36 @@ describe('LoggerConfig LOG_LEVELS validation', () => {
 
 	it('should reject a rule without level', () => {
 		expect(validate('BoardModule')).toEqual([expect.stringMatching(/^LOG_LEVELS must look like/)]);
+	});
+});
+
+describe('createLevelFilter', () => {
+	const passes = (logLevels: string, info: { level: string; context?: string; module?: string }): boolean => {
+		const filter = createLevelFilter(parseLogLevels(logLevels, SyslogLevel.NOTICE));
+
+		return filter.transform({ message: 'test', ...info }) !== false;
+	};
+
+	it('should apply the default level', () => {
+		expect(passes('default=notice', { level: 'notice' })).toBe(true);
+		expect(passes('default=notice', { level: 'info' })).toBe(false);
+	});
+
+	it('should apply the level of the module', () => {
+		const logLevels = 'default=notice,BoardModule=debug';
+
+		expect(passes(logLevels, { level: 'debug', context: 'BoardService', module: 'BoardModule' })).toBe(true);
+		expect(passes(logLevels, { level: 'debug', context: 'UserService', module: 'UserModule' })).toBe(false);
+	});
+
+	it('should prefer the level of the class over the level of the module', () => {
+		const logLevels = 'default=notice,BoardModule=debug,BoardService=warning';
+
+		expect(passes(logLevels, { level: 'info', context: 'BoardService', module: 'BoardModule' })).toBe(false);
+		expect(passes(logLevels, { level: 'info', context: 'CardService', module: 'BoardModule' })).toBe(true);
+	});
+
+	it('should apply the level of a context without module, e.g. from Nest itself', () => {
+		expect(passes('default=info,InstanceLoader=warning', { level: 'info', context: 'InstanceLoader' })).toBe(false);
 	});
 });

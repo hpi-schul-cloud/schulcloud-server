@@ -6,6 +6,7 @@ import { AUDIT_LOGGER_PROVIDER, AuditLogger } from './audit-logger';
 import { ErrorLogger } from './error-logger';
 import { LegacyLogger } from './legacy-logger.service';
 import { createLogFormat } from './log-format';
+import { createLevelFilter, getMostVerboseLevel, parseLogLevels } from './log-levels';
 import { Logger } from './logger';
 import { LOGGER_CONFIG_TOKEN, LoggerConfig, SyslogLevel } from './logger.config';
 
@@ -32,15 +33,18 @@ const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
 		WinstonModule.forRootAsync({
 			imports: [ConfigurationModule.register(LOGGER_CONFIG_TOKEN, LoggerConfig)],
 			useFactory: (config: LoggerConfig) => {
+				const logLevels = parseLogLevels(config.logLevels, config.nestLogLevel);
+
 				return {
 					levels: winston.config.syslog.levels,
-					level: config.nestLogLevel,
+					// winston lets everything through that any module may log, the level filter decides per entry
+					level: getMostVerboseLevel(logLevels),
 					exitOnError: config.exitOnError,
 					transports: [
 						new winston.transports.Console({
 							handleExceptions: true,
 							handleRejections: true,
-							format: createLogFormat(config.logFormat),
+							format: winston.format.combine(createLevelFilter(logLevels), createLogFormat(config.logFormat)),
 						}),
 					],
 				};
