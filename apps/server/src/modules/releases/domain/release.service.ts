@@ -23,11 +23,9 @@ export class ReleasesService {
 
 	private static readonly UNUSED_IMAGE_GRACE_PERIOD_MS = 60 * 60 * 1000;
 
-	// groups: 1 = prefix, 2 = image url, 3 = suffix
-	private static readonly HTML_IMAGE_REGEX = /(<img[^>]+src=")([^">]+)(")/g;
+	private static readonly HTML_IMAGE_REGEX = /(?<prefix><img[^>]+src=")(?<url>[^">]+)(?<suffix>")/g;
 
-	private static readonly MARKDOWN_IMAGE_REGEX = /(!\[[^\]]*\]\()(\S+?)((?:\s+"[^"]*")?\))/g;
-
+	private static readonly MARKDOWN_IMAGE_REGEX = /(?<prefix>!\[[^\]]*\]\()(?<url>\S+?)(?<suffix>(?:\s+"[^"]*")?\))/g;
 	constructor(
 		private readonly releasesRepo: ReleasesRepo,
 		private readonly releaseImagesRepo: ReleaseImagesRepo,
@@ -105,11 +103,7 @@ export class ReleasesService {
 		body: string,
 		imageIdsBySourceUrl: Map<string, EntityId | null>
 	): Promise<{ body: string; imageIds: EntityId[] }> {
-		const urls = new Set(
-			[ReleasesService.HTML_IMAGE_REGEX, ReleasesService.MARKDOWN_IMAGE_REGEX].flatMap((regex) =>
-				[...body.matchAll(regex)].map((match) => match[2])
-			)
-		);
+		const urls = this.extractImageUrls(body);
 
 		for (const url of urls) {
 			if (!imageIdsBySourceUrl.has(url)) {
@@ -134,6 +128,22 @@ export class ReleasesService {
 			.filter((id): id is EntityId => typeof id === 'string');
 
 		return { body: result, imageIds: [...new Set(imageIds)] };
+	}
+
+	private extractImageUrls(body: string): Set<string> {
+		const urls = new Set<string>();
+		const regexes = [ReleasesService.HTML_IMAGE_REGEX, ReleasesService.MARKDOWN_IMAGE_REGEX];
+
+		for (const regex of regexes) {
+			for (const match of body.matchAll(regex)) {
+				const url = match.groups?.url;
+				if (url) {
+					urls.add(url);
+				}
+			}
+		}
+
+		return urls;
 	}
 
 	/**
