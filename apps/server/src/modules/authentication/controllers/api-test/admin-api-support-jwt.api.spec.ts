@@ -61,8 +61,12 @@ describe('Admin API - Support JWT', () => {
 
 	it('rejects an identified support user without the required permissions', async () => {
 		const school = schoolEntityFactory.buildWithId();
-		const { studentUser: supportUser, studentAccount: supportAccount } = UserAndAccountTestFactory.buildStudent({ school });
-		const { studentUser: targetUser, studentAccount: targetAccount } = UserAndAccountTestFactory.buildStudent({ school });
+		const { studentUser: supportUser, studentAccount: supportAccount } = UserAndAccountTestFactory.buildStudent({
+			school,
+		});
+		const { studentUser: targetUser, studentAccount: targetAccount } = UserAndAccountTestFactory.buildStudent({
+			school,
+		});
 		await em.persist([school, supportUser, supportAccount, targetUser, targetAccount]).flush();
 
 		const response = await new TestApiClientBuilder(app, basePath)
