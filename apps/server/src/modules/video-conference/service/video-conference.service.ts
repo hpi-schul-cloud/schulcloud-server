@@ -1,4 +1,3 @@
-import { CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
@@ -31,7 +30,6 @@ export class VideoConferenceService {
 		private readonly boardNodeService: BoardNodeService,
 		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig,
 		private readonly courseService: CourseService,
-		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
@@ -59,8 +57,7 @@ export class VideoConferenceService {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE:
 			case VideoConferenceScope.ROOM:
-			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT:
-			case VideoConferenceScope.EVENT: {
+			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
 				const user = await this.userService.findById(userId);
 				isExternalPerson = this.existsOnlyExternalPersonRole(user.roles);
 
@@ -216,16 +213,6 @@ export class VideoConferenceService {
 					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
 					title: ensureMinTitleLength(course.name),
-				};
-			}
-			case VideoConferenceScope.EVENT: {
-				const event = await this.calendarService.findEvent(userId, scopeId);
-
-				return {
-					scopeId: event.courseId || scopeId,
-					scopeName: VideoConferenceScope.EVENT,
-					logoutUrl: event.courseId ? `${this.hostUrl}/courses/${event.courseId}?activeTab=tools` : `${this.hostUrl}/events/${scopeId}`,
-					title: ensureMinTitleLength(event.title),
 				};
 			}
 			case VideoConferenceScope.ROOM: {

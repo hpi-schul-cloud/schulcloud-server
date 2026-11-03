@@ -1,6 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { type ICurrentUser } from '@infra/auth-guard';
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { type CourseEntity } from '@modules/course/repo';
@@ -8,7 +7,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { type TeamEntity, TeamRepo } from '@modules/team/repo';
+import { type TeamEntity } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { type UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
@@ -65,26 +64,19 @@ describe('VideoConferenceUc', () => {
 	let bbbService: DeepMocked<BBBService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let teamRepo: DeepMocked<TeamRepo>;
 	let courseService: DeepMocked<CourseService>;
 	let userService: DeepMocked<UserService>;
-	let calendarService: DeepMocked<CalendarService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let config: VideoConferenceConfig;
 
 	const hostUrl = 'https://localhost:4000';
 	const course: CourseEntity = { id: 'courseId', name: 'courseName' } as CourseEntity;
-	const eventId = 'eventId';
-	const event: CalendarEventDto = new CalendarEventDto({
-		title: 'eventTitle',
-		teamId: 'teamId',
-	});
 	let defaultCurrentUser: ICurrentUser;
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
-	let team: TeamEntity;
 	let user: UserDo;
+	let team: TeamEntity;
 
 	let defaultRole: Role;
 	let externalPersonRole: Role;
@@ -95,6 +87,7 @@ describe('VideoConferenceUc', () => {
 		user.roles = [new RoleReference({ id: role.id, name: role.name })];
 		defaultCurrentUser.roles = [role.name];
 	};
+
 
 	beforeAll(async () => {
 		await setupEntities([User, Role]);
@@ -115,20 +108,12 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<VideoConferenceRepo>(),
 				},
 				{
-					provide: TeamRepo,
-					useValue: createMock<TeamRepo>(),
-				},
-				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
-				},
-				{
-					provide: CalendarService,
-					useValue: createMock<CalendarService>(),
 				},
 				{
 					provide: LegacySchoolService,
@@ -147,10 +132,8 @@ describe('VideoConferenceUc', () => {
 		schoolService = module.get(LegacySchoolService);
 		authorizationService = module.get(AuthorizationService);
 		courseService = module.get(CourseService);
-		calendarService = module.get(CalendarService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		userService = module.get(UserService);
-		teamRepo = module.get(TeamRepo);
 		bbbService = module.get(BBBService);
 		config = module.get<VideoConferenceConfig>(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
@@ -180,16 +163,14 @@ describe('VideoConferenceUc', () => {
 		externalPersonRole = roleFactory.build({ name: RoleName.EXTERNALPERSON, permissions: [Permission.JOIN_MEETING] });
 		teamExpertRole = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
 
-		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
 		user = userDoFactory.build({ id: defaultCurrentUser.userId, firstName: 'firstName', lastName: 'lastName' });
+		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
 
 		userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
 		userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
-		teamRepo.findById.mockResolvedValue(team);
 		schoolService.hasFeature.mockResolvedValue(true);
 		courseService.findById.mockResolvedValue(course);
-		calendarService.findEvent.mockResolvedValue(event);
 	});
 
 	describe('getScopeInfo', () => {
@@ -203,18 +184,6 @@ describe('VideoConferenceUc', () => {
 			expect(result.scopeInfo.scopeName).toEqual(VideoConferenceScope.COURSE);
 			expect(result.scopeInfo.title).toEqual(course.name);
 			expect(result.object).toEqual(course);
-		});
-
-		it('should return scope info for teams', async () => {
-			// Act
-			const result = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
-
-			// Assert
-			expect(result.scopeInfo.scopeId).toEqual(event.teamId);
-			expect(result.scopeInfo.title).toEqual(event.title);
-			expect(result.scopeInfo.logoutUrl).toEqual(`${hostUrl}/teams/${event.teamId}?activeTab=events`);
-			expect(result.scopeInfo.scopeName).toEqual(VideoConferenceScope.EVENT);
-			expect(result.object).toEqual(team);
 		});
 
 		it('should throw on unknown scope', async () => {
@@ -441,9 +410,8 @@ describe('VideoConferenceUc', () => {
 		const joinUrl = 'joinUrl';
 
 		let builderCourse: BBBJoinConfigBuilder;
-		let builderEvent: BBBJoinConfigBuilder;
+
 		let courseVcDO: VideoConferenceDO;
-		let eventVcDO: VideoConferenceDO;
 
 		beforeEach(() => {
 			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
@@ -453,20 +421,9 @@ describe('VideoConferenceUc', () => {
 				meetingID: course.id,
 				role: BBBRole.VIEWER,
 			}).withUserId(defaultCurrentUser.userId);
-			builderEvent = new BBBJoinConfigBuilder({
-				fullName: `${user.firstName} ${user.lastName}`,
-				meetingID: eventId,
-				role: BBBRole.VIEWER,
-			}).withUserId(defaultCurrentUser.userId);
 			courseVcDO = new VideoConferenceDO({
 				target: course.id,
 				targetModel: VideoConferenceScope.COURSE,
-				options: defaultOptions,
-				salt: 'fixed-salt-for-testing',
-			});
-			eventVcDO = new VideoConferenceDO({
-				target: eventId,
-				targetModel: VideoConferenceScope.EVENT,
 				options: defaultOptions,
 				salt: 'fixed-salt-for-testing',
 			});
@@ -494,26 +451,6 @@ describe('VideoConferenceUc', () => {
 			expect(result.url).toEqual(joinUrl);
 		});
 
-		it('should successfully return a join link for a viewer in teams', async () => {
-			// Arrange
-			authorizationService.hasPermission.mockReturnValueOnce(false);
-			authorizationService.hasPermission.mockReturnValueOnce(true);
-			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(eventVcDO);
-			bbbService.join.mockResolvedValue(joinUrl);
-
-			// Act
-			const result = await useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId);
-
-			// Assert
-			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
-			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
-			expect(userService.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamRepo.findById).toHaveBeenCalledWith(event.teamId);
-
-			expect(result.state).toEqual(VideoConferenceState.RUNNING);
-			expect(result.permission).toEqual(Permission.JOIN_MEETING);
-			expect(result.url).toEqual(joinUrl);
-		});
 
 		it('should successfully join as guest in courses, without moderator rights', async () => {
 			// Arrange
@@ -539,43 +476,7 @@ describe('VideoConferenceUc', () => {
 			expect(result.url).toEqual(joinUrl);
 		});
 
-		it('should successfully join as guest in teams, without moderator rights', async () => {
-			// Arrange
-			authorizationService.hasPermission.mockReturnValueOnce(false);
-			authorizationService.hasPermission.mockReturnValueOnce(true);
-			courseVcDO.options.everybodyJoinsAsModerator = true;
-			courseVcDO.options.moderatorMustApproveJoinRequests = true;
-			setTeamRole(teamExpertRole);
-			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(eventVcDO);
-			bbbService.join.mockResolvedValue(joinUrl);
-			builderEvent.asGuest(true);
 
-			// Act
-			const result = await useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId);
-
-			// Assert
-			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
-			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
-			expect(userService.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamRepo.findById).toHaveBeenCalledWith(event.teamId);
-
-			expect(result.state).toEqual(VideoConferenceState.RUNNING);
-			expect(result.permission).toEqual(Permission.JOIN_MEETING);
-			expect(result.url).toEqual(joinUrl);
-		});
-
-		it('should throw when joining as guest without waiting room', async () => {
-			// Arrange
-			courseVcDO.options.moderatorMustApproveJoinRequests = false;
-			setTeamRole(teamExpertRole);
-			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(eventVcDO);
-			bbbService.join.mockResolvedValue(joinUrl);
-
-			// Act & Assert
-			await expect(useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
-			);
-		});
 
 		it('should throw on unknown scope', async () => {
 			// Act & Assert
@@ -584,15 +485,6 @@ describe('VideoConferenceUc', () => {
 			).rejects.toThrow(BadRequestException);
 		});
 
-		it('should throw on unknown team user', async () => {
-			// Arrange
-			team.teamUsers = [];
-
-			// Act & Assert
-			await expect(useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.UNKNOWN_USER)
-			);
-		});
 
 		it('should always successfully join as moderator', async () => {
 			// Arrange
@@ -740,30 +632,7 @@ describe('VideoConferenceUc', () => {
 			expect(result.options).toEqual({});
 		});
 
-		it('should throw forbidden, when called as guest without waiting room', async () => {
-			// Arrange
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
-			setTeamRole(teamExpertRole);
-			vcDO.options.moderatorMustApproveJoinRequests = false;
-			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
-			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(vcDO);
 
-			// Act & Assert
-			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
-			);
-		});
 
-		it('should throw forbidden, when called as guest and meeting is not started yet', async () => {
-			// Arrange
-			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
-			setTeamRole(teamExpertRole);
-			bbbService.getMeetingInfo.mockImplementation(() => Promise.reject(new Error('test error')));
-
-			// Act & Assert
-			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
-			);
-		});
 	});
 });

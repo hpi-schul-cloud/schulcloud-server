@@ -1,13 +1,10 @@
 import { ICurrentUser } from '@infra/auth-guard';
-import { CalendarService } from '@infra/calendar';
-import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { RoleName } from '@modules/role';
 import { SchoolFeature } from '@modules/school/domain';
-import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
@@ -48,10 +45,8 @@ export class VideoConferenceDeprecatedUc {
 		private readonly bbbService: BBBService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
-		private readonly teamRepo: TeamRepo,
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
-		private readonly calendarService: CalendarService,
 		private readonly schoolService: LegacySchoolService,
 		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig
 	) {}
@@ -307,18 +302,6 @@ export class VideoConferenceDeprecatedUc {
 
 				return roles.includes(RoleName.EXTERNALPERSON);
 			}
-			case VideoConferenceScope.EVENT: {
-				const team: TeamEntity = await this.teamRepo.findById(scopeId);
-				const teamUser: TeamUserEntity | undefined = team.teamUsers.find(
-					(userInTeam: TeamUserEntity) => userInTeam.user.id === currentUser.userId
-				);
-
-				if (teamUser === undefined) {
-					throw new ForbiddenException(ErrorStatus.UNKNOWN_USER, 'Cannot find user in team.');
-				}
-
-				return teamUser.role.name === RoleName.TEAMEXPERT;
-			}
 			/* istanbul ignore next */
 			default:
 				throw new BadRequestException('Unknown scope name.');
@@ -349,20 +332,6 @@ export class VideoConferenceDeprecatedUc {
 						title: course.name,
 					},
 					object: course,
-				};
-			}
-			case VideoConferenceScope.EVENT: {
-				const event: CalendarEventDto = await this.calendarService.findEvent(userId, refId);
-				const team = await this.teamRepo.findById(event.teamId, true);
-
-				return {
-					scopeInfo: {
-						scopeId: event.teamId,
-						scopeName: VideoConferenceScope.EVENT,
-						logoutUrl: `${this.config.scHostUrl}/teams/${event.teamId}?activeTab=events`,
-						title: event.title,
-					},
-					object: team,
 				};
 			}
 			default:
