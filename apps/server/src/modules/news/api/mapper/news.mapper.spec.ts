@@ -3,12 +3,11 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { type SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { TeamEntity } from '@modules/team/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
 import { type CreateNews, type INewsScope, type IUpdateNews, type NewsTarget, NewsTargetModel } from '../../domain';
-import { CourseNews, type News, type NewsProperties, SchoolNews, TeamNews } from '../../repo';
+import { CourseNews, type News, type NewsProperties, SchoolNews } from '../../repo';
 import {
 	type CreateNewsParams,
 	FilterNewsParams,
@@ -26,9 +25,6 @@ const getTargetModel = (news: News): NewsTargetModel => {
 	}
 	if (news instanceof CourseNews) {
 		return NewsTargetModel.Course;
-	}
-	if (news instanceof TeamNews) {
-		return NewsTargetModel.Team;
 	}
 	throw Error('Unknown news type');
 };
@@ -133,18 +129,6 @@ describe('NewsMapper', () => {
 
 			const result = NewsMapper.mapToResponse(courseNews);
 			const expected = getExpectedNewsResponse(school, creator, courseNews, newsProps, course);
-
-			expect(result).toStrictEqual(expected);
-		});
-		it('should correctly map team news to dto', () => {
-			const school = schoolEntityFactory.build();
-			const team = new TeamEntity({ name: 'team #1' });
-			const creator = userFactory.build();
-			const newsProps = { title: 'test title', content: 'test content' };
-			const teamNews = createNews(newsProps, TeamNews, school, creator, team);
-
-			const result = NewsMapper.mapToResponse(teamNews);
-			const expected = getExpectedNewsResponse(school, creator, teamNews, newsProps, team);
 
 			expect(result).toStrictEqual(expected);
 		});

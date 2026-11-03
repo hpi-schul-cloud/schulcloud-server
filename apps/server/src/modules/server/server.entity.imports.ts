@@ -20,7 +20,7 @@ import {
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { MediaSourceEntity } from '@modules/media-source/entity';
-import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
+import { CourseNews, News, SchoolNews } from '@modules/news/repo';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationEntity } from '@modules/registration';
@@ -98,7 +98,6 @@ export const ENTITIES = [
 	Task,
 	TaskBoardElement,
 	TeamEntity,
-	TeamNews,
 	TeamUserEntity,
 	User,
 	UserLoginMigrationEntity,

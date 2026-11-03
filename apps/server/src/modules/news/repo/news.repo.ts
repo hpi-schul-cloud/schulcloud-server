@@ -6,7 +6,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { getFieldName } from '@shared/repo/utils/repo-helper';
 import { NewsTargetFilter } from './news-target-filter';
-import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
+import { CourseNews, News, SchoolNews } from './news.entity';
 import { NewsScope } from './scope/news-scope';
 
 @Injectable()
@@ -96,8 +96,6 @@ export class NewsRepo extends BaseRepo<News> {
 		// populate target for all inheritances of news which not works when the list contains different types
 		const schoolNews = newsEntities.filter((news) => news instanceof SchoolNews);
 		await this._em.populate(schoolNews, this.propertiesToPopulate as never[]);
-		const teamNews = newsEntities.filter((news) => news instanceof TeamNews);
-		await this._em.populate(teamNews, this.propertiesToPopulate as never[]);
 		const courseNews = newsEntities.filter((news) => news instanceof CourseNews);
 		await this._em.populate(courseNews, this.propertiesToPopulate as never[]);
 		return [newsEntities, count];

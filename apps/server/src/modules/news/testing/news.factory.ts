@@ -4,11 +4,9 @@ import { courseEntityFactory } from '@modules/course/testing';
 
 import { schoolEntityFactory } from '@modules/school/testing';
 
-import { teamFactory } from '@modules/team/testing';
-
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { CourseNews, type NewsProperties, SchoolNews, TeamNews } from '../repo';
+import { CourseNews, type NewsProperties, SchoolNews } from '../repo';
 
 export const schoolNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(SchoolNews, ({ sequence }) => {
 	const school = schoolEntityFactory.buildWithId();
@@ -36,21 +34,6 @@ export const courseNewsFactory = BaseFactory.define<CourseNews, NewsProperties>(
 		school,
 		creator: user,
 		target: course.id,
-	};
-});
-
-export const teamNewsFactory = BaseFactory.define<TeamNews, NewsProperties>(TeamNews, ({ sequence }) => {
-	const school = schoolEntityFactory.buildWithId();
-	const user = userFactory.buildWithId({ school });
-	const team = teamFactory.buildWithId();
-
-	return {
-		title: `news ${sequence}`,
-		content: `content of news ${sequence}`,
-		displayAt: new Date(),
-		school,
-		creator: user,
-		target: team.id,
 	};
 });
 
@@ -88,18 +71,3 @@ export const courseUnpublishedNewsFactory = BaseFactory.define<CourseNews, NewsP
 		};
 	}
 );
-
-export const teamUnpublishedNewsFactory = BaseFactory.define<TeamNews, NewsProperties>(TeamNews, ({ sequence }) => {
-	const school = schoolEntityFactory.buildWithId();
-	const user = userFactory.buildWithId({ school });
-	const team = teamFactory.buildWithId();
-
-	return {
-		title: `news ${sequence}`,
-		content: `content of news ${sequence}`,
-		displayAt: new Date(Date.now() + 86400000),
-		school,
-		creator: user,
-		target: team.id,
-	};
-});

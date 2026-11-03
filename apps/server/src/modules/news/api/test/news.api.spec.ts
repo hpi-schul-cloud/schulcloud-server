@@ -237,55 +237,6 @@ describe('News Controller (API)', () => {
 		});
 	});
 
-	describe('GET /team/{teamId}/news', () => {
-		describe('when user is authenticated', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await createTeamTarget(teamTargetId);
-				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
-
-				await em.persist([studentAccount, studentUser]).flush();
-
-				const loggedInClient = await new TestApiClientBuilder(app, teamsApiRoute).build(studentAccount);
-
-				return { loggedInClient, news };
-			};
-
-			it('should get team-news by id', async () => {
-				const { loggedInClient, news } = await setup();
-
-				const response = await loggedInClient.get(`${teamTargetId}/news`).expect(200);
-
-				const body = response.body as NewsListResponse;
-				expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
-			});
-
-			it('should not throw if a team was not found', async () => {
-				const { loggedInClient } = await setup();
-
-				const randomId = new ObjectId().toHexString();
-				await loggedInClient.get(`${randomId}/news`).expect(200).expect(emptyPaginationResponse);
-			});
-		});
-
-		describe('when user is not authenticated', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
-
-				await em.persist([studentAccount, studentUser]).flush();
-
-				return { news };
-			};
-
-			it('should return 401 status', async () => {
-				await setup();
-
-				await new TestApiClientBuilder(app, teamsApiRoute).build().get(`${teamTargetId}/news`).expect(401);
-			});
-		});
-	});
-
 	describe('POST /news/{id}', () => {
 		describe('when user is authenticated', () => {
 			const setup = async () => {

@@ -8,7 +8,6 @@ export class CalendarMapper {
 	public mapToDto(event: CalendarEvent): CalendarEventDto {
 		const { attributes } = event.data[0];
 		return new CalendarEventDto({
-			teamId: attributes['x-sc-teamid'],
 			title: attributes.summary,
 		});
 	}
