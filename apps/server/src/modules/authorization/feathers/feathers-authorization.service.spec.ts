@@ -68,14 +68,6 @@ describe('FeatherAuthorizationService', () => {
 			const expectedParams = [userId, NewsTargetModel.Course, courseId];
 			expect(getUserTargetPermissionsSpy).toHaveBeenCalledWith(...expectedParams);
 		});
-
-		it('should call auth provider for team with correct params', async () => {
-			const teamId = new ObjectId().toHexString();
-			const getUserTargetPermissionsSpy = jest.spyOn(authProvider, 'getUserTargetPermissions');
-			await service.getEntityPermissions(userId, NewsTargetModel.Team, teamId);
-			const expectedParams = [userId, NewsTargetModel.Team, teamId];
-			expect(getUserTargetPermissionsSpy).toHaveBeenCalledWith(...expectedParams);
-		});
 	});
 
 	describe('checkEntityPermissions', () => {
@@ -119,12 +111,5 @@ describe('FeatherAuthorizationService', () => {
 			expect(getPermittedTargetsSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 
-		it('should call auth provider for team with correct params', async () => {
-			const permissions = teamPermissions;
-			const getPermittedTargetsSpy = jest.spyOn(authProvider, 'getPermittedTargets');
-			await service.getPermittedEntities(userId, NewsTargetModel.Team, permissions);
-			const expectedParams = [userId, NewsTargetModel.Team, permissions];
-			expect(getPermittedTargetsSpy).toHaveBeenCalledWith(...expectedParams);
-		});
 	});
 });

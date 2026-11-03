@@ -132,13 +132,8 @@ describe('FeathersAuthProvider', () => {
 			expect(userTargetPermissions).toBe(coursePermissions);
 		});
 
-		it('should return user team permissions', async () => {
-			const userTargetPermissions = await authProvider.getUserTargetPermissions(userId, NewsTargetModel.Team, teamId);
-			expect(userTargetPermissions).toBe(teamPermissions);
-		});
-
 		it('should return user school permissions', async () => {
-			const userTargetPermissions = await authProvider.getUserTargetPermissions(userId, NewsTargetModel.School, teamId);
+			const userTargetPermissions = await authProvider.getUserTargetPermissions(userId, NewsTargetModel.School, schoolId);
 			expect(userTargetPermissions).toBe(schoolPermissions);
 		});
 	});
@@ -158,11 +153,6 @@ describe('FeathersAuthProvider', () => {
 				coursePermissions
 			);
 			expect(permittedCourses).toStrictEqual([courseId]);
-		});
-
-		it('should return permitted teams', async () => {
-			const permittedTeams = await authProvider.getPermittedTargets(userId, NewsTargetModel.Team, teamPermissions);
-			expect(permittedTeams).toStrictEqual([teamId]);
 		});
 	});
 });

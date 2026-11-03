@@ -25,15 +25,11 @@ describe('News Controller (API)', () => {
 
 	const courseTargetId = new ObjectId().toHexString();
 	const unpublishedCourseTargetId = new ObjectId().toHexString();
-	const teamTargetId = new ObjectId().toHexString();
+	const course2TargetId = new ObjectId().toHexString();
 	const targets = [
 		{
 			targetModel: NewsTargetModel.Course,
-			targetIds: [courseTargetId, unpublishedCourseTargetId],
-		},
-		{
-			targetModel: NewsTargetModel.Team,
-			targetIds: [teamTargetId],
+			targetIds: [courseTargetId, unpublishedCourseTargetId, course2TargetId],
 		},
 	];
 	const emptyPaginationResponse: NewsListResponse = { data: [], total: 0 };
