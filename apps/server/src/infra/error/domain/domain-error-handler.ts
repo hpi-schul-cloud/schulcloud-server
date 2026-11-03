@@ -24,8 +24,8 @@ export class DomainErrorHandler {
 			request: {
 				method: request.method,
 				endpoint: request.url,
-				params: JSON.stringify(request.params),
-				query: JSON.stringify(request.query),
+				params: request.params,
+				query: request.query,
 			},
 		};
 		const loggable = this.createErrorLoggable(error, requestInfo);
