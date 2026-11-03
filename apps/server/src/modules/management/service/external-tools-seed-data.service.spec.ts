@@ -1,9 +1,8 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
-import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
-import { ExternalTool, ExternalToolService, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool';
+import { ExternalTool, ExternalToolService, Lti11ToolConfig } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
 import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import {
@@ -12,7 +11,6 @@ import {
 	CustomParameterType,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	TokenEndpointAuthMethod,
 	ToolContextType,
 } from '@modules/tool/common/enum';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -300,12 +298,12 @@ describe(ExternalToolsSeedDataService.name, () => {
 				);
 			});
 
-			it('should return 5', async () => {
+			it('should return 4', async () => {
 				setup();
 
 				const result = await service.import();
 
-				expect(result).toEqual(5);
+				expect(result).toEqual(4);
 			});
 		});
 	});
