@@ -36,7 +36,7 @@ export class LoggingUtils {
 
 	private static redactSensitiveObject(value: unknown, visited = new WeakSet<object>()): unknown {
 		if (value instanceof Error) {
-			return value;
+			return this.redactError(value, visited);
 		}
 
 		if (typeof value === 'string') {
@@ -52,6 +52,36 @@ export class LoggingUtils {
 		}
 
 		return value;
+	}
+
+	private static redactError(error: Error, visited: WeakSet<object>): unknown {
+		if (visited.has(error)) {
+			return '[Circular]';
+		}
+
+		visited.add(error);
+
+		// Copy the error instead of changing it. A real Error keeps util.inspect printing it as an error (with stack),
+		// the original prototype keeps its class name.
+		const redactedError = new Error(error.message);
+		Object.setPrototypeOf(redactedError, Object.getPrototypeOf(error) as object);
+		const ownProperties = { ...error };
+
+		const redactedRecord = redactedError as unknown as Record<string, unknown>;
+		for (const [key, val] of Object.entries(ownProperties)) {
+			redactedRecord[key] = this.redactEntryValue(key, val, visited);
+		}
+
+		Object.defineProperty(redactedError, 'stack', { value: error.stack, enumerable: false, writable: true });
+
+		if (error.cause !== undefined) {
+			Object.defineProperty(redactedError, 'cause', {
+				value: this.redactSensitiveObject(error.cause, visited),
+				enumerable: false,
+			});
+		}
+
+		return redactedError;
 	}
 
 	private static redactSensitiveArray(value: unknown[], visited: WeakSet<object>): unknown {

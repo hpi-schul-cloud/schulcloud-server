@@ -147,7 +147,7 @@ describe(LoggingUtils.name, () => {
 			expect(result.message).toContain("AuthToken: '[REDACTED]'");
 		});
 
-		it('should keep Error instances unchanged in output', () => {
+		it('should keep the message of Error instances in output', () => {
 			const loggable = new SampleLoggable({
 				message: 'request failed',
 				data: {
@@ -173,6 +173,68 @@ describe(LoggingUtils.name, () => {
 
 			expect(result.message).toContain('attempt: 2');
 			expect(result.message).toContain('retry: false');
+		});
+
+		describe('when an error is logged', () => {
+			it('should redact sensitive own properties of the error', () => {
+				const error = Object.assign(new Error('boom'), { accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload', attempt: 2 });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload');
+				expect(result.message).toContain('attempt: 2');
+				expect(result.message).toContain('Error: boom');
+			});
+
+			it('should redact sensitive properties of the error cause', () => {
+				const cause = Object.assign(new Error('inner'), { clientSecret: 'super-secret-client-secret-value' });
+				const error = new Error('outer', { cause });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).not.toContain('super-secret-client-secret-value');
+				expect(result.message).toContain('Error: outer');
+				expect(result.message).toContain('Error: inner');
+			});
+
+			it('should keep the stack trace of the error', () => {
+				const error = new Error('boom');
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).toContain('logging.utils.spec.ts');
+			});
+
+			it('should keep the class name of the error', () => {
+				class CustomError extends Error {}
+				const loggable = new SampleLoggable({ error: new CustomError('boom'), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).toContain('CustomError: boom');
+			});
+
+			it('should not modify the original error', () => {
+				const error = Object.assign(new Error('boom'), { accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload' });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				LoggingUtils.createMessageWithContext(loggable);
+
+				expect(error.accessToken).toBe('eyJhbGciOiJIUzI1NiJ9.payload');
+			});
+
+			it('should replace a circular error cause with circular marker', () => {
+				const error = new Error('boom');
+				error.cause = error;
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).toContain('[Circular]');
+			});
 		});
 	});
 
