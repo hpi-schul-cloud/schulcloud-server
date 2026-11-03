@@ -4,7 +4,6 @@ import { type Logger } from '@infra/logger';
 import Valkey from 'iovalkey';
 import * as util from 'node:util';
 import { InMemoryClient, ValkeyClient } from './clients';
-import { ConnectedLoggable } from './loggable';
 import { ValkeyMode } from './valkey.config';
 import { ValkeyFactory } from './valkey.factory';
 
@@ -37,14 +36,14 @@ describe(ValkeyFactory.name, () => {
 				expect(redisInstance).toBeInstanceOf(InMemoryClient);
 			});
 
-			it('should log ConnectedLoggable if connect event is emitted', async () => {
+			it('should log that the client connected if connect event is emitted', async () => {
 				const { config } = setup();
 
 				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
 
 				(redisInstance as unknown as InMemoryClient).emit('connect', { test: true });
 
-				expect(logger.info).toHaveBeenNthCalledWith(1, new ConnectedLoggable({ test: true }));
+				expect(logger.info).toHaveBeenNthCalledWith(1, 'Valkey client connected', { event: { test: true } });
 			});
 		});
 
