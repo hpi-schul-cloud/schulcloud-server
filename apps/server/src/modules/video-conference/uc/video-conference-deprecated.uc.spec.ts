@@ -75,9 +75,7 @@ describe('VideoConferenceUc', () => {
 
 	let user: UserDo;
 
-	let defaultRole: Role;
 	let externalPersonRole: Role;
-
 
 	beforeAll(async () => {
 		await setupEntities([User, Role]);
@@ -149,7 +147,6 @@ describe('VideoConferenceUc', () => {
 			everyAttendeeJoinsMuted: false,
 			moderatorMustApproveJoinRequests: false,
 		};
-		defaultRole = roleFactory.build({ permissions: [Permission.JOIN_MEETING] });
 		externalPersonRole = roleFactory.build({ name: RoleName.EXTERNALPERSON, permissions: [Permission.JOIN_MEETING] });
 
 		user = userDoFactory.build({ id: defaultCurrentUser.userId, firstName: 'firstName', lastName: 'lastName' });
@@ -474,7 +471,6 @@ describe('VideoConferenceUc', () => {
 			).rejects.toThrow(BadRequestException);
 		});
 
-
 		it('should always successfully join as moderator', async () => {
 			// Arrange
 			authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -620,8 +616,5 @@ describe('VideoConferenceUc', () => {
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 			expect(result.options).toEqual({});
 		});
-
-
-
 	});
-});
+	});

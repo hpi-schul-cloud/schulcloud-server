@@ -3,7 +3,6 @@ import { PseudonymService } from '@modules/pseudonym/service';
 import { ExternalTool, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '../domain';
 import { OauthProviderLoginFlowService } from '../domain/service/oauth-provider.login-flow.service';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';

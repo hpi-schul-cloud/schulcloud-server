@@ -5,10 +5,9 @@ import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { userDoFactory, userFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { OauthProviderLoginFlowService, OauthProviderService, type ProviderRedirectResponse } from '../domain';
 import { providerLoginResponseFactory } from '../testing';
@@ -21,7 +20,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
 	let pseudonymService: DeepMocked<PseudonymService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
 	let userService: DeepMocked<UserService>;
 
 	const pseudonym = pseudonymFactory.build({
@@ -64,7 +62,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 		oauthProviderService = module.get(OauthProviderService);
 		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
 		pseudonymService = module.get(PseudonymService);
-		authorizationService = module.get(AuthorizationService);
 		userService = module.get(UserService);
 
 		await setupEntities([User]);

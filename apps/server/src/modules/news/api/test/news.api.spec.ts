@@ -17,7 +17,6 @@ import { News } from '../../repo';
 import { CreateNewsParams, type NewsListResponse, type NewsResponse, type UpdateNewsParams } from '../dto';
 
 const newsApiRoute = '/news';
-const teamsApiRoute = '/team';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;
@@ -32,7 +31,6 @@ describe('News Controller (API)', () => {
 			targetIds: [courseTargetId, unpublishedCourseTargetId, course2TargetId],
 		},
 	];
-	const emptyPaginationResponse: NewsListResponse = { data: [], total: 0 };
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -90,13 +88,6 @@ describe('News Controller (API)', () => {
 		course.id = id;
 		await em.persist(course).flush();
 		return course;
-	};
-
-	const createTeamTarget = async (id: EntityId) => {
-		const team = teamFactory.build();
-		team.id = id;
-		await em.persist(team).flush();
-		return team;
 	};
 
 	describe('GET /news', () => {

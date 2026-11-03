@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export const MANAGEMENT_SEED_DATA_CONFIG_TOKEN = 'MANAGEMENT_SEED_DATA_CONFIG_TOKEN';
 

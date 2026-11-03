@@ -21,11 +21,9 @@ import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membershi
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { TeamRepo } from '@modules/team/repo';
-import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { userDoFactory, userFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -49,7 +47,6 @@ describe(VideoConferenceService.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let roomService: DeepMocked<RoomService>;
-	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let config: VideoConferenceConfig;
@@ -112,7 +109,6 @@ describe(VideoConferenceService.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		roomMembershipService = module.get(RoomMembershipService);
 		roomService = module.get(RoomService);
-		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);

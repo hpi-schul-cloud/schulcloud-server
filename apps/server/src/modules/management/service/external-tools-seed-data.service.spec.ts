@@ -24,8 +24,6 @@ describe(ExternalToolsSeedDataService.name, () => {
 	let config: ManagementSeedDataConfig;
 	let encryptionService: DeepMocked<EncryptionService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let oauthProviderService: DeepMocked<OauthProviderService>;
-	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -58,8 +56,6 @@ describe(ExternalToolsSeedDataService.name, () => {
 		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		encryptionService = module.get(DefaultEncryptionService);
 		externalToolService = module.get(ExternalToolService);
-		oauthProviderService = module.get(OauthProviderService);
-		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {

@@ -114,11 +114,14 @@ export class ExternalToolLogoService {
 				error instanceof ExternalToolLogoSanitizationLoggableException
 			) {
 				throw error;
-			} else if (error instanceof HttpException) {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
-			} else {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
 			}
+
+			const err = error as Error;
+			if (err instanceof HttpException) {
+				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, err.getStatus());
+			}
+
+			throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
 		}
 	}
 

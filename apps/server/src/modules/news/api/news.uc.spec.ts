@@ -15,7 +15,6 @@ describe('NewsUc', () => {
 	let service: NewsUc;
 	let repo: NewsRepo;
 	const courseTargetId = 'course1';
-	const teamTargetId = 'team1';
 	const NEWS_PERMISSIONS = [Permission.NEWS_VIEW, Permission.NEWS_EDIT];
 
 	const userId = new ObjectId().toString();

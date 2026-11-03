@@ -110,6 +110,5 @@ describe('FeatherAuthorizationService', () => {
 			const expectedParams = [userId, NewsTargetModel.Course, permissions];
 			expect(getPermittedTargetsSpy).toHaveBeenCalledWith(...expectedParams);
 		});
-
 	});
 });
