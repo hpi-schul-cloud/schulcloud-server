@@ -1,4 +1,5 @@
 import { type Loggable, type LoggableMessage, type LogMessage } from '@shared/common/loggable';
+import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { LoggingUtils } from './logging.utils';
 
 class SampleLoggable implements Loggable {
@@ -234,6 +235,102 @@ describe(LoggingUtils.name, () => {
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
 				expect(result.message).toContain('[Circular]');
+			});
+		});
+
+		describe('when an axios error is logged', () => {
+			const clientSecret = 'super-secret-client-secret-value';
+			const basicCredentials = Buffer.from(`my-client:${clientSecret}`).toString('base64');
+
+			const buildAxiosError = (url = 'https://idp.example.org/token?client_secret=abc123secret&scope=openid') => {
+				const config = {
+					method: 'post',
+					url,
+					headers: new AxiosHeaders({
+						Authorization: `Basic ${basicCredentials}`,
+						'Content-Type': 'application/x-www-form-urlencoded',
+					}),
+					auth: { username: 'my-client', password: clientSecret },
+					data: `grant_type=client_credentials&client_secret=${clientSecret}`,
+				} as InternalAxiosRequestConfig;
+				const response = {
+					status: 401,
+					statusText: 'Unauthorized',
+					headers: {},
+					config,
+					data: { error: 'invalid_client' },
+				};
+
+				return new AxiosError('Request failed with status code 401', 'ERR_BAD_REQUEST', config, {}, response);
+			};
+
+			const expectNoSecrets = (message: string) => {
+				expect(message).not.toContain(clientSecret);
+				expect(message).not.toContain(basicCredentials);
+				expect(message).not.toContain('abc123secret');
+				expect(message).not.toContain('grant_type');
+			};
+
+			it('should not log credentials of a raw axios error', () => {
+				const loggable = new SampleLoggable({ error: buildAxiosError(), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(result.message);
+			});
+
+			it('should keep method, url, status and code of a raw axios error', () => {
+				const loggable = new SampleLoggable({ error: buildAxiosError(), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).toContain('AxiosError: Request failed with status code 401');
+				expect(result.message).toContain("code: 'ERR_BAD_REQUEST'");
+				expect(result.message).toContain('status: 401');
+				expect(result.message).toContain("method: 'POST'");
+				expect(result.message).toContain("url: 'https://idp.example.org/token?client_secret=[REDACTED]&scope=openid'");
+			});
+
+			it('should remove credentials from the axios request url', () => {
+				const axiosError = buildAxiosError('https://my-client:url-password@idp.example.org/token');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).not.toContain('url-password');
+				expect(result.message).toContain("url: 'https://idp.example.org/token'");
+			});
+
+			it('should resolve a relative axios url against its base url', () => {
+				const axiosError = buildAxiosError('/token?access_token=abc123secret');
+				if (axiosError.config) {
+					axiosError.config.baseURL = 'https://idp.example.org/api';
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).toContain("url: 'https://idp.example.org/token?access_token=[REDACTED]'");
+			});
+
+			it('should not log credentials of an axios error used as cause', () => {
+				const error = new Error('token request failed', { cause: buildAxiosError() });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(result.message);
+				expect(result.message).toContain('Error: token request failed');
+				expect(result.message).toContain('AxiosError: Request failed with status code 401');
+			});
+
+			it('should not modify the original axios error', () => {
+				const axiosError = buildAxiosError();
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				LoggingUtils.createMessageWithContext(loggable);
+
+				expect(axiosError.config?.data).toContain(clientSecret);
 			});
 		});
 	});

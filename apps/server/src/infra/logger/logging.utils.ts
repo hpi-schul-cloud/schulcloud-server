@@ -1,4 +1,5 @@
 import { type Loggable } from '@shared/common/loggable';
+import { type AxiosError, isAxiosError } from 'axios';
 import util from 'node:util';
 import { type LogMessageWithContext } from './types';
 
@@ -65,7 +66,7 @@ export class LoggingUtils {
 		// the original prototype keeps its class name.
 		const redactedError = new Error(error.message);
 		Object.setPrototypeOf(redactedError, Object.getPrototypeOf(error) as object);
-		const ownProperties = { ...error };
+		const ownProperties = isAxiosError(error) ? this.getSafeAxiosErrorProperties(error) : { ...error };
 
 		const redactedRecord = redactedError as unknown as Record<string, unknown>;
 		for (const [key, val] of Object.entries(ownProperties)) {
@@ -82,6 +83,42 @@ export class LoggingUtils {
 		}
 
 		return redactedError;
+	}
+
+	// Axios errors carry the full request config (headers, auth, body) and response. Only these fields are safe to log.
+	private static getSafeAxiosErrorProperties(error: AxiosError): Record<string, unknown> {
+		return {
+			code: error.code,
+			status: error.response?.status ?? error.status,
+			method: error.config?.method?.toUpperCase(),
+			url: this.redactUrl(error.config?.url, error.config?.baseURL),
+		};
+	}
+
+	private static redactUrl(url: string | undefined, baseUrl: string | undefined): string | undefined {
+		if (!url) {
+			return url;
+		}
+
+		const placeholderOrigin = 'http://relative.invalid';
+		let parsedUrl: URL;
+		try {
+			parsedUrl = new URL(url, baseUrl ?? placeholderOrigin);
+		} catch {
+			return '[REDACTED]';
+		}
+
+		parsedUrl.username = '';
+		parsedUrl.password = '';
+		for (const name of new Set(parsedUrl.searchParams.keys())) {
+			if (this.isSensitiveFieldName(name)) {
+				parsedUrl.searchParams.set(name, 'REDACTED_VALUE');
+			}
+		}
+
+		const redactedUrl = parsedUrl.toString().replaceAll('REDACTED_VALUE', '[REDACTED]');
+
+		return redactedUrl.startsWith(placeholderOrigin) ? redactedUrl.slice(placeholderOrigin.length) : redactedUrl;
 	}
 
 	private static redactSensitiveArray(value: unknown[], visited: WeakSet<object>): unknown {
