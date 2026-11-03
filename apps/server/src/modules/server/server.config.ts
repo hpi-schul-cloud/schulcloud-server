@@ -27,11 +27,6 @@ export class ServerPublicApiConfig {
 	@IsBoolean()
 	public adminTablesDisplayConsentColumn = true;
 
-	@ConfigProperty('FEATURE_TEAMS_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureTeamsEnabled = true;
-
 	@ConfigProperty('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE')
 	@StringToBoolean()
 	@IsBoolean()

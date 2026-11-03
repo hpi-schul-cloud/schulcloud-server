@@ -70,9 +70,6 @@ export class ConfigResponse {
 	ALERT_STATUS_URL: string | null;
 
 	@ApiProperty()
-	FEATURE_TEAMS_ENABLED: boolean;
-
-	@ApiProperty()
 	FEATURE_FWU_CONTENT_ENABLED: boolean;
 
 	@ApiProperty()
@@ -299,7 +296,6 @@ export class ConfigResponse {
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.adminTablesDisplayConsentColumn;
 		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
-		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
 		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
 		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.teacherStudentVisibilityIsEnabledByDefault;
