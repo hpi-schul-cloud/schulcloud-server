@@ -2,6 +2,8 @@ import { ValidationModule } from '@core/validation';
 import {
 	AuthGuardModule,
 	AuthGuardOptions,
+	JWT_AUTH_GUARD_CONFIG_TOKEN,
+	JwtAuthGuardConfig,
 	X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
 	XApiKeyAuthGuardConfig,
 } from '@infra/auth-guard';
@@ -31,6 +33,8 @@ import { UserApiModule } from '@modules/user/user-api.module';
 import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
+import { AdminApiAuthenticationModule } from '@modules/authentication';
+import { AuthorizationRulesModule } from '@modules/authorization-rules';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
@@ -40,6 +44,7 @@ import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 const serverModules = [
 	ConfigurationModule.register(ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig),
 	ValidationModule,
+	AuthorizationRulesModule,
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
@@ -51,9 +56,15 @@ const serverModules = [
 			configInjectionToken: X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
 			configConstructor: XApiKeyAuthGuardConfig,
 		},
+		{
+			option: AuthGuardOptions.JWT,
+			configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+			configConstructor: JwtAuthGuardConfig,
+		},
 	]),
 	AccountApiModule,
 	AuthenticationApiModule,
+	AdminApiAuthenticationModule,
 	MediaBoardApiModule,
 	ClassModule,
 	CourseApiModule,
