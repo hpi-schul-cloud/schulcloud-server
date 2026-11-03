@@ -104,14 +104,27 @@ export class LoggingUtils {
 		return error.name === 'Error' ? error.constructor.name : error.name;
 	}
 
-	// Axios errors carry the full request config (headers, auth, body) and response. Only these fields are safe to log.
+	// Axios errors carry the full request config (headers, auth, body) with our credentials. Only these fields are logged.
+	// The response body is kept (redacted like any other value), because external APIs explain their errors there.
 	private static getSafeAxiosErrorProperties(error: AxiosError): Record<string, unknown> {
 		return {
 			code: error.code,
 			status: error.response?.status ?? error.status,
+			statusText: error.response?.statusText,
 			method: error.config?.method?.toUpperCase(),
 			url: this.redactUrl(error.config?.url, error.config?.baseURL),
+			responseData: this.truncateText(error.response?.data),
 		};
+	}
+
+	// Error responses can be whole HTML pages.
+	private static truncateText(value: unknown): unknown {
+		const maxLength = 1000;
+		if (typeof value !== 'string' || value.length <= maxLength) {
+			return value;
+		}
+
+		return `${value.slice(0, maxLength)}... [truncated ${value.length - maxLength} characters]`;
 	}
 
 	private static redactUrl(url: string | undefined, baseUrl: string | undefined): string | undefined {

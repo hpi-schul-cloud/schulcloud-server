@@ -356,6 +356,42 @@ describe(LoggingUtils.name, () => {
 				expect(render(result)).toContain("url: 'https://idp.example.org/token?client_secret=[REDACTED]&scope=openid'");
 			});
 
+			it('should keep the response body of an axios error', () => {
+				const loggable = new SampleLoggable({ error: buildAxiosError(), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.error).toEqual(
+					expect.objectContaining({ statusText: 'Unauthorized', responseData: { error: 'invalid_client' } })
+				);
+			});
+
+			it('should redact sensitive values in the response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				(axiosError.response as { data: unknown }).data = {
+					error: 'invalid_grant',
+					access_token: 'eyJhbGciOiJIUzI1NiJ9.payload',
+				};
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload');
+				expect(render(result)).toContain("error: 'invalid_grant'");
+			});
+
+			it('should truncate a long text response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				(axiosError.response as { data: unknown }).data = `<html>${'x'.repeat(5000)}</html>`;
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				const { responseData } = result.error as { responseData: string };
+				expect(responseData).toHaveLength(1000 + '... [truncated 4013 characters]'.length);
+				expect(responseData).toContain('[truncated 4013 characters]');
+			});
+
 			it('should remove credentials from the axios request url', () => {
 				const axiosError = buildAxiosError('https://my-client:url-password@idp.example.org/token');
 				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
