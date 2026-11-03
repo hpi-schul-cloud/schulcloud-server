@@ -16,6 +16,15 @@ export class Logger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
+	/**
+	 * For errors that are caught and handled, e.g. a failed retry. Thrown errors are logged by the global error filter.
+	 */
+	public error(message: string, data?: LogData): void;
+	public error(loggable: Loggable): void;
+	public error(messageOrLoggable: string | Loggable, data?: LogData): void {
+		this.logger.error(this.createLogEntry(messageOrLoggable, data));
+	}
+
 	public warning(message: string, data?: LogData): void;
 	public warning(loggable: Loggable): void;
 	public warning(messageOrLoggable: string | Loggable, data?: LogData): void {

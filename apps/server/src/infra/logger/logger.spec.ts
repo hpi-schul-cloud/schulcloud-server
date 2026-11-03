@@ -46,6 +46,7 @@ describe('Logger', () => {
 
 	describe('when logging a message with data', () => {
 		it.each([
+			['error', 'error'],
 			['warning', 'warning'],
 			['notice', 'notice'],
 			['info', 'info'],
@@ -85,6 +86,18 @@ describe('Logger', () => {
 				expect.objectContaining({
 					data: { error: expect.objectContaining({ name: 'Error', message: 'timeout', stack: expect.any(String) }) },
 				})
+			);
+		});
+	});
+
+	describe('error', () => {
+		it('should call error method of WinstonLogger with a loggable', () => {
+			service.setContext('test context');
+
+			service.error(new SampleLoggable());
+
+			expect(winstonLogger.error).toHaveBeenCalledWith(
+				expect.objectContaining({ message: 'test message', data: 'test data', context: 'test context' })
 			);
 		});
 	});
