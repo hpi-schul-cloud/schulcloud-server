@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { InternalEtherpadClientConfig } from '@infra/etherpad-client';
 import { IsString, IsUrl } from 'class-validator';
 
@@ -11,6 +11,7 @@ export class EtherpadClientConfig implements InternalEtherpadClientConfig {
 	 * After resolving this dependency, this default value can be removed.
 	 */
 	@ConfigProperty('ETHERPAD__API_KEY')
+	@Secret()
 	@IsString()
 	public apiKey = 'defaultApiKey';
 
