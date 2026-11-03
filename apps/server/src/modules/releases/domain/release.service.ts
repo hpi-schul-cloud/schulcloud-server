@@ -56,6 +56,16 @@ export class ReleasesService {
 		const syncedAt = new Date();
 		const githubReleases = await this.fetchFromRepository(this.config.releaseNotesRepoUrl);
 
+		await this.upsertReleases(githubReleases, syncedAt);
+
+		await this.releasesRepo.deleteAllExceptGithubIds(
+			githubReleases.map((release) => release.id),
+			syncedAt
+		);
+		await this.deleteUnusedImages();
+	}
+
+	private async upsertReleases(githubReleases: GithubRelease[], syncedAt: Date): Promise<void> {
 		// source url -> image id (or null if the image could not be stored); avoids repeated lookups within one fetch
 		const imageIdsBySourceUrl = new Map<string, EntityId | null>();
 
@@ -66,12 +76,6 @@ export class ReleasesService {
 
 			await this.releasesRepo.upsertByGithubId(entity, syncedAt);
 		}
-
-		await this.releasesRepo.deleteAllExceptGithubIds(
-			githubReleases.map((release) => release.id),
-			syncedAt
-		);
-		await this.deleteUnusedImages();
 	}
 
 	private async deleteUnusedImages(): Promise<void> {
