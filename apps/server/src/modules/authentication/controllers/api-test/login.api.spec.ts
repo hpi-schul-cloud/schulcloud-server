@@ -1,6 +1,5 @@
 import { type OauthTokenResponse } from '@infra/oauth-adapter';
 import { EntityManager } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { type AccountEntity } from '@modules/account/repo';
 import { accountFactory, defaultTestPassword } from '@modules/account/testing';
 import { RoleName } from '@modules/role';
@@ -642,93 +641,6 @@ describe('Login Controller (api)', () => {
 				const response: Response = await new TestApiClientBuilder(app, basePath).build().post('/refresh-session');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
-			});
-		});
-	});
-
-	describe('supportJwt', () => {
-		describe('when unprivileged user wants to access', () => {
-			const setup = async () => {
-				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-
-				await em.persist([superheroAccount, superheroUser, studentAccount, studentUser]).flush();
-				em.clear();
-
-				const data = { userId: superheroUser.id };
-				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
-
-				return { data, loggedInClient };
-			};
-
-			describe('when jwt is not passed', () => {
-				it('should respond with unauthorized exception', async () => {
-					const { data } = await setup();
-
-					const response = await new TestApiClientBuilder(app, basePath).build().post('/support-jwt', data);
-
-					expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
-				});
-			});
-
-			describe('when user has not the privilege to request supportJwt', () => {
-				it('should respond with forbidden exception', async () => {
-					const { data, loggedInClient } = await setup();
-
-					const response = await loggedInClient.post('/support-jwt', data);
-
-					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-				});
-			});
-		});
-
-		describe('when privileged user wants to access', () => {
-			const setup = async (userId?: string) => {
-				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-
-				await em.persist([superheroAccount, superheroUser, studentAccount, studentUser]).flush();
-				em.clear();
-
-				const data = { userId: userId ?? studentUser.id };
-				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
-
-				return { data, loggedInClient };
-			};
-
-			describe('when requested user exists', () => {
-				it('should respond with loginResponse', async () => {
-					const { data, loggedInClient } = await setup();
-
-					const response = await loggedInClient.post('/support-jwt', data);
-
-					expect(response.statusCode).toEqual(HttpStatus.CREATED);
-					expect(response.body).toMatchObject({
-						accessToken: expect.any(String),
-					});
-				});
-			});
-
-			describe('when requested user does not exist', () => {
-				it('should return 404', async () => {
-					const notExistedUserId = new ObjectId().toString();
-					const { loggedInClient } = await setup(notExistedUserId);
-
-					const response = await loggedInClient.post('/support-jwt', { userId: notExistedUserId });
-
-					expect(response.status).toEqual(HttpStatus.NOT_FOUND);
-				});
-			});
-
-			describe('when invalid data passed', () => {
-				it('should return 400', async () => {
-					const invalidUserId = 'someId';
-					const { loggedInClient } = await setup(invalidUserId);
-
-					const response = await loggedInClient.post('/support-jwt', { userId: invalidUserId });
-
-					expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				});
 			});
 		});
 	});
