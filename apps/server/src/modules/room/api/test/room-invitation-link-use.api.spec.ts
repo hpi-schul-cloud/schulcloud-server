@@ -182,81 +182,18 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
-		describe('when the user is student', () => {
-			describe.each([
-				[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[UserRole.STUDENT, {}, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
-			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
-				const config = JSON.stringify(roomInvitationLinkConfig);
-				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
-					it(`should return http status ${httpStatus}`, async () => {
-						const { loggedInClient, roomInvitationLink } = await setup(
-							roomInvitationLinkConfig,
-							roleName,
-							fromSameSchool
-						);
+		describe('when having an invitation without a token (legacy)', () => {
+			describe('when trying to use the invitation by its id', () => {
+				it('should still accept its original id URL', async () => {
+					const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+					await em.nativeUpdate(RoomInvitationLinkEntity, roomInvitationLink.id, { invitationToken: null });
+					em.clear();
 
-						const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
 
-						expect(response.status).toBe(httpStatus);
-					});
+					expect(response.status).toBe(HttpStatus.CREATED);
+					expect(response.body).toEqual({ id: roomInvitationLink.roomId });
 				});
-			});
-		});
-
-		describe('when the link is vaild', () => {
-			it('should return 201 and the roomId', async () => {
-				const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
-
-				const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
-
-				expect(response.status).toBe(HttpStatus.CREATED);
-				expect(response.body).toEqual({
-					id: roomInvitationLink.roomId,
-				});
-			});
-		});
-
-		describe('when the link does not exist', () => {
-			it('should return http status 404', async () => {
-				const { loggedInClient } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
-
-				const linkId = new ObjectId().toHexString();
-
-				const response = await loggedInClient.post(`/${linkId}`);
-				const body = response.body as RoomInvitationLinkError;
-
-				expect(response.status).toBe(HttpStatus.NOT_FOUND);
-				expect(body.details?.validationMessage).toEqual(RoomInvitationLinkValidationError.INVALID_LINK);
-			});
-		});
-
-		describe('when using a token-backed invitation internal id', () => {
-			it('should return INVALID_LINK without adding a member', async () => {
-				const { loggedInClient, roomInvitationLink, user } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
-
-				const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
-				const membershipService = app.get(RoomMembershipService);
-				const authorizable = await membershipService.getRoomAuthorizable(roomInvitationLink.roomId);
-
-				expect(response.status).toBe(HttpStatus.NOT_FOUND);
-				expect(response.body).toMatchObject({
-					details: { validationMessage: RoomInvitationLinkValidationError.INVALID_LINK },
-				});
-				expect(authorizable.getRoleOfUser(user.id)).toBeNull();
-			});
-		});
-
-		describe('when using a legacy invitation without a token', () => {
-			it('should still accept its original id URL', async () => {
-				const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
-				await em.nativeUpdate(RoomInvitationLinkEntity, roomInvitationLink.id, { invitationToken: null });
-				em.clear();
-
-				const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
-
-				expect(response.status).toBe(HttpStatus.CREATED);
-				expect(response.body).toEqual({ id: roomInvitationLink.roomId });
 			});
 		});
 
@@ -273,281 +210,358 @@ describe('Room Invitation Link Controller (API)', () => {
 			);
 		});
 
-		describe('when the token does not exist', () => {
-			it('should return INVALID_LINK', async () => {
+		describe('when the invitation id does not exist', () => {
+			it('should return http status 404', async () => {
 				const { loggedInClient } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
-				const unknownLink = roomInvitationLinkEntityFactory.build();
 
-				const response = await loggedInClient.post(`/${unknownLink.invitationToken}`);
+				const linkId = new ObjectId().toHexString();
+
+				const response = await loggedInClient.post(`/${linkId}`);
+				const body = response.body as RoomInvitationLinkError;
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
-				expect(response.body).toMatchObject({
-					details: { validationMessage: RoomInvitationLinkValidationError.INVALID_LINK },
-				});
+				expect(body.details?.validationMessage).toEqual(RoomInvitationLinkValidationError.INVALID_LINK);
 			});
 		});
 
-		describe('when the database lookup fails', () => {
-			it('should surface a server error rather than INVALID_LINK', async () => {
-				const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
-				const service = app.get(RoomInvitationLinkService);
-				jest.spyOn(service, 'findByInvitationCredential').mockRejectedValueOnce(new Error('Database unavailable'));
-
-				const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
-
-				expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-			});
-		});
-
-		describe('when external person link feature is disabled', () => {
-			beforeEach(() => {
-				config.featureRoomLinkInvitationExternalPersonsEnabled = false;
-			});
-
-			describe('when the user is an external person', () => {
-				it('should return http status 403', async () => {
-					const { loggedInClient, roomInvitationLink } = await setup(
+		describe('when having an invitation with a token (secured)', () => {
+			describe('when trying to use the invitation by its id', () => {
+				it('should return INVALID_LINK without adding a member', async () => {
+					const { loggedInClient, roomInvitationLink, user } = await setup(
 						{},
-						UserRole.EXTERNAL_PERSON,
+						UserRole.TEACHER,
 						UserSchool.SAME_SCHOOL
 					);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+					const membershipService = app.get(RoomMembershipService);
+					const authorizable = await membershipService.getRoomAuthorizable(roomInvitationLink.roomId);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					expect(response.status).toBe(HttpStatus.NOT_FOUND);
+					expect(response.body).toMatchObject({
+						details: { validationMessage: RoomInvitationLinkValidationError.INVALID_LINK },
+					});
+					expect(authorizable.getRoleOfUser(user.id)).toBeNull();
 				});
 			});
 
-			describe('when the user is a teacher', () => {
-				it('should return http status 201', async () => {
-					const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+			describe('when trying to use the invitation by its token', () => {
+				describe('when the user is student', () => {
+					describe.each([
+						[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+						[UserRole.STUDENT, {}, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+					])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+						const config = JSON.stringify(roomInvitationLinkConfig);
+						describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
+							it(`should return http status ${httpStatus}`, async () => {
+								const { loggedInClient, roomInvitationLink } = await setup(
+									roomInvitationLinkConfig,
+									roleName,
+									fromSameSchool
+								);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+								const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
-					expect(response.status).toBe(HttpStatus.CREATED);
-					expect(response.body).toEqual({
-						id: roomInvitationLink.roomId,
+								expect(response.status).toBe(httpStatus);
+							});
+						});
 					});
 				});
-			});
 
-			describe('when the user is a student', () => {
-				it('should return http status 201', async () => {
-					const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.STUDENT, UserSchool.SAME_SCHOOL);
-
-					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
-
-					expect(response.status).toBe(HttpStatus.CREATED);
-					expect(response.body).toEqual({
-						id: roomInvitationLink.roomId,
-					});
-				});
-			});
-		});
-
-		describe.each([
-			[
-				UserRole.TEACHER,
-				{ isUsableByExternalPersons: false, isUsableByStudents: false },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.TEACHER,
-				{ isUsableByExternalPersons: true, isUsableByStudents: false },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.TEACHER,
-				{ isUsableByExternalPersons: false, isUsableByStudents: true },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.TEACHER,
-				{ isUsableByExternalPersons: true, isUsableByStudents: true },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.STUDENT,
-				{ isUsableByExternalPersons: false, isUsableByStudents: false },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.FORBIDDEN,
-			],
-			[
-				UserRole.STUDENT,
-				{ isUsableByExternalPersons: true, isUsableByStudents: false },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.FORBIDDEN,
-			],
-			[
-				UserRole.STUDENT,
-				{ isUsableByExternalPersons: false, isUsableByStudents: true },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.STUDENT,
-				{ isUsableByExternalPersons: true, isUsableByStudents: true },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.EXTERNAL_PERSON,
-				{ isUsableByExternalPersons: false, isUsableByStudents: false },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.FORBIDDEN,
-			],
-			[
-				UserRole.EXTERNAL_PERSON,
-				{ isUsableByExternalPersons: true, isUsableByStudents: false },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.EXTERNAL_PERSON,
-				{ isUsableByExternalPersons: true, isUsableByStudents: false },
-				UserSchool.SAME_SCHOOL,
-				'false',
-				HttpStatus.FORBIDDEN,
-			],
-			[
-				UserRole.EXTERNAL_PERSON,
-				{ isUsableByExternalPersons: false, isUsableByStudents: true },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.FORBIDDEN,
-			],
-			[
-				UserRole.EXTERNAL_PERSON,
-				{ isUsableByExternalPersons: true, isUsableByStudents: true },
-				UserSchool.SAME_SCHOOL,
-				'true',
-				HttpStatus.CREATED,
-			],
-			[
-				UserRole.EXTERNAL_PERSON,
-				{ isUsableByExternalPersons: true, isUsableByStudents: true },
-				UserSchool.SAME_SCHOOL,
-				'false',
-				HttpStatus.FORBIDDEN,
-			],
-		])(
-			'usable by external persons and students',
-			(roleName, roomInvitationLinkConfig, fromSameSchool, featureEnabled, httpStatus) => {
-				const config = JSON.stringify(roomInvitationLinkConfig);
-				describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool} and external persons invitation feature is ${featureEnabled}'`, () => {
-					it(`should return http status ${httpStatus}`, async () => {
-						const { loggedInClient, roomInvitationLink } = await setup(
-							roomInvitationLinkConfig,
-							roleName,
-							fromSameSchool,
-							undefined,
-							featureEnabled === 'true'
-						);
+				describe('when the link is valid', () => {
+					it('should return 201 and the roomId', async () => {
+						const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
 
 						const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
-						expect(response.status).toBe(httpStatus);
+						expect(response.status).toBe(HttpStatus.CREATED);
+						expect(response.body).toEqual({
+							id: roomInvitationLink.roomId,
+						});
 					});
 				});
-			}
-		);
 
-		describe.each([
-			[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
-			[UserRole.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
-			[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
-			[UserRole.TEACHER, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
-			[UserRole.STUDENT, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
-			[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
-		])('restriction to creators school', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
-			const config = JSON.stringify(roomInvitationLinkConfig);
-			describe(`when link is '${config}' and user is a '${roleName}' from '${fromSameSchool}'`, () => {
-				it(`should return http status ${httpStatus}`, async () => {
-					const { loggedInClient, roomInvitationLink } = await setup(
-						roomInvitationLinkConfig,
-						roleName,
-						fromSameSchool
-					);
+				describe('when the token does not exist', () => {
+					it('should return INVALID_LINK', async () => {
+						const { loggedInClient } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+						const unknownLink = roomInvitationLinkEntityFactory.build();
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+						const response = await loggedInClient.post(`/${unknownLink.invitationToken}`);
 
-					expect(response.status).toBe(httpStatus);
+						expect(response.status).toBe(HttpStatus.NOT_FOUND);
+						expect(response.body).toMatchObject({
+							details: { validationMessage: RoomInvitationLinkValidationError.INVALID_LINK },
+						});
+					});
 				});
-			});
-		});
 
-		describe.each([
-			[UserRole.TEACHER, ActiveUntil.THE_FUTURE, UserSchool.SAME_SCHOOL, HttpStatus.CREATED, Responses.SUCCESS],
-			[UserRole.STUDENT, ActiveUntil.THE_FUTURE, UserSchool.SAME_SCHOOL, HttpStatus.CREATED, Responses.SUCCESS],
-			[UserRole.TEACHER, ActiveUntil.THE_PAST, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST, Responses.EXPIRED],
-			[UserRole.STUDENT, ActiveUntil.THE_PAST, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST, Responses.EXPIRED],
-		])('expiry date', (roleName, activeUntil, fromSameSchool, httpStatus, body) => {
-			const inTheFuture = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
-			const inThePast = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
-			const roomInvitationLinkConfig = {
-				activeUntil: activeUntil === ActiveUntil.THE_FUTURE ? inTheFuture : inThePast,
-			};
-			describe(`when link expires ${activeUntil} and user is a ${roleName} from '${fromSameSchool}'`, () => {
-				it(`should return http status ${httpStatus}`, async () => {
-					const { loggedInClient, roomInvitationLink } = await setup(
-						roomInvitationLinkConfig,
-						roleName,
-						fromSameSchool
-					);
+				describe('when the database lookup fails', () => {
+					it('should surface a server error rather than INVALID_LINK', async () => {
+						const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+						const service = app.get(RoomInvitationLinkService);
+						jest.spyOn(service, 'findByInvitationCredential').mockRejectedValueOnce(new Error('Database unavailable'));
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+						const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
-					expect(response.status).toBe(httpStatus);
-					expect(response.body).toEqual(expect.objectContaining(body));
+						expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+					});
 				});
-			});
-		});
 
-		describe.each([
-			{ prevRole: undefined, config: { requiresConfirmation: true }, finalRole: RoleName.ROOMAPPLICANT },
-			{ prevRole: undefined, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMVIEWER },
-			{ prevRole: RoleName.ROOMAPPLICANT, config: { requiresConfirmation: true }, finalRole: RoleName.ROOMAPPLICANT },
-			{ prevRole: RoleName.ROOMAPPLICANT, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMVIEWER },
-			{ prevRole: RoleName.ROOMVIEWER, config: { requiresConfirmation: true }, finalRole: RoleName.ROOMVIEWER },
-			{ prevRole: RoleName.ROOMVIEWER, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMVIEWER },
-			{ prevRole: RoleName.ROOMEDITOR, config: { requiresConfirmation: true }, finalRole: RoleName.ROOMEDITOR },
-			{ prevRole: RoleName.ROOMEDITOR, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMEDITOR },
-		])('role assignment', ({ prevRole, config, finalRole }) => {
-			const configString = JSON.stringify(config);
-			const prevRoleString = prevRole || 'not a member';
-			describe(`when room config is '${configString}' and user was ${prevRoleString} before`, () => {
-				it(`user should get the role: ${finalRole}`, async () => {
-					const { loggedInClient, roomInvitationLink, user } = await setup(
-						config,
+				describe('when external person link feature is disabled', () => {
+					beforeEach(() => {
+						config.featureRoomLinkInvitationExternalPersonsEnabled = false;
+					});
+
+					describe('when the user is an external person', () => {
+						it('should return http status 403', async () => {
+							const { loggedInClient, roomInvitationLink } = await setup(
+								{},
+								UserRole.EXTERNAL_PERSON,
+								UserSchool.SAME_SCHOOL
+							);
+
+							const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+
+							expect(response.status).toBe(HttpStatus.FORBIDDEN);
+						});
+					});
+
+					describe('when the user is a teacher', () => {
+						it('should return http status 201', async () => {
+							const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+
+							const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+
+							expect(response.status).toBe(HttpStatus.CREATED);
+							expect(response.body).toEqual({
+								id: roomInvitationLink.roomId,
+							});
+						});
+					});
+
+					describe('when the user is a student', () => {
+						it('should return http status 201', async () => {
+							const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.STUDENT, UserSchool.SAME_SCHOOL);
+
+							const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+
+							expect(response.status).toBe(HttpStatus.CREATED);
+							expect(response.body).toEqual({
+								id: roomInvitationLink.roomId,
+							});
+						});
+					});
+				});
+
+				describe.each([
+					[
 						UserRole.TEACHER,
+						{ isUsableByExternalPersons: false, isUsableByStudents: false },
 						UserSchool.SAME_SCHOOL,
-						prevRole
-					);
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.TEACHER,
+						{ isUsableByExternalPersons: true, isUsableByStudents: false },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.TEACHER,
+						{ isUsableByExternalPersons: false, isUsableByStudents: true },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.TEACHER,
+						{ isUsableByExternalPersons: true, isUsableByStudents: true },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.STUDENT,
+						{ isUsableByExternalPersons: false, isUsableByStudents: false },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.FORBIDDEN,
+					],
+					[
+						UserRole.STUDENT,
+						{ isUsableByExternalPersons: true, isUsableByStudents: false },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.FORBIDDEN,
+					],
+					[
+						UserRole.STUDENT,
+						{ isUsableByExternalPersons: false, isUsableByStudents: true },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.STUDENT,
+						{ isUsableByExternalPersons: true, isUsableByStudents: true },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.EXTERNAL_PERSON,
+						{ isUsableByExternalPersons: false, isUsableByStudents: false },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.FORBIDDEN,
+					],
+					[
+						UserRole.EXTERNAL_PERSON,
+						{ isUsableByExternalPersons: true, isUsableByStudents: false },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.EXTERNAL_PERSON,
+						{ isUsableByExternalPersons: true, isUsableByStudents: false },
+						UserSchool.SAME_SCHOOL,
+						'false',
+						HttpStatus.FORBIDDEN,
+					],
+					[
+						UserRole.EXTERNAL_PERSON,
+						{ isUsableByExternalPersons: false, isUsableByStudents: true },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.FORBIDDEN,
+					],
+					[
+						UserRole.EXTERNAL_PERSON,
+						{ isUsableByExternalPersons: true, isUsableByStudents: true },
+						UserSchool.SAME_SCHOOL,
+						'true',
+						HttpStatus.CREATED,
+					],
+					[
+						UserRole.EXTERNAL_PERSON,
+						{ isUsableByExternalPersons: true, isUsableByStudents: true },
+						UserSchool.SAME_SCHOOL,
+						'false',
+						HttpStatus.FORBIDDEN,
+					],
+				])(
+					'usable by external persons and students',
+					(roleName, roomInvitationLinkConfig, fromSameSchool, featureEnabled, httpStatus) => {
+						const config = JSON.stringify(roomInvitationLinkConfig);
+						describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool} and external persons invitation feature is ${featureEnabled}'`, () => {
+							it(`should return http status ${httpStatus}`, async () => {
+								const { loggedInClient, roomInvitationLink } = await setup(
+									roomInvitationLinkConfig,
+									roleName,
+									fromSameSchool,
+									undefined,
+									featureEnabled === 'true'
+								);
 
-					await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+								const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
 
-					const roomMembership = await em.findOneOrFail(RoomMembershipEntity, {
-						roomId: roomInvitationLink.roomId,
+								expect(response.status).toBe(httpStatus);
+							});
+						});
+					}
+				);
+
+				describe.each([
+					[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+					[UserRole.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+					[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
+					[UserRole.TEACHER, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
+					[UserRole.STUDENT, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+					[UserRole.EXTERNAL_PERSON, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
+				])('restriction to creators school', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+					const config = JSON.stringify(roomInvitationLinkConfig);
+					describe(`when link is '${config}' and user is a '${roleName}' from '${fromSameSchool}'`, () => {
+						it(`should return http status ${httpStatus}`, async () => {
+							const { loggedInClient, roomInvitationLink } = await setup(
+								roomInvitationLinkConfig,
+								roleName,
+								fromSameSchool
+							);
+
+							const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+
+							expect(response.status).toBe(httpStatus);
+						});
 					});
-					const group = await em.findOneOrFail(GroupEntity, { id: roomMembership.userGroupId });
-					const role = await em.findOneOrFail(Role, { name: finalRole });
+				});
 
-					expect(group.users[0].user.id).toEqual(user.id);
-					expect(group.users[0].role.id).toEqual(role.id);
+				describe.each([
+					[UserRole.TEACHER, ActiveUntil.THE_FUTURE, UserSchool.SAME_SCHOOL, HttpStatus.CREATED, Responses.SUCCESS],
+					[UserRole.STUDENT, ActiveUntil.THE_FUTURE, UserSchool.SAME_SCHOOL, HttpStatus.CREATED, Responses.SUCCESS],
+					[UserRole.TEACHER, ActiveUntil.THE_PAST, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST, Responses.EXPIRED],
+					[UserRole.STUDENT, ActiveUntil.THE_PAST, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST, Responses.EXPIRED],
+				])('expiry date', (roleName, activeUntil, fromSameSchool, httpStatus, body) => {
+					const inTheFuture = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+					const inThePast = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
+					const roomInvitationLinkConfig = {
+						activeUntil: activeUntil === ActiveUntil.THE_FUTURE ? inTheFuture : inThePast,
+					};
+					describe(`when link expires ${activeUntil} and user is a ${roleName} from '${fromSameSchool}'`, () => {
+						it(`should return http status ${httpStatus}`, async () => {
+							const { loggedInClient, roomInvitationLink } = await setup(
+								roomInvitationLinkConfig,
+								roleName,
+								fromSameSchool
+							);
+
+							const response = await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+
+							expect(response.status).toBe(httpStatus);
+							expect(response.body).toEqual(expect.objectContaining(body));
+						});
+					});
+				});
+
+				describe.each([
+					{ prevRole: undefined, config: { requiresConfirmation: true }, finalRole: RoleName.ROOMAPPLICANT },
+					{ prevRole: undefined, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMVIEWER },
+					{
+						prevRole: RoleName.ROOMAPPLICANT,
+						config: { requiresConfirmation: true },
+						finalRole: RoleName.ROOMAPPLICANT,
+					},
+					{ prevRole: RoleName.ROOMAPPLICANT, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMVIEWER },
+					{ prevRole: RoleName.ROOMVIEWER, config: { requiresConfirmation: true }, finalRole: RoleName.ROOMVIEWER },
+					{ prevRole: RoleName.ROOMVIEWER, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMVIEWER },
+					{ prevRole: RoleName.ROOMEDITOR, config: { requiresConfirmation: true }, finalRole: RoleName.ROOMEDITOR },
+					{ prevRole: RoleName.ROOMEDITOR, config: { requiresConfirmation: false }, finalRole: RoleName.ROOMEDITOR },
+				])('role assignment', ({ prevRole, config, finalRole }) => {
+					const configString = JSON.stringify(config);
+					const prevRoleString = prevRole || 'not a member';
+					describe(`when room config is '${configString}' and user was ${prevRoleString} before`, () => {
+						it(`user should get the role: ${finalRole}`, async () => {
+							const { loggedInClient, roomInvitationLink, user } = await setup(
+								config,
+								UserRole.TEACHER,
+								UserSchool.SAME_SCHOOL,
+								prevRole
+							);
+
+							await loggedInClient.post(`/${roomInvitationLink.invitationToken}`);
+
+							const roomMembership = await em.findOneOrFail(RoomMembershipEntity, {
+								roomId: roomInvitationLink.roomId,
+							});
+							const group = await em.findOneOrFail(GroupEntity, { id: roomMembership.userGroupId });
+							const role = await em.findOneOrFail(Role, { name: finalRole });
+
+							expect(group.users[0].user.id).toEqual(user.id);
+							expect(group.users[0].role.id).toEqual(role.id);
+						});
+					});
 				});
 			});
 		});
