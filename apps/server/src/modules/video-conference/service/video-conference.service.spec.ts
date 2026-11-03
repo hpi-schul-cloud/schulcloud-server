@@ -163,7 +163,7 @@ describe(VideoConferenceService.name, () => {
 		});
 	});
 
-	describe('isExternalPersonOrTeamExpert', () => {
+	describe('isExternalPerson', () => {
 		describe('when user has EXTERNALPERSON role for a course conference', () => {
 			const setup = () => {
 				const user = userDoFactory
@@ -186,7 +186,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -194,7 +194,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -222,7 +222,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -230,7 +230,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -258,7 +258,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -266,7 +266,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -291,7 +291,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call the user service to find the user by id', async () => {
 				const { userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -299,7 +299,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 			});
@@ -327,7 +327,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 				expect(userService.findById).toHaveBeenCalledWith(userId);
@@ -353,13 +353,11 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a BadRequestException', async () => {
 				const { userId, scopeId } = setup();
 
-				const func = () =>
-					service.isExternalPersonOrTeamExpert(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
+				const func = () => service.isExternalPerson(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
 
 				await expect(func()).rejects.toThrow(new BadRequestException('Unknown scope name.'));
 			});
 		});
-
 	});
 
 	describe('determineBbbRole', () => {
@@ -1283,7 +1281,6 @@ describe(VideoConferenceService.name, () => {
 				expect(result).toEqual({ role: BBBRole.VIEWER, isGuest: false });
 			});
 		});
-
 	});
 
 	describe('findVideoConferenceByScopeAndScopeId', () => {
