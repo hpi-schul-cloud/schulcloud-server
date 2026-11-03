@@ -3,6 +3,7 @@ import { INQUIRER, ModulesContainer } from '@nestjs/core';
 import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
+import { getLogOrigin } from './log-origin';
 import { LoggingUtils } from './logging.utils';
 import { LogData, LogMessageWithContext } from './types';
 
@@ -13,8 +14,6 @@ import { LogData, LogMessageWithContext } from './types';
 // The Loggable overloads come last: TypeScript uses the last overload for mocks and Parameters<>.
 @Injectable({ scope: Scope.TRANSIENT })
 export class Logger {
-	private static readonly moduleNamesByContainer = new WeakMap<ModulesContainer, Map<unknown, string>>();
-
 	private context: string;
 
 	private readonly module?: string;
@@ -28,55 +27,9 @@ export class Logger {
 		@Optional() @Inject(INQUIRER) inquirer?: object | null,
 		@Optional() modulesContainer?: ModulesContainer
 	) {
-		this.context = Logger.getClassName(inquirer);
-		this.module = Logger.getModuleName(inquirer, modulesContainer);
-	}
-
-	private static getModuleName(
-		inquirer: object | null | undefined,
-		modulesContainer: ModulesContainer | undefined
-	): string | undefined {
-		const inquirerClass = Logger.getInquirerClass(inquirer);
-		if (!inquirerClass || !modulesContainer) {
-			return undefined;
-		}
-
-		return Logger.getModuleNames(modulesContainer).get(inquirerClass);
-	}
-
-	// Built once per application. A class provided by several modules gets the first one.
-	private static getModuleNames(modulesContainer: ModulesContainer): Map<unknown, string> {
-		let moduleNames = Logger.moduleNamesByContainer.get(modulesContainer);
-
-		if (!moduleNames) {
-			moduleNames = new Map();
-			for (const module of modulesContainer.values()) {
-				for (const wrapper of [...module.providers.values(), ...module.controllers.values()]) {
-					if (wrapper.metatype && !moduleNames.has(wrapper.metatype)) {
-						moduleNames.set(wrapper.metatype, module.metatype.name);
-					}
-				}
-			}
-			Logger.moduleNamesByContainer.set(modulesContainer, moduleNames);
-		}
-
-		return moduleNames;
-	}
-
-	private static getClassName(inquirer: object | null | undefined): string {
-		const inquirerClass = Logger.getInquirerClass(inquirer);
-
-		return inquirerClass && inquirerClass.name !== 'Object' ? inquirerClass.name : '';
-	}
-
-	// There is no inquirer when the logger is injected into a factory (null) or resolved directly (Nest then reports
-	// the logger itself).
-	private static getInquirerClass(inquirer: object | null | undefined): { name: string } | undefined {
-		if (inquirer === null || inquirer === undefined || inquirer instanceof Logger) {
-			return undefined;
-		}
-
-		return (inquirer as { constructor?: { name: string } }).constructor;
+		const { context, module } = getLogOrigin(inquirer, modulesContainer, (value) => value instanceof Logger);
+		this.context = context;
+		this.module = module;
 	}
 
 	/**
