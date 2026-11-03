@@ -17,6 +17,11 @@ export class RoomPublicApiConfig {
 	@StringToBoolean()
 	public featureRoomCopyEnabled = true;
 
+	@ConfigProperty('FEATURE_ROOM_ARCHIVE_ENABLED')
+	@IsBoolean()
+	@StringToBoolean()
+	public featureRoomArchiveEnabled = false;
+
 	@ConfigProperty('FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED')
 	@IsBoolean()
 	@StringToBoolean()

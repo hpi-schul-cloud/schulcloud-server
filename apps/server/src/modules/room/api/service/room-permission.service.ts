@@ -71,4 +71,10 @@ export class RoomPermissionService {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
 		}
 	}
+
+	public checkFeatureRoomArchiveEnabled(): void {
+		if (!this.config.featureRoomArchiveEnabled) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOM_ARCHIVE_ENABLED');
+		}
+	}
 }
