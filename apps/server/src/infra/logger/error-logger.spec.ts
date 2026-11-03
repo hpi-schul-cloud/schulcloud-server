@@ -34,7 +34,10 @@ describe('ErrorLogger', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
 
-			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
+			const expectedMessage = expect.objectContaining({
+				message: 'test',
+				error: expect.objectContaining({ name: 'Error', message: 'test' }),
+			});
 
 			service.emerg(loggable);
 
@@ -47,7 +50,10 @@ describe('ErrorLogger', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
 
-			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
+			const expectedMessage = expect.objectContaining({
+				message: 'test',
+				error: expect.objectContaining({ name: 'Error', message: 'test' }),
+			});
 
 			service.alert(loggable);
 
@@ -60,7 +66,10 @@ describe('ErrorLogger', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
 
-			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
+			const expectedMessage = expect.objectContaining({
+				message: 'test',
+				error: expect.objectContaining({ name: 'Error', message: 'test' }),
+			});
 
 			service.crit(loggable);
 
@@ -73,7 +82,10 @@ describe('ErrorLogger', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
 
-			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
+			const expectedMessage = expect.objectContaining({
+				message: 'test',
+				error: expect.objectContaining({ name: 'Error', message: 'test' }),
+			});
 
 			service.error(loggable);
 

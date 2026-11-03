@@ -4,23 +4,41 @@ import util from 'node:util';
 import { type LogMessageWithContext } from './types';
 
 export class LoggingUtils {
+	/**
+	 * Turns a loggable into separate log fields (message, data, error, ...) instead of one string,
+	 * so that structured log formats like JSON can filter by them. Sensitive values are redacted.
+	 */
 	public static createMessageWithContext(loggable: Loggable, context?: string): LogMessageWithContext {
-		const message = loggable.getLogMessage();
-		const stringifiedMessage = this.stringifyMessage(message);
-		const messageWithContext = { message: stringifiedMessage, context };
+		const redactedMessage = this.redactSensitiveValue(loggable.getLogMessage());
+		const { message, ...fields } = this.isRecord(redactedMessage) ? redactedMessage : { message: redactedMessage };
 
-		return messageWithContext;
+		return { message: this.toMessageText(message, fields), context, ...fields };
 	}
 
 	public static redactSensitiveValue(value: unknown): unknown {
 		return this.redactSensitiveObject(value);
 	}
 
-	private static stringifyMessage(message: unknown): string {
-		const redactedMessage = this.redactSensitiveValue(message);
-		const inspectedMessage = util.inspect(redactedMessage);
+	// Error and validation log messages have no message of their own, so it is taken from the error or the type.
+	private static toMessageText(message: unknown, fields: Record<string, unknown>): string {
+		if (typeof message === 'string') {
+			return message;
+		}
 
-		return inspectedMessage.replaceAll('\n', '').replaceAll(String.raw`\n`, '');
+		if (message !== undefined) {
+			return util.inspect(message, { breakLength: Infinity });
+		}
+
+		const { error, type } = fields;
+		if (this.isRecord(error) && typeof error.message === 'string') {
+			return error.message;
+		}
+
+		return typeof type === 'string' ? type : '';
+	}
+
+	private static isRecord(value: unknown): value is Record<string, unknown> {
+		return typeof value === 'object' && value !== null && !Array.isArray(value);
 	}
 
 	private static isSensitiveFieldName(name: string): boolean {
@@ -62,27 +80,28 @@ export class LoggingUtils {
 
 		visited.add(error);
 
-		// Copy the error instead of changing it. A real Error keeps util.inspect printing it as an error (with stack),
-		// the original prototype keeps its class name.
-		const redactedError = new Error(error.message);
-		Object.setPrototypeOf(redactedError, Object.getPrototypeOf(error) as object);
-		const ownProperties = isAxiosError(error) ? this.getSafeAxiosErrorProperties(error) : { ...error };
+		// A plain object instead of the Error itself: message and stack are not enumerable, so JSON output would drop them.
+		const redactedError: Record<string, unknown> = {
+			name: this.getErrorName(error),
+			message: this.redactBearerToken(error.message),
+			stack: error.stack === undefined ? undefined : this.redactBearerToken(error.stack),
+		};
 
-		const redactedRecord = redactedError as unknown as Record<string, unknown>;
+		const ownProperties = isAxiosError(error) ? this.getSafeAxiosErrorProperties(error) : { ...error };
 		for (const [key, val] of Object.entries(ownProperties)) {
-			redactedRecord[key] = this.redactEntryValue(key, val, visited);
+			redactedError[key] = this.redactEntryValue(key, val, visited);
 		}
 
-		Object.defineProperty(redactedError, 'stack', { value: error.stack, enumerable: false, writable: true });
-
 		if (error.cause !== undefined) {
-			Object.defineProperty(redactedError, 'cause', {
-				value: this.redactSensitiveObject(error.cause, visited),
-				enumerable: false,
-			});
+			redactedError.cause = this.redactSensitiveObject(error.cause, visited);
 		}
 
 		return redactedError;
+	}
+
+	// Subclasses that don't set their own name are still called "Error", the class name is more useful.
+	private static getErrorName(error: Error): string {
+		return error.name === 'Error' ? error.constructor.name : error.name;
 	}
 
 	// Axios errors carry the full request config (headers, auth, body) and response. Only these fields are safe to log.

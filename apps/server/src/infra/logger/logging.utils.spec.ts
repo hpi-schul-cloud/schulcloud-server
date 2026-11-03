@@ -1,6 +1,10 @@
 import { type Loggable, type LoggableMessage, type LogMessage } from '@shared/common/loggable';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import util from 'node:util';
 import { LoggingUtils } from './logging.utils';
+
+// Renders everything that ends up in the log entry, so tests can check that a value is (not) logged anywhere.
+const render = (value: unknown): string => util.inspect(value, { depth: null, breakLength: Infinity });
 
 class SampleLoggable implements Loggable {
 	constructor(private readonly message: LoggableMessage) {}
@@ -28,11 +32,11 @@ describe(LoggingUtils.name, () => {
 
 			expect(result.context).toBe('ctx');
 
-			expect(result.message).toContain("message: 'request failed'");
-			expect(result.message).toContain("accept: 'application/json'");
-			expect(result.message).toContain("'user-agent': 'Mozilla/5.0'");
+			expect(render(result)).toContain("message: 'request failed'");
+			expect(render(result)).toContain("accept: 'application/json'");
+			expect(render(result)).toContain("'user-agent': 'Mozilla/5.0'");
 
-			expect(result.message).not.toContain('[REDACTED]');
+			expect(render(result)).not.toContain('[REDACTED]');
 		});
 
 		it('should redact sensitive header and token values while keeping header names', () => {
@@ -59,18 +63,18 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain('Authorization');
-			expect(result.message).toContain('Cookie');
-			expect(result.message).toContain('X-Api-Key');
-			expect(result.message).toContain('Accept');
+			expect(render(result)).toContain('Authorization');
+			expect(render(result)).toContain('Cookie');
+			expect(render(result)).toContain('X-Api-Key');
+			expect(render(result)).toContain('Accept');
 
-			expect(result.message).not.toContain(token);
-			expect(result.message).not.toContain(cookie);
-			expect(result.message).not.toContain(apiKey);
+			expect(render(result)).not.toContain(token);
+			expect(render(result)).not.toContain(cookie);
+			expect(render(result)).not.toContain(apiKey);
 
-			expect(result.message).toContain(redactedToken);
-			expect(result.message).toContain(redactedCookie);
-			expect(result.message).toContain(redactedApiKey);
+			expect(render(result)).toContain(redactedToken);
+			expect(render(result)).toContain(redactedCookie);
+			expect(render(result)).toContain(redactedApiKey);
 		});
 
 		it('should keep already redacted bearer token unchanged', () => {
@@ -84,8 +88,8 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain(token);
-			expect(result.message).not.toContain('...');
+			expect(render(result)).toContain(token);
+			expect(render(result)).not.toContain('...');
 		});
 
 		it('should redact blank and short sensitive values', () => {
@@ -99,8 +103,8 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("Cookie: '[REDACTED]'");
-			expect(result.message).toContain("Secret: '[REDACTED]'");
+			expect(render(result)).toContain("Cookie: '[REDACTED]'");
+			expect(render(result)).toContain("Secret: '[REDACTED]'");
 		});
 
 		it('should replace circular arrays with circular marker', () => {
@@ -116,7 +120,7 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("items: [ '[Circular]' ]");
+			expect(render(result)).toContain("items: [ '[Circular]' ]");
 		});
 
 		it('should replace circular objects with circular marker', () => {
@@ -132,7 +136,7 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("self: '[Circular]'");
+			expect(render(result)).toContain("self: '[Circular]'");
 		});
 
 		it('should redact non-string values for sensitive keys', () => {
@@ -145,7 +149,7 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("AuthToken: '[REDACTED]'");
+			expect(render(result)).toContain("AuthToken: '[REDACTED]'");
 		});
 
 		it('should keep the message of Error instances in output', () => {
@@ -158,7 +162,7 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain('Error: boom');
+			expect(render(result)).toContain('Error: boom');
 		});
 
 		it('should keep non-sensitive primitive values unchanged', () => {
@@ -172,8 +176,69 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain('attempt: 2');
-			expect(result.message).toContain('retry: false');
+			expect(render(result)).toContain('attempt: 2');
+			expect(render(result)).toContain('retry: false');
+		});
+
+		describe('when building log fields', () => {
+			it('should return message and data as separate fields', () => {
+				const loggable = new SampleLoggable({ message: 'user created', data: { userId: '123' } });
+
+				const result = LoggingUtils.createMessageWithContext(loggable, 'UserService');
+
+				expect(result).toEqual({ message: 'user created', context: 'UserService', data: { userId: '123' } });
+			});
+
+			it('should take the message of an error log message from the error', () => {
+				const loggable = new SampleLoggable({ error: new Error('boom'), type: 'Technical Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						message: 'boom',
+						type: 'Technical Error',
+						error: expect.objectContaining({ name: 'Error', message: 'boom', stack: expect.any(String) }),
+					})
+				);
+			});
+
+			it('should take the message of a validation error log message from the type', () => {
+				const loggable = new SampleLoggable({ validationErrors: ['wrong value'], type: 'API Validation Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result).toEqual(
+					expect.objectContaining({ message: 'API Validation Error', validationErrors: ['wrong value'] })
+				);
+			});
+
+			it('should turn a message that is not a string into text', () => {
+				const loggable = new SampleLoggable({ message: { text: 'hello' } } as unknown as LogMessage);
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).toBe("{ text: 'hello' }");
+			});
+
+			it('should keep message and stack of an error when serialized as JSON', () => {
+				const loggable = new SampleLoggable({ error: new Error('boom'), type: 'Technical Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				const { error } = JSON.parse(JSON.stringify(result)) as { error: { message: string; stack: string } };
+				expect(error.message).toBe('boom');
+				expect(error.stack).toContain('logging.utils.spec.ts');
+			});
+
+			it('should redact bearer tokens in the error message', () => {
+				const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.payload.signature';
+				const loggable = new SampleLoggable({ error: new Error(`request with Bearer ${token} failed`), type: '' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).not.toContain(token);
+			});
 		});
 
 		describe('when an error is logged', () => {
@@ -183,9 +248,9 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload');
-				expect(result.message).toContain('attempt: 2');
-				expect(result.message).toContain('Error: boom');
+				expect(render(result)).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload');
+				expect(render(result)).toContain('attempt: 2');
+				expect(render(result)).toContain('Error: boom');
 			});
 
 			it('should redact sensitive properties of the error cause', () => {
@@ -195,9 +260,9 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).not.toContain('super-secret-client-secret-value');
-				expect(result.message).toContain('Error: outer');
-				expect(result.message).toContain('Error: inner');
+				expect(render(result)).not.toContain('super-secret-client-secret-value');
+				expect(render(result)).toContain('Error: outer');
+				expect(render(result)).toContain('Error: inner');
 			});
 
 			it('should keep the stack trace of the error', () => {
@@ -206,7 +271,7 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).toContain('logging.utils.spec.ts');
+				expect(render(result)).toContain('logging.utils.spec.ts');
 			});
 
 			it('should keep the class name of the error', () => {
@@ -215,7 +280,7 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).toContain('CustomError: boom');
+				expect(result.error).toEqual(expect.objectContaining({ name: 'CustomError', message: 'boom' }));
 			});
 
 			it('should not modify the original error', () => {
@@ -234,7 +299,7 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).toContain('[Circular]');
+				expect(render(result)).toContain('[Circular]');
 			});
 		});
 
@@ -276,7 +341,7 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expectNoSecrets(result.message);
+				expectNoSecrets(render(result));
 			});
 
 			it('should keep method, url, status and code of a raw axios error', () => {
@@ -284,11 +349,11 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).toContain('AxiosError: Request failed with status code 401');
-				expect(result.message).toContain("code: 'ERR_BAD_REQUEST'");
-				expect(result.message).toContain('status: 401');
-				expect(result.message).toContain("method: 'POST'");
-				expect(result.message).toContain("url: 'https://idp.example.org/token?client_secret=[REDACTED]&scope=openid'");
+				expect(render(result)).toContain('AxiosError: Request failed with status code 401');
+				expect(render(result)).toContain("code: 'ERR_BAD_REQUEST'");
+				expect(render(result)).toContain('status: 401');
+				expect(render(result)).toContain("method: 'POST'");
+				expect(render(result)).toContain("url: 'https://idp.example.org/token?client_secret=[REDACTED]&scope=openid'");
 			});
 
 			it('should remove credentials from the axios request url', () => {
@@ -297,8 +362,8 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).not.toContain('url-password');
-				expect(result.message).toContain("url: 'https://idp.example.org/token'");
+				expect(render(result)).not.toContain('url-password');
+				expect(render(result)).toContain("url: 'https://idp.example.org/token'");
 			});
 
 			it('should resolve a relative axios url against its base url', () => {
@@ -310,7 +375,7 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(result.message).toContain("url: 'https://idp.example.org/token?access_token=[REDACTED]'");
+				expect(render(result)).toContain("url: 'https://idp.example.org/token?access_token=[REDACTED]'");
 			});
 
 			it('should not log credentials of an axios error used as cause', () => {
@@ -319,9 +384,9 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expectNoSecrets(result.message);
-				expect(result.message).toContain('Error: token request failed');
-				expect(result.message).toContain('AxiosError: Request failed with status code 401');
+				expectNoSecrets(render(result));
+				expect(render(result)).toContain('Error: token request failed');
+				expect(render(result)).toContain('AxiosError: Request failed with status code 401');
 			});
 
 			it('should not modify the original axios error', () => {

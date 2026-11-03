@@ -50,7 +50,8 @@ describe('Logger', () => {
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 
@@ -66,7 +67,8 @@ describe('Logger', () => {
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 
@@ -82,7 +84,8 @@ describe('Logger', () => {
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 
@@ -106,7 +109,8 @@ describe('Logger', () => {
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 
