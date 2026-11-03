@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { type INestApplication } from '@nestjs/common';
@@ -57,5 +57,49 @@ describe('Admin API - Support JWT', () => {
 
 		expect(response.status).toBe(201);
 		expect(response.body).toEqual(expect.objectContaining({ accessToken: expect.any(String) }));
+	});
+
+	it('rejects an identified support user without the required permissions', async () => {
+		const school = schoolEntityFactory.buildWithId();
+		const { studentUser: supportUser, studentAccount: supportAccount } = UserAndAccountTestFactory.buildStudent({ school });
+		const { studentUser: targetUser, studentAccount: targetAccount } = UserAndAccountTestFactory.buildStudent({ school });
+		await em.persist([school, supportUser, supportAccount, targetUser, targetAccount]).flush();
+
+		const response = await new TestApiClientBuilder(app, basePath)
+			.withApiKey('someotherkey')
+			.build()
+			.post('/support-jwt', { userId: targetUser.id, supportUserId: supportUser.id });
+
+		expect(response.status).toBe(403);
+	});
+
+	it('returns 404 when the target user does not exist', async () => {
+		const school = schoolEntityFactory.buildWithId();
+		const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({ school }, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+		]);
+		await em.persist([school, superheroUser, superheroAccount]).flush();
+
+		const response = await new TestApiClientBuilder(app, basePath)
+			.withApiKey('someotherkey')
+			.build()
+			.post('/support-jwt', { userId: new ObjectId().toHexString(), supportUserId: superheroUser.id });
+
+		expect(response.status).toBe(404);
+	});
+
+	it('returns 400 when the target user ID is invalid', async () => {
+		const school = schoolEntityFactory.buildWithId();
+		const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({ school }, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+		]);
+		await em.persist([school, superheroUser, superheroAccount]).flush();
+
+		const response = await new TestApiClientBuilder(app, basePath)
+			.withApiKey('someotherkey')
+			.build()
+			.post('/support-jwt', { userId: 'someId', supportUserId: superheroUser.id });
+
+		expect(response.status).toBe(400);
 	});
 });
