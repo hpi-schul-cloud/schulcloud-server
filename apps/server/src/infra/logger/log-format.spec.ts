@@ -1,3 +1,4 @@
+import { SecretRegistry } from '@infra/configuration';
 import { createLogFormat } from './log-format';
 import { LogFormat } from './logger.config';
 
@@ -120,5 +121,57 @@ describe('createLogFormat', () => {
 			expect(output).toContain('[UserModule/UserService]');
 			expect(output).not.toContain('"module"');
 		});
+	});
+});
+
+describe('createLogFormat with secrets', () => {
+	const clientSecret = 'super-secret-client-value';
+
+	beforeEach(() => {
+		SecretRegistry.register(clientSecret);
+	});
+
+	afterEach(() => {
+		SecretRegistry.clear();
+	});
+
+	it.each([LogFormat.JSON, LogFormat.PRETTY])('should mask secret values in %s logs', (logFormat) => {
+		const output = render(logFormat, { message: `token request with ${clientSecret}`, data: { body: clientSecret } });
+
+		expect(output).not.toContain(clientSecret);
+		expect(output).toContain('token request with ***');
+	});
+
+	it('should mask a secret inside a Basic auth header', () => {
+		const header = `Basic ${Buffer.from(`my-client:${clientSecret}`).toString('base64')}`;
+
+		const output = render(LogFormat.JSON, { message: 'request failed', data: { authorization: header } });
+
+		expect(output).not.toContain(header);
+		expect(output).toContain('Basic ***');
+	});
+
+	it('should keep Basic auth headers without secret', () => {
+		const header = `Basic ${Buffer.from('user:not-a-registered-value').toString('base64')}`;
+
+		const output = render(LogFormat.JSON, { message: `header ${header}` });
+
+		expect(output).toContain(header);
+	});
+
+	it('should mask a secret that is escaped in JSON', () => {
+		const secretWithQuote = 'secret"with\\quote';
+		SecretRegistry.register(secretWithQuote);
+
+		const output = render(LogFormat.JSON, { message: `value ${secretWithQuote}` });
+
+		expect(output).toContain('value ***');
+		expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'value ***' }));
+	});
+
+	it('should keep text that is not a registered secret', () => {
+		const output = render(LogFormat.JSON, { message: 'user created' });
+
+		expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'user created' }));
 	});
 });

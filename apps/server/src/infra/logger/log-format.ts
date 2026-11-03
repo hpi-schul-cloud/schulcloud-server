@@ -2,6 +2,7 @@ import { utilities } from 'nest-winston';
 import winston from 'winston';
 import { LogFormat } from './logger.config';
 import { LoggingUtils } from './logging.utils';
+import { maskSecrets } from './secret-masking';
 
 // Reserved for tracing (OpenTelemetry). Set only by tracing, never by log messages.
 const RESERVED_TRACING_FIELDS = ['trace_id', 'span_id'];
@@ -23,7 +24,8 @@ const createPrettyFormat = (): winston.Logform.Format =>
 		mergeModuleIntoContext(),
 		winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
 		winston.format.ms(),
-		utilities.format.nestLike()
+		utilities.format.nestLike(),
+		maskSecrets()
 	);
 
 // Puts the common fields first, so every log line starts the same way.
@@ -48,7 +50,12 @@ const orderFields = winston.format((info) => {
 });
 
 const createJsonFormat = (): winston.Logform.Format =>
-	winston.format.combine(winston.format.timestamp(), orderFields(), winston.format.json({ deterministic: false }));
+	winston.format.combine(
+		winston.format.timestamp(),
+		orderFields(),
+		winston.format.json({ deterministic: false }),
+		maskSecrets()
+	);
 
 export const createLogFormat = (logFormat: LogFormat): winston.Logform.Format =>
 	logFormat === LogFormat.PRETTY ? createPrettyFormat() : createJsonFormat();
