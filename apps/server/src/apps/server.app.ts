@@ -50,12 +50,14 @@ async function bootstrap(): Promise<void> {
 	// See: https://docs.nestjs.com/migration-guide#query-parameters-parsing
 	nestExpress.set('query parser', 'extended');
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter, { bufferLogs: true });
 	const orm = nestApp.get(MikroORM);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
 	nestApp.useLogger(legacyLogger);
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestApp.flushLogs();
 
 	const logger = await nestApp.resolve(Logger);
 	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);

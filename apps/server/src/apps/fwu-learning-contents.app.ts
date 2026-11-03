@@ -19,9 +19,11 @@ async function bootstrap(): Promise<void> {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(FwuLearningContentsModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(FwuLearningContentsModule, nestExpressAdapter, { bufferLogs: true });
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestApp.flushLogs();
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
