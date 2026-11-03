@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ErrorLoggable } from '@infra/error';
+import { Injectable, Module } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { type Logger as WinstonLogger } from 'winston';
@@ -21,12 +22,40 @@ describe('ErrorLogger', () => {
 			],
 		}).compile();
 
-		service = module.get(ErrorLogger);
+		service = await module.resolve(ErrorLogger);
 		winstonLogger = module.get(WINSTON_MODULE_PROVIDER);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('context', () => {
+		@Injectable()
+		class SampleErrorHandler {
+			constructor(public readonly logger: ErrorLogger) {}
+		}
+
+		@Module({
+			providers: [
+				SampleErrorHandler,
+				ErrorLogger,
+				{ provide: WINSTON_MODULE_PROVIDER, useFactory: () => winstonLogger },
+			],
+		})
+		class SampleErrorModule {}
+
+		it('should add the class and module using the logger as context and module', async () => {
+			const testModule = await Test.createTestingModule({ imports: [SampleErrorModule] }).compile();
+			const handler = testModule.get(SampleErrorHandler);
+
+			handler.logger.error(new ErrorLoggable(new Error('test')));
+
+			expect(winstonLogger.error).toHaveBeenCalledWith(
+				expect.objectContaining({ context: 'SampleErrorHandler', module: 'SampleErrorModule' })
+			);
+			await testModule.close();
+		});
 	});
 
 	describe('emerg', () => {

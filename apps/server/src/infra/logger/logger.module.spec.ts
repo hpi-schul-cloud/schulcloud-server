@@ -22,6 +22,6 @@ describe(LoggerModule.name, () => {
 		expect(await module.resolve(Logger)).toBeInstanceOf(Logger);
 		expect(await module.resolve(LegacyLogger)).toBeInstanceOf(LegacyLogger);
 		expect(await module.resolve(AuditLogger)).toBeInstanceOf(AuditLogger);
-		expect(module.get(ErrorLogger)).toBeInstanceOf(ErrorLogger);
+		expect(await module.resolve(ErrorLogger)).toBeInstanceOf(ErrorLogger);
 	});
 });
