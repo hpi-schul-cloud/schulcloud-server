@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Injectable } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -42,6 +43,65 @@ describe('Logger', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('context', () => {
+		@Injectable()
+		class UserService {
+			constructor(public readonly logger: Logger) {}
+		}
+
+		const setup = async () => {
+			const testModule = await Test.createTestingModule({
+				providers: [UserService, Logger, { provide: WINSTON_MODULE_PROVIDER, useValue: winstonLogger }],
+			}).compile();
+			const userService = testModule.get(UserService);
+
+			return { testModule, userService };
+		};
+
+		it('should use the name of the class the logger is injected into', async () => {
+			const { testModule, userService } = await setup();
+
+			userService.logger.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: 'UserService' }));
+			await testModule.close();
+		});
+
+		it('should let setContext override the class name', async () => {
+			const { testModule, userService } = await setup();
+
+			userService.logger.setContext('CustomContext');
+			userService.logger.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: 'CustomContext' }));
+			await testModule.close();
+		});
+
+		it('should have an empty context when injected into a factory', async () => {
+			const testModule = await Test.createTestingModule({
+				providers: [
+					Logger,
+					{ provide: WINSTON_MODULE_PROVIDER, useValue: winstonLogger },
+					{ provide: 'CLIENT', useFactory: (logger: Logger) => logger, inject: [Logger] },
+				],
+			}).compile();
+			const logger = testModule.get<Logger>('CLIENT');
+
+			logger.info('Client created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: '' }));
+			await testModule.close();
+		});
+
+		it('should have an empty context when resolved without a class', async () => {
+			const logger = await module.resolve(Logger);
+
+			logger.info('App started');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: '' }));
+		});
 	});
 
 	describe('when logging a message with data', () => {

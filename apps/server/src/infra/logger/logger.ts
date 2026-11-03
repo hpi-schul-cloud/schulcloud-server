@@ -1,4 +1,5 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
+import { Inject, Injectable, Optional, Scope } from '@nestjs/common';
+import { INQUIRER } from '@nestjs/core';
 import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
@@ -12,9 +13,30 @@ import { LogData, LogMessageWithContext } from './types';
 // The Loggable overloads come last: TypeScript uses the last overload for mocks and Parameters<>.
 @Injectable({ scope: Scope.TRANSIENT })
 export class Logger {
-	private context = '';
+	private context: string;
 
-	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
+	/**
+	 * The context defaults to the name of the class the logger is injected into (INQUIRER, works because the
+	 * logger is transient). setContext() overrides it.
+	 */
+	constructor(
+		@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger,
+		@Optional() @Inject(INQUIRER) inquirer?: object | null
+	) {
+		this.context = Logger.getClassName(inquirer);
+	}
+
+	// There is no inquirer when the logger is injected into a factory (null) or resolved directly (Nest then reports
+	// the logger itself).
+	private static getClassName(inquirer: object | null | undefined): string {
+		if (inquirer === null || inquirer === undefined || inquirer instanceof Logger) {
+			return '';
+		}
+
+		const name = (inquirer as { constructor?: { name: string } }).constructor?.name;
+
+		return name && name !== 'Object' ? name : '';
+	}
 
 	/**
 	 * For errors that are caught and handled, e.g. a failed retry. Thrown errors are logged by the global error filter.
