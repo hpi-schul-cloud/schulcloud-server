@@ -15,8 +15,6 @@ const helpers = require('./helpers');
 const resolve = require('./resolve');
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
-const teams = require('./teams');
-const teamEvents = require('./teams/events');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const releases = require('./releases');
@@ -50,7 +48,6 @@ module.exports = function initializeServices() {
 	app.configure(school);
 	app.configure(resolve);
 	app.configure(userGroup);
-	app.configure(teams);
 	app.configure(content);
 	app.configure(calendar);
 	app.configure(lesson);
@@ -77,5 +74,4 @@ module.exports = function initializeServices() {
 
 	// initialize events
 	newsEvents.configure(app);
-	teamEvents.configure(app);
 };
