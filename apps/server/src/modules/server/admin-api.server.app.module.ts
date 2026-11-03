@@ -26,7 +26,6 @@ import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { NewsModule } from '@modules/news';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
-import { TeamModule } from '@modules/team';
 import { UserApiModule } from '@modules/user/user-api.module';
 
 import { ConfigurationModule } from '@infra/configuration';
@@ -64,7 +63,6 @@ const serverModules = [
 	NewsModule,
 	PseudonymApiModule,
 	TaskApiModule,
-	TeamModule,
 	UserApiModule,
 	RoomApiModule,
 ];

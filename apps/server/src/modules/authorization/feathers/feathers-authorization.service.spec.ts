@@ -15,7 +15,7 @@ describe('FeatherAuthorizationService', () => {
 	const schoolId = new ObjectId().toHexString();
 	const schoolPermissions = ['SCHOOL_CREATE', 'SCHOOL_EDIT', 'SCHOOL_VIEW', 'SCHOOL_DELETE'];
 	const coursePermissions = ['COURSE_VIEW', 'COURSE_CREATE', 'COURSE_EDIT', 'COURSE_DELETE'];
-	const teamPermissions = ['TEAM_CREATE', 'TEAM_EDIT', 'TEAM_VIEW', 'TEAM_DELETE'];
+	const unrelatedPermissions = ['UNRELATED_PERMISSION'];
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,7 +28,7 @@ describe('FeatherAuthorizationService', () => {
 							return schoolPermissions;
 						},
 						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModel) {
-							return targetModel === NewsTargetModel.Course ? coursePermissions : teamPermissions;
+							return targetModel === NewsTargetModel.Course ? coursePermissions : schoolPermissions;
 						},
 						getPermittedSchools() {
 							return [];
@@ -79,7 +79,7 @@ describe('FeatherAuthorizationService', () => {
 		it('should throw UnauthorizedException if permissions are not sufficient', async () => {
 			const courseId = new ObjectId().toHexString();
 			await expect(
-				service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, teamPermissions)
+				service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, unrelatedPermissions)
 			).rejects.toThrow(UnauthorizedException);
 		});
 

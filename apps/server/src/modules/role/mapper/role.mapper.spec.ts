@@ -7,7 +7,7 @@ import { RoleMapper } from './role.mapper';
 describe('RoleMapper', () => {
 	it('mapFromEntityToDto', () => {
 		// Arrange
-		const entity: Role = roleFactory.buildWithId({ permissions: [Permission.DELETE_TEAM, Permission.COMMENTS_EDIT] });
+		const entity: Role = roleFactory.buildWithId({ permissions: [Permission.FILE_DELETE, Permission.COMMENTS_EDIT] });
 
 		// Act
 		const dto: RoleDto = RoleMapper.mapFromEntityToDto(entity);

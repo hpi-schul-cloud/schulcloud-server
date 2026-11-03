@@ -12,10 +12,8 @@ describe('FeathersAuthProvider', () => {
 	const userId = new ObjectId().toHexString();
 	const schoolId = new ObjectId().toHexString();
 	const courseId = new ObjectId().toHexString();
-	const teamId = new ObjectId().toHexString();
 	const schoolPermissions = ['SCHOOL_CREATE', 'SCHOOL_EDIT', 'SCHOOL_VIEW', 'SCHOOL_DELETE'];
 	const coursePermissions = ['COURSE_VIEW', 'COURSE_CREATE', 'COURSE_EDIT', 'COURSE_DELETE'];
-	const teamPermissions = ['TEAM_CREATE', 'TEAM_EDIT', 'TEAM_VIEW', 'TEAM_DELETE'];
 	const defaultUser = {
 		userId,
 		schoolId,
@@ -48,13 +46,6 @@ describe('FeathersAuthProvider', () => {
 									},
 								};
 							}
-							if (name === 'teams/:scopeId/userPermissions/') {
-								return {
-									get() {
-										return Promise.resolve(teamPermissions);
-									},
-								};
-							}
 							if (name === 'schools/:scopeId/userPermissions/') {
 								return {
 									get() {
@@ -71,18 +62,6 @@ describe('FeathersAuthProvider', () => {
 											},
 										];
 										return Promise.resolve(defaultCourses);
-									},
-								};
-							}
-							if (name === '/users/:scopeId/teams') {
-								return {
-									find() {
-										const defaultTeams = [
-											{
-												_id: teamId,
-											},
-										];
-										return Promise.resolve(defaultTeams);
 									},
 								};
 							}

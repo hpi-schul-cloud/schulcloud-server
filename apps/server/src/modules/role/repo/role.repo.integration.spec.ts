@@ -112,7 +112,7 @@ describe('role repo', () => {
 
 		beforeEach(async () => {
 			roleA = roleFactory.build({ name: RoleName.STUDENT });
-			roleB = roleFactory.build({ name: RoleName.TEAMMEMBER });
+			roleB = roleFactory.build({ name: RoleName.TEACHER });
 			await em.persist([roleA, roleB]).flush();
 		});
 
@@ -121,7 +121,7 @@ describe('role repo', () => {
 		});
 
 		it('should return multiple roles that matched by names', async () => {
-			const result: Role[] = await repo.findByNames([RoleName.STUDENT, RoleName.TEAMMEMBER]);
+			const result: Role[] = await repo.findByNames([RoleName.STUDENT, RoleName.TEACHER]);
 			expect(result).toContainEqual(roleA);
 			expect(result).toContainEqual(roleB);
 		});

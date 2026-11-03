@@ -12,7 +12,6 @@ import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
-import { TeamPublicApiConfig } from '@modules/team';
 import { ToolPublicApiConfig } from '@modules/tool';
 import { UserPublicApiConfig } from '@modules/user';
 import { UserImportPublicApiConfig } from '@modules/user-import';
@@ -72,9 +71,6 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_TEAMS_ENABLED: boolean;
-
-	@ApiProperty()
-	FEATURE_TEAM_CREATE_ROOM_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_FWU_CONTENT_ENABLED: boolean;
@@ -294,7 +290,6 @@ export class ConfigResponse {
 			UserImportPublicApiConfig &
 			UserLoginMigrationPublicApiConfig &
 			FwuPublicApiConfig &
-			TeamPublicApiConfig &
 			NotificationPublicApiConfig
 	) {
 		this.FEATURE_NOTIFICATIONS_ENABLED = config.featureNotificationsEnabled;
@@ -305,7 +300,6 @@ export class ConfigResponse {
 		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
 		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
-		this.FEATURE_TEAM_CREATE_ROOM_ENABLED = config.featureTeamCreateRoomEnabled;
 		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
 		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.teacherStudentVisibilityIsEnabledByDefault;

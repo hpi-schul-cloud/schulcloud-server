@@ -7,8 +7,6 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { type TeamEntity } from '@modules/team/repo';
-import { teamFactory } from '@modules/team/testing';
 import { type UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
@@ -76,17 +74,9 @@ describe('VideoConferenceUc', () => {
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
 	let user: UserDo;
-	let team: TeamEntity;
 
 	let defaultRole: Role;
 	let externalPersonRole: Role;
-	let teamExpertRole: Role;
-
-	const setTeamRole = (role: Role) => {
-		team.teamUsers[0].role = role;
-		user.roles = [new RoleReference({ id: role.id, name: role.name })];
-		defaultCurrentUser.roles = [role.name];
-	};
 
 
 	beforeAll(async () => {
@@ -161,10 +151,8 @@ describe('VideoConferenceUc', () => {
 		};
 		defaultRole = roleFactory.build({ permissions: [Permission.JOIN_MEETING] });
 		externalPersonRole = roleFactory.build({ name: RoleName.EXTERNALPERSON, permissions: [Permission.JOIN_MEETING] });
-		teamExpertRole = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
 
 		user = userDoFactory.build({ id: defaultCurrentUser.userId, firstName: 'firstName', lastName: 'lastName' });
-		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
 
 		userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
 		userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
@@ -458,7 +446,8 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(true);
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			courseVcDO.options.moderatorMustApproveJoinRequests = true;
-			setTeamRole(externalPersonRole);
+			user.roles = [new RoleReference({ id: externalPersonRole.id, name: externalPersonRole.name })];
+			defaultCurrentUser.roles = [externalPersonRole.name];
 			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(courseVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 			builderCourse.asGuest(true);
