@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common/error';
 
@@ -8,6 +8,9 @@ import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountResponse,
+	AccountSearchDto,
+	AccountSearchListResponse,
+	AccountSearchQueryParams,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 	UpdateAccountDto,
@@ -20,6 +23,38 @@ import { AccountResponseMapper } from './mapper/account-response.mapper';
 @Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
+
+	@Get()
+	@ApiOperation({
+		summary:
+			'Returns all accounts which satisfies the given criteria. For unlimited access Superhero role is REQUIRED.',
+	})
+	@ApiResponse({ status: 200, type: AccountSearchListResponse, description: 'Returns a paged list of accounts.' })
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero or administrator.' })
+	public async searchAccounts(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() query: AccountSearchQueryParams
+	): Promise<AccountSearchListResponse> {
+		const search = new AccountSearchDto(query);
+		const searchResult = await this.accountUc.searchAccounts(currentUser, search);
+
+		return AccountResponseMapper.mapToAccountSearchListResponse(searchResult);
+	}
+
+	@Get(':id')
+	@ApiOperation({ summary: 'Returns an account with given id. Superhero role is REQUIRED.' })
+	@ApiResponse({ status: 200, type: AccountResponse, description: 'Returns the account.' })
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
+	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
+	public async findAccountById(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: AccountByIdParams
+	): Promise<AccountResponse> {
+		const dto = await this.accountUc.findAccountById(currentUser, params.id);
+		return AccountResponseMapper.mapToAccountResponse(dto);
+	}
 
 	// IMPORTANT!!!
 	// updateMyAccount has to occur before updateAccountById, because Nest.js
@@ -52,6 +87,20 @@ export class AccountController {
 		const updateData = new UpdateAccountDto(body);
 		const dto = await this.accountUc.updateAccountById(currentUser, params.id, updateData);
 
+		return AccountResponseMapper.mapToAccountResponse(dto);
+	}
+
+	@Delete(':id')
+	@ApiOperation({ summary: 'Deletes an account with given id. Superhero role is REQUIRED.' })
+	@ApiResponse({ status: 200, type: AccountResponse, description: 'Returns deleted account.' })
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
+	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
+	public async deleteAccountById(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: AccountByIdParams
+	): Promise<AccountResponse> {
+		const dto = await this.accountUc.deleteAccountById(currentUser, params.id);
 		return AccountResponseMapper.mapToAccountResponse(dto);
 	}
 

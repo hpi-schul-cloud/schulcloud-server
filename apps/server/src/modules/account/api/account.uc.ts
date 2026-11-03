@@ -1,13 +1,22 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common/error';
+import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Account, AccountSave, AccountService, UpdateAccount, UpdateMyAccount } from '../domain';
-import { ResolvedAccountDto, UpdateAccountDto, UpdateMyAccountDto } from './dto';
+import {
+	AccountSearchDto,
+	AccountSearchType,
+	ResolvedAccountDto,
+	ResolvedSearchListAccountDto,
+	UpdateAccountDto,
+	UpdateMyAccountDto,
+} from './dto';
 import { AccountUcMapper } from './mapper/account-uc.mapper';
 
 @Injectable()
@@ -16,6 +25,90 @@ export class AccountUc {
 		private readonly accountService: AccountService,
 		private readonly authorizationService: AuthorizationService
 	) {}
+
+	/**
+	 * This method processes the request on the GET account search endpoint from the account controller.
+	 *
+	 * @param currentUser the request user
+	 * @param search the search request
+	 * @throws {ValidationError}
+	 * @throws {ForbiddenOperationError}
+	 */
+	public async searchAccounts(
+		currentUser: ICurrentUser,
+		search: AccountSearchDto
+	): Promise<ResolvedSearchListAccountDto> {
+		const executingUser: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+
+		switch (search.type) {
+			case AccountSearchType.USERNAME:
+				return this.searchByUsername(executingUser, search.value, search.skip, search.limit);
+			case AccountSearchType.USER_ID:
+				return this.searchByUserId(executingUser, search.value, search.skip, search.limit);
+			default:
+				throw new ValidationError('Invalid search type.');
+		}
+	}
+
+	private async searchByUsername(
+		executingUser: User,
+		usernameQuery: string,
+		skip?: number,
+		limit?: number
+	): Promise<ResolvedSearchListAccountDto> {
+		this.authorizationService.checkAllPermissions(executingUser, [Permission.ACCOUNT_VIEW]);
+
+		const searchDoCounted = await this.accountService.searchByUsernamePartialMatch(
+			usernameQuery,
+			skip ?? 0,
+			limit ?? 10
+		);
+		const [searchResult, total] = AccountUcMapper.mapSearchResult(searchDoCounted);
+
+		return new ResolvedSearchListAccountDto(searchResult, total, skip ?? 0, limit ?? 10);
+	}
+
+	private async searchByUserId(
+		executingUser: User,
+		targetUserId: string,
+		skip?: number,
+		limit?: number
+	): Promise<ResolvedSearchListAccountDto> {
+		const targetUser = await this.authorizationService.getUserWithPermissions(targetUserId);
+		const permission = this.hasPermissionsToAccessAccount(executingUser, targetUser, 'READ');
+		if (!permission) {
+			throw new UnauthorizedException('Current user is not authorized to search for accounts by user id.');
+		}
+
+		const account = await this.accountService.findByUserId(targetUserId);
+
+		if (account) {
+			return new ResolvedSearchListAccountDto(
+				[AccountUcMapper.mapToResolvedAccountDto(account)],
+				1,
+				skip ?? 0,
+				limit ?? 1
+			);
+		}
+		return new ResolvedSearchListAccountDto([], 0, skip ?? 0, limit ?? 0);
+	}
+
+	/**
+	 * This method processes the request on the GET account with id endpoint from the account controller.
+	 *
+	 * @param currentUser the request user
+	 * @param accountId the account id
+	 * @throws {ForbiddenOperationError}
+	 * @throws {EntityNotFoundError}
+	 */
+	public async findAccountById(currentUser: ICurrentUser, accountId: string): Promise<ResolvedAccountDto> {
+		const user = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.ACCOUNT_VIEW]);
+
+		const account = await this.accountService.findById(accountId);
+
+		return AccountUcMapper.mapToResolvedAccountDto(account);
+	}
 
 	/**
 	 * Saves the given account with validation.
@@ -49,7 +142,7 @@ export class AccountUc {
 
 		const targetUser = await this.authorizationService.getUserWithPermissions(targetAccount.userId);
 
-		if (!this.hasPermissionsToAccessAccount(executingUser, targetUser)) {
+		if (!this.hasPermissionsToAccessAccount(executingUser, targetUser, 'UPDATE')) {
 			throw new UnauthorizedException('Current user is not authorized to update target account.');
 		}
 
@@ -57,6 +150,24 @@ export class AccountUc {
 		const updated: Account = await this.accountService.updateAccount(targetUser, targetAccount, updateData);
 
 		return AccountUcMapper.mapToResolvedAccountDto(updated);
+	}
+
+	/**
+	 * This method processes the request on the DELETE account with id endpoint from the account controller.
+	 *
+	 * @param currentUser the request user
+	 * @param accountId the account id
+	 * @throws {ForbiddenOperationError}
+	 * @throws {EntityNotFoundError}
+	 */
+	public async deleteAccountById(currentUser: ICurrentUser, accountId: string): Promise<ResolvedAccountDto> {
+		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.ACCOUNT_DELETE]);
+
+		const account: Account = await this.accountService.findById(accountId);
+
+		await this.accountService.delete(account.id);
+		return AccountUcMapper.mapToResolvedAccountDto(account);
 	}
 
 	/**
@@ -92,7 +203,11 @@ export class AccountUc {
 		await this.accountService.replaceMyTemporaryPassword(userId, password, confirmPassword);
 	}
 
-	private hasPermissionsToAccessAccount(currentUser: User, targetUser: User): boolean {
+	private hasPermissionsToAccessAccount(
+		currentUser: User,
+		targetUser: User,
+		action: 'READ' | 'UPDATE' | 'DELETE' | 'CREATE'
+	): boolean {
 		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}
@@ -102,20 +217,80 @@ export class AccountUc {
 
 		const permissionsToCheck: Permission[] = [];
 		if (this.hasRole(targetUser, RoleName.STUDENT)) {
-			permissionsToCheck.push(Permission.STUDENT_EDIT);
+			switch (action) {
+				case 'READ':
+					permissionsToCheck.push(Permission.STUDENT_LIST);
+					break;
+				case 'UPDATE':
+					permissionsToCheck.push(Permission.STUDENT_EDIT);
+					break;
+				// for future endpoints
+				/* case 'CREATE':
+					permissionsToCheck.push('STUDENT_CREATE');
+					break;
+				case 'DELETE':
+					permissionsToCheck.push('STUDENT_DELETE');
+					break;
+				*/
+			}
 		}
 		if (this.hasRole(targetUser, RoleName.TEACHER)) {
-			permissionsToCheck.push(Permission.TEACHER_EDIT);
+			switch (action) {
+				case 'READ':
+					permissionsToCheck.push(Permission.TEACHER_LIST);
+					break;
+				case 'UPDATE':
+					permissionsToCheck.push(Permission.TEACHER_EDIT);
+					break;
+				// for future endpoints
+				/* case 'CREATE':
+					permissionsToCheck.push('TEACHER_CREATE');
+					break;
+				case 'DELETE':
+					permissionsToCheck.push('TEACHER_DELETE');
+					break;
+				*/
+			}
 		}
 		if (permissionsToCheck.length === 0) {
 			// target user is neither student nor teacher. Undefined what to do
 			return false;
 		}
 
-		return this.authorizationService.hasAllPermissions(currentUser, permissionsToCheck);
+		return (
+			this.authorizationService.hasAllPermissions(currentUser, permissionsToCheck) ||
+			this.schoolPermissionExists(
+				this.extractRoles(currentUser.roles.getItems()),
+				currentUser.school,
+				permissionsToCheck
+			)
+		);
 	}
 
 	private hasRole(user: User, roleName: RoleName): boolean {
 		return user.roles.getItems().some((role) => role.name === roleName);
+	}
+
+	private schoolPermissionExists(roles: string[], school: SchoolEntity, permissions: string[]): boolean {
+		if (
+			roles.some((role) => (role as RoleName) === RoleName.TEACHER) &&
+			permissions.some((permission) => (permission as Permission) === Permission.STUDENT_LIST)
+		) {
+			return school.permissions?.teacher?.STUDENT_LIST ?? false;
+		}
+
+		return false;
+	}
+
+	private extractRoles(inputRoles: Role[]): string[] {
+		const roles: string[] = [];
+
+		for (const role of inputRoles) {
+			roles.push(role.name);
+			const innerRoles = role.roles.getItems().map((x) => x.name);
+			roles.push(...innerRoles);
+		}
+
+		return roles;
 	}
 }

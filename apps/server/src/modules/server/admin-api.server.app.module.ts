@@ -17,7 +17,6 @@ import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
 
 // needed for deletion module
 import { AccountApiModule } from '@modules/account/account-api.module';
-import { AccountAdminApiModule } from '@modules/account/account-admin-api.module';
 import { ClassModule } from '@modules/class';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
@@ -58,7 +57,6 @@ const serverModules = [
 		},
 	]),
 	AccountApiModule,
-	AccountAdminApiModule,
 	AuthenticationApiModule,
 	AdminApiAuthenticationModule,
 	MediaBoardApiModule,
