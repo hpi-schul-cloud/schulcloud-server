@@ -8,7 +8,7 @@ export class DiscoveredSentinalHostsLoggable implements Loggable {
 	public getLogMessage(): LoggableMessage {
 		const log = {
 			message: 'Discovered sentinels:',
-			data: JSON.stringify(this.data),
+			data: { sentinels: this.data },
 		};
 
 		return log;
