@@ -1,0 +1,67 @@
+// Systems outside SVS that SVS calls or that call SVS.
+model {
+
+  idp = external 'Externe OIDC-IdPs' {
+    description 'Login über moin.schule und weitere Identity Provider. Konfiguriert in der DB-Collection systems.'
+    technology 'OIDC'
+  }
+  schulconnex = external 'Schulconnex-API' {
+    #nbc
+    description 'Personen, Gruppen und Lizenzen aus moin.schule'
+    technology 'REST, OAuth2 Client Credentials'
+  }
+  ldap = external 'Schul-LDAP' {
+    #brb #nbc
+    description 'Verzeichnisse der Schulen (z. B. iServ)'
+    technology 'LDAP'
+  }
+  tsp = external 'TSP Thüringen' {
+    #thr
+    description 'Thüringer Schulportal: Login und Stammdaten'
+    technology 'REST, JWT'
+  }
+  vidis = external 'VIDIS' {
+    #nbc
+    description 'Medienlizenzen und Metadaten'
+    technology 'REST'
+  }
+  bilo = external 'BILO' {
+    #nbc
+    description 'Metadaten von Bildungsmedien'
+    technology 'REST'
+  }
+  bbb = external 'BigBlueButton' {
+    description 'Videokonferenzen'
+    technology 'BBB-API'
+  }
+  nextcloud = external 'Nextcloud' {
+    #brb #nbc #thr
+    description 'Dateiablage der Mandanten, nicht über dof_app_deploy ausgerollt'
+    technology 'OCS, WebDAV, OIDC'
+  }
+  tools = external 'Externe Tools' {
+    description 'Lern-Tools über CTL, LTI und OAuth2, z. B. Bettermarks'
+    technology 'LTI, OAuth2'
+  }
+  h5pHub = external 'H5P Hub' {
+    description 'Quelle der H5P-Bibliotheken'
+    technology 'HTTPS'
+  }
+  smtp = external 'SMTP-Relay' {
+    description 'Ausgehende E-Mails'
+    technology 'SMTP'
+  }
+  hidrive = external 'Strato HiDrive' {
+    #thr
+    description 'Alte Dateien und Rechtsdokumente in Thüringen'
+    technology 'S3'
+  }
+  cachet = external 'Cachet' {
+    description 'Statusseite, liefert Störungsmeldungen'
+    technology 'REST'
+  }
+  web = external 'Beliebige Webseiten' {
+    description 'Link-Vorschau im Board (meta-tag-extractor)'
+    technology 'HTTPS'
+  }
+}

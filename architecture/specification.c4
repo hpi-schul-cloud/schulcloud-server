@@ -1,0 +1,68 @@
+specification {
+  element actor {
+    style {
+      shape person
+    }
+  }
+  element system
+  element webapp {
+    style {
+      shape browser
+    }
+  }
+  element service
+  // A separately deployed process of a service (Deployment, Consumer)
+  element deployable {
+    style {
+      color slate
+    }
+  }
+  // Console app run as Job or CronJob
+  element job {
+    style {
+      color slate
+      shape rectangle
+      border dashed
+    }
+  }
+  // Feature area of a client, grouped by URL paths
+  element page {
+    style {
+      color green
+      shape mobile
+    }
+  }
+  element database {
+    style {
+      shape storage
+    }
+  }
+  element queue {
+    style {
+      shape queue
+    }
+  }
+  element external {
+    style {
+      color muted
+    }
+  }
+
+  // Relationship carries personal data (input for data-protection documents)
+  tag pii
+  // Relationship runs over RabbitMQ
+  tag async
+  // Only deployed for this tenant; untagged elements run everywhere
+  tag brb
+  tag nbc
+  tag thr
+  tag dbc
+  // Feature area split between nuxt-client and schulcloud-client
+  tag split
+  // Route or ingress path without a working page
+  tag dead
+  // Deployed but switched off in production
+  tag disabled
+  // Only in dev namespaces
+  tag dev
+}

@@ -1,0 +1,122 @@
+// Feature areas of both clients with their paths.
+// The ingress (dof_app_deploy x_ingress.yml) routes each path to nuxtclient-svc or client-svc.
+model {
+
+  extend svs.nuxt {
+    nDashboard = page 'Dashboard' {
+      description '/dashboard'
+      technology 'nuxtclient-svc'
+    }
+    nRooms = page 'Räume und Kurse' {
+      #split
+      description '/rooms, /rooms/courses-overview, Kursliste. Anlegen, Bearbeiten, Kopieren und Themen von Kursen liegen noch im Legacy-Client.'
+      technology 'nuxtclient-svc'
+    }
+    nBoards = page 'Boards und Ordner' {
+      description '/boards/:id, /folder/:id'
+      technology 'nuxtclient-svc'
+    }
+    nCollabora = page 'Office-Dokumente' {
+      description '/collabora/:id'
+      technology 'nuxtclient-svc'
+    }
+    nH5p = page 'H5P' {
+      description '/h5p/player, /h5p/editor'
+      technology 'nuxtclient-svc'
+    }
+    nTasks = page 'Aufgabenübersicht' {
+      #split
+      description '/tasks. Einzelne Aufgaben (/homework) liegen im Legacy-Client.'
+      technology 'nuxtclient-svc'
+    }
+    nNews = page 'Neuigkeiten' {
+      #split
+      description '/news. Team-Neuigkeiten (/teams/:id/news) liegen im Legacy-Client.'
+      technology 'nuxtclient-svc'
+    }
+    nMediaShelf = page 'Medienregal' {
+      description '/media-shelf. FWU-Inhalte nur in brb.'
+      technology 'nuxtclient-svc'
+    }
+    nMigration = page 'Login-Migration' {
+      description '/migration, /registration-external-members'
+      technology 'nuxtclient-svc'
+    }
+    nAdmin = page 'Administration (neu)' {
+      #split
+      description '/administration: Schüler- und Lehrerlisten, Gruppen und Klassen, rooms/new, rooms/manage, school-settings, tool-configuration, provisioning-options, ldap/config, ldap/activate, migration. Detail-, Bearbeiten-, Passwort-, skipregistration- und Import-Seiten leitet nginx an den Legacy-Client weiter.'
+      technology 'nuxtclient-svc'
+    }
+    nTools = page 'Tool-Konfiguration im Kontext' {
+      description '/tools/context/tool-configuration'
+      technology 'nuxtclient-svc'
+    }
+    nStatic = page 'Rechtliches und System' {
+      description '/imprint, /licenses, /system/security, /error'
+      technology 'nuxtclient-svc'
+    }
+    nDead = page 'Pfade ohne Seite' {
+      #dead
+      description 'Nuxt-Route / (Home.page.vue) ist nicht erreichbar. /poc-files und /administration stehen in der Whitelist, haben aber keine Route. Der Ingress schickt /content, /mint-ec und /administration/ldap an nuxt, dort gibt es keine Route.'
+      technology 'nuxtclient-svc'
+    }
+  }
+
+  extend svs.legacy {
+    lLogin = page 'Login und SSO' {
+      description '/login, SSO-Einstiege, /oauth2/* (Hydra-Consent)'
+      technology 'client-svc'
+    }
+    lRegistration = page 'Registrierung und Erstanmeldung' {
+      description '/registration, /firstLogin, /pwrecovery'
+      technology 'client-svc'
+    }
+    lCourses = page 'Kurse bearbeiten' {
+      #split
+      description 'Kurs anlegen, bearbeiten, kopieren, Kursgruppen, Themen (/courses, /topics)'
+      technology 'client-svc'
+    }
+    lHomework = page 'Aufgaben' {
+      #split
+      description '/homework/*'
+      technology 'client-svc'
+    }
+    lTeams = page 'Teams' {
+      #split
+      description '/teams/*, /teams/:id/news'
+      technology 'client-svc'
+    }
+    lCalendar = page 'Kalender' {
+      description '/calendar'
+      technology 'client-svc'
+    }
+    lFiles = page 'Dateien (alt)' {
+      description '/files/*, alte Dateiablage'
+      technology 'client-svc'
+    }
+    lVideo = page 'Videokonferenz' {
+      description '/videoconference/:scope/:id'
+      technology 'client-svc'
+    }
+    lAccount = page 'Konto und Hilfe' {
+      description '/account/*, /help/*'
+      technology 'client-svc'
+    }
+    lStatic = page 'Rechtliches und Sonstiges' {
+      description '/privacypolicy, /termsofuse, /community, /system/releases, /alerts'
+      technology 'client-svc'
+    }
+    lAdmin = page 'Administration (alt)' {
+      #split
+      description '/administration: users-without-consent, classes/*, courses/:id, teams, startldapschoolyear, dazu die von nuxt weitergeleiteten Schüler- und Lehrer-Detailseiten'
+      technology 'client-svc'
+    }
+  }
+
+  extend svs.tldrawClient {
+    tWhiteboard = page 'Whiteboard' {
+      description '/tldraw'
+      technology 'tldraw-client-svc'
+    }
+  }
+}

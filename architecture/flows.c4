@@ -1,0 +1,797 @@
+// Every relationship states purpose, technology and its source in code or config.
+// For #pii relationships the description names the personal data categories; MCP clients read it.
+model {
+
+  // Users and clients
+
+  user -> svs.nuxt 'Nutzt umgezogene Seiten' {
+    #pii
+    technology 'HTTPS'
+    description 'Personenbezogene Daten: Login-Session, Eingaben'
+    metadata {
+      source 'dof_app_deploy/ansible/group_vars/all/x_ingress.yml'
+    }
+  }
+  user -> svs.legacy 'Nutzt Login und nicht umgezogene Seiten' {
+    #pii
+    technology 'HTTPS'
+    description 'Personenbezogene Daten: Zugangsdaten, Login-Session, Eingaben'
+    metadata {
+      source 'dof_app_deploy/ansible/group_vars/all/x_ingress.yml'
+    }
+  }
+  user -> svs.tldrawClient 'Zeichnet auf Whiteboards' {
+    technology 'HTTPS'
+    metadata {
+      source 'tldraw-client/ansible'
+    }
+  }
+  user -> svs.collabora 'Bearbeitet Office-Dokumente' {
+    #pii
+    technology 'HTTPS, iframe'
+    description 'Personenbezogene Daten: Dokumentinhalte, Anzeigename'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/collabora-office'
+    }
+  }
+  support -> svs.superhero 'Verwaltet Schulen und Nutzer' {
+    #pii
+    technology 'HTTPS'
+    description 'Personenbezogene Daten: Nutzer- und Schuldaten'
+    metadata {
+      source 'superhero-dashboard'
+    }
+  }
+
+  svs.nuxt -> svs.legacy 'Leitet Admin-Detailseiten weiter' {
+    technology 'nginx proxy_pass'
+    metadata {
+      source 'nuxt-client nginx config'
+    }
+  }
+  svs.nuxt -> svs.server.api 'Fachfunktionen' {
+    #pii
+    technology 'REST /api/v3, v1-Whitelist'
+    description 'Personenbezogene Daten: Nutzer-, Kurs-, Board- und Aufgabendaten'
+    metadata {
+      source 'dof_app_deploy/ansible/group_vars/all/x_ingress.yml'
+    }
+  }
+  svs.nuxt -> svs.server.boardCollab 'Boards in Echtzeit bearbeiten' {
+    #pii
+    technology 'WebSocket (socket.io)'
+    description 'Personenbezogene Daten: Board-Inhalte, Autorenschaft'
+    metadata {
+      source 'schulcloud-server/ansible/roles/schulcloud-server-core'
+    }
+  }
+  svs.nuxt -> svs.files.api 'Dateien hoch- und herunterladen' {
+    #pii
+    technology 'REST'
+    description 'Personenbezogene Daten: Dateiinhalte, Dateinamen, Ersteller'
+    metadata {
+      source 'file-storage/ansible'
+    }
+  }
+  svs.nuxt -> svs.h5p.proxy 'H5P bearbeiten und abspielen' {
+    #pii
+    technology 'REST'
+    description 'Personenbezogene Daten: H5P-Inhalte, Nutzer-ID'
+    metadata {
+      source 'h5p-server/ansible'
+    }
+  }
+  svs.legacy -> svs.server.api 'Rendert Seiten mit Daten aus der API' {
+    #pii
+    technology 'REST über API_HOST, /api/v1 und /api/v3'
+    description 'Personenbezogene Daten: alle Nutzer-, Schul-, Kurs-, Aufgaben- und Dateidaten der Legacy-Seiten'
+    metadata {
+      source 'schulcloud-client/api.js'
+    }
+  }
+  svs.tldrawClient -> svs.tldraw.gateway 'Zeichnung synchronisieren' {
+    technology 'WebSocket'
+    metadata {
+      source 'tldraw-server/ansible'
+    }
+  }
+  svs.superhero -> svs.server.api 'Fachdaten' {
+    #pii
+    technology 'REST'
+    description 'Personenbezogene Daten: Nutzer- und Schuldaten'
+    metadata {
+      source 'superhero-dashboard'
+    }
+  }
+  svs.superhero -> svs.server.adminApi 'Verwaltungsaktionen' {
+    #pii
+    technology 'REST /admin/api/v1'
+    description 'Personenbezogene Daten: Nutzer- und Schuldaten'
+    metadata {
+      source 'superhero-dashboard'
+    }
+  }
+  svs.superhero -> svs.files.api 'Dateien verwalten' {
+    technology 'REST'
+    metadata {
+      source 'superhero-dashboard'
+    }
+  }
+
+  // schulcloud-server
+
+  svs.server.api -> svs.mongo 'Liest und schreibt Fachdaten' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Konten, Nutzer, Schulen, Klassen, Kurse, Boards, Aufgaben, Einwilligungen'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules'
+    }
+  }
+  svs.server.api -> svs.valkey 'Sessions und JWT-Whitelist' {
+    #pii
+    technology 'Redis-Protokoll'
+    description 'Personenbezogene Daten: Account-ID, Session'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/session-valkey'
+    }
+  }
+  svs.server.api -> svs.files.api 'Dateien kopieren und löschen' {
+    technology 'REST'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/files-storage-client'
+    }
+  }
+  svs.server.api -> svs.rabbit.exFiles 'Dateioperationen anstoßen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/rabbitmq'
+    }
+  }
+  svs.server.api -> svs.rabbit.exH5p 'H5P-Inhalte kopieren und löschen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/rabbitmq'
+    }
+  }
+  svs.server.api -> svs.rabbit.exMail 'E-Mail versenden' {
+    #async #pii
+    technology 'AMQP'
+    description 'Personenbezogene Daten: E-Mail-Adresse, Name, Nachrichtentext'
+    metadata {
+      source 'schulcloud-server (mail module, Feathers)'
+    }
+  }
+  svs.server.api -> svs.rabbit.exProvisioning 'Provisionierung beim Login anstoßen' {
+    #async #pii
+    technology 'AMQP'
+    description 'Personenbezogene Daten: Nutzer-ID, Gruppenzugehörigkeiten'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/provisioning'
+    }
+  }
+  svs.server.api -> svs.antivirus.web 'Alte Dateien scannen' {
+    technology 'REST'
+    metadata {
+      source 'schulcloud-server/src/services/fileStorage'
+    }
+  }
+  svs.server.api -> svs.s3 'Alte Dateiablage' {
+    #pii
+    technology 'S3, Anbieter je Schule aus der DB'
+    description 'Personenbezogene Daten: Dateiinhalte'
+    metadata {
+      source 'schulcloud-server/src/services/fileStorage'
+    }
+  }
+  svs.server.api -> svs.hydra 'OAuth2-Clients und Consent verwalten' {
+    technology 'Hydra Admin API'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/oauth-provider'
+    }
+  }
+  svs.server.api -> svs.etherpad 'Pads anlegen' {
+    #pii
+    technology 'Etherpad API, API-Key'
+    description 'Personenbezogene Daten: Autorenname'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/collaborative-text-editor'
+    }
+  }
+  svs.server.api -> svs.calendar 'Termine' {
+    #pii
+    technology 'REST'
+    description 'Personenbezogene Daten: Termine mit Nutzer- und Kursbezug'
+    metadata {
+      source 'schulcloud-server/src/services/calendar'
+    }
+  }
+  svs.server.api -> svs.tldraw 'Zeichnungen löschen' {
+    technology 'REST, tldraw Admin-API'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/tldraw-client'
+    }
+  }
+  svs.server.api -> idp 'Login über OIDC' {
+    #pii
+    technology 'OIDC'
+    description 'Personenbezogene Daten: Name, Rolle, Schule, externe ID'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/oauth (DB-Collection systems)'
+    }
+  }
+  svs.server.api -> schulconnex 'Personen und Gruppen beim Login lesen' {
+    #pii
+    technology 'REST, OAuth2 Client Credentials'
+    description 'Personenbezogene Daten: Name, Rolle, Schule, Klassen und Gruppen'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/schulconnex-client'
+    }
+  }
+  svs.server.api -> ldap 'Login gegen das Schul-LDAP' {
+    #pii
+    technology 'LDAP (ldapjs)'
+    description 'Personenbezogene Daten: Benutzername, Passwort beim Login'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/authentication'
+    }
+  }
+  svs.server.api -> tsp 'Login über das TSP' {
+    #pii
+    technology 'JWT'
+    description 'Personenbezogene Daten: Name, Rolle, Schule'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/tsp-client'
+    }
+  }
+  svs.server.api -> bbb 'Konferenzen anlegen und beitreten' {
+    #pii
+    technology 'BBB-API'
+    description 'Personenbezogene Daten: Anzeigename, Rolle in der Konferenz'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/video-conference'
+    }
+  }
+  svs.server.api -> nextcloud 'Gruppen und Ordner für Teams' {
+    #pii
+    technology 'OCS, WebDAV'
+    description 'Personenbezogene Daten: Nutzer-ID, Name, Gruppen'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/collaborative-storage'
+    }
+  }
+  svs.server.api -> cachet 'Störungsmeldungen' {
+    technology 'REST'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/alert'
+    }
+  }
+  svs.server.api -> web 'Link-Vorschau laden' {
+    technology 'HTTPS'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/meta-tag-extractor'
+    }
+  }
+
+  svs.server.boardCollab -> svs.mongo 'Boards und Socket-Adapter' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Board-Inhalte'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/board-collaboration.app.ts'
+    }
+  }
+  svs.server.boardCollab -> svs.rabbit.exFiles 'Dateien von Board-Elementen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/board'
+    }
+  }
+  svs.server.adminApi -> svs.mongo 'Verwaltungsdaten' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Nutzer- und Schuldaten'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/admin-api-server.app.ts'
+    }
+  }
+  svs.server.migrationSystems -> svs.mongo 'Importierte Nutzer zuordnen' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Name, Login, externe ID'
+    metadata {
+      source 'schulcloud-server/ansible/roles/schulcloud-server-migration-system'
+    }
+  }
+  svs.server.commonCartridge -> svs.mongo 'Kurse lesen und anlegen' {
+    technology 'MongoDB'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/common-cartridge.app.ts'
+    }
+  }
+  svs.server.commonCartridge -> svs.rabbit.exFiles 'Dateien im Paket' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/common-cartridge'
+    }
+  }
+  svs.server.legacyFileArchive -> svs.s3 'Archivierte Dateien' {
+    #pii
+    technology 'S3'
+    description 'Personenbezogene Daten: Dateiinhalte'
+    metadata {
+      source 'schulcloud-server/ansible/roles/legacy-file-archive'
+    }
+  }
+  svs.server.fwuLearningContents -> svs.s3 'FWU-Bucket lesen' {
+    technology 'S3'
+    metadata {
+      source 'schulcloud-server/ansible/roles/fwu'
+    }
+  }
+  svs.server.notification -> svs.mongo 'Change Streams' {
+    technology 'MongoDB'
+    metadata {
+      source 'schulcloud-server/ansible/roles/notification-server'
+    }
+  }
+  svs.rabbit.exProvisioning -> svs.server.schulconnexConsumers 'Provisionierung' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/schulconnex-*-consumer.app.ts'
+    }
+  }
+  svs.server.schulconnexConsumers -> svs.mongo 'Gruppen, Kurse und Lizenzen schreiben' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Gruppenzugehörigkeiten, Medienlizenzen je Nutzer'
+    metadata {
+      source 'schulcloud-server/ansible/roles/schulcloud-server-provisioning'
+    }
+  }
+  svs.server.serverConsole -> svs.mongo 'Datenmigrationen' {
+    technology 'MongoDB'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/server-console.app.ts'
+    }
+  }
+  svs.server.serverConsole -> svs.s3 'Verwaiste Dateien löschen' {
+    technology 'S3'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/server-console.app.ts'
+    }
+  }
+  svs.server.deletionConsole -> svs.server.adminApi 'Löschungen anstoßen' {
+    #pii
+    technology 'REST'
+    description 'Personenbezogene Daten: IDs der zu löschenden Nutzer'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/deletion-console.app.ts'
+    }
+  }
+  svs.server.idpConsole -> schulconnex 'Nutzer mit moin.schule abgleichen' {
+    #pii
+    technology 'REST'
+    description 'Personenbezogene Daten: Name, Rolle, Schule, externe ID'
+    metadata {
+      source 'schulcloud-server/ansible/roles/moin-schule-sync'
+    }
+  }
+  svs.server.idpConsole -> svs.mongo 'Abgleich speichern' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: externe IDs, Sync-Status'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/idp-console.app.ts'
+    }
+  }
+  svs.server.ldapSyncConsole -> svs.rabbit.qLdap 'Sync pro Schule einstellen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'schulcloud-server/ansible/roles/schulcloud-server-ldapsync'
+    }
+  }
+  svs.rabbit.qLdap -> svs.server.worker 'LDAP-Sync ausführen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'schulcloud-server/ansible/roles/schulcloud-server-ldapsync'
+    }
+  }
+  svs.server.worker -> ldap 'Nutzer und Klassen lesen' {
+    #pii
+    technology 'LDAP (ldapjs)'
+    description 'Personenbezogene Daten: Name, E-Mail, Rolle, Klassen'
+    metadata {
+      source 'schulcloud-server/src/services/sync'
+    }
+  }
+  svs.server.worker -> svs.mongo 'Nutzer und Klassen schreiben' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Name, E-Mail, Rolle, Klassen'
+    metadata {
+      source 'schulcloud-server/src/services/sync'
+    }
+  }
+  svs.server.syncConsole -> vidis 'Medien-Metadaten' {
+    technology 'REST'
+    metadata {
+      source 'schulcloud-server/ansible/roles/vidis-media-metadata-sync'
+    }
+  }
+  svs.server.syncConsole -> bilo 'Medien-Metadaten' {
+    technology 'REST'
+    metadata {
+      source 'schulcloud-server/ansible/roles/bilo-media-metadata-sync'
+    }
+  }
+  svs.server.syncConsole -> svs.mongo 'Metadaten speichern' {
+    technology 'MongoDB'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/sync-console.app.ts'
+    }
+  }
+  svs.server.tspSyncConsole -> tsp 'Schulen, Klassen und Personen lesen' {
+    #pii
+    technology 'REST, JWT'
+    description 'Personenbezogene Daten: Name, Rolle, Klassen'
+    metadata {
+      source 'schulcloud-server/ansible/roles/schulcloud-server-tspsync'
+    }
+  }
+  svs.server.tspSyncConsole -> svs.mongo 'Stammdaten schreiben' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Name, Rolle, Klassen'
+    metadata {
+      source 'schulcloud-server/apps/server/src/apps/tsp-sync-console.app.ts'
+    }
+  }
+  svs.server.schulconnexConsumers -> schulconnex 'Lizenzen und Gruppen nachladen' {
+    #pii
+    technology 'REST'
+    description 'Personenbezogene Daten: Gruppenzugehörigkeiten'
+    metadata {
+      source 'schulcloud-server/apps/server/src/infra/schulconnex-client'
+    }
+  }
+
+  // file-storage
+
+  svs.rabbit.exFiles -> svs.files.consumer 'Dateioperationen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'file-storage/ansible'
+    }
+  }
+  svs.files.api -> svs.server.api 'Rechte prüfen' {
+    technology 'REST (Authorization API)'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.files.api -> svs.mongo 'Datei-Metadaten' {
+    #pii
+    technology 'MongoDB (DB scapp)'
+    description 'Personenbezogene Daten: Dateinamen, Ersteller-ID'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.files.api -> svs.s3 'Dateiinhalte' {
+    #pii
+    technology 'S3'
+    description 'Personenbezogene Daten: Dateiinhalte'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.files.api -> svs.rabbit.exAntivirus 'Scan anstoßen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.files.api -> svs.rabbit.exPreview 'Vorschau anstoßen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.files.consumer -> svs.mongo 'Datei-Metadaten' {
+    #pii
+    technology 'MongoDB'
+    description 'Personenbezogene Daten: Dateinamen, Ersteller-ID'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.files.consumer -> svs.s3 'Kopieren und Löschen' {
+    #pii
+    technology 'S3'
+    description 'Personenbezogene Daten: Dateiinhalte'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.rabbit.exPreview -> svs.files.previewGenerator 'Vorschau erzeugen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.files.previewGenerator -> svs.s3 'Bilder lesen, Vorschau schreiben' {
+    #pii
+    technology 'S3'
+    description 'Personenbezogene Daten: Bildinhalte'
+    metadata {
+      source 'file-storage'
+    }
+  }
+  svs.collabora -> svs.files.api 'Dokument laden und speichern' {
+    #pii
+    technology 'WOPI'
+    description 'Personenbezogene Daten: Dokumentinhalte, Anzeigename'
+    metadata {
+      source 'file-storage (WOPI-Ingress)'
+    }
+  }
+
+  // antivirus
+
+  svs.antivirus.web -> svs.rabbit.exAntivirus 'Scan einstellen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'antivirus_check_service'
+    }
+  }
+  svs.rabbit.exAntivirus -> svs.antivirus.scanfile 'Scanauftrag' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'antivirus_check_service'
+    }
+  }
+  svs.antivirus.scanfile -> svs.files.api 'Datei laden, Ergebnis melden' {
+    #pii
+    technology 'HTTP-Callback'
+    description 'Personenbezogene Daten: Dateiinhalte'
+    metadata {
+      source 'antivirus_check_service'
+    }
+  }
+
+  // h5p-server
+
+  svs.h5p.proxy -> svs.clammit 'Uploads prüfen' {
+    technology 'HTTP'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/clammit'
+    }
+  }
+  svs.clammit -> svs.h5p.editor 'Geprüfte Anfragen' {
+    technology 'HTTP'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/clammit'
+    }
+  }
+  svs.h5p.editor -> svs.server.api 'Rechte prüfen' {
+    technology 'REST (Authorization API)'
+    metadata {
+      source 'h5p-server'
+    }
+  }
+  svs.h5p.editor -> svs.mongo 'Inhalts-Metadaten' {
+    #pii
+    technology 'MongoDB (DB scapp)'
+    description 'Personenbezogene Daten: Ersteller-ID'
+    metadata {
+      source 'h5p-server'
+    }
+  }
+  svs.h5p.editor -> svs.s3 'Inhalte und Bibliotheken' {
+    technology 'S3'
+    metadata {
+      source 'h5p-server'
+    }
+  }
+  svs.rabbit.exH5p -> svs.h5p.consumer 'Kopieren und Löschen' {
+    #async
+    technology 'AMQP'
+    metadata {
+      source 'h5p-server'
+    }
+  }
+  svs.h5p.consumer -> svs.mongo 'Inhalts-Metadaten' {
+    technology 'MongoDB'
+    metadata {
+      source 'h5p-server'
+    }
+  }
+  svs.h5p.consumer -> svs.s3 'Inhalte kopieren' {
+    technology 'S3'
+    metadata {
+      source 'h5p-server'
+    }
+  }
+  svs.h5p.libraryManagement -> h5pHub 'Bibliotheken laden' {
+    technology 'HTTPS'
+    metadata {
+      source 'h5p-server/ansible'
+    }
+  }
+  svs.h5p.libraryManagement -> svs.s3 'Bibliotheken ablegen' {
+    technology 'S3'
+    metadata {
+      source 'h5p-server/ansible'
+    }
+  }
+
+  // tldraw-server
+
+  svs.tldraw.gateway -> svs.server.api 'Rechte prüfen' {
+    technology 'REST (Authorization API)'
+    metadata {
+      source 'tldraw-server'
+    }
+  }
+  svs.tldraw.gateway -> svs.tldrawValkey 'Änderungen streamen' {
+    technology 'Redis-Streams'
+    metadata {
+      source 'tldraw-server'
+    }
+  }
+  svs.tldraw.worker -> svs.tldrawValkey 'Änderungen lesen' {
+    technology 'Redis-Streams'
+    metadata {
+      source 'tldraw-server'
+    }
+  }
+  svs.tldraw.worker -> svs.s3 'Zeichnungen speichern' {
+    technology 'S3'
+    metadata {
+      source 'tldraw-server'
+    }
+  }
+
+  // Other services
+
+  svs.calendar -> svs.server.api 'Nutzer und Scopes auflösen' {
+    technology 'REST /api/v1/resolve'
+    metadata {
+      source 'schulcloud-calendar'
+    }
+  }
+  svs.calendar -> svs.postgres 'Termine' {
+    #pii
+    technology 'PostgreSQL'
+    description 'Personenbezogene Daten: Termine mit Nutzer- und Kursbezug'
+    metadata {
+      source 'schulcloud-calendar'
+    }
+  }
+  svs.rabbit.exMail -> svs.maildrop 'E-Mail-Aufträge' {
+    #async #pii
+    technology 'AMQP'
+    description 'Personenbezogene Daten: E-Mail-Adresse, Name, Nachrichtentext'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/maildrop'
+    }
+  }
+  svs.maildrop -> smtp 'E-Mails versenden' {
+    #pii
+    technology 'SMTP'
+    description 'Personenbezogene Daten: E-Mail-Adresse, Name, Nachrichtentext'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/maildrop'
+    }
+  }
+  svs.hydra -> svs.postgres 'Clients, Consents, Tokens' {
+    #pii
+    technology 'PostgreSQL'
+    description 'Personenbezogene Daten: Nutzer-ID, erteilte Einwilligungen'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/hydra'
+    }
+  }
+  svs.etherpad -> svs.mongo 'Pads' {
+    #pii
+    technology 'MongoDB (eigene DB)'
+    description 'Personenbezogene Daten: Pad-Inhalte, Autorenname'
+    metadata {
+      source 'dof_app_deploy/ansible/roles/dof_etherpad'
+    }
+  }
+  svs.prometheus -> svs.server 'Metriken abfragen' {
+    technology 'HTTP /metrics'
+    metadata {
+      source 'dof_app_deploy (Prometheus Operator)'
+    }
+  }
+  svs.versionAggregator -> svs.server.api 'Version abfragen' {
+    technology 'HTTP'
+    metadata {
+      source 'version-aggregator'
+    }
+  }
+
+  // External systems calling SVS
+
+  nextcloud -> svs.hydra 'Login über SVS' {
+    #pii
+    technology 'OIDC'
+    description 'Personenbezogene Daten: Nutzer-ID, Name, Gruppen'
+    metadata {
+      source 'schulcloud-nextcloud'
+    }
+  }
+  tools -> svs.hydra 'Login über SVS' {
+    #pii
+    technology 'OAuth2, OIDC'
+    description 'Personenbezogene Daten: Pseudonym, Rolle'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/oauth-provider'
+    }
+  }
+  tools -> svs.server.api 'Klassenlisten abrufen' {
+    #pii #brb #nbc
+    technology 'REST /api/v1/roster'
+    description 'Personenbezogene Daten: Pseudonyme, Kurs- und Gruppenzugehörigkeit'
+    metadata {
+      source 'dof_app_deploy/ansible/group_vars/all/x_ingress.yml'
+    }
+  }
+  svs.server.api -> tools 'Tools starten' {
+    #pii
+    technology 'LTI, Links mit Parametern'
+    description 'Personenbezogene Daten: Pseudonym, Rolle, Kontext'
+    metadata {
+      source 'schulcloud-server/apps/server/src/modules/tool'
+    }
+  }
+
+  // Feature areas → backends
+
+  svs.nuxt.nDashboard -> svs.server.api 'Räume, Aufgaben, Neuigkeiten' { technology 'REST /api/v3' }
+  svs.nuxt.nRooms -> svs.server.api 'Räume und Kurse' { technology 'REST /api/v3, /api/v1/courses' }
+  svs.nuxt.nBoards -> svs.server.api 'Board laden' { technology 'REST /api/v3' }
+  svs.nuxt.nBoards -> svs.server.boardCollab 'Board bearbeiten' { technology 'WebSocket' }
+  svs.nuxt.nBoards -> svs.files.api 'Dateien im Board' { technology 'REST' }
+  svs.nuxt.nBoards -> svs.tldrawClient 'Whiteboard öffnen' { technology 'Link' }
+  svs.nuxt.nCollabora -> svs.collabora 'Editor einbetten' { technology 'iframe' }
+  svs.nuxt.nCollabora -> svs.files.api 'WOPI-URL holen' { technology 'REST' }
+  svs.nuxt.nH5p -> svs.h5p.proxy 'Editor und Player' { technology 'REST' }
+  svs.nuxt.nTasks -> svs.server.api 'Aufgaben' { technology 'REST /api/v3' }
+  svs.nuxt.nNews -> svs.server.api 'Neuigkeiten' { technology 'REST /api/v3' }
+  svs.nuxt.nMediaShelf -> svs.server.api 'Medien und Lizenzen' { technology 'REST /api/v3' }
+  svs.nuxt.nMigration -> svs.server.api 'Login-Migration' { technology 'REST /api/v3' }
+  svs.nuxt.nAdmin -> svs.server.api 'Schulverwaltung' { technology 'REST /api/v3, /api/v1 users, classes, ldap-config' }
+  svs.nuxt.nTools -> svs.server.api 'Tool-Konfiguration' { technology 'REST /api/v3' }
+  svs.nuxt.nStatic -> svs.server.api 'Konfiguration' { technology 'REST /api/v3' }
+
+  svs.legacy.lLogin -> svs.server.api 'Anmelden' { technology 'REST' }
+  svs.legacy.lLogin -> svs.hydra 'OAuth2-Consent' { technology 'Hydra Login- und Consent-Flow' }
+  svs.legacy.lRegistration -> svs.server.api 'Registrierung, Einwilligungen' { technology 'REST /api/v1' }
+  svs.legacy.lCourses -> svs.server.api 'Kurse und Themen' { technology 'REST /api/v1, /api/v3' }
+  svs.legacy.lHomework -> svs.server.api 'Aufgaben und Abgaben' { technology 'REST /api/v1' }
+  svs.legacy.lTeams -> svs.server.api 'Teams und Team-News' { technology 'REST /api/v1' }
+  svs.legacy.lCalendar -> svs.server.api 'Termine (weiter an den Kalender)' { technology 'REST /api/v1' }
+  svs.legacy.lFiles -> svs.server.api 'Alte Dateiablage' { technology 'REST /api/v1' }
+  svs.legacy.lVideo -> svs.server.api 'Konferenz starten (weiter an BBB)' { technology 'REST /api/v3' }
+  svs.legacy.lAccount -> svs.server.api 'Konto' { technology 'REST /api/v1' }
+  svs.legacy.lStatic -> svs.server.api 'Inhalte und Meldungen' { technology 'REST' }
+  svs.legacy.lAdmin -> svs.server.api 'Schulverwaltung' { technology 'REST /api/v1' }
+  svs.tldrawClient.tWhiteboard -> svs.tldraw.gateway 'Zeichnung synchronisieren' { technology 'WebSocket' }
+}

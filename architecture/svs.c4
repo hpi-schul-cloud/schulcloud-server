@@ -1,0 +1,285 @@
+// Services, deployables and data stores of SVS.
+// Deployables follow the Ansible roles of each repo; tenant tags follow the WITH_* flags in production.
+model {
+
+  user = actor 'Nutzerinnen und Nutzer' {
+    description 'Schülerinnen und Schüler, Lehrkräfte, Schuladmins'
+  }
+  support = actor 'Support' {
+    description 'Betrieb und Support der Mandanten'
+  }
+
+  svs = system 'SVS' {
+    description 'Schulcloud-Verbund-Software (dBildungscloud). Mandanten brb, nbc, thr, dbc.'
+
+    nuxt = webapp 'nuxt-client' {
+      description 'Neues Frontend. Bekommt vom Ingress alle umgezogenen Pfade. nginx leitet einzelne Admin-Seiten an den Legacy-Client weiter.'
+      technology 'Vue 3, Vite, nginx (nuxtclient-svc)'
+      link https://github.com/hpi-schul-cloud/nuxt-client
+    }
+    legacy = webapp 'schulcloud-client' {
+      description 'Legacy-Frontend, rendert serverseitig. Bekommt /login und als Fallback alle nicht umgezogenen Pfade.'
+      technology 'Express, Handlebars (client-svc)'
+      link https://github.com/hpi-schul-cloud/schulcloud-client
+    }
+    tldrawClient = webapp 'tldraw-client' {
+      description 'Whiteboard-Oberfläche, eingebettet in Boards'
+      technology 'React, tldraw (tldraw-client-svc)'
+      link https://github.com/hpi-schul-cloud/tldraw-client
+    }
+    superhero = webapp 'superhero-dashboard' {
+      description 'Admin- und Support-Oberfläche (dashboard.DOMAIN)'
+      technology 'Express'
+      link https://github.com/hpi-schul-cloud/superhero-dashboard
+    }
+
+    server = service 'schulcloud-server' {
+      description 'Backend: NestJS (/api/v3) und Legacy-Feathers (/api/v1) in einem Image. Jede Rolle ist ein eigenes Deployment oder ein Job.'
+      technology 'Node.js, NestJS, Feathers'
+      link https://github.com/hpi-schul-cloud/schulcloud-server
+
+      api = deployable 'api' {
+        description 'Haupt-API: /api/v3 (NestJS) und /api/v1 (Feathers). Einstieg apps/server.app.ts.'
+        technology 'NestJS, Feathers'
+      }
+      worker = deployable 'api-worker' {
+        #brb #nbc
+        description 'Verarbeitet die LDAP-Sync-Queue. Skaliert über KEDA.'
+        technology 'Feathers, KEDA'
+      }
+      migrationSystems = deployable 'api-migration-systems' {
+        #nbc
+        description 'Nutzerimport bei der Login-Migration (/api/v3/user/import)'
+        technology 'NestJS'
+      }
+      adminApi = deployable 'admin-api-server' {
+        description 'Admin-API für Betrieb und Superhero-Dashboard (/admin/api/v1)'
+        technology 'NestJS'
+      }
+      boardCollab = deployable 'board-collaboration' {
+        description 'Echtzeit-Bearbeitung von Boards (/board-collaboration)'
+        technology 'socket.io, Mongo-Adapter'
+      }
+      commonCartridge = deployable 'common-cartridge' {
+        #dbc
+        description 'Import und Export von Kursen im Common-Cartridge-Format'
+        technology 'NestJS'
+      }
+      legacyFileArchive = deployable 'legacy-file-archive' {
+        description 'Archiv der Dateien aus der alten Dateiablage'
+        technology 'NestJS'
+      }
+      fwuLearningContents = deployable 'fwu-learning-contents' {
+        #brb
+        description 'Liefert FWU-Lerninhalte aus dem FWU-Bucket'
+        technology 'NestJS'
+      }
+      notification = deployable 'notification-server' {
+        #disabled
+        description 'Server-Sent Events aus Mongo-Change-Streams. In Produktion abgeschaltet.'
+        technology 'NestJS, SSE'
+      }
+      schulconnexConsumers = deployable 'Schulconnex-Consumer' {
+        #nbc
+        description 'Drei Consumer: Gruppen-Provisionierung, Gruppen-Entfernung, Lizenz-Provisionierung'
+        technology 'NestJS, RabbitMQ'
+      }
+      management = deployable 'management' {
+        #dev
+        description 'Datenbank-Seeding und Verwaltung, nur in Dev'
+        technology 'NestJS'
+      }
+
+      serverConsole = job 'server-console' {
+        description 'Migrationen beim Deploy, Löschen verwaister S3-Dateien'
+        technology 'Job, CronJob'
+      }
+      deletionConsole = job 'deletion-console' {
+        description 'Stößt Löschanfragen an und stellt nicht synchronisierte Nutzer zur Löschung ein'
+        technology 'CronJob'
+      }
+      idpConsole = job 'idp-console' {
+        #nbc
+        description 'Abgleich mit moin.schule'
+        technology 'CronJob'
+      }
+      ldapSyncConsole = job 'ldap-sync-console' {
+        #brb #nbc
+        description 'Stellt LDAP-Syncs pro Schule in die Queue'
+        technology 'CronJob'
+      }
+      syncConsole = job 'sync-console' {
+        #nbc
+        description 'Metadaten-Sync für Medien aus VIDIS und BILO'
+        technology 'CronJob'
+      }
+      tspSyncConsole = job 'tsp-sync-console' {
+        #thr
+        description 'Abgleich von Schulen, Klassen und Personen mit dem TSP'
+        technology 'CronJob'
+      }
+    }
+
+    files = service 'file-storage' {
+      description 'Dateidienst für Boards, Aufgaben, Kurse und H5P'
+      technology 'NestJS'
+      link https://github.com/hpi-schul-cloud/file-storage
+
+      api = deployable 'file-storage api' {
+        description 'REST für Upload, Download, Kopieren und WOPI für Collabora'
+        technology 'NestJS'
+      }
+      consumer = deployable 'file-storage consumer' {
+        description 'Dateioperationen, die der Server per RabbitMQ anstößt'
+        technology 'NestJS, RabbitMQ'
+      }
+      previewGenerator = deployable 'preview-generator' {
+        description 'Vorschaubilder'
+        technology 'NestJS, ImageMagick'
+      }
+    }
+
+    h5p = service 'h5p-server' {
+      description 'H5P-Editor und -Player'
+      technology 'NestJS, @lumieducation/h5p'
+      link https://github.com/hpi-schul-cloud/h5p-server
+
+      proxy = deployable 'h5p-proxy' {
+        description 'Eingang für Uploads, leitet über clammit weiter'
+        technology 'nginx'
+      }
+      editor = deployable 'api-h5p' {
+        description 'Editor und Player'
+        technology 'NestJS'
+      }
+      consumer = deployable 'h5p consumer' {
+        description 'Kopieren und Löschen von H5P-Inhalten auf Anstoß des Servers'
+        technology 'NestJS, RabbitMQ'
+      }
+      staticfiles = deployable 'h5p staticfiles' {
+        description 'Statische Dateien des H5P-Kerns'
+        technology 'nginx'
+      }
+      libraryManagement = job 'library-management' {
+        #brb #nbc #thr
+        description 'Installiert und aktualisiert H5P-Bibliotheken'
+        technology 'CronJob'
+      }
+    }
+
+    tldraw = service 'tldraw-server' {
+      description 'Whiteboard-Backend'
+      technology 'Node.js, y-redis'
+      link https://github.com/hpi-schul-cloud/tldraw-server
+
+      gateway = deployable 'tldraw gateway' {
+        description 'WebSocket-Eingang, prüft Rechte beim Server'
+        technology 'WebSocket, y-redis'
+      }
+      worker = deployable 'tldraw worker' {
+        description 'Schreibt Zeichnungen aus Valkey nach S3'
+        technology 'y-redis'
+      }
+    }
+
+    calendar = service 'schulcloud-calendar' {
+      description 'Kalender-Service. Ohne Ingress, nur clusterintern erreichbar.'
+      technology 'Node.js, PostgreSQL'
+      link https://github.com/hpi-schul-cloud/schulcloud-calendar
+    }
+    antivirus = service 'antivirus_check_service' {
+      description 'Virenscan für hochgeladene Dateien'
+      technology 'Python, ClamAV'
+      link https://github.com/hpi-schul-cloud/antivirus_check_service
+
+      web = deployable 'antivirus web' {
+        description 'HTTP-API, stellt Scanaufträge in die Queue'
+        technology 'Python'
+      }
+      scanfile = deployable 'antivirus scanfile' {
+        description 'Lädt die Datei, scannt mit clamd, meldet das Ergebnis zurück'
+        technology 'Python, clamd'
+      }
+    }
+    maildrop = service 'maildrop' {
+      description 'Versendet E-Mails aus der Queue'
+      technology 'Spring Boot'
+    }
+    versionAggregator = service 'version-aggregator' {
+      description 'Sammelt die Versionen aller Dienste (/version)'
+      technology 'Node.js'
+      link https://github.com/hpi-schul-cloud/version-aggregator
+    }
+    hydra = service 'Hydra' {
+      description 'OAuth2- und OIDC-Provider für externe Tools und Nextcloud (oauth.DOMAIN)'
+      technology 'ORY Hydra'
+    }
+    etherpad = service 'Etherpad' {
+      description 'Kollaborative Textdokumente (/etherpad)'
+      technology 'Etherpad'
+    }
+    collabora = service 'Collabora' {
+      #brb #nbc #thr
+      description 'Office-Editor im Browser (cool.DOMAIN)'
+      technology 'Collabora Online, WOPI'
+    }
+    clammit = service 'clammit' {
+      description 'HTTP-Proxy, der Uploads vor dem H5P-Editor mit ClamAV prüft'
+      technology 'clammit, ClamAV'
+    }
+    prometheus = service 'Prometheus' {
+      description 'Metriken aller Dienste, dazu mongodb-query-exporter'
+      technology 'Prometheus Operator'
+    }
+
+    mongo = database 'MongoDB' {
+      description 'Gemeinsame Datenbank scapp für Server, file-storage und h5p-server. Dazu eigene DB für Etherpad.'
+      technology 'MongoDB (extern betrieben)'
+    }
+    postgres = database 'PostgreSQL' {
+      description 'Datenbank für Hydra und Kalender'
+      technology 'PostgreSQL (IONOS Managed)'
+    }
+    valkey = database 'Session-Valkey' {
+      description 'Sessions und JWT-Whitelist'
+      technology 'Valkey (Sentinel)'
+    }
+    tldrawValkey = database 'tldraw-Valkey' {
+      description 'Arbeitsstand der Whiteboards'
+      technology 'Valkey'
+    }
+    s3 = database 'S3' {
+      description 'Buckets für Dateien, H5P-Inhalte und -Bibliotheken, FWU-Inhalte und Whiteboards. MinIO in Dev und Ref.'
+      technology 'IONOS S3'
+    }
+
+    rabbit = queue 'RabbitMQ' {
+      description 'Nachrichten zwischen den Diensten. Kinder sind die Exchanges und Queues.'
+      technology 'RabbitMQ (Operator)'
+
+      exFiles = queue 'files-storage' {
+        technology 'Exchange'
+      }
+      exH5p = queue 'h5p-editor' {
+        technology 'Exchange'
+      }
+      exProvisioning = queue 'provisioning-schulconnex' {
+        #nbc
+        technology 'Exchange'
+      }
+      exMail = queue 'mail-drop' {
+        technology 'Exchange'
+      }
+      exAntivirus = queue 'scan_file_v2' {
+        technology 'Exchange'
+      }
+      exPreview = queue 'files-preview' {
+        technology 'Exchange'
+      }
+      qLdap = queue 'sync_ldap' {
+        #brb #nbc
+        technology 'Queue'
+      }
+    }
+  }
+}

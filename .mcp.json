@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "likec4": {
+      "command": "npx",
+      "args": ["-y", "likec4@1.60.0", "mcp", "--stdio", "architecture"]
+    }
+  }
+}

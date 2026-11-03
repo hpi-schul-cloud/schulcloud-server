@@ -1,0 +1,146 @@
+views {
+
+  view index {
+    title 'SVS: Systemübersicht'
+    description 'Welche Dienste es gibt und wer mit wem spricht. Einstieg für neue Entwicklerinnen und Entwickler.'
+    include *
+  }
+
+  view svs of svs {
+    title 'SVS: Dienste und Datenspeicher'
+    description 'Alle Dienste, Datenspeicher und externen Systeme mit ihren Verbindungen.'
+    include *
+  }
+
+  view server of svs.server {
+    title 'schulcloud-server: Rollen und Jobs'
+    description 'Alle Deployments und Jobs aus dem Server-Image und woran sie hängen.'
+    include *
+  }
+
+  view pages {
+    title 'Seiten: wer sie ausliefert und welche APIs sie rufen'
+    description 'Fachbereiche von nuxt-client und schulcloud-client mit ihren Pfaden. #split = auf beide Clients verteilt, #dead = Pfad ohne Seite.'
+    include
+      svs.nuxt,
+      svs.nuxt.*,
+      svs.legacy,
+      svs.legacy.*,
+      svs.tldrawClient,
+      svs.tldrawClient.*,
+      svs.server.api,
+      svs.server.boardCollab,
+      svs.files.api,
+      svs.h5p.proxy,
+      svs.collabora,
+      svs.hydra,
+      svs.tldraw.gateway
+    autoLayout LeftRight
+    style element.tag = #split {
+      color amber
+    }
+    style element.tag = #dead {
+      color red
+    }
+  }
+
+  view migration {
+    title 'Migration: was in welchem Client liegt'
+    description 'Nur die Fachbereiche, die auf beide Clients verteilt sind, und Pfade ohne Seite.'
+    include
+      svs.nuxt.* where tag is #split or tag is #dead,
+      svs.legacy.* where tag is #split
+    autoLayout LeftRight
+  }
+
+  view pii {
+    title 'Datenschutz: Flüsse personenbezogener Daten'
+    description 'Nur Verbindungen mit personenbezogenen Daten. Vorlage für Verarbeitungsverzeichnis und TOMs.'
+    include
+      * -> * where tag is #pii,
+      user -> svs.* where tag is #pii,
+      support -> svs.* where tag is #pii,
+      svs.* -> * where tag is #pii,
+      * -> svs.* where tag is #pii,
+      svs.* -> svs.* where tag is #pii
+  }
+
+  view async {
+    title 'RabbitMQ: Exchanges, Publisher und Consumer'
+    description 'Wer welche Nachrichten einstellt und wer sie verarbeitet.'
+    include
+      svs.rabbit,
+      svs.rabbit.*,
+      svs.** -> svs.rabbit.**,
+      svs.rabbit.** -> svs.**
+  }
+
+  view files {
+    title 'file-storage: Abhängigkeiten'
+    description 'Was am Dateidienst hängt und woran er hängt.'
+    include
+      svs.files,
+      svs.files.*,
+      svs.** -> svs.files.**,
+      svs.files.** -> svs.**
+  }
+
+  view identity {
+    title 'Login und Identitäten'
+    description 'Wie Nutzer angelegt und angemeldet werden: OIDC, Schulconnex, LDAP, TSP, Hydra.'
+    include
+      svs.legacy.lLogin,
+      svs.server.api,
+      svs.server.worker,
+      svs.server.idpConsole,
+      svs.server.ldapSyncConsole,
+      svs.server.tspSyncConsole,
+      svs.server.schulconnexConsumers,
+      svs.server.migrationSystems,
+      svs.hydra,
+      idp,
+      schulconnex,
+      ldap,
+      tsp,
+      tools,
+      nextcloud
+    exclude
+      svs.server.api -> svs.server.api
+  }
+
+  view brb of svs {
+    title 'Mandant brb: Brandenburg'
+    description 'Was in Brandenburg läuft. Ohne Komponenten, die nur andere Mandanten haben.'
+    include *, svs.server.*
+    exclude
+      * where (tag is #nbc or tag is #thr or tag is #dbc) and tag is not #brb,
+      * where tag is #dev or tag is #disabled
+  }
+
+  view nbc of svs {
+    title 'Mandant nbc: Niedersachsen'
+    description 'Was in Niedersachsen läuft. Ohne Komponenten, die nur andere Mandanten haben.'
+    include *, svs.server.*
+    exclude
+      * where (tag is #brb or tag is #thr or tag is #dbc) and tag is not #nbc,
+      * where tag is #dev or tag is #disabled
+  }
+
+  view thr of svs {
+    title 'Mandant thr: Thüringen'
+    description 'Was in Thüringen läuft. Ohne Komponenten, die nur andere Mandanten haben.'
+    include *, svs.server.*
+    exclude
+      * where (tag is #brb or tag is #nbc or tag is #dbc) and tag is not #thr,
+      * where tag is #dev or tag is #disabled
+  }
+
+  view dbc of svs {
+    title 'Mandant dbc: dBildungscloud'
+    description 'Was in der dBildungscloud läuft. Ohne Komponenten, die nur andere Mandanten haben.'
+    include *, svs.server.*
+    exclude
+      * where (tag is #brb or tag is #nbc or tag is #thr) and tag is not #dbc,
+      * where tag is #dev or tag is #disabled
+  }
+}
