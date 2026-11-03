@@ -611,6 +611,65 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
+		describe('when user has room admin role in an archived room', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const { roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
+				const room = roomFactory.build({ archivedAt: new Date() });
+				const conferenceScope = VideoConferenceScope.ROOM;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				const roomAuthorizable = new RoomAuthorizable(
+					room.id,
+					[{ userId: user.id, roles: [roomAdminRole], userSchoolId: user.school.id }],
+					room.schoolId,
+					true
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomAuthorizable);
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				return { userId: user.id, roomId: room.id, conferenceScope };
+			};
+
+			it('should not grant BBBRole.MODERATOR', async () => {
+				const { userId, conferenceScope, roomId } = setup();
+
+				await expect(service.determineBbbRole(userId, roomId, conferenceScope)).rejects.toThrow(ForbiddenException);
+			});
+		});
+
+		describe('when user has admin role in a video conference node of an archived room', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const element = videoConferenceElementFactory.build();
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR, BoardRoles.ADMIN] }],
+					id: element.id,
+					boardNode: element,
+					rootNode: columnBoardFactory.build(),
+					boardConfiguration: { isArchived: true },
+				});
+				boardNodeAuthorizableService.getBoardAuthorizable
+					.mockResolvedValueOnce(boardNodeAuthorizable)
+					.mockResolvedValueOnce(boardNodeAuthorizable);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
+
+				return { userId: user.id, elementId: element.id, conferenceScope };
+			};
+
+			it('should only grant BBBRole.VIEWER', async () => {
+				const { userId, conferenceScope, elementId } = setup();
+
+				const result = await service.determineBbbRole(userId, elementId, conferenceScope);
+
+				expect(result).toBe(BBBRole.VIEWER);
+			});
+		});
+
 		// can be removed when team / course / user is passed from UC
 		// missing when course / team loading throw an error, but also not nessasary if it is passed to UC.
 		describe('when user has START_MEETING permission and is in team(event) scope', () => {

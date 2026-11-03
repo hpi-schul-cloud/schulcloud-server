@@ -90,6 +90,9 @@ export class ColumnUc {
 		const isNotBoardContent = fromBoard.context.id !== toBoard.context.id;
 		if (isNotBoardContent) {
 			throwForbiddenIfFalse(this.boardNodeRule.can('relocateContent', user, boardNodeAuthorizable));
+
+			const toBoardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(toColumn);
+			throwForbiddenIfFalse(this.boardNodeRule.can('createCard', user, toBoardNodeAuthorizable));
 		}
 
 		await this.boardNodeService.move(card, toColumn, toPosition);

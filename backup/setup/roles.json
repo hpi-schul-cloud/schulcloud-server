@@ -647,6 +647,7 @@
 		"permissions": [
 			"ROOM_EDIT_ROOM",
 			"ROOM_DELETE_ROOM",
+			"ROOM_ARCHIVE_ROOM",
 			"ROOM_SHARE_ROOM",
 			"ROOM_COPY_ROOM",
 			"ROOM_EDIT_CONTENT",

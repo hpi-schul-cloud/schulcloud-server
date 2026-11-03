@@ -2,7 +2,7 @@ import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleName, RoleService, RoomRole } from '@modules/role';
-import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig, RoomService } from '@modules/room';
+import { Room, ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig, RoomService } from '@modules/room';
 import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
 import { SchoolService } from '@modules/school/domain/service/school.service';
 import { UserService } from '@modules/user';
@@ -173,7 +173,8 @@ export class RoomMembershipService {
 		const groups = await this.getAllRoomGroupsOfUser(userId);
 		const groupIds = groups.map((group) => group.id);
 		const roomMemberships = await this.roomMembershipRepo.findByGroupIds(groupIds);
-		return await this.getAuthorizables(groups, roomMemberships);
+		const rooms = await this.roomService.getRoomsByIds(roomMemberships.map((membership) => membership.roomId));
+		return await this.getAuthorizables(groups, roomMemberships, rooms);
 	}
 
 	public async getRoomAuthorizable(roomId: EntityId): Promise<RoomAuthorizable> {
@@ -184,19 +185,19 @@ export class RoomMembershipService {
 
 		if (roomMembership === null) {
 			this.logger.warn(`No room membership found for roomId ${roomId}`);
-			return new RoomAuthorizable(roomId, [], room.schoolId);
+			return new RoomAuthorizable(roomId, [], room.schoolId, room.isArchived);
 		}
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		if (group === null) {
 			this.logger.warn(`No group found for roomId ${roomId} groupId ${roomMembership.userGroupId}`);
-			return new RoomAuthorizable(roomId, [], room.schoolId);
+			return new RoomAuthorizable(roomId, [], room.schoolId, room.isArchived);
 		}
 
-		const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
+		const roomAuthorizables = await this.getAuthorizables([group], [roomMembership], [room]);
 		if (roomAuthorizables.length !== 1) {
 			this.logger.warn(`Expected exactly 1 room authorizable for roomId ${roomId}, got ${roomAuthorizables.length}`);
-			return new RoomAuthorizable(roomId, [], room.schoolId);
+			return new RoomAuthorizable(roomId, [], room.schoolId, room.isArchived);
 		}
 		return roomAuthorizables[0];
 	}
@@ -219,7 +220,11 @@ export class RoomMembershipService {
 		);
 	}
 
-	private async getAuthorizables(groups: Group[], roomMemberships: RoomMembership[]): Promise<RoomAuthorizable[]> {
+	private async getAuthorizables(
+		groups: Group[],
+		roomMemberships: RoomMembership[],
+		rooms: Room[]
+	): Promise<RoomAuthorizable[]> {
 		const userIds = [...groups.flatMap((group) => group.users.map((user) => user.userId))];
 		const [userSchoolMap, roleDtos] = await Promise.all([
 			this.userService.getSchoolIdsByUserIds(userIds),
@@ -239,7 +244,8 @@ export class RoomMembershipService {
 						userSchoolId: userSchoolMap.get(groupUser.userId) ?? '',
 					};
 				}) ?? [];
-			roomAuthorizables.push(new RoomAuthorizable(roomMembership.roomId, members, roomMembership.schoolId));
+			const isArchived = rooms.find((room) => room.id === roomMembership.roomId)?.isArchived ?? false;
+			roomAuthorizables.push(new RoomAuthorizable(roomMembership.roomId, members, roomMembership.schoolId, isArchived));
 		}
 		return roomAuthorizables;
 	}
