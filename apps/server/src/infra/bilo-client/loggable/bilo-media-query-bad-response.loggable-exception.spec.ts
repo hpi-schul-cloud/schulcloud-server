@@ -33,7 +33,7 @@ describe(BiloMediaQueryBadResponseLoggableException.name, () => {
 				stack: exception.stack,
 				data: {
 					message: `${expectedLoggableReports.length} bad response(s) from bilo media query is/are found`,
-					reports: JSON.stringify(expectedLoggableReports),
+					reports: expectedLoggableReports,
 				},
 			});
 		});
