@@ -34,8 +34,9 @@ export const parseLogLevels = (value: string | undefined, fallbackLevel: SyslogL
 const severity = (level: string): number => winston.config.syslog.levels[level] ?? -1;
 
 export const getMostVerboseLevel = ({ defaultLevel, overrides }: LogLevels): SyslogLevel =>
-	[defaultLevel, ...overrides.values()].reduce((mostVerbose, level) =>
-		severity(level) > severity(mostVerbose) ? level : mostVerbose
+	[...overrides.values()].reduce(
+		(mostVerbose, level) => (severity(level) > severity(mostVerbose) ? level : mostVerbose),
+		defaultLevel
 	);
 
 /**
