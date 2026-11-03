@@ -20,7 +20,7 @@ export class BoardCopyService {
 }
 ```
 
-Keep the message fixed and put everything that varies into the data object. That way all entries of one kind can be found by their message, and the values can be filtered as fields.
+Keep the message fixed and put everything that varies into the data object. That way all entries of one kind can be found by their message, and the values can be filtered as fields. Pass objects and arrays as they are, don't `JSON.stringify` them: they end up as nested JSON in the log, a string would be JSON inside JSON.
 
 Log IDs, not personal data: no names, email addresses or content written by users.
 
