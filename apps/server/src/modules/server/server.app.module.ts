@@ -54,8 +54,7 @@ import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { TaskApiModule } from '@modules/task/task-api.module';
-import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '@modules/team';
-import { TeamApiModule } from '@modules/team/team-api.module';
+import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamModule, TeamPublicApiConfig } from '@modules/team';
 import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig } from '@modules/user';
@@ -138,7 +137,7 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardApiModule,
 	GroupApiModule,
-	TeamApiModule,
+	TeamModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
 	SchoolApiModule,
