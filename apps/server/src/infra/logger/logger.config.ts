@@ -14,6 +14,11 @@ export enum SyslogLevel {
 	EMERGENCY = 'emerg',
 }
 
+export enum LogFormat {
+	JSON = 'json',
+	PRETTY = 'pretty',
+}
+
 export const LOGGER_CONFIG_TOKEN = 'LOGGER_CONFIG_TOKEN';
 
 @Configuration()
@@ -21,6 +26,14 @@ export class LoggerConfig {
 	@ConfigProperty('NEST_LOG_LEVEL')
 	@IsEnum(SyslogLevel)
 	public nestLogLevel = SyslogLevel.NOTICE;
+
+	/**
+	 * json: one JSON object per line, for deployments and log collection.
+	 * pretty: human readable output for local development.
+	 */
+	@ConfigProperty('LOG_FORMAT')
+	@IsEnum(LogFormat)
+	public logFormat = LogFormat.JSON;
 
 	/**
 	 * By default, the application is terminated after an uncaughtException has been logged.
