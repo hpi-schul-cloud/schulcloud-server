@@ -8,7 +8,8 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { UUID } from 'bson';
-import { type Response } from 'supertest';
+import { type Server } from 'node:http';
+import supertest, { type Response } from 'supertest';
 import { type ExternalToolPseudonymEntity } from '../../entity';
 import { externalToolPseudonymEntityFactory } from '../../testing';
 import { type PseudonymResponse } from '../dto';
@@ -141,6 +142,51 @@ describe('PseudonymController (API)', () => {
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
+		});
+	});
+
+	describe('[GET] pseudonyms/username/:pseudonym', () => {
+		it('shows a storage-access prompt without a JWT', async () => {
+			const response = await supertest(app.getHttpServer() as Server).get('/pseudonyms/username/opaque-pseudonym');
+
+			expect(response.status).toBe(HttpStatus.OK);
+			expect(response.headers['content-type']).toContain('text/html');
+			expect(response.text).toContain('Namen zeigen');
+			expect(response.text).toContain('document.requestStorageAccess()');
+		});
+
+		it('returns 401 for an invalid JWT instead of displaying a name', async () => {
+			const response = await supertest(app.getHttpServer() as Server)
+				.get('/pseudonyms/username/opaque-pseudonym')
+				.set('Cookie', 'jwt=invalid');
+
+			expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+		});
+
+		it('renders an authorized user name as escaped HTML', async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { studentUser } = UserAndAccountTestFactory.buildStudent({
+				school,
+				firstName: '<Ada>',
+				lastName: 'Lovelace',
+			});
+			const externalTool = externalToolEntityFactory.buildWithId();
+			const pseudonym = externalToolPseudonymEntityFactory.buildWithId({
+				pseudonym: new UUID().toString(),
+				toolId: externalTool.id,
+				userId: studentUser.id,
+			});
+			await em.persist([school, teacherUser, teacherAccount, studentUser, externalTool, pseudonym]).flush();
+			em.clear();
+
+			const client = await new TestApiClientBuilder(app, 'pseudonyms/username').build(teacherAccount);
+			const response = await client.get(pseudonym.pseudonym);
+
+			expect(response.status).toBe(HttpStatus.OK);
+			expect(response.text).toContain('&lt;Ada&gt; Lovelace');
+			expect(response.text).not.toContain('document.requestStorageAccess()');
+			expect(response.headers['cache-control']).toBe('no-store');
 		});
 	});
 });
