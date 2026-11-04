@@ -1,21 +1,15 @@
-import { CALENDAR_CONFIG_TOKEN, CalendarConfig, CalendarModule } from '@infra/calendar';
 import { ConfigurationModule } from '@infra/configuration';
-import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { CourseModule } from '@modules/course';
-import { LegacySchoolModule } from '@modules/legacy-school';
-import { RoleModule } from '@modules/role';
 import { RoomModule } from '@modules/room';
 import { RoomMembershipModule } from '@modules/room-membership';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { BBBService } from './bbb';
-import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceRepo } from './repo';
 import { VideoConferenceService } from './service';
-import { VideoConferenceDeprecatedUc } from './uc';
 import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-conference-config';
 
 @Module({
@@ -23,26 +17,13 @@ import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-co
 		ConfigurationModule.register(VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig),
 		AuthorizationModule,
 		BoardModule,
-		CalendarModule.register(CALENDAR_CONFIG_TOKEN, CalendarConfig),
 		HttpModule,
-		LegacySchoolModule,
-		LoggerModule,
-		RoleModule,
 		RoomMembershipModule,
 		RoomModule,
-		UserModule,
 		CourseModule,
 		UserModule,
 	],
-	providers: [
-		BBBService,
-		VideoConferenceRepo,
-		VideoConferenceService,
-		// TODO: N21-885 remove VideoConferenceDeprecatedUc from providers
-		VideoConferenceDeprecatedUc,
-	],
-	// TODO: N21-885 remove VideoConferenceDeprecatedController from exports
-	controllers: [VideoConferenceDeprecatedController],
+	providers: [BBBService, VideoConferenceRepo, VideoConferenceService],
 	exports: [BBBService, VideoConferenceService],
 })
 export class VideoConferenceModule {}
