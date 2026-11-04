@@ -1,33 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
 
-const teamRoles = [
-	{
-		_id: new ObjectId('6bb5c190fb457b1c3c0c7e0f'),
-		name: 'teammember',
-		roles: [],
-	},
-	{
-		_id: new ObjectId('6bb5c391fb457b1c3c0c7e10'),
-		name: 'teamexpert',
-		roles: [],
-	},
-	{
-		_id: new ObjectId('6bb5c49efb457b1c3c0c7e11'),
-		name: 'teamleader',
-		roles: ['6bb5c190fb457b1c3c0c7e0f'],
-	},
-	{
-		_id: new ObjectId('6bb5c545fb457b1c3c0c7e13'),
-		name: 'teamadministrator',
-		roles: ['6bb5c49efb457b1c3c0c7e11'],
-	},
-	{
-		_id: new ObjectId('6bb5c62bfb457b1c3c0c7e14'),
-		name: 'teamowner',
-		roles: ['6bb5c545fb457b1c3c0c7e13'],
-	},
-];
-
 module.exports = {
 	schools: [
 		{
@@ -71,7 +43,6 @@ module.exports = {
 			_id: new ObjectId('0000d186816aaaa584714c99'),
 			name: 'teacher',
 		},
-		...teamRoles,
 	],
 	courses: [
 		{
@@ -226,122 +197,6 @@ module.exports = {
 			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
-			_id: new ObjectId('5ca613c4c7f5120b8c5bef29'),
-			owner: new ObjectId('5cf9303bec9d6ac639fefd42'),
-			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => {
-				return {
-					refId,
-					refPermModel: 'role',
-					read: true,
-					delete: true,
-					write: true,
-					create: true,
-				};
-			}),
-			isDirectory: false,
-			storageFileName: 'undefined',
-			type: 'any/type',
-			size: 123,
-			name: 'sample',
-			bucket: 'bucket-test',
-			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
-		},
-		{
-			_id: new ObjectId('5ca613c4c7f5120b8c5bef30'),
-			owner: new ObjectId('5cf9303bec9d6ac639fefd42'),
-			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => {
-				return {
-					refId,
-					refPermModel: 'role',
-					read: true,
-					delete: true,
-					write: true,
-					create: true,
-				};
-			}),
-			isDirectory: false,
-			storageFileName: 'undefined',
-			type: 'any/type',
-			size: 123,
-			name: 'sample',
-			bucket: 'bucket-test',
-			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
-		},
-		{
-			_id: new ObjectId('5ca613c4c7f5120b8c5bef31'),
-			owner: new ObjectId('5cf9303bec9d6ac639fefd42'),
-			parent: '5ca613c4c7f5120b8c5bef33',
-			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => {
-				return {
-					refId,
-					refPermModel: 'role',
-					read: true,
-					delete: true,
-					write: true,
-					create: true,
-				};
-			}),
-			isDirectory: false,
-			storageFileName: 'undefined',
-			type: 'any/type',
-			size: 123,
-			name: 'sample',
-			bucket: 'bucket-test',
-			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
-		},
-		{
-			_id: new ObjectId('5ca613c4c7f5120b8c5bef32'),
-			owner: new ObjectId('5cf9303bec9d6ac639fefd42'),
-			parent: '5ca613c4c7f5120b8c5bef33',
-			refOwnerModel: 'teams',
-			permissions: teamRoles.map(({ refId }) => {
-				return {
-					refId,
-					refPermModel: 'role',
-					read: refId !== '6bb5c190fb457b1c3c0c7e0f',
-					delete: true,
-					write: true,
-					create: true,
-				};
-			}),
-			isDirectory: false,
-			storageFileName: 'undefined',
-			type: 'any/type',
-			size: 123,
-			name: 'sample',
-			bucket: 'bucket-test',
-			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
-		},
-		{
-			_id: new ObjectId('5ca613c4c7f5120b8c5bef33'),
-			owner: new ObjectId('5cf9303bec9d6ac639fefd42'),
-			refOwnerModel: 'teams',
-			permissions: [
-				{
-					refId: '0000d224816abba584714c8e',
-					refPermModel: 'user',
-					read: true,
-				},
-				...teamRoles.map(({ refId }) => {
-					return {
-						refId,
-						refPermModel: 'role',
-						read: true,
-						delete: true,
-						write: true,
-						create: true,
-					};
-				}),
-			],
-			isDirectory: true,
-			name: 'sample',
-			bucket: 'bucket-test',
-			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
-		},
-		{
 			_id: new ObjectId('5ca613c4c7f5120b8c5bef34'),
 			owner: new ObjectId('0000dcfbfb5c7a3f00bf21ac'),
 			refOwnerModel: 'course',
@@ -408,6 +263,28 @@ module.exports = {
 					refPermModel: 'role',
 					read: true,
 					write: true,
+				},
+			],
+			isDirectory: false,
+			storageFileName: 'undefined',
+			type: 'any/type',
+			size: 123,
+			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
+		},
+		{
+			_id: new ObjectId('5ca613c4c7f5120b8c5bef33'),
+			owner: new ObjectId('0000d224816abba584714c8e'),
+			refOwnerModel: 'user',
+			permissions: [
+				{
+					refId: '0000d224816abba584714c8e',
+					refPermModel: 'user',
+					read: true,
+					write: true,
+					delete: true,
+					create: true,
 				},
 			],
 			isDirectory: false,
