@@ -6,7 +6,7 @@ import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
-import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { OauthProviderLoginFlowService, OauthProviderService, type ProviderRedirectResponse } from '../domain';
@@ -69,6 +69,10 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('getLoginRequest', () => {
@@ -135,6 +139,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+				oauthProviderLoginFlowService.isRetiredNextcloudTool.mockReturnValue(false);
 				userService.findById.mockResolvedValue(user);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
@@ -185,6 +190,69 @@ describe(OauthProviderLoginFlowUc.name, () => {
 				const result = await uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
 
 				expect(result).toEqual(redirectResponse);
+			});
+		});
+
+		describe('when the tool is the retired Nextcloud tool', () => {
+			const setup = () => {
+				const query = { accept: true };
+
+				const loginRequestBodyMock = {
+					remember: true,
+					remember_for: 0,
+				};
+
+				const providerLoginResponse = providerLoginResponseFactory.build({
+					challenge: 'challenge',
+					client: {
+						client_id: 'clientId',
+					},
+					oidc_context: {},
+					request_url: 'request_url',
+					requested_access_token_audience: ['requested_access_token_audience'],
+					requested_scope: ['requested_scope'],
+					session_id: 'session_id',
+					skip: true,
+					subject: 'subject',
+				});
+
+				const tool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
+
+				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
+				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+				oauthProviderLoginFlowService.isRetiredNextcloudTool.mockReturnValue(true);
+
+				return {
+					query,
+					loginRequestBodyMock,
+					tool,
+				};
+			};
+
+			it('should throw a ForbiddenException', async () => {
+				const { query, loginRequestBodyMock, tool } = setup();
+
+				const func = () => uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
+
+				await expect(func).rejects.toThrow(
+					new ForbiddenException(`Tool ${tool.name} has been retired and can not be used for OAuth2 login`)
+				);
+			});
+
+			it('should not accept the login request', async () => {
+				const { query, loginRequestBodyMock } = setup();
+
+				await expect(uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query)).rejects.toThrow();
+
+				expect(oauthProviderService.acceptLoginRequest).not.toHaveBeenCalled();
+			});
+
+			it('should not create a pseudonym', async () => {
+				const { query, loginRequestBodyMock } = setup();
+
+				await expect(uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query)).rejects.toThrow();
+
+				expect(pseudonymService.findOrCreatePseudonym).not.toHaveBeenCalled();
 			});
 		});
 
@@ -258,6 +326,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+				oauthProviderLoginFlowService.isRetiredNextcloudTool.mockReturnValue(false);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 
 				return {

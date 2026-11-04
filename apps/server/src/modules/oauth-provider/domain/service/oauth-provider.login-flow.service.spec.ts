@@ -70,4 +70,42 @@ describe(OauthProviderLoginFlowService.name, () => {
 			});
 		});
 	});
+
+	describe('isRetiredNextcloudTool', () => {
+		describe('when the tool is the retired Nextcloud tool', () => {
+			const setup = () => {
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+
+				return {
+					tool,
+				};
+			};
+
+			it('should return true', () => {
+				const { tool } = setup();
+
+				const result: boolean = service.isRetiredNextcloudTool(tool);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when the tool is any other tool', () => {
+			const setup = () => {
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'TestTool' });
+
+				return {
+					tool,
+				};
+			};
+
+			it('should return false', () => {
+				const { tool } = setup();
+
+				const result: boolean = service.isRetiredNextcloudTool(tool);
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
 });
