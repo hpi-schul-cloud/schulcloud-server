@@ -61,7 +61,7 @@ export class PseudonymService {
 	}
 
 	public getIframeSubject(pseudonym: string): string {
-		const iFrameSubject = `<iframe src="${this.config.hostUrl}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
+		const iFrameSubject = `<iframe src="${this.config.hostUrl}/api/v3/pseudonyms/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
 
 		return iFrameSubject;
 	}
