@@ -19,7 +19,6 @@ const teams = require('./teams');
 const teamEvents = require('./teams/events');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
-const releases = require('./releases');
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
@@ -61,7 +60,6 @@ module.exports = function initializeServices() {
 	app.configure(homework);
 	app.configure(federalState);
 	app.configure(passwordRecovery);
-	app.configure(releases);
 	app.configure(consent);
 	app.configure(ldap);
 	app.configure(ldapConfig);
