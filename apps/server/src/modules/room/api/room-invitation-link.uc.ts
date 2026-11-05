@@ -112,11 +112,12 @@ export class RoomInvitationLinkUc {
 	}
 
 	private async tryGetLink(linkId: string): Promise<RoomInvitationLink> {
-		try {
-			return await this.roomInvitationLinkService.findById(linkId);
-		} catch {
+		const roomInvitationLink = await this.roomInvitationLinkService.findByInvitationCredential(linkId);
+		if (!roomInvitationLink) {
 			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.INVALID_LINK, HttpStatus.NOT_FOUND);
 		}
+
+		return roomInvitationLink;
 	}
 
 	private async ensureUserIsInRoom(roomInvitationLink: RoomInvitationLink, userId: EntityId): Promise<RoleName> {
