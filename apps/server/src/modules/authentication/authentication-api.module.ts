@@ -18,5 +18,6 @@ import { LoginUc, LogoutUc } from './uc';
 	],
 	providers: [LoginUc, LogoutUc],
 	controllers: [LoginController, LogoutController],
+	exports: [LoginUc],
 })
 export class AuthenticationApiModule {}

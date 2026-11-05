@@ -249,7 +249,7 @@ export class AccountUc {
 				case 'DELETE':
 					permissionsToCheck.push('TEACHER_DELETE');
 					break;
- 				*/
+				*/
 			}
 		}
 		if (permissionsToCheck.length === 0) {
