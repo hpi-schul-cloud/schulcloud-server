@@ -3,7 +3,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { Logger } from '@infra/logger';
 import { type StorageClient } from '@infra/valkey-client';
-import { HealthStatuses } from '../domain';
+import { HealthCheck, HealthStatuses } from '../domain';
 import { HEALTH_CONFIG_TOKEN, type HealthConfig } from '../health.config';
 import { HEALTH_SESSION_STORAGE_CLIENT } from '../health.constants';
 import { HealthService } from '../service';
@@ -53,6 +53,10 @@ describe(HealthUC.name, () => {
 		healthConfig.hostname = 'localhost';
 		healthConfig.excludeMongoDB = false;
 		healthConfig.excludeSessionStorage = true;
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -136,15 +140,38 @@ describe(HealthUC.name, () => {
 			});
 
 			it('checks storage with a temporary key and reports a pass', async () => {
+				jest.spyOn(Math, 'random').mockReturnValueOnce(1e-7);
+
 				const healthStatus = await uc.checkOverallHealth();
 				const [key] = sessionStorage.set.mock.calls[0];
 
-				expect(key).toMatch(/^health-check-\d+-[\d.]+$/);
+				expect(key).toMatch(/^health-check-\d+-1e-7$/);
 				expect(sessionStorage.set).toHaveBeenCalledWith(key, 'ok', 10);
 				expect(sessionStorage.del).toHaveBeenCalledWith(key);
 				expect(healthStatus.status).toEqual(HealthStatuses.STATUS_PASS);
 				expect(healthStatus.checks?.['sessionStorage:operationTime'][0].status).toEqual(HealthStatuses.STATUS_PASS);
 				expect(healthStatus.output).toBeUndefined();
+			});
+
+			it('runs MongoDB and session-storage checks concurrently', async () => {
+				healthConfig.excludeMongoDB = false;
+				let resolveMongoCheck!: (value: HealthCheck) => void;
+				const mongoCheck = new Promise<HealthCheck>((resolve) => {
+					resolveMongoCheck = resolve;
+				});
+				service.upsertHealthCheckById.mockReturnValueOnce(mongoCheck);
+
+				const healthStatusPromise = uc.checkOverallHealth();
+
+				expect(service.upsertHealthCheckById).toHaveBeenCalledTimes(1);
+				expect(sessionStorage.set).toHaveBeenCalledTimes(1);
+				resolveMongoCheck(new HealthCheck('db-health-check', new Date()));
+
+				const healthStatus = await healthStatusPromise;
+
+				expect(healthStatus.status).toEqual(HealthStatuses.STATUS_PASS);
+				expect(healthStatus.checks?.['mongoDB:upsertOperationTime'][0].status).toEqual(HealthStatuses.STATUS_PASS);
+				expect(healthStatus.checks?.['sessionStorage:operationTime'][0].status).toEqual(HealthStatuses.STATUS_PASS);
 			});
 
 			it('reports a write failure and does not attempt deletion', async () => {

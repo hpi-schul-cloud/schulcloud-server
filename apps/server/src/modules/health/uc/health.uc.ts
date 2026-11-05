@@ -68,7 +68,7 @@ export class HealthUC {
 	}
 
 	public async checkOverallHealth(): Promise<HealthStatus> {
-		const results = [await this.checkMongoDBHealth(), await this.checkSessionStorageHealth()].filter(
+		const results = (await Promise.all([this.checkMongoDBHealth(), this.checkSessionStorageHealth()])).filter(
 			(result): result is DependencyHealthCheckResult => result !== undefined
 		);
 		const checks = Object.fromEntries(results.map(({ name, check }) => [name, [check]]));
