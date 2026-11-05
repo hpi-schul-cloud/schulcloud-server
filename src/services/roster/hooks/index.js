@@ -76,7 +76,7 @@ module.exports = {
 	 * @param {*} context
 	 */
 	stripIframe: (context) => {
-		const regEx = /oauth2\/username\/(.*?)"/;
+		const regEx = /(?:oauth2\/username|api\/v3\/pseudonyms\/username)\/(.*?)"/;
 		const pseudonym = context.params.route.user;
 		context.params.pseudonym = pseudonym.includes('iframe') ? pseudonym.match(regEx)[1] : pseudonym;
 
@@ -91,6 +91,7 @@ module.exports = {
 			users.some(
 				(user) =>
 					user.user_id === oauth2.getSubject(context.params.tokenInfo.obfuscated_subject, webUri) ||
+					user.user_id === oauth2.getLegacySubject(context.params.tokenInfo.obfuscated_subject, webUri) ||
 					user.user_id === context.params.tokenInfo.obfuscated_subject
 			)
 		)

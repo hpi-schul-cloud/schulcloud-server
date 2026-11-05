@@ -112,7 +112,11 @@ describe('FeathersAuthProvider', () => {
 		});
 
 		it('should return user school permissions', async () => {
-			const userTargetPermissions = await authProvider.getUserTargetPermissions(userId, NewsTargetModel.School, schoolId);
+			const userTargetPermissions = await authProvider.getUserTargetPermissions(
+				userId,
+				NewsTargetModel.School,
+				schoolId
+			);
 			expect(userTargetPermissions).toBe(schoolPermissions);
 		});
 	});

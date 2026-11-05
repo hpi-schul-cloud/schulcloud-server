@@ -48,10 +48,10 @@ export class VideoConferenceService {
 		return true;
 	}
 
-	public async isExternalPersonOrTeamExpert(
+	public async isExternalPerson(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
-		scopeId: string
+		_scopeId: string
 	): Promise<boolean> {
 		let isExternalPerson = false;
 		switch (conferenceScope) {
@@ -249,7 +249,7 @@ export class VideoConferenceService {
 
 		const role = await this.determineBbbRole(userId, scopeInfo.scopeId, scope);
 
-		const isBbbGuest = await this.isExternalPersonOrTeamExpert(userId, scope, scopeInfo.scopeId);
+		const isBbbGuest = await this.isExternalPerson(userId, scope, scopeInfo.scopeId);
 
 		return { role, isGuest: isBbbGuest };
 	}

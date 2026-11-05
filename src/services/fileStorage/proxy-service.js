@@ -130,14 +130,18 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
  * @returns 'user' || 'course'
  */
 const getRefOwnerModel = async (owner) => {
-	let refOwnerModel = 'user';
-
 	if (owner) {
 		const isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
-		refOwnerModel = isCourse ? 'course' : 'user';
+		if (isCourse) {
+			return 'course';
+		}
+		const isUser = Boolean(await userModel.findOne({ _id: owner }).exec());
+		if (isUser) {
+			return 'user';
+		}
+		throw new BadRequest('File owner must be an existing user or course.');
 	}
-
-	return refOwnerModel;
+	return 'user';
 };
 
 const fileStorageService = {

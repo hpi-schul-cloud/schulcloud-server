@@ -125,4 +125,3 @@ export class CourseNews extends News {
 		this.targetModel = NewsTargetModel.Course;
 	}
 }
-

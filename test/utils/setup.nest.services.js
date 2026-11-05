@@ -6,8 +6,6 @@ const { Test } = require('@nestjs/testing');
 const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/api/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/domain/services/account.service');
-const { TeamService } = require('../../dist/apps/server/modules/team/domain/service/team.service');
-const { TeamApiModule } = require('../../dist/apps/server/modules/team/team-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
 const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server/modules/authorization-rules');
 const {
@@ -35,7 +33,6 @@ const setupNestServices = async (app) => {
 			}),
 			ConfigurationModule.register(SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig),
 			AccountApiModule,
-			TeamApiModule,
 			AuthorizationModule,
 			AuthorizationRulesModule,
 			RosterModule,
@@ -46,14 +43,12 @@ const setupNestServices = async (app) => {
 	const orm = nestApp.get(MikroORM);
 	const accountUc = nestApp.get(AccountUc);
 	const accountService = nestApp.get(AccountService);
-	const teamService = nestApp.get(TeamService);
 	const systemRule = nestApp.get(SystemRule);
 	const feathersRosterService = nestApp.get(FeathersRosterService);
 	const jwtWhitelistAdapter = nestApp.get(JwtWhitelistAdapter);
 
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
-	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
 	app.services['nest-feathers-roster-service'] = feathersRosterService;
 	app.services['nest-orm'] = orm;

@@ -10,6 +10,6 @@ import { PseudonymService } from './service';
 @Module({
 	imports: [LoggerModule, SagaModule, ConfigurationModule.register(PSEUDONYM_CONFIG_TOKEN, PseudonymConfig)],
 	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger, DeleteUserPseudonymDataStep],
-	exports: [PseudonymService],
+	exports: [PseudonymService, ConfigurationModule],
 })
 export class PseudonymModule {}

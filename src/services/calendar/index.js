@@ -53,7 +53,6 @@ const convertEventToJsonApi = (body) => {
 					repeat_wkst: body.weekday,
 					repeat_until: body.repeat_until,
 					'x-sc-courseId': body.courseId,
-					'x-sc-featureVideoConference': body.featureVideoConference === 'on',
 					'x-sc-courseTimeId': body.courseTimeId,
 				},
 				relationships: {

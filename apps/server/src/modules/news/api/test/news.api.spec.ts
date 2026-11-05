@@ -3,8 +3,6 @@ import { FeathersAuthorizationService } from '@modules/authorization';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { TeamEntity } from '@modules/team/repo';
-import { teamFactory } from '@modules/team/testing';
 import { type User } from '@modules/user/repo';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -17,7 +15,6 @@ import { News } from '../../repo';
 import { CreateNewsParams, type NewsListResponse, type NewsResponse, type UpdateNewsParams } from '../dto';
 
 const newsApiRoute = '/news';
-const teamsApiRoute = '/team';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;
@@ -32,7 +29,6 @@ describe('News Controller (API)', () => {
 			targetIds: [courseTargetId, unpublishedCourseTargetId, course2TargetId],
 		},
 	];
-	const emptyPaginationResponse: NewsListResponse = { data: [], total: 0 };
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -56,7 +52,6 @@ describe('News Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(TeamEntity, {});
 		await em.nativeDelete(CourseEntity, {});
 		await em.nativeDelete(News, {});
 	});
@@ -90,13 +85,6 @@ describe('News Controller (API)', () => {
 		course.id = id;
 		await em.persist(course).flush();
 		return course;
-	};
-
-	const createTeamTarget = async (id: EntityId) => {
-		const team = teamFactory.build();
-		team.id = id;
-		await em.persist(team).flush();
-		return team;
 	};
 
 	describe('GET /news', () => {

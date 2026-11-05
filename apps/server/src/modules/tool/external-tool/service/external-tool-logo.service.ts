@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 import { Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { EntityId, ImageMimeType } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
+import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { lastValueFrom } from 'rxjs';
 import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
@@ -22,6 +24,12 @@ import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer
 
 @Injectable()
 export class ExternalToolLogoService {
+	// Prevent SSRF: the agents reject connections to private, loopback, link-local and other non-public IPs.
+	// The check happens on the resolved IP at connect time, so it also covers DNS rebinding and redirects.
+	private readonly httpAgent = new RequestFilteringHttpAgent();
+
+	private readonly httpsAgent = new RequestFilteringHttpsAgent();
+
 	constructor(
 		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
 		private readonly logger: Logger,
@@ -71,7 +79,15 @@ export class ExternalToolLogoService {
 	private async fetchBase64Logo(logoUrl: string): Promise<string> {
 		try {
 			const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
-				this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
+				this.httpService.get(logoUrl, {
+					responseType: 'arraybuffer',
+					httpAgent: this.httpAgent,
+					httpsAgent: this.httpsAgent,
+					proxy: false,
+					maxRedirects: 3,
+					timeout: 10000,
+					maxContentLength: this.config.ctlToolsExternalToolMaxLogoSizeInBytes,
+				})
 			);
 			this.logger.debug(new ExternalToolLogoFetchedLoggable(logoUrl));
 
@@ -94,16 +110,19 @@ export class ExternalToolLogoService {
 			const logoBase64: string = buffer.toString('base64');
 			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
+			const err = error as unknown;
 			if (
-				error instanceof ExternalToolLogoWrongFileTypeLoggableException ||
-				error instanceof ExternalToolLogoSanitizationLoggableException
+				err instanceof ExternalToolLogoWrongFileTypeLoggableException ||
+				err instanceof ExternalToolLogoSanitizationLoggableException
 			) {
-				throw error;
-			} else if (error instanceof HttpException) {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
-			} else {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+				throw err;
 			}
+
+			if (err instanceof HttpException) {
+				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, err.getStatus());
+			}
+
+			throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
 		}
 	}
 

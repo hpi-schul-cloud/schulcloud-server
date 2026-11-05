@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
@@ -21,8 +22,6 @@ import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membershi
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { TeamRepo } from '@modules/team/repo';
-import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
@@ -49,7 +48,6 @@ describe(VideoConferenceService.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let roomService: DeepMocked<RoomService>;
-	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let config: VideoConferenceConfig;
@@ -91,10 +89,6 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<RoomService>(),
 				},
 				{
-					provide: TeamRepo,
-					useValue: createMock<TeamRepo>(),
-				},
-				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
@@ -112,7 +106,6 @@ describe(VideoConferenceService.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		roomMembershipService = module.get(RoomMembershipService);
 		roomService = module.get(RoomService);
-		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
@@ -163,7 +156,7 @@ describe(VideoConferenceService.name, () => {
 		});
 	});
 
-	describe('isExternalPersonOrTeamExpert', () => {
+	describe('isExternalPerson', () => {
 		describe('when user has EXTERNALPERSON role for a course conference', () => {
 			const setup = () => {
 				const user = userDoFactory
@@ -186,7 +179,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -194,7 +187,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -222,7 +215,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -230,7 +223,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -258,7 +251,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -266,7 +259,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -291,7 +284,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call the user service to find the user by id', async () => {
 				const { userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -299,7 +292,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 			});
@@ -327,7 +320,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 				expect(userService.findById).toHaveBeenCalledWith(userId);
@@ -353,13 +346,11 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a BadRequestException', async () => {
 				const { userId, scopeId } = setup();
 
-				const func = () =>
-					service.isExternalPersonOrTeamExpert(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
+				const func = () => service.isExternalPerson(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
 
 				await expect(func()).rejects.toThrow(new BadRequestException('Unknown scope name.'));
 			});
 		});
-
 	});
 
 	describe('determineBbbRole', () => {
@@ -1283,7 +1274,6 @@ describe(VideoConferenceService.name, () => {
 				expect(result).toEqual({ role: BBBRole.VIEWER, isGuest: false });
 			});
 		});
-
 	});
 
 	describe('findVideoConferenceByScopeAndScopeId', () => {
