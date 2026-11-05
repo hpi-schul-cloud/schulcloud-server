@@ -1,8 +1,10 @@
 import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
-import { Inject, Injectable } from '@nestjs/common';
+import { type StorageClient } from '@infra/valkey-client';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { HealthStatus, HealthStatusCheck, HealthStatuses } from '../domain';
 import { HEALTH_CONFIG_TOKEN, HealthConfig } from '../health.config';
+import { HEALTH_SESSION_STORAGE_CLIENT } from '../health.constants';
 import { HealthService } from '../service';
 
 const selfOnlyHealthDescription = 'Service health status (self-only)';
@@ -10,6 +12,7 @@ const selfOnlyHealthDescription = 'Service health status (self-only)';
 const overallHealthDescription = 'Service health status (overall)';
 
 const mongoDBUpsertOperationTime = 'mongoDB:upsertOperationTime';
+const sessionStorageOperationTime = 'sessionStorage:operationTime';
 
 const datastoreComponentType = 'datastore';
 
@@ -31,7 +34,8 @@ export class HealthUC {
 	constructor(
 		private readonly healthService: HealthService,
 		private readonly logger: Logger,
-		@Inject(HEALTH_CONFIG_TOKEN) private readonly healthConfig: HealthConfig
+		@Inject(HEALTH_CONFIG_TOKEN) private readonly healthConfig: HealthConfig,
+		@Optional() @Inject(HEALTH_SESSION_STORAGE_CLIENT) private readonly sessionStorage?: StorageClient
 	) {
 		this.logger.setContext(HealthUC.name);
 	}
@@ -48,80 +52,67 @@ export class HealthUC {
 	}
 
 	public async checkOverallHealth(): Promise<HealthStatus> {
-		// The below check allows for turning off the MongoDB dependency on the health check -
-		// it shouldn't be typically used, but if this health check will be used e.g. in the k8s
-		// liveliness or readiness probes and, for any reason, there would be a need to stop
-		// including MongoDB check in the overall API health checks, the HEALTH_CHECKS_EXCLUDE_MONGODB
-		// config var can be set to 'true' to disable it. This way, as currently only this single
-		// MongoDB check is included in the overall API health checks, the whole health check will
-		// not perform any additional checks on any of the 3rd party services and thus will behave
-		// like the self-only API health check.
-		if (this.healthConfig.excludeMongoDB) {
-			return new HealthStatus({
-				status: HealthStatuses.STATUS_PASS,
-				description: overallHealthDescription,
-			});
-		}
+		// MongoDB can be excluded for deployments that need an independent health check.
+		// Session storage is still checked when configured because the server depends on it.
+		const checks: Record<string, HealthStatusCheck[]> = {};
+		const outputs: string[] = [];
 
-		const upsertOperationDate = new Date();
-		const startTime = performance.now();
-
-		try {
-			let healthCheckID = 'db-health-check';
-
-			// If hostname is available in the health module
-			// config, append it to the health check ID.
-			if (this.healthConfig.hostname !== '') {
-				healthCheckID += `-${this.healthConfig.hostname}`;
+		if (!this.healthConfig.excludeMongoDB) {
+			const checkTime = new Date();
+			const startTime = performance.now();
+			let errorMessage: string | undefined;
+			try {
+				let healthCheckID = 'db-health-check';
+				if (this.healthConfig.hostname !== '') healthCheckID += `-${this.healthConfig.hostname}`;
+				await this.healthService.upsertHealthCheckById(healthCheckID);
+			} catch (error) {
+				this.logger.warning(new ErrorLoggable(error));
+				errorMessage = hasMessage(error) ? error.message : JSON.stringify(error);
+				outputs.push(`'${mongoDBUpsertOperationTime}' check error: ${errorMessage}`);
 			}
-
-			await this.healthService.upsertHealthCheckById(healthCheckID);
-		} catch (error) {
-			this.logger.warning(new ErrorLoggable(error));
-			// If any error occurred in the database operation execution it should be indicated
-			// as a MongoDB check failure (and thus the whole health check should fail).
-
-			const endTime = performance.now();
-
-			const errorMessage = hasMessage(error) ? error.message : JSON.stringify(error);
-
-			return new HealthStatus({
-				status: HealthStatuses.STATUS_FAIL,
-				output: `'${mongoDBUpsertOperationTime}' check error: ${errorMessage}`,
-				description: overallHealthDescription,
-				checks: {
-					[mongoDBUpsertOperationTime]: [
-						new HealthStatusCheck({
-							componentType: datastoreComponentType,
-							observedValue: endTime - startTime,
-							observedUnit: observedUnitMs,
-							status: HealthStatuses.STATUS_FAIL,
-							time: upsertOperationDate,
-							output: errorMessage,
-						}),
-					],
-				},
-			});
+			checks[mongoDBUpsertOperationTime] = [
+				new HealthStatusCheck({
+					componentType: datastoreComponentType,
+					observedValue: performance.now() - startTime,
+					observedUnit: observedUnitMs,
+					status: errorMessage ? HealthStatuses.STATUS_FAIL : HealthStatuses.STATUS_PASS,
+					time: checkTime,
+					output: errorMessage,
+				}),
+			];
 		}
 
-		const endTime = performance.now();
+		if (this.sessionStorage) {
+			const checkTime = new Date();
+			const startTime = performance.now();
+			const key = `health-check-${Date.now()}-${Math.random()}`;
+			let errorMessage: string | undefined;
+			try {
+				await this.sessionStorage.set(key, 'ok', 10);
+				await this.sessionStorage.del(key);
+			} catch (error) {
+				this.logger.warning(new ErrorLoggable(error));
+				errorMessage = hasMessage(error) ? error.message : JSON.stringify(error);
+				outputs.push(`'${sessionStorageOperationTime}' check error: ${errorMessage}`);
+			}
+			checks[sessionStorageOperationTime] = [
+				new HealthStatusCheck({
+					componentType: datastoreComponentType,
+					observedValue: performance.now() - startTime,
+					observedUnit: observedUnitMs,
+					status: errorMessage ? HealthStatuses.STATUS_FAIL : HealthStatuses.STATUS_PASS,
+					time: checkTime,
+					output: errorMessage,
+				}),
+			];
+		}
 
-		// Prepare the passed health status with
-		// the performed upsert operation time.
+		const failed = Object.values(checks).some((componentChecks) => componentChecks.some((check) => !check.isPassed()));
 		return new HealthStatus({
-			status: HealthStatuses.STATUS_PASS,
+			status: failed ? HealthStatuses.STATUS_FAIL : HealthStatuses.STATUS_PASS,
 			description: overallHealthDescription,
-			checks: {
-				[mongoDBUpsertOperationTime]: [
-					new HealthStatusCheck({
-						componentType: datastoreComponentType,
-						observedValue: endTime - startTime,
-						observedUnit: observedUnitMs,
-						status: HealthStatuses.STATUS_PASS,
-						time: upsertOperationDate,
-					}),
-				],
-			},
+			output: outputs.length > 0 ? outputs.join('; ') : undefined,
+			checks: Object.keys(checks).length > 0 ? checks : undefined,
 		});
 	}
 }
