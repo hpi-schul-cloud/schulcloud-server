@@ -18,6 +18,12 @@ const datastoreComponentType = 'datastore';
 
 const observedUnitMs = 'ms';
 
+interface DependencyHealthCheckResult {
+	name: string;
+	check: HealthStatusCheck;
+	output?: string;
+}
+
 function hasMessage(error: unknown): error is { message: string } {
 	// Check whether given error of an unknown type
 	// has a 'message' field of a string type or not.
@@ -27,6 +33,16 @@ function hasMessage(error: unknown): error is { message: string } {
 		'message' in error &&
 		typeof (error as Record<string, unknown>).message === 'string'
 	);
+}
+
+function getErrorMessage(error: unknown): string {
+	if (hasMessage(error)) return error.message;
+
+	try {
+		return JSON.stringify(error) ?? String(error);
+	} catch {
+		return String(error);
+	}
 }
 
 @Injectable()
@@ -52,67 +68,72 @@ export class HealthUC {
 	}
 
 	public async checkOverallHealth(): Promise<HealthStatus> {
-		// Each external dependency can be excluded independently for deployments that need
-		// an independent health check.
-		const checks: Record<string, HealthStatusCheck[]> = {};
-		const outputs: string[] = [];
+		const results = [await this.checkMongoDBHealth(), await this.checkSessionStorageHealth()].filter(
+			(result): result is DependencyHealthCheckResult => result !== undefined
+		);
+		const checks = Object.fromEntries(results.map(({ name, check }) => [name, [check]]));
+		const outputs = results.flatMap(({ output }) => (output ? [output] : []));
+		const failed = results.some(({ check }) => !check.isPassed());
 
-		if (!this.healthConfig.excludeMongoDB) {
-			const checkTime = new Date();
-			const startTime = performance.now();
-			let errorMessage: string | undefined;
-			try {
-				let healthCheckID = 'db-health-check';
-				if (this.healthConfig.hostname !== '') healthCheckID += `-${this.healthConfig.hostname}`;
-				await this.healthService.upsertHealthCheckById(healthCheckID);
-			} catch (error) {
-				this.logger.warning(new ErrorLoggable(error));
-				errorMessage = hasMessage(error) ? error.message : JSON.stringify(error);
-				outputs.push(`'${mongoDBUpsertOperationTime}' check error: ${errorMessage}`);
-			}
-			checks[mongoDBUpsertOperationTime] = [
-				new HealthStatusCheck({
-					componentType: datastoreComponentType,
-					observedValue: performance.now() - startTime,
-					observedUnit: observedUnitMs,
-					status: errorMessage ? HealthStatuses.STATUS_FAIL : HealthStatuses.STATUS_PASS,
-					time: checkTime,
-					output: errorMessage,
-				}),
-			];
-		}
-
-		if (this.sessionStorage && !this.healthConfig.excludeSessionStorage) {
-			const checkTime = new Date();
-			const startTime = performance.now();
-			const key = `health-check-${Date.now()}-${Math.random()}`;
-			let errorMessage: string | undefined;
-			try {
-				await this.sessionStorage.set(key, 'ok', 10);
-				await this.sessionStorage.del(key);
-			} catch (error) {
-				this.logger.warning(new ErrorLoggable(error));
-				errorMessage = hasMessage(error) ? error.message : JSON.stringify(error);
-				outputs.push(`'${sessionStorageOperationTime}' check error: ${errorMessage}`);
-			}
-			checks[sessionStorageOperationTime] = [
-				new HealthStatusCheck({
-					componentType: datastoreComponentType,
-					observedValue: performance.now() - startTime,
-					observedUnit: observedUnitMs,
-					status: errorMessage ? HealthStatuses.STATUS_FAIL : HealthStatuses.STATUS_PASS,
-					time: checkTime,
-					output: errorMessage,
-				}),
-			];
-		}
-
-		const failed = Object.values(checks).some((componentChecks) => componentChecks.some((check) => !check.isPassed()));
 		return new HealthStatus({
 			status: failed ? HealthStatuses.STATUS_FAIL : HealthStatuses.STATUS_PASS,
 			description: overallHealthDescription,
 			output: outputs.length > 0 ? outputs.join('; ') : undefined,
 			checks: Object.keys(checks).length > 0 ? checks : undefined,
 		});
+	}
+
+	private checkMongoDBHealth(): Promise<DependencyHealthCheckResult> | undefined {
+		if (this.healthConfig.excludeMongoDB) return undefined;
+
+		let healthCheckID = 'db-health-check';
+		if (this.healthConfig.hostname !== '') healthCheckID += `-${this.healthConfig.hostname}`;
+
+		return this.checkDependencyHealth(mongoDBUpsertOperationTime, () =>
+			this.healthService.upsertHealthCheckById(healthCheckID)
+		);
+	}
+
+	private checkSessionStorageHealth(): Promise<DependencyHealthCheckResult> | undefined {
+		const { sessionStorage } = this;
+		if (!sessionStorage || this.healthConfig.excludeSessionStorage) return undefined;
+
+		const key = `health-check-${Date.now()}-${Math.random()}`;
+
+		return this.checkDependencyHealth(sessionStorageOperationTime, async () => {
+			await sessionStorage.set(key, 'ok', 10);
+			await sessionStorage.del(key);
+		});
+	}
+
+	private async checkDependencyHealth(
+		name: string,
+		operation: () => Promise<unknown>
+	): Promise<DependencyHealthCheckResult> {
+		const checkTime = new Date();
+		const startTime = performance.now();
+		let errorMessage: string | undefined;
+		let failed = false;
+
+		try {
+			await operation();
+		} catch (error) {
+			failed = true;
+			this.logger.warning(new ErrorLoggable(error));
+			errorMessage = getErrorMessage(error);
+		}
+
+		return {
+			name,
+			output: failed ? `'${name}' check error: ${errorMessage}` : undefined,
+			check: new HealthStatusCheck({
+				componentType: datastoreComponentType,
+				observedValue: performance.now() - startTime,
+				observedUnit: observedUnitMs,
+				status: failed ? HealthStatuses.STATUS_FAIL : HealthStatuses.STATUS_PASS,
+				time: checkTime,
+				output: errorMessage,
+			}),
+		};
 	}
 }
