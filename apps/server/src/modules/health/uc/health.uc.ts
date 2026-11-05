@@ -52,8 +52,8 @@ export class HealthUC {
 	}
 
 	public async checkOverallHealth(): Promise<HealthStatus> {
-		// MongoDB can be excluded for deployments that need an independent health check.
-		// Session storage is still checked when configured because the server depends on it.
+		// Each external dependency can be excluded independently for deployments that need
+		// an independent health check.
 		const checks: Record<string, HealthStatusCheck[]> = {};
 		const outputs: string[] = [];
 
@@ -82,7 +82,7 @@ export class HealthUC {
 			];
 		}
 
-		if (this.sessionStorage) {
+		if (this.sessionStorage && !this.healthConfig.excludeSessionStorage) {
 			const checkTime = new Date();
 			const startTime = performance.now();
 			const key = `health-check-${Date.now()}-${Math.random()}`;
