@@ -1,9 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { GroupService } from '@modules/group';
-import { groupFactory } from '@modules/group/testing';
-import { type MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
-import { mediaGroupLicenseFactory } from '@modules/group-license/testing';
 import { type MediaSchoolLicense } from '@modules/school-license';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
@@ -13,7 +9,6 @@ import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { Page } from '@shared/domain/domainobject';
 import {
 	type ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,
@@ -34,8 +29,6 @@ describe(ToolConfigurationStatusService.name, () => {
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
-	let mediaGroupLicenseService: DeepMocked<MediaGroupLicenseService>;
-	let groupService: DeepMocked<GroupService>;
 	let userService: DeepMocked<UserService>;
 	let config: ToolConfig;
 
@@ -56,14 +49,6 @@ describe(ToolConfigurationStatusService.name, () => {
 					useValue: createMock<MediaSchoolLicenseService>(),
 				},
 				{
-					provide: MediaGroupLicenseService,
-					useValue: createMock<MediaGroupLicenseService>(),
-				},
-				{
-					provide: GroupService,
-					useValue: createMock<GroupService>(),
-				},
-				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
@@ -78,8 +63,6 @@ describe(ToolConfigurationStatusService.name, () => {
 		commonToolValidationService = module.get(CommonToolValidationService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
-		mediaGroupLicenseService = module.get(MediaGroupLicenseService);
-		groupService = module.get(GroupService);
 		userService = module.get(UserService);
 		config = module.get(TOOL_CONFIG_TOKEN);
 	});
@@ -684,159 +667,11 @@ describe(ToolConfigurationStatusService.name, () => {
 						]);
 					});
 				});
-
-				describe('when user has a license through a group', () => {
-					const setup = () => {
-						const userId = new ObjectId().toHexString();
-						const schoolId = new ObjectId().toHexString();
-						const user = userDoFactory.buildWithId({ id: userId, schoolId });
-						const group = groupFactory.build({ organizationId: schoolId });
-						const externalTool = externalToolFactory.withMedium().buildWithId();
-						const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
-						const contextExternalTool = contextExternalToolFactory
-							.withSchoolExternalToolRef(schoolExternalTool.id)
-							.buildWithId();
-						const mediaGroupLicense: MediaGroupLicense = mediaGroupLicenseFactory.build({ groupId: group.id });
-
-						config.featureVidisMediaActivationsEnabled = true;
-						config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
-						commonToolValidationService.validateParameters.mockReturnValue([]);
-						userService.findById.mockResolvedValue(user);
-						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
-						groupService.findGroups.mockResolvedValue(new Page([group], 1));
-						mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([mediaGroupLicense]);
-						mediaGroupLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
-						mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([]);
-
-						return {
-							contextExternalTool,
-							externalTool,
-							group,
-							mediaGroupLicense,
-							schoolExternalTool,
-							schoolId,
-							userId,
-						};
-					};
-
-					it('should consider the tool licensed', async () => {
-						const { contextExternalTool, externalTool, schoolExternalTool, userId } = setup();
-
-						const status = await service.determineToolConfigurationStatus(
-							externalTool,
-							schoolExternalTool,
-							contextExternalTool,
-							userId
-						);
-
-						expect(status.isNotLicensed).toBe(false);
-					});
-
-					it('should check the licenses of the user groups', async () => {
-						const {
-							contextExternalTool,
-							externalTool,
-							group,
-							mediaGroupLicense,
-							schoolExternalTool,
-							schoolId,
-							userId,
-						} = setup();
-
-						await service.determineToolConfigurationStatus(
-							externalTool,
-							schoolExternalTool,
-							contextExternalTool,
-							userId
-						);
-
-						expect(groupService.findGroups).toHaveBeenCalledWith({ schoolId, userId });
-						expect(mediaGroupLicenseService.findMediaGroupLicensesByGroupIds).toHaveBeenCalledWith([group.id]);
-						expect(mediaGroupLicenseService.hasLicenseForExternalTool).toHaveBeenCalledWith(externalTool.medium, [
-							mediaGroupLicense,
-						]);
-					});
-				});
-
-				describe('when tool has no medium', () => {
-					const setup = () => {
-						const userId = new ObjectId().toHexString();
-						const schoolId = new ObjectId().toHexString();
-						const user = userDoFactory.buildWithId({ id: userId, schoolId });
-						const externalTool = externalToolFactory.buildWithId();
-						const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
-						const contextExternalTool = contextExternalToolFactory
-							.withSchoolExternalToolRef(schoolExternalTool.id)
-							.buildWithId();
-
-						config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
-						commonToolValidationService.validateParameters.mockReturnValue([]);
-						userService.findById.mockResolvedValue(user);
-						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
-						groupService.findGroups.mockResolvedValue(new Page([], 0));
-						mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([]);
-						mediaGroupLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
-						mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([]);
-
-						return { contextExternalTool, externalTool, schoolExternalTool, userId };
-					};
-
-					it('should not call findMediaGroupLicensesByGroupIds', async () => {
-						const { contextExternalTool, externalTool, schoolExternalTool, userId } = setup();
-
-						await service.determineToolConfigurationStatus(
-							externalTool,
-							schoolExternalTool,
-							contextExternalTool,
-							userId
-						);
-
-						expect(mediaGroupLicenseService.findMediaGroupLicensesByGroupIds).not.toHaveBeenCalled();
-					});
-				});
-
-				describe('when user has no groups', () => {
-					const setup = () => {
-						const userId = new ObjectId().toHexString();
-						const schoolId = new ObjectId().toHexString();
-						const user = userDoFactory.buildWithId({ id: userId, schoolId });
-						const externalTool = externalToolFactory.withMedium().buildWithId();
-						const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
-						const contextExternalTool = contextExternalToolFactory
-							.withSchoolExternalToolRef(schoolExternalTool.id)
-							.buildWithId();
-
-						config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
-						commonToolValidationService.validateParameters.mockReturnValue([]);
-						userService.findById.mockResolvedValue(user);
-						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
-						groupService.findGroups.mockResolvedValue(new Page([], 0));
-						mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([]);
-						mediaGroupLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
-						mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([]);
-
-						return { contextExternalTool, externalTool, schoolExternalTool, userId };
-					};
-
-					it('should not call findMediaGroupLicensesByGroupIds', async () => {
-						const { contextExternalTool, externalTool, schoolExternalTool, userId } = setup();
-
-						await service.determineToolConfigurationStatus(
-							externalTool,
-							schoolExternalTool,
-							contextExternalTool,
-							userId
-						);
-
-						expect(mediaGroupLicenseService.findMediaGroupLicensesByGroupIds).not.toHaveBeenCalled();
-					});
-				});
 			});
 			describe('determineToolConfigurationStatus with FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED media license activations', () => {
 				beforeEach(() => {
 					config.featureSchulconnexMediaLicenseEnabled = false;
 					config.featureVidisMediaActivationsEnabled = true;
-					config.featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
 				});
 				describe('when license feature is enabled and user school has no license for externalTool', () => {
 					const setup = () => {

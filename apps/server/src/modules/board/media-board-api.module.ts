@@ -2,7 +2,6 @@ import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { GroupModule } from '@modules/group';
-import { GroupLicenseModule } from '@modules/group-license';
 import { SagaModule } from '@modules/saga';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
@@ -23,7 +22,6 @@ import { MediaAvailableLineUc, MediaBoardUc, MediaElementUc, MediaLineUc } from 
 		LoggerModule,
 		UserModule,
 		GroupModule,
-		GroupLicenseModule,
 		forwardRef(() => AuthorizationModule),
 		MediaBoardModule,
 		ToolModule,

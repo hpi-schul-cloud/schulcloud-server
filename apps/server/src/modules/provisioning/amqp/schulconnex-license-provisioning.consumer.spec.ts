@@ -164,9 +164,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 
 				expect(schulconnexLicenseProvisioningService.provisionExternalLicenses).toHaveBeenCalledWith(
 					userId,
-					externalLicenses,
-					schoolId,
-					systemId
+					externalLicenses
 				);
 			});
 

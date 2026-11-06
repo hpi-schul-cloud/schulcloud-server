@@ -1,7 +1,5 @@
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupService } from '@modules/group';
-import { MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
 import { MediumIdentifier } from '@modules/media-source';
 import { ExternalToolMetadataUpdateService } from '@modules/media-source-sync';
@@ -15,7 +13,7 @@ import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	ExternalToolMetadataUpdateFailedLoggable,
@@ -23,7 +21,6 @@ import {
 	ExternalToolCreatedLoggable,
 	SchoolExternalToolCreatedLoggable,
 } from '../../../loggable';
-import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../../provisioning.config';
 
 @Injectable()
 export class SchulconnexToolProvisioningService {
@@ -36,10 +33,7 @@ export class SchulconnexToolProvisioningService {
 		private readonly externalToolValidationService: ExternalToolValidationService,
 		private readonly mediumMetadataService: MediumMetadataService,
 		private readonly externalToolMetadataUpdateService: ExternalToolMetadataUpdateService,
-		private readonly logger: Logger,
-		private readonly mediaGroupLicenseService: MediaGroupLicenseService,
-		private readonly groupService: GroupService,
-		@Inject(PROVISIONING_CONFIG_TOKEN) private readonly config: ProvisioningConfig
+		private readonly logger: Logger
 	) {}
 
 	public async provisionSchoolExternalTools(userId: EntityId, schoolId: EntityId, systemId: string): Promise<void> {
@@ -56,20 +50,7 @@ export class SchulconnexToolProvisioningService {
 		const mediaSchoolLicenses: MediaSchoolLicense[] =
 			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
-		let mediaGroupLicenses: MediaGroupLicense[] = [];
-		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled) {
-			const userGroups = await this.groupService.findGroups({ userId, schoolId });
-			const userGroupIds = userGroups.data.map((group: Group) => group.id);
-			if (userGroupIds.length > 0) {
-				mediaGroupLicenses = await this.mediaGroupLicenseService.findMediaGroupLicensesByGroupIds(userGroupIds);
-			}
-		}
-
-		const mediaLicenses: MediumIdentifier[] = this.getUniqueMediaLicenses(
-			mediaUserLicenses,
-			mediaSchoolLicenses,
-			mediaGroupLicenses
-		);
+		const mediaLicenses: MediumIdentifier[] = this.getUniqueMediaLicenses(mediaUserLicenses, mediaSchoolLicenses);
 
 		const results = await Promise.allSettled(
 			mediaLicenses.map((license: MediumIdentifier) => this.provisionExternalToolForLicense(userId, schoolId, license))
@@ -86,12 +67,11 @@ export class SchulconnexToolProvisioningService {
 
 	private getUniqueMediaLicenses(
 		mediaUserLicenses: MediaUserLicense[],
-		mediaSchoolLicenses: MediaSchoolLicense[],
-		mediaGroupLicenses: MediaGroupLicense[] = []
+		mediaSchoolLicenses: MediaSchoolLicense[]
 	): MediumIdentifier[] {
 		return Array.from(
 			new Map(
-				[...mediaUserLicenses, ...mediaSchoolLicenses, ...mediaGroupLicenses].map((license: MediumIdentifier) => [
+				[...mediaUserLicenses, ...mediaSchoolLicenses].map((license: MediumIdentifier) => [
 					JSON.stringify([license.mediaSource?.sourceId, license.mediumId]),
 					license,
 				])
