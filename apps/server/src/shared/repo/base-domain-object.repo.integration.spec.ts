@@ -1,4 +1,5 @@
-import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
+import { EntityData, EntityName } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -24,6 +25,9 @@ describe('BaseDomainObjectRepo', () => {
 	class TestEntity extends BaseEntityWithTimestamps {
 		@Property()
 		name: string;
+
+		@Property({ nullable: true })
+		description?: string;
 
 		constructor(props: TestEntityProperties) {
 			super();
@@ -90,6 +94,34 @@ describe('BaseDomainObjectRepo', () => {
 	});
 
 	describe('save', () => {
+		it.each([false, true])('should preserve partial update semantics when description is cleared=%s', async (clear) => {
+			const entity = new TestEntity({ id: new ObjectId().toHexString(), name: 'before' });
+			entity.description = 'keep unless explicitly cleared';
+			await em.persist(entity).flush();
+			const { id, _id, createdAt } = entity;
+			em.clear();
+
+			const data: EntityData<TestEntity> = clear ? { name: 'after', description: undefined } : { name: 'after' };
+			const mapperSpy = jest.spyOn(repo, 'mapDOToEntityProperties').mockReturnValueOnce(data);
+			try {
+				await repo.save(new TestDO({ id, name: 'after' }));
+				em.clear();
+
+				const stored = await em.findOneOrFail(TestEntity, id);
+				expect(stored.name).toBe('after');
+				expect(stored._id).toEqual(_id);
+				expect(stored.createdAt).toEqual(createdAt);
+				const raw = await em.getCollection(TestEntity).findOne({ _id });
+				if (clear) {
+					expect(raw).not.toHaveProperty('description');
+				} else {
+					expect(raw).toHaveProperty('description', 'keep unless explicitly cleared');
+				}
+			} finally {
+				mapperSpy.mockRestore();
+			}
+		});
+
 		describe('when create new entity', () => {
 			const setup = () => {
 				const oid = new ObjectId();

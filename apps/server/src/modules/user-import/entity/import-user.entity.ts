@@ -1,4 +1,5 @@
-import { Entity, Enum, Ref, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { ArrayType, Ref, wrap } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property, Unique } from '@mikro-orm/decorators/legacy';
 import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
@@ -98,14 +99,14 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	@Enum({ fieldName: 'roles' })
 	roleNames: ImportUserRoleName[] = [];
 
-	@Property()
+	@Property({ type: ArrayType<string> })
 	classNames: string[] = [];
 
 	/**
 	 * Update user-match together with matchedBy, take the field as read-only
 	 * @read
 	 */
-	@ManyToOne('User', { fieldName: 'match_userId', eager: true, nullable: true })
+	@ManyToOne(() => User, { fieldName: 'match_userId', eager: true, nullable: true })
 	@Unique({ options: { partialFilterExpression: { match_userId: { $type: 'objectId' } } } })
 	user?: User;
 

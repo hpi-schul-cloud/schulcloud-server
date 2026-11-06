@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { RoomEntity } from '@modules/room';
 import { roomEntityFactory } from '@modules/room/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -32,6 +32,77 @@ describe('RegistrationRepo', () => {
 	});
 
 	describe('save', () => {
+		it.each([false, true])(
+			'should flush scalar changes and an empty room list when clearing resentAt=%s',
+			async (clearResentAt) => {
+				const roomId = new ObjectId().toHexString();
+				const entity = registrationEntityFactory.buildWithId({
+					firstName: 'before',
+					lastName: 'before',
+					roomIds: [roomId],
+					resentAt: new Date('2026-01-01T00:00:00.000Z'),
+				});
+				await em.persist(entity).flush();
+				em.clear();
+				const registration = await repo.findById(entity.id);
+				const resentAt = clearResentAt ? undefined : new Date('2026-02-01T00:00:00.000Z');
+				registration.updateName({ firstName: 'after', lastName: 'updated' });
+				registration.removeRoomId(roomId);
+				registration.resentAt = resentAt;
+
+				await repo.save(registration);
+
+				const stored = await em.getCollection(RegistrationEntity).findOne({ _id: entity._id });
+				expect(stored).toMatchObject({
+					_id: entity._id,
+					firstName: 'after',
+					lastName: 'updated',
+					roomIds: [],
+					email: entity.email,
+					registrationSecret: entity.registrationSecret,
+					createdAt: entity.createdAt,
+				});
+				if (clearResentAt) {
+					expect(stored).not.toHaveProperty('resentAt');
+				} else {
+					expect(stored?.resentAt).toEqual(resentAt);
+				}
+				em.clear();
+				const reloaded = await repo.findById(registration.id);
+				expect(reloaded.getProps()).toMatchObject({
+					firstName: 'after',
+					lastName: 'updated',
+					roomIds: [],
+				});
+				expect(reloaded.resentAt).toEqual(resentAt);
+				await expect(repo.findByRoomId(roomId)).resolves.toEqual([]);
+			}
+		);
+
+		it('should flush updated and new registrations in one batch before any ORM read', async () => {
+			const entity = registrationEntityFactory.buildWithId({ firstName: 'before' });
+			await em.persist(entity).flush();
+			em.clear();
+			const updated = await repo.findById(entity.id);
+			updated.firstName = 'after';
+			const created = registrationFactory.build();
+
+			await repo.save([updated, created]);
+
+			const collection = em.getCollection(RegistrationEntity);
+			expect(await collection.findOne({ _id: entity._id })).toMatchObject({ firstName: 'after' });
+			expect(await collection.findOne({ _id: new ObjectId(created.id) })).toMatchObject({
+				email: created.email,
+				firstName: created.firstName,
+				lastName: created.lastName,
+				roomIds: created.roomIds,
+				registrationSecret: created.registrationSecret,
+			});
+			em.clear();
+			expect((await repo.findById(updated.id)).firstName).toBe('after');
+			expect((await repo.findByEmail(created.email))?.id).toBe(created.id);
+		});
+
 		const setup = () => {
 			const registrations = registrationFactory.buildList(3);
 			return { registrations };

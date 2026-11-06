@@ -1,5 +1,5 @@
-import { Embedded, Entity, Index, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Embedded, Entity, Index, Property } from '@mikro-orm/decorators/legacy';
+import { ArrayType, ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ClassSourceOptionsEntity } from './class-source-options.entity';
@@ -29,11 +29,11 @@ export class ClassEntity extends BaseEntityWithTimestamps {
 	@Index()
 	schoolId: ObjectId;
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, type: ArrayType<ObjectId> })
 	@Index()
 	userIds?: ObjectId[];
 
-	@Property()
+	@Property({ type: ArrayType<ObjectId> })
 	@Index()
 	teacherIds: ObjectId[];
 

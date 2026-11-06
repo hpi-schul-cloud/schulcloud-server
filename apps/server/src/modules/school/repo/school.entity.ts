@@ -1,6 +1,5 @@
+import { Cascade, Collection } from '@mikro-orm/core';
 import {
-	Cascade,
-	Collection,
 	Embeddable,
 	Embedded,
 	Entity,
@@ -10,7 +9,7 @@ import {
 	OneToMany,
 	OneToOne,
 	Property,
-} from '@mikro-orm/core';
+} from '@mikro-orm/decorators/legacy';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -98,6 +97,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 		() => UserLoginMigrationEntity,
 		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
 		{
+			nullable: true,
 			orphanRemoval: true,
 			eager: true,
 		}

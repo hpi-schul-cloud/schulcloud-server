@@ -1,4 +1,4 @@
-import { Embeddable, Property } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/decorators/legacy';
 import type { EntityId } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
 import { BoardExternalReference, BoardExternalReferenceType } from '../../../domain';

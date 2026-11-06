@@ -1,5 +1,6 @@
 import { type DeepMocked, createMock } from '@golevelup/ts-jest';
-import { type Redis } from 'iovalkey';
+import { Test } from '@nestjs/testing';
+import Valkey, { type Redis } from 'iovalkey';
 import { ValkeyClient } from './valkey.client';
 
 describe('ValkeyClient', () => {
@@ -10,6 +11,43 @@ describe('ValkeyClient', () => {
 		redisMock = createMock<Redis>();
 
 		valkeyClient = new ValkeyClient(redisMock);
+	});
+
+	describe('application shutdown', () => {
+		it('should disconnect a factory-provided client when its Nest context closes', async () => {
+			const module = await Test.createTestingModule({
+				providers: [{ provide: 'STORAGE_CLIENT', useFactory: () => valkeyClient }],
+			}).compile();
+			await module.init();
+
+			await module.close();
+
+			expect(redisMock.disconnect).toHaveBeenCalledTimes(1);
+			expect(redisMock.disconnect).toHaveBeenCalledWith();
+		});
+
+		it('should propagate disconnect failures from the shutdown hook', () => {
+			const error = new Error('disconnect failed');
+			redisMock.disconnect.mockImplementation(() => {
+				throw error;
+			});
+
+			expect(() => valkeyClient.onApplicationShutdown()).toThrow(error);
+		});
+
+		it('should stop a real lazy client without opening a connection', () => {
+			const redis = new Valkey({ lazyConnect: true });
+			const client = new ValkeyClient(redis);
+			const connect = jest.spyOn(redis, 'connect');
+			try {
+				client.onApplicationShutdown();
+
+				expect(redis.status).toBe('end');
+				expect(connect).not.toHaveBeenCalled();
+			} finally {
+				redis.disconnect();
+			}
+		});
 	});
 
 	describe('GET', () => {

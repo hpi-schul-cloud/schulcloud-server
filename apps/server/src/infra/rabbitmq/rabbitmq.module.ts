@@ -8,8 +8,23 @@ import { RabbitMQConfig } from './rabbitmq.config';
 
 @Module({})
 export class RabbitMQWrapperModule {
+	private static readonly registrations: { options: RabbitMQModuleOptions; module: DynamicModule }[] = [];
+
 	public static register(options: RabbitMQModuleOptions): DynamicModule {
-		return {
+		options = { ...options };
+		const existing = this.registrations.find(
+			(registration) =>
+				registration.options.connectionName === options.connectionName &&
+				registration.options.configInjectionToken === options.configInjectionToken &&
+				registration.options.configConstructor === options.configConstructor &&
+				registration.options.exchangeConfigInjectionToken === options.exchangeConfigInjectionToken &&
+				registration.options.exchangeConfigConstructor === options.exchangeConfigConstructor
+		);
+		if (existing) {
+			return existing.module;
+		}
+
+		const module: DynamicModule = {
 			module: RabbitMQWrapperModule,
 			imports: [
 				RabbitMQModule.forRootAsync({
@@ -41,5 +56,8 @@ export class RabbitMQWrapperModule {
 			providers: [AmqpConnectionGuard],
 			exports: [RabbitMQModule],
 		};
+		// Nest's reference-based module identity must reuse identical connection registrations.
+		this.registrations.push({ options, module });
+		return module;
 	}
 }

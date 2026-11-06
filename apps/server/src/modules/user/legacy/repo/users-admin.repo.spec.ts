@@ -1,4 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
+import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
@@ -14,12 +16,14 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { classEntityFactory } from '../../../class/entity/testing';
-import { type UserListResponse, type UserResponse, type UsersSearchQueryParams } from '../controller/dto';
+import { type UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';
+import { UsersAdminService } from '../service/users-admin.service';
 
 describe('users admin repo', () => {
 	let module: TestingModule;
 	let repo: UsersAdminRepo;
+	let service: UsersAdminService;
 
 	let em: EntityManager;
 
@@ -122,9 +126,10 @@ describe('users admin repo', () => {
 					entities: [User, Role, SchoolEntity, SchoolYearEntity, AccountEntity, ClassEntity],
 				}),
 			],
-			providers: [UsersAdminRepo],
+			providers: [UsersAdminRepo, UsersAdminService, { provide: Logger, useValue: createMock<Logger>() }],
 		}).compile();
 		repo = module.get(UsersAdminRepo);
+		service = module.get(UsersAdminService);
 		em = module.get(EntityManager);
 
 		await setupDb();
@@ -148,11 +153,63 @@ describe('users admin repo', () => {
 		expect(repo.entityName).toBe(User);
 	});
 
+	describe('raw aggregation and response contracts', () => {
+		it('should return raw ObjectIds and class labels without entity hydration', async () => {
+			em.clear();
+			const [raw] = await repo.getUserByIdWithNestedData(studentRole.id, school.id, currentYear.id, studentUser1.id);
+
+			expect(raw).not.toBeInstanceOf(User);
+			expect(raw._id).toBeInstanceOf(ObjectId);
+			expect(raw).not.toHaveProperty('id');
+			expect(raw.classes).toEqual(['12Group A']);
+			expect(raw.consent?.parentConsents?.[0]._id).toBeInstanceOf(ObjectId);
+			expect(raw.createdAt).toBeInstanceOf(Date);
+		});
+
+		it('should convert top-level and nested ObjectIds while preserving the response payload', async () => {
+			const response = await service.getUserWithNestedData(studentRole.id, school.id, currentYear.id, studentUser1.id);
+
+			expect(response._id).toBe(studentUser1.id);
+			expect(response.consent?.parentConsents?.[0]._id).toBe('5fa31aacb229544f2c697b48');
+			expect(response.classes).toEqual(['12Group A']);
+			expect(response.firstName).toBe(studentUser1.firstName);
+			expect(response.createdAt).toEqual(studentUser1.createdAt);
+			expect(response).not.toHaveProperty('id');
+		});
+
+		it('should map paginated results and preserve the total beyond the last page', async () => {
+			const response = await service.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, {
+				$skip: 0,
+				$limit: 1,
+				$sort: { firstName: 1 },
+			});
+			expect(response).toMatchObject({
+				total: 2,
+				skip: 0,
+				limit: 1,
+				data: [{ _id: studentUser1.id, classes: ['12Group A'] }],
+			});
+			expect(response.data).toHaveLength(1);
+
+			const emptyPage = await service.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, {
+				$skip: 100,
+				$limit: 1,
+			});
+			expect(emptyPage).toEqual({ total: 2, skip: 100, limit: 1, data: [] });
+		});
+
+		it('should retain the not-found error for an unknown user', async () => {
+			await expect(
+				service.getUserWithNestedData(studentRole.id, school.id, currentYear.id, new ObjectId().toHexString())
+			).rejects.toThrow('User');
+		});
+	});
+
 	describe('when student exists', () => {
 		it('should return student ', async () => {
 			const response = await repo.getUserByIdWithNestedData(studentRole.id, school.id, currentYear.id, studentUser1.id);
 
-			const userResponse = response as UserResponse[];
+			const userResponse = response;
 
 			expect(userResponse[0]._id.toString()).toBe(studentUser1._id.toString());
 			expect(userResponse[0].firstName).toBe(studentUser1.firstName);
@@ -178,7 +235,7 @@ describe('users admin repo', () => {
 			const { query } = setup();
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
-			const userListResponse = response as UserListResponse[];
+			const userListResponse = response;
 			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
@@ -205,7 +262,7 @@ describe('users admin repo', () => {
 			const { query } = setup();
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
-			const userListResponse = response as UserListResponse[];
+			const userListResponse = response;
 			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
@@ -230,7 +287,7 @@ describe('users admin repo', () => {
 			const { query } = setup();
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
-			const userListResponse = response as UserListResponse[];
+			const userListResponse = response;
 			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(2);
@@ -275,7 +332,7 @@ describe('users admin repo', () => {
 			const { query } = setup();
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
-			const userListResponse = response as UserListResponse[];
+			const userListResponse = response;
 			const { data } = userListResponse[0];
 
 			expect(userListResponse[0].total).toBe(0);
@@ -300,7 +357,7 @@ describe('users admin repo', () => {
 			const { query } = setup();
 			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
 
-			const userListResponse = response as UserListResponse[];
+			const userListResponse = response;
 			const { data } = userListResponse[0];
 
 			expect(data.length).toBe(0);

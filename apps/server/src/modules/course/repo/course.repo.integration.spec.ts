@@ -7,7 +7,8 @@ import { type EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
-import { CourseEntity } from './course.entity';
+import { CourseSyncAttribute } from '../domain';
+import { CourseEntity, CourseFeatures } from './course.entity';
 import { CourseRepo } from './course.repo';
 import { CourseGroupEntity } from './coursegroup.entity';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -50,7 +51,7 @@ describe('course repo', () => {
 	});
 
 	describe('findAllByUserId', () => {
-		it('should return right keys', async () => {
+		it('should return persisted properties without materializing absent optional fields', async () => {
 			const student = userFactory.build();
 			const course = courseEntityFactory.build({ school: student.school, students: [student] });
 
@@ -64,25 +65,54 @@ describe('course repo', () => {
 				'_id',
 				'color',
 				'createdAt',
-				'copyingSince',
 				'courseGroups',
 				'description',
 				'name',
 				'school',
-				'shareToken',
-				'startDate',
 				'substitutionTeachers',
 				'teachers',
-				'untilDate',
 				'updatedAt',
 				'students',
-				'features',
 				'classes',
 				'groups',
-				'syncedWithGroup',
-				'excludeFromSync',
 			].sort();
 			expect(keysOfFirstElements).toEqual(expectedResult);
+			expect(result[0]).toBeInstanceOf(CourseEntity);
+			expect(result[0].id).toBe(course.id);
+			expect(result[0].copyingSince).toBeUndefined();
+			expect(result[0].shareToken).toBeUndefined();
+			expect(result[0].startDate).toBeUndefined();
+			expect(result[0].untilDate).toBeUndefined();
+			expect(result[0].features).toBeUndefined();
+			expect(result[0].syncedWithGroup).toBeUndefined();
+			expect(result[0].excludeFromSync).toBeUndefined();
+		});
+
+		it('should hydrate persisted optional dates, enum arrays and share token', async () => {
+			const student = userFactory.build();
+			const optionalProperties = {
+				startDate: new Date('2026-01-01'),
+				untilDate: new Date('2026-12-31'),
+				copyingSince: new Date('2026-06-01'),
+				features: [CourseFeatures.VIDEOCONFERENCE],
+				excludeFromSync: [CourseSyncAttribute.TEACHERS],
+				shareToken: 'course-roundtrip-token',
+			};
+			const course = courseEntityFactory.build({
+				school: student.school,
+				students: [student],
+				...optionalProperties,
+			});
+			course.shareToken = optionalProperties.shareToken;
+			await em.persist(course).flush();
+			em.clear();
+
+			const [courses, count] = await repo.findAllByUserId(student.id, student.school.id);
+
+			expect(count).toBe(1);
+			expect(courses).toHaveLength(1);
+			expect(courses[0]).toBeInstanceOf(CourseEntity);
+			expect(courses[0]).toMatchObject({ id: course.id, ...optionalProperties });
 		});
 
 		it('should return nothing by undefined value for user', async () => {

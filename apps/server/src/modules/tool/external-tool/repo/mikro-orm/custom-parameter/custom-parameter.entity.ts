@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Enum, Property } from '@mikro-orm/decorators/legacy';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../../common/enum';
 
 @Embeddable()
@@ -21,13 +21,13 @@ export class CustomParameterEntity {
 	@Property({ nullable: true })
 	regexComment?: string;
 
-	@Enum()
+	@Enum({ items: () => CustomParameterScope })
 	scope: CustomParameterScope;
 
-	@Enum()
+	@Enum({ items: () => CustomParameterLocation })
 	location: CustomParameterLocation;
 
-	@Enum()
+	@Enum({ items: () => CustomParameterType })
 	type: CustomParameterType;
 
 	@Property()

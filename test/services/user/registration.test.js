@@ -154,18 +154,18 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
-		registrationService
-			.create({
+		await assert.rejects(
+			registrationService.create({
 				importHash,
 				classOrSchoolId: '5f2987e020834114b8efd6f8',
 				email,
 				parent_email: email,
 				birthDate: moment('18.02.2015', 'DD.MM.YYYY'),
-			})
-			.catch((err) => {
-				expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
-			});
+			}),
+			{ message: 'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.' }
+		);
 	});
 
 	it('fails if parent and student email are the same (case insensitive)', async () => {
@@ -178,18 +178,18 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
-		registrationService
-			.create({
+		await assert.rejects(
+			registrationService.create({
 				importHash,
 				classOrSchoolId: '5f2987e020834114b8efd6f8',
 				email,
 				parent_email: parentEmail,
 				birthDate: moment('18.02.2015', 'DD.MM.YYYY'),
-			})
-			.catch((err) => {
-				expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
-			});
+			}),
+			{ message: 'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.' }
+		);
 	});
 
 	it('fails if user is trying to register with roles other than student/employee/expert', async () => {

@@ -67,11 +67,12 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 			},
 		];
 
-		const rawFilesDocuments = await this._em.aggregate(FileEntity, pipeline);
+		const rawFilesDocuments = await this._em
+			.getCollection(FileEntity)
+			.aggregate<EntityDictionary<FileEntity>>(pipeline)
+			.toArray();
 
-		const files = rawFilesDocuments.map((rawFileDocument) =>
-			this._em.map(FileEntity, rawFileDocument as EntityDictionary<FileEntity>)
-		);
+		const files = rawFilesDocuments.map((rawFileDocument) => this._em.map(FileEntity, rawFileDocument));
 
 		return files;
 	}

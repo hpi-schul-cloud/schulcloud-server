@@ -145,8 +145,8 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return page;
 	}
 
-	private async aggregateGroups<T extends object>(pipeline: Record<string, unknown>[]): Promise<T[]> {
-		return (await this.em.aggregate(GroupEntity, pipeline)) as T[];
+	private aggregateGroups<T extends object>(pipeline: Record<string, unknown>[]): Promise<T[]> {
+		return this.em.getCollection(GroupEntity).aggregate<T>(pipeline).toArray();
 	}
 
 	public async removeUserReference(userId: EntityId): Promise<number> {

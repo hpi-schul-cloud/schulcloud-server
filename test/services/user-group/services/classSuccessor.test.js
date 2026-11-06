@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { EventEmitter } = require('events');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
@@ -20,13 +21,39 @@ describe('classSuccessor service', () => {
 	});
 
 	after(async () => {
-		testObjects.cleanup();
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
 
 	it('is properly registered the class successor service', () => {
 		expect(classSuccessorService).to.not.equal(undefined);
+	});
+
+	describe('event listener lifecycle', () => {
+		it('registers the class removal handler only once across repeated setup calls', () => {
+			const classes = new EventEmitter();
+			const service = new classSuccessorServiceClass();
+			const fakeApp = { service: () => classes };
+
+			service.setup(fakeApp);
+			service.setup(fakeApp);
+
+			expect(classes.listeners('removed')).to.deep.equal([service.onClassRemoved]);
+			service.teardown();
+		});
+
+		it('removes only its own handler on teardown', () => {
+			const classes = new EventEmitter();
+			const otherHandler = () => {};
+			classes.on('removed', otherHandler);
+			const service = new classSuccessorServiceClass();
+
+			service.setup({ service: () => classes });
+			service.teardown();
+
+			expect(classes.listeners('removed')).to.deep.equal([otherHandler]);
+		});
 	});
 
 	it('GET works for class without year or gradeLevel', async () => {

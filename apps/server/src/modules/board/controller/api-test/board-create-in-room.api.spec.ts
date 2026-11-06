@@ -3,6 +3,7 @@ import { accountFactory } from '@modules/account/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomContentEntity } from '@modules/room/repo';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -104,7 +105,7 @@ describe(`create board in room (api)`, () => {
 				// wait for event bus
 				await new Promise((resolve) => setTimeout(resolve, 150));
 
-				const roomContent = await em.findOneOrFail('RoomContentEntity', {
+				const roomContent = await em.findOneOrFail(RoomContentEntity, {
 					roomId: room.id,
 				});
 

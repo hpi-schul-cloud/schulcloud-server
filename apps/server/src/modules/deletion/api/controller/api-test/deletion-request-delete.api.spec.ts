@@ -1,3 +1,4 @@
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
@@ -19,7 +20,10 @@ describe(`deletionRequest delete (api)`, () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: [API_KEY] } satisfies XApiKeyAuthGuardConfig)
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();

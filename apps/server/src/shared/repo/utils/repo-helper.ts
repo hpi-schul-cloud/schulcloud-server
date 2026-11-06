@@ -1,6 +1,6 @@
-import { type EntityManager } from '@mikro-orm/core';
+import { type EntityManager, type EntityName } from '@mikro-orm/core';
 
-export const getFieldName = (em: EntityManager, prop: string, entityName: string): string => {
+export const getFieldName = (em: EntityManager, prop: string, entityName: EntityName): string => {
 	const metadata = em.getMetadata();
 	const fieldName = metadata.find(entityName)?.properties[prop]?.fieldNames[0];
 	if (!fieldName) {

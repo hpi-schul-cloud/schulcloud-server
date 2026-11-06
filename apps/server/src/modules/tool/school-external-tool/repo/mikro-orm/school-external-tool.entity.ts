@@ -1,4 +1,4 @@
-import { Embedded, Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Embedded, Entity, ManyToOne, Property, Unique } from '@mikro-orm/decorators/legacy';
 import { SchoolEntity } from '@modules/school/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';

@@ -12,6 +12,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { type Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
+import { BoardNodeEntity } from '../../repo';
 import {
 	BoardExternalReferenceType,
 	BoardLayout,
@@ -38,6 +39,9 @@ describe(BoardCollaborationGateway.name, () => {
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	let jwtConfig: TestJwtModuleConfig;
+	let courseId: string;
+	let teacherAuthJwt: string;
+	let studentAuthJwt: string;
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
@@ -61,15 +65,7 @@ describe(BoardCollaborationGateway.name, () => {
 		await app.listen(0);
 		testApiClient = new TestApiClient(app, '/boards');
 		jwtConfig = app.get(TEST_JWT_CONFIG_TOKEN);
-	});
 
-	afterAll(async () => {
-		ioClient.disconnect();
-		unauthorizedIoClient.disconnect();
-		await app.close();
-	});
-
-	const setup = async () => {
 		await cleanupCollections(em);
 		const school = schoolEntityFactory.build();
 		const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -79,16 +75,32 @@ describe(BoardCollaborationGateway.name, () => {
 		await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();
 
 		const teacherLoggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
-		const teacherAuthJwt = teacherLoggedInClient.getAuthHeader().replace('Bearer ', '');
-
 		const studentLoggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
-		const studentAuthJwt = studentLoggedInClient.getAuthHeader().replace('Bearer ', '');
+
+		courseId = course.id;
+		teacherAuthJwt = teacherLoggedInClient.getAuthHeader().replace('Bearer ', '');
+		studentAuthJwt = studentLoggedInClient.getAuthHeader().replace('Bearer ', '');
+
+		em.clear();
+	});
+
+	afterEach(() => {
+		ioClient?.disconnect();
+		unauthorizedIoClient?.disconnect();
+	});
+
+	afterAll(async () => {
+		await app.close();
+	});
+
+	const setup = async () => {
+		await em.nativeDelete(BoardNodeEntity, {});
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);
 		unauthorizedIoClient = await getSocketApiClient(app, studentAuthJwt);
 
 		const columnBoardNode = columnBoardEntityFactory.buildWithId({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
+			context: { id: courseId, type: BoardExternalReferenceType.Course },
 		});
 
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();

@@ -1,4 +1,5 @@
-import { OptionalProps, PrimaryKey, Property, SerializedPrimaryKey } from '@mikro-orm/core';
+import { OptionalProps } from '@mikro-orm/core';
+import { PrimaryKey, Property, SerializedPrimaryKey } from '@mikro-orm/decorators/legacy';
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { AuthorizableObject } from '../domain-object';
 import type { IEntity } from '../interface';

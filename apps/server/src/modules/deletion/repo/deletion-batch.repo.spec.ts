@@ -72,6 +72,82 @@ describe(DeletionBatchRepo.name, () => {
 	});
 
 	describe('save', () => {
+		it.each([false, true])(
+			'should store status and replacement ID arrays when clearing all IDs=%s',
+			async (clearIds) => {
+				const entity = deletionBatchEntityFactory.buildWithId({
+					status: BatchStatus.CREATED,
+					targetRefIds: [new ObjectId().toHexString()],
+					invalidIds: [new ObjectId().toHexString()],
+					skippedIds: [new ObjectId().toHexString()],
+				});
+				await em.persist(entity).flush();
+				em.clear();
+				const domainObject = await repo.findById(entity.id);
+				const ids = {
+					targetRefIds: clearIds ? [] : [new ObjectId().toHexString(), new ObjectId().toHexString()],
+					invalidIds: [],
+					skippedIds: clearIds ? [] : [new ObjectId().toHexString()],
+				};
+				domainObject.updateIds(ids);
+				domainObject.startDeletion();
+
+				await repo.save(domainObject);
+
+				const stored = await em.getCollection(DeletionBatchEntity).findOne({ _id: entity._id });
+				expect(stored).toMatchObject({
+					_id: entity._id,
+					...ids,
+					status: BatchStatus.DELETION_REQUESTED,
+					name: entity.name,
+					targetRefDomain: entity.targetRefDomain,
+					createdAt: entity.createdAt,
+				});
+				expect(stored).not.toHaveProperty('domainObject');
+				em.clear();
+				const reloaded = await repo.findById(entity.id);
+				expect(reloaded.getProps()).toMatchObject({ ...ids, status: BatchStatus.DELETION_REQUESTED });
+			}
+		);
+
+		it('should flush existing and new batches together before any ORM read', async () => {
+			const entity = deletionBatchEntityFactory.buildWithId({ status: BatchStatus.CREATED });
+			await em.persist(entity).flush();
+			em.clear();
+			const updated = await repo.findById(entity.id);
+			updated.startDeletion();
+			const created = new DeletionBatch({
+				id: new ObjectId().toHexString(),
+				name: 'new batch',
+				status: BatchStatus.CREATED,
+				targetRefDomain: DomainName.USER,
+				targetRefIds: [new ObjectId().toHexString()],
+				invalidIds: [],
+				skippedIds: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+
+			await repo.save([updated, created]);
+
+			const collection = em.getCollection(DeletionBatchEntity);
+			expect(await collection.findOne({ _id: entity._id })).toMatchObject({
+				status: BatchStatus.DELETION_REQUESTED,
+			});
+			const stored = await collection.findOne({ _id: new ObjectId(created.id) });
+			expect(stored).toMatchObject({
+				name: created.name,
+				status: BatchStatus.CREATED,
+				targetRefIds: created.targetRefIds,
+				invalidIds: [],
+				skippedIds: [],
+			});
+			expect(stored).not.toHaveProperty('domainObject');
+			em.clear();
+			expect((await repo.findById(updated.id)).status).toBe(BatchStatus.DELETION_REQUESTED);
+			expect((await repo.findById(created.id)).getProps()).toMatchObject(created.getProps());
+		});
+
 		it('should save a new deletion batch', async () => {
 			const domainObject: DeletionBatch = new DeletionBatch({
 				id: new ObjectId().toHexString(),
@@ -108,6 +184,37 @@ describe(DeletionBatchRepo.name, () => {
 	});
 
 	describe('updateStatus', () => {
+		it('should flush a status-only update without changing saved ID arrays', async () => {
+			const entity = deletionBatchEntityFactory.buildWithId({
+				status: BatchStatus.CREATED,
+				targetRefIds: [new ObjectId().toHexString(), new ObjectId().toHexString()],
+				invalidIds: [new ObjectId().toHexString()],
+				skippedIds: [new ObjectId().toHexString()],
+			});
+			await em.persist(entity).flush();
+			em.clear();
+			const domainObject = await repo.findById(entity.id);
+
+			await repo.updateStatus(domainObject, BatchStatus.DELETION_REQUESTED);
+
+			const stored = await em.getCollection(DeletionBatchEntity).findOne({ _id: entity._id });
+			expect(stored).toMatchObject({
+				status: BatchStatus.DELETION_REQUESTED,
+				targetRefIds: entity.targetRefIds,
+				invalidIds: entity.invalidIds,
+				skippedIds: entity.skippedIds,
+				createdAt: entity.createdAt,
+			});
+			expect(stored).not.toHaveProperty('domainObject');
+			em.clear();
+			expect((await repo.findById(entity.id)).getProps()).toMatchObject({
+				status: BatchStatus.DELETION_REQUESTED,
+				targetRefIds: entity.targetRefIds,
+				invalidIds: entity.invalidIds,
+				skippedIds: entity.skippedIds,
+			});
+		});
+
 		it('should update the status of a deletion batch', async () => {
 			const entity: DeletionBatchEntity = deletionBatchEntityFactory.buildWithId();
 			await em.persist(entity).flush();

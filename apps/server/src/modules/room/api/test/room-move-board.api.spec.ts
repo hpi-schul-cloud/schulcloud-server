@@ -5,6 +5,7 @@ import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomContentType } from '@modules/room/domain';
+import { RoomContentEntity } from '@modules/room/repo';
 import { roomContentEntityFactory, roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -126,7 +127,7 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.patch(`${room.id}/boards`, { id: boards[1].id, toPosition: 0 });
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
 
-					const roomContent = await em.findOneOrFail('RoomContentEntity', { roomId: room.id });
+					const roomContent = await em.findOneOrFail(RoomContentEntity, { roomId: room.id });
 					expect(roomContent['items']).toEqual([
 						{ id: boards[1].id, type: RoomContentType.BOARD },
 						{ id: boards[0].id, type: RoomContentType.BOARD },

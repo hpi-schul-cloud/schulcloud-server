@@ -1,10 +1,11 @@
-import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { SchoolEntity } from '@modules/school/repo';
 import { ExternalSourceEmbeddable } from '@modules/system/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { GroupUserEmbeddable } from './group-user.embeddable';
 import { GroupValidPeriodEmbeddable } from './group-valid-period.embeddable';
+import { ArrayType } from '@mikro-orm/mongodb';
 
 export enum GroupEntityTypes {
 	CLASS = 'class',
@@ -45,7 +46,7 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	validPeriod?: GroupValidPeriodEmbeddable;
 
 	@Index()
-	@Embedded(() => GroupUserEmbeddable, { array: true })
+	@Embedded(() => GroupUserEmbeddable, { array: true, type: ArrayType<GroupUserEmbeddable> })
 	users: GroupUserEmbeddable[];
 
 	@Index()

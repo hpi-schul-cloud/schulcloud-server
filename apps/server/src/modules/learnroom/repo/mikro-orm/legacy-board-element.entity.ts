@@ -1,4 +1,4 @@
-import { Entity, Enum } from '@mikro-orm/core';
+import { Entity, Enum } from '@mikro-orm/decorators/legacy';
 import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { LessonEntity } from '@modules/lesson/repo';
 import { Task } from '@modules/task/repo';

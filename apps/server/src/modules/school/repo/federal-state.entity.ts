@@ -1,4 +1,5 @@
-import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/decorators/legacy';
+import { ArrayType } from '@mikro-orm/mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 
@@ -44,7 +45,7 @@ export class FederalStateEntity extends BaseEntityWithTimestamps {
 	@Property()
 	logoUrl: string;
 
-	@Embedded(() => CountyEmbeddable, { array: true, nullable: true })
+	@Embedded(() => CountyEmbeddable, { array: true, nullable: true, type: ArrayType<CountyEmbeddable> })
 	counties?: CountyEmbeddable[];
 
 	constructor(props: FederalStateProperties) {

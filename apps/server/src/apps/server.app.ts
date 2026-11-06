@@ -51,7 +51,7 @@ async function bootstrap(): Promise<void> {
 	nestExpress.set('query parser', 'extended');
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
-	const orm = nestApp.get(MikroORM);
+	const orm = nestApp.get<MikroORM>(MikroORM);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);

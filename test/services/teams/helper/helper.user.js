@@ -3,34 +3,20 @@ const { BadRequest } = require('../../../../src/errors');
 const rolesModel = require('../../../../src/services/role/model');
 const { userModel } = require('../../../../src/services/user/model');
 const appPromise = require('../../../../src/app');
+const loginHelper = require('../../helpers/services/login');
 const { warning } = require('../../../../src/logger/index');
 
 // eslint-disable-next-line no-process-env
-const TEST_PW = (process.env.TEST_PW || '').trim();
-// eslint-disable-next-line no-process-env
 const TEST_HASH = (process.env.TEST_HASH || '').trim();
 
-if (TEST_PW === '') warning('TEST_PW is not defined');
 if (TEST_HASH === '') warning('TEST_HASH is not defined');
 
 const AT = '@schul-cloud.org';
 
-const REQUEST_PARAMS = {
-	headers: { 'content-type': 'application/json' },
-	provider: 'rest',
-};
-
 const getToken = async ({ userId }) => {
 	const app = await appPromise();
-	const result = app.service('authentication').create(
-		{
-			strategy: 'local',
-			username: userId + AT,
-			password: TEST_PW,
-		},
-		REQUEST_PARAMS
-	);
-	return result.accessToken;
+	const params = await loginHelper(app).generateRequestParams({ username: userId + AT });
+	return params.authentication.accessToken;
 };
 
 const getRoleByKey = (key, value) =>

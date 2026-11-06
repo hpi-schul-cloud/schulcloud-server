@@ -1,5 +1,5 @@
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, type MongoDriver } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -18,7 +18,7 @@ describe('ImportUserRepo', () => {
 	let module: TestingModule;
 	let repo: ImportUserRepo;
 	let em: EntityManager;
-	let orm: MikroORM;
+	let orm: MikroORM<MongoDriver>;
 
 	const persistedReferences = async () => {
 		const school = schoolEntityFactory.build();
@@ -762,7 +762,7 @@ describe('ImportUserRepo', () => {
 
 	describe('Indexes', () => {
 		beforeAll(async () => {
-			await orm.getSchemaGenerator().ensureIndexes();
+			await orm.schema.ensureIndexes();
 		});
 		describe('on user (match_userId)', () => {
 			it('[SPARSE] should allow to unset items (acceppt null or undefined multiple times)', async () => {
@@ -789,7 +789,7 @@ describe('ImportUserRepo', () => {
 				await Promise.all(result);
 			});
 			it('[UNIQUE] should prohibit same match of one user ', async () => {
-				await orm.getSchemaGenerator().ensureIndexes();
+				await orm.schema.ensureIndexes();
 				const school = schoolEntityFactory.build();
 				await em.persist(school).flush();
 				const user = userFactory.build({ school });

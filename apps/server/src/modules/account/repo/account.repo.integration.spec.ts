@@ -87,6 +87,25 @@ describe('AccountMikroOrmRepo', () => {
 	});
 
 	describe('saveAll', () => {
+		it('should flush mixed updates and inserts before a database-filtered read', async () => {
+			const existing = accountFactory.build({ username: 'before-batch' });
+			await em.persist(existing).flush();
+			const updated = accountDoFactory.build({ id: existing.id, username: 'after-batch' });
+			const created = accountDoFactory.build({ username: 'created-in-batch' });
+
+			await repo.saveAll([updated, created]);
+
+			const collection = em.getCollection(AccountEntity);
+			expect(await collection.findOne({ _id: existing._id })).toMatchObject({ username: 'after-batch' });
+			expect(await collection.findOne({ _id: new ObjectId(created.id) })).toMatchObject({
+				username: 'created-in-batch',
+			});
+			em.clear();
+			expect((await repo.findByUsername('after-batch'))?.id).toBe(existing.id);
+			expect(await repo.findByUsername('before-batch')).toBeNull();
+			expect((await repo.findByUsername('created-in-batch'))?.id).toBe(created.id);
+		});
+
 		describe('When multiple accounts are given', () => {
 			const setup = () => {
 				const accounts = accountDoFactory.buildList(3);
@@ -185,7 +204,7 @@ describe('AccountMikroOrmRepo', () => {
 	describe('findByUsernameAndSystemId', () => {
 		describe('When username and systemId are given', () => {
 			const setup = async () => {
-				const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
+				const accountToFind = accountFactory.withSystemId(new ObjectId()).build();
 				await em.persist(accountToFind).flush();
 				em.clear();
 				return accountToFind;
@@ -289,6 +308,26 @@ describe('AccountMikroOrmRepo', () => {
 	});
 
 	describe('saveWithoutFlush', () => {
+		it('should defer an existing scalar update until the explicit flush', async () => {
+			const existing = accountFactory.build({ username: 'before-deferred-update' });
+			await em.persist(existing).flush();
+			const updated = accountDoFactory.build({ id: existing.id, username: 'after-deferred-update' });
+			const collection = em.getCollection(AccountEntity);
+
+			await repo.saveWithoutFlush(updated);
+
+			expect(await collection.findOne({ _id: existing._id })).toMatchObject({
+				username: 'before-deferred-update',
+			});
+			await repo.flush();
+			expect(await collection.findOne({ _id: existing._id })).toMatchObject({
+				username: 'after-deferred-update',
+			});
+			em.clear();
+			expect((await repo.findByUsername('after-deferred-update'))?.id).toBe(existing.id);
+			expect(await repo.findByUsername('before-deferred-update')).toBeNull();
+		});
+
 		describe('When calling saveWithoutFlush', () => {
 			const setup = () => {
 				const account = accountDoFactory.build();

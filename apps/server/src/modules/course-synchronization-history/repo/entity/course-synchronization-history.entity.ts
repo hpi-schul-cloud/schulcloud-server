@@ -1,4 +1,4 @@
-import { Entity, Enum, Index, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseSyncAttribute } from '@modules/course';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';

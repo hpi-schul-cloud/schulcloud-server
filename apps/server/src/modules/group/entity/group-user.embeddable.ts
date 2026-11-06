@@ -1,4 +1,4 @@
-import { Embeddable, ManyToOne } from '@mikro-orm/core';
+import { Embeddable, ManyToOne } from '@mikro-orm/decorators/legacy';
 import { Role } from '@modules/role/repo';
 import { User } from '@modules/user/repo';
 

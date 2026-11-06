@@ -1,6 +1,7 @@
 import { MaybePromise, MikroORM } from '@mikro-orm/core';
+import { ReflectMetadataProvider } from '@mikro-orm/decorators/legacy';
 import { defineConfig, MongoDriver } from '@mikro-orm/mongodb';
-import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import _ from 'lodash';
 
@@ -8,7 +9,7 @@ import { MongoDatabaseModuleOptions } from './types';
 
 const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('');
 
-const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): MaybePromise<DynamicModule> => {
+const createMikroOrmModule = (options: MongoDatabaseModuleOptions): MaybePromise<DynamicModule> => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
 		driver: MongoDriver,
 		useFactory: () => {
@@ -19,6 +20,7 @@ const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): MaybePromise
 				...options,
 				driver: MongoDriver,
 				clientUrl,
+				metadataProvider: ReflectMetadataProvider,
 			});
 		},
 	});

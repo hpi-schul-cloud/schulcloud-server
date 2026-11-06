@@ -4,6 +4,7 @@ import { columnBoardEntityFactory } from '@modules/board/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomBoardCreatedHandler } from '@modules/room/api/service/room-board-created.handler';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -101,8 +102,22 @@ describe('Sharing Controller (API)', () => {
 			describe('when the destination is valid', () => {
 				it('should return a 201 status', async () => {
 					const { loggedInClient, token, room } = await setup();
-					const response = await loggedInClient.post(`${token}/import`, { newName: 'NewName', destinationId: room.id });
-					expect(response.status).toBe(HttpStatus.CREATED);
+					const handlerSpy = jest.spyOn(app.get(RoomBoardCreatedHandler), 'handle');
+					try {
+						const response = await loggedInClient.post(`${token}/import`, {
+							newName: 'NewName',
+							destinationId: room.id,
+						});
+						expect(handlerSpy).toHaveBeenCalledTimes(1);
+						const result = handlerSpy.mock.results[0];
+						if (result?.type !== 'return') {
+							throw new Error('Expected room board creation handler to return its completion promise');
+						}
+						await result.value;
+						expect(response.status).toBe(HttpStatus.CREATED);
+					} finally {
+						handlerSpy.mockRestore();
+					}
 				});
 			});
 		});

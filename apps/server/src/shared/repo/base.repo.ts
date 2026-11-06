@@ -1,4 +1,4 @@
-import { EntityName, FilterQuery } from '@mikro-orm/core';
+import { EntityName, FilterQuery, IsSubset, RequiredEntityData } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import type { BaseEntity } from '../domain/entity';
@@ -14,8 +14,8 @@ export abstract class BaseRepo<T extends BaseEntity> {
 
 	abstract get entityName(): EntityName<T>;
 
-	public create(entity: T): T {
-		return this._em.create(this.entityName, entity);
+	public create<Data extends RequiredEntityData<T>>(entity: Data & IsSubset<RequiredEntityData<T>, Data>): T {
+		return this._em.create<T, false, Data>(this.entityName, entity);
 	}
 
 	public async save(entities: T | T[]): Promise<void> {

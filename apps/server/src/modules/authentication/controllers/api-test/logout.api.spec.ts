@@ -136,7 +136,17 @@ describe('Logout Controller (api)', () => {
 	describe('externalSystemLogout', () => {
 		let currentUser: ICurrentUser;
 
+		beforeAll(() => {
+			axiosMock = createAxiosMockAdapter();
+		});
+
+		afterAll(() => {
+			axiosMock.restore();
+		});
+
 		const setupTestWithMocks = async () => {
+			await app.close();
+
 			const moduleFixture: TestingModule = await Test.createTestingModule({
 				imports: [ServerTestModule],
 			})
@@ -153,7 +163,6 @@ describe('Logout Controller (api)', () => {
 			app = moduleFixture.createNestApplication();
 			await app.init();
 			em = app.get(EntityManager);
-			axiosMock = createAxiosMockAdapter();
 			config = app.get<AuthenticationConfig>(AUTHENTICATION_CONFIG_TOKEN);
 		};
 

@@ -47,7 +47,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 	}
 
 	public async removeUserReference(submissionIds: EntityId[]): Promise<number> {
-		const submissionFieldName = getFieldName(this._em, 'student', Submission.name);
+		const submissionFieldName = getFieldName(this._em, 'student', Submission);
 		const count = await this._em.nativeUpdate(this.entityName, { id: { $in: submissionIds } }, {
 			$unset: { [submissionFieldName]: '' },
 		} as Partial<Submission>);

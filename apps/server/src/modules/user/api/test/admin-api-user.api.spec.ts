@@ -1,3 +1,4 @@
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { RoleName } from '@modules/role';
@@ -11,6 +12,7 @@ import { User } from '../../repo';
 import { type AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 
 const baseRouteName = '/admin/users';
+const apiKey = 'admin-user-api-test-key';
 
 describe('Admin API - Users (API)', () => {
 	let app: INestApplication;
@@ -20,13 +22,16 @@ describe('Admin API - Users (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: [apiKey] } satisfies XApiKeyAuthGuardConfig)
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
 
-		testApiClient = new TestApiClient(app, baseRouteName, 'someotherkey', true);
+		testApiClient = new TestApiClient(app, baseRouteName, apiKey, true);
 	});
 
 	afterAll(async () => {
@@ -77,8 +82,10 @@ describe('Admin API - Users (API)', () => {
 			it('should persist user', async () => {
 				const { body } = await setup();
 				const response = await testApiClient.post('', body);
+				expect(response.status).toEqual(201);
 				const { userId } = response.body as AdminApiUserCreateResponse;
 
+				em.clear();
 				const loaded = await em.findOneOrFail(User, userId);
 				expect(loaded).toEqual(
 					expect.objectContaining({
@@ -93,8 +100,10 @@ describe('Admin API - Users (API)', () => {
 			it('should persist account', async () => {
 				const { body } = await setup();
 				const response = await testApiClient.post('', body);
+				expect(response.status).toEqual(201);
 				const { accountId } = response.body as AdminApiUserCreateResponse;
 
+				em.clear();
 				const loaded = await em.findOneOrFail(AccountEntity, accountId);
 				expect(loaded).toEqual(
 					expect.objectContaining({

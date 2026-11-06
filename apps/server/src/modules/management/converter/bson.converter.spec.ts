@@ -46,6 +46,7 @@ describe('BsonConverter', () => {
 			}[];
 
 			expect(result._id.toString()).toEqual(pojo._id.toString());
+			expect(result._id).toBeInstanceOf(ObjectId);
 			expect(result.dueDate).toEqual(pojo.dueDate);
 		});
 	});

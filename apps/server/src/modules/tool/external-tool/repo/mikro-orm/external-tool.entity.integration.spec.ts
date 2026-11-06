@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, type MongoDriver } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ExternalToolMediumStatus } from '../../enum';
@@ -9,7 +9,7 @@ import { ExternalToolEntity } from './external-tool.entity';
 describe('ExternalToolEntity indexes', () => {
 	let module: TestingModule;
 	let em: EntityManager;
-	let orm: MikroORM;
+	let orm: MikroORM<MongoDriver>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -19,7 +19,7 @@ describe('ExternalToolEntity indexes', () => {
 		em = module.get(EntityManager);
 		orm = module.get(MikroORM);
 
-		await orm.getSchemaGenerator().ensureIndexes();
+		await orm.schema.ensureIndexes();
 	});
 
 	afterAll(async () => {

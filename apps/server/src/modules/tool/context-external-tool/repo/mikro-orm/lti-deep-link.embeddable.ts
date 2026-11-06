@@ -1,5 +1,6 @@
-import { Embeddable, Embedded, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Property } from '@mikro-orm/decorators/legacy';
 import { CustomParameterEntryEntity } from '../../../common/entity';
+import { ArrayType } from '@mikro-orm/core';
 
 @Embeddable()
 export class LtiDeepLinkEmbeddable {
@@ -15,7 +16,7 @@ export class LtiDeepLinkEmbeddable {
 	@Property({ nullable: true })
 	text?: string;
 
-	@Embedded(() => CustomParameterEntryEntity, { array: true })
+	@Embedded(() => CustomParameterEntryEntity, { array: true, type: ArrayType<CustomParameterEntryEntity> })
 	parameters: CustomParameterEntryEntity[];
 
 	@Property({ nullable: true })

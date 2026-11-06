@@ -116,9 +116,9 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 	public async removeUserReference(userId: EntityId, courseIdsFilter?: EntityId[]): Promise<Counted<EntityId[]>> {
 		const id = new ObjectId(userId);
 
-		const teachersFiledName = getFieldName(this._em, 'teachers', CourseEntity.name);
-		const substitutionTeachersFieldName = getFieldName(this._em, 'substitutionTeachers', CourseEntity.name);
-		const studentsFieldName = getFieldName(this._em, 'students', CourseEntity.name);
+		const teachersFiledName = getFieldName(this._em, 'teachers', CourseEntity);
+		const substitutionTeachersFieldName = getFieldName(this._em, 'substitutionTeachers', CourseEntity);
+		const studentsFieldName = getFieldName(this._em, 'students', CourseEntity);
 
 		const query: FilterQuery<CourseEntity> = {
 			$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],

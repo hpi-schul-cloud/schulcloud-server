@@ -1,4 +1,5 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/decorators/legacy';
+import { ArrayType } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { Registration, RegistrationProps } from '../../domain/do/registration.do';
@@ -15,7 +16,7 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 	lastName!: string;
 
 	@Index()
-	@Property({ type: 'EntityId[]', fieldName: 'roomIds', nullable: false })
+	@Property({ type: ArrayType<EntityId>, fieldName: 'roomIds', nullable: false })
 	roomIds!: EntityId[];
 
 	@Index()

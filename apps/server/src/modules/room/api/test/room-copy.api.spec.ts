@@ -1,6 +1,5 @@
-import { type FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { type BoardExternalReference, BoardExternalReferenceType } from '@modules/board';
+import { BoardExternalReferenceType } from '@modules/board';
 import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
 import { type CopyStatus } from '@modules/copy-helper';
@@ -236,9 +235,9 @@ describe('POST /rooms/:roomId/copy', () => {
 
 			const copiedBoards = await em.find(BoardNodeEntity, {
 				context: {
-					_contextId: new ObjectId(copiedRoomId),
+					_contextId: copiedRoomId,
 					_contextType: BoardExternalReferenceType.Room,
-				} as FilterQuery<BoardExternalReference>,
+				},
 			});
 			expect(copiedBoards.length).toBe(boards.length);
 		});

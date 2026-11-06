@@ -1,5 +1,6 @@
 import { Logger } from '@infra/logger';
-import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
+import { EnsureRequestContext } from '@mikro-orm/decorators/legacy';
 import { Group, GroupDeletedEvent } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';

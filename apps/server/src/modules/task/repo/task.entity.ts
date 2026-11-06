@@ -1,4 +1,5 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Collection } from '@mikro-orm/core';
+import { Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';

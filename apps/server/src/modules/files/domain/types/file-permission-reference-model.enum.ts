@@ -1,4 +1,4 @@
-export const enum FilePermissionReferenceModel {
+export enum FilePermissionReferenceModel {
 	USER = 'user',
 	ROLE = 'role',
 }

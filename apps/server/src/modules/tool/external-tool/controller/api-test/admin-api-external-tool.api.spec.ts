@@ -1,4 +1,5 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -20,18 +21,22 @@ describe('AdminApiExternalTool (API)', () => {
 	let testApiClient: TestApiClient;
 
 	const basePath = 'admin/tools/external-tools';
+	const apiKey = 'external-tool-api-test-key';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: [apiKey] } satisfies XApiKeyAuthGuardConfig)
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
 		orm = app.get(MikroORM);
 
-		testApiClient = new TestApiClient(app, basePath, 'someotherkey', true);
+		testApiClient = new TestApiClient(app, basePath, apiKey, true);
 	});
 
 	afterAll(async () => {
@@ -39,7 +44,7 @@ describe('AdminApiExternalTool (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 	});
 
 	describe('[POST] admin/tools/external-tools', () => {

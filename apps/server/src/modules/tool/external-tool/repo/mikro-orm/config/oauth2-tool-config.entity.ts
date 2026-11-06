@@ -1,4 +1,4 @@
-import { Embeddable, Property } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/decorators/legacy';
 import { ToolConfigType } from '../../../../common/enum';
 import { ExternalToolConfigEntity } from './external-tool-config.entity';
 

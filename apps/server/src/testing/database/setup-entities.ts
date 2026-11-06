@@ -1,4 +1,5 @@
 import { type AnyEntity, type EntityClass, MikroORM } from '@mikro-orm/core';
+import { ReflectMetadataProvider } from '@mikro-orm/decorators/legacy';
 import { MongoDriver } from '@mikro-orm/mongodb';
 
 /**
@@ -10,8 +11,8 @@ export const setupEntities = async (entities: EntityClass<AnyEntity>[]): Promise
 		driver: MongoDriver,
 		dbName: 'dummy',
 		entities,
+		metadataProvider: ReflectMetadataProvider,
 		allowGlobalContext: true,
-		connect: false,
 	});
 	return orm;
 };

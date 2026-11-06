@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';

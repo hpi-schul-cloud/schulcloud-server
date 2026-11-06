@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
@@ -9,8 +10,11 @@ describe('consentVersionService tests', () => {
 	let server;
 	let nestServices;
 	let consentVersionService;
+	let originalTheme;
 
 	before(async () => {
+		originalTheme = Configuration.get('SC_THEME');
+		Configuration.set('SC_THEME', 'default');
 		app = await appPromise();
 		consentVersionService = app.service('/consentVersions');
 		server = await app.listen(0);
@@ -18,6 +22,7 @@ describe('consentVersionService tests', () => {
 	});
 
 	after(async () => {
+		Configuration.set('SC_THEME', originalTheme);
 		await server.close();
 		await closeNestServices(nestServices);
 	});

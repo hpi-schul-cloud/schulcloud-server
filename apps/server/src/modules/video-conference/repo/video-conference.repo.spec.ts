@@ -140,9 +140,11 @@ describe('Video Conference Repo', () => {
 			// Assert
 			expect(result.target).toEqual(testDO.target);
 			expect(result.targetModel).toEqual(VideoConferenceTargetModels.COURSES);
-			expect(result.options?.everyAttendeJoinsMuted).toEqual(testDO.options.everyAttendeeJoinsMuted);
-			expect(result.options?.everybodyJoinsAsModerator).toEqual(testDO.options.everybodyJoinsAsModerator);
-			expect(result.options?.moderatorMustApproveJoinRequests).toEqual(testDO.options.moderatorMustApproveJoinRequests);
+			expect(result.options).toEqual({
+				everyAttendeJoinsMuted: testDO.options.everyAttendeeJoinsMuted,
+				everybodyJoinsAsModerator: testDO.options.everybodyJoinsAsModerator,
+				moderatorMustApproveJoinRequests: testDO.options.moderatorMustApproveJoinRequests,
+			});
 		});
 	});
 });

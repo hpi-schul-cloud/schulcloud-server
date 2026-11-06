@@ -21,7 +21,6 @@ module.exports = {
 			algorithm: Configuration.get('JWT_SIGNING_ALGORITHM'),
 			expiresIn: Configuration.get('JWT_LIFETIME'),
 		},
-		tsp: {},
 		'api-key': {},
 	},
 };

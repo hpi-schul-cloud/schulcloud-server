@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { StorageProviderEntity } from '@modules/school/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { FileEntity } from '../entity';
+import { FileEntity, FilePermissionEntity } from '../entity';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FilesRepo } from './files.repo';
 
@@ -36,6 +36,33 @@ describe(FilesRepo.name, () => {
 	describe('defined', () => {
 		it('repo should be defined', () => {
 			expect(repo).toBeDefined();
+		});
+
+		describe('aggregation hydration', () => {
+			it.each([0, 2])(
+				'should map stored string enums and %i embedded permissions after clearing the identity map',
+				async (count) => {
+					const permissions = filePermissionEntityFactory.buildList(count);
+					const creatorId = new ObjectId().toHexString();
+					const file = fileEntityFactory.build({ permissions, creatorId });
+					await em.persist(file).flush();
+					em.clear();
+
+					const document = await em.getCollection(FileEntity).findOne({ _id: new ObjectId(file.id) });
+					expect(document?.refOwnerModel).toBe(file.refOwnerModel);
+					expect(document?.permissions).toHaveLength(count);
+					expect(document?.permissions).toEqual(permissions);
+
+					const results = await repo.findByPermissionRefIdOrCreatorId(creatorId);
+					const loaded = results.find((result) => result.id === file.id);
+					expect(loaded).toBeInstanceOf(FileEntity);
+					expect(loaded?.refOwnerModel).toBe(file.refOwnerModel);
+					expect(loaded?.permissions).toEqual(permissions);
+					for (const permission of loaded?.permissions ?? []) {
+						expect(permission).toBeInstanceOf(FilePermissionEntity);
+					}
+				}
+			);
 		});
 
 		it('entity manager should be defined', () => {

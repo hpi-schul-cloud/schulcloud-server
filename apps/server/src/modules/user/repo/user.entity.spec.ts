@@ -9,7 +9,7 @@ import { userFactory } from '@modules/user/testing';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { User } from './user.entity';
+import { User, UserSchoolEmbeddable } from './user.entity';
 
 describe('User Entity', () => {
 	let orm: MikroORM;
@@ -22,6 +22,26 @@ describe('User Entity', () => {
 	});
 
 	describe('constructor', () => {
+		it('should instantiate secondary schools from property objects', () => {
+			const school = schoolEntityFactory.build();
+			const role = roleFactory.build();
+			const user = userFactory.build({ secondarySchools: [{ school, role }] });
+
+			expect(user.secondarySchools[0]).toBeInstanceOf(UserSchoolEmbeddable);
+			expect(user.secondarySchools[0].school).toBe(school);
+			expect(user.secondarySchools[0].role).toBe(role);
+		});
+
+		it('should preserve existing secondary school instances', () => {
+			const secondarySchool = new UserSchoolEmbeddable({
+				school: schoolEntityFactory.build(),
+				role: roleFactory.build(),
+			});
+			const user = userFactory.build({ secondarySchools: [secondarySchool] });
+
+			expect(user.secondarySchools[0]).toBe(secondarySchool);
+		});
+
 		it('should throw an error when called without required properties', () => {
 			// @ts-expect-error: Test case
 			const test = () => new User();

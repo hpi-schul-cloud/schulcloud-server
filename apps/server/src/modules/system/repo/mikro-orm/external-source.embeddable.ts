@@ -1,4 +1,4 @@
-import { Embeddable, ManyToOne, Property } from '@mikro-orm/core';
+import { Embeddable, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { SystemEntity } from './system.entity';
 
 export interface ExternalSourceEntityProps {

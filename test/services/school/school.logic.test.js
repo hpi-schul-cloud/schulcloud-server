@@ -14,17 +14,20 @@ const { expect } = chai;
 
 describe('school logic', () => {
 	let defaultSchool;
-	const DOCUMENT_BASE_DIR = Configuration.get('DOCUMENT_BASE_DIR');
+	let documentBaseDir;
+	let theme;
 
 	before('create school with group', async () => {
+		documentBaseDir = Configuration.get('DOCUMENT_BASE_DIR');
+		theme = Configuration.get('SC_THEME');
 		const schoolGroupId = await new SchoolGroup({ name: 'defaultSchoolGroup' }).save();
 		defaultSchool = await createSchool({ schoolGroupId });
 	});
 
 	it('get default documentBaseDir', async () => {
 		const school = await School.findById(defaultSchool._id);
-		const baseDir = String(new URL('default/', new URL(DOCUMENT_BASE_DIR)));
-		expect(baseDir).contains(DOCUMENT_BASE_DIR);
+		const baseDir = String(new URL(`${theme}/`, new URL(documentBaseDir)));
+		expect(baseDir).contains(documentBaseDir);
 		expect(school.documentBaseDir).equals(baseDir);
 		logger.info('school basedir', school.documentBaseDir);
 	});
@@ -33,9 +36,9 @@ describe('school logic', () => {
 		const school = await School.findById(defaultSchool._id);
 		school.documentBaseDirType = 'school';
 		await school.save();
-		const path = `default/${String(school._id)}/`;
-		const baseDir = String(new URL(String(path), new URL(DOCUMENT_BASE_DIR)));
-		expect(baseDir).contains(DOCUMENT_BASE_DIR);
+		const path = `${theme}/${String(school._id)}/`;
+		const baseDir = String(new URL(String(path), new URL(documentBaseDir)));
+		expect(baseDir).contains(documentBaseDir);
 		expect(baseDir).contains(String(path));
 		expect(school.documentBaseDir).equals(baseDir);
 		logger.info('school basedir', school.documentBaseDir);
@@ -45,9 +48,9 @@ describe('school logic', () => {
 		const school = await School.findById(defaultSchool._id);
 		school.documentBaseDirType = 'schoolGroup';
 		await school.save();
-		const path = `default/${String(school.schoolGroupId)}/`;
-		const baseDir = String(new URL(path, new URL(DOCUMENT_BASE_DIR)));
-		expect(baseDir).contains(DOCUMENT_BASE_DIR);
+		const path = `${theme}/${String(school.schoolGroupId)}/`;
+		const baseDir = String(new URL(path, new URL(documentBaseDir)));
+		expect(baseDir).contains(documentBaseDir);
 		expect(baseDir).contains(String(path));
 		expect(school.documentBaseDir).equals(baseDir);
 		logger.info('school group basedir', school.documentBaseDir);

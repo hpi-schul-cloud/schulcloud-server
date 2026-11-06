@@ -1,4 +1,5 @@
-import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
+import { Cascade, Collection } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Enum, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';

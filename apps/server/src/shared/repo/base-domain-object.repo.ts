@@ -1,4 +1,12 @@
-import { EntityData, EntityName, FilterQuery, Primary, RequiredEntityData, Utils } from '@mikro-orm/core';
+import {
+	EntityData,
+	EntityName,
+	FilterQuery,
+	FromEntityType,
+	Primary,
+	RequiredEntityData,
+	Utils,
+} from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { AuthorizableObject, DomainObject } from '../domain/domain-object';
@@ -15,7 +23,7 @@ export abstract class BaseDomainObjectRepo<
 
 	protected abstract get entityName(): EntityName<E>;
 
-	protected abstract mapDOToEntityProperties(entityDO: D): EntityData<E>;
+	protected abstract mapDOToEntityProperties(entityDO: D): EntityData<FromEntityType<E>>;
 
 	public async save(domainObject: D): Promise<D> {
 		const savedDomainObjects = await this.saveAll([domainObject]);
@@ -38,9 +46,13 @@ export abstract class BaseDomainObjectRepo<
 		const { id } = domainObject;
 		const existingEntity = await this.em.findOne(this.entityName, { id } as FilterQuery<E>);
 
-		const persistedEntity = existingEntity
-			? (this.em.assign(existingEntity, entityData as never) as E)
-			: this.em.create(this.entityName, { ...entityData, id } as unknown as RequiredEntityData<E>);
+		let persistedEntity: E;
+		if (existingEntity) {
+			this.em.assign<E>(existingEntity, entityData);
+			persistedEntity = existingEntity;
+		} else {
+			persistedEntity = this.em.create(this.entityName, { ...entityData, id } as unknown as RequiredEntityData<E>);
+		}
 
 		return { domainObject, persistedEntity };
 	}
@@ -67,7 +79,7 @@ export abstract class BaseDomainObjectRepo<
 	/**
 	 * Ignore base entity properties when updating entity
 	 */
-	private removeProtectedEntityFields(entityData: EntityData<E>): void {
+	private removeProtectedEntityFields(entityData: EntityData<FromEntityType<E>>): void {
 		Object.keys(entityData).forEach((key) => {
 			if (baseEntityProperties.includes(key)) {
 				delete entityData[key];

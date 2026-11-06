@@ -17,7 +17,7 @@ class AxiosResponseImp<T> implements AxiosResponse {
 
 	public statusText: string;
 
-	public headers: AxiosHeaders;
+	public headers: InstanceType<typeof AxiosHeaders>;
 
 	public config: InternalAxiosRequestConfig<unknown>;
 

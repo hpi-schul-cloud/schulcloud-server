@@ -175,8 +175,9 @@ export class DeletionRequestRepo {
 			},
 		];
 		const result = await this.em
-			.getConnection()
-			.aggregate<{ status: StatusModel; targetRefIds: EntityId[] }>('deletionrequests', pipeline);
+			.getCollection(DeletionRequestEntity)
+			.aggregate<{ status: StatusModel; targetRefIds: EntityId[] }>(pipeline)
+			.toArray();
 		return result;
 	}
 }

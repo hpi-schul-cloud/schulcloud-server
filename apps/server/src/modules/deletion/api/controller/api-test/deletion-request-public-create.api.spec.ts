@@ -7,6 +7,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
+import { DeletionRequestEntity } from '../../../repo/entity';
 import { type DeletionRequestParams } from '../dto';
 
 const baseRouteName = '/deletionRequestsPublic';
@@ -77,7 +78,7 @@ describe(`deletionRequest public create (api)`, () => {
 
 			await loggedInClient.delete(`?${queryString}`);
 
-			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser.id) });
+			const deletionRequest = await em.findOne(DeletionRequestEntity, { targetRefId: studentUser.id });
 			expect(deletionRequest).toBeDefined();
 		});
 
@@ -109,7 +110,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const response = await loggedInClient.delete(`?ids[]=${studentUser2.id}`);
 
 			expect(response.status).toEqual(204);
-			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser2.id) });
+			const deletionRequest = await em.findOne(DeletionRequestEntity, { targetRefId: studentUser2.id });
 			expect(deletionRequest).toBeDefined();
 		});
 
@@ -140,7 +141,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const response = await loggedInClient.delete(`?${queryString}${additionalQueryString}`);
 
 			expect(response.status).toEqual(400);
-			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser.id) });
+			const deletionRequest = await em.findOne(DeletionRequestEntity, { targetRefId: studentUser.id });
 			expect(deletionRequest).toBeNull();
 		});
 	});
@@ -181,7 +182,7 @@ describe(`deletionRequest public create (api)`, () => {
 
 			await loggedInClient.delete(`?${queryString}`);
 
-			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser.id) });
+			const deletionRequest = await em.findOne(DeletionRequestEntity, { targetRefId: studentUser.id });
 			expect(deletionRequest).toBeNull();
 		});
 	});
@@ -220,7 +221,7 @@ describe(`deletionRequest public create (api)`, () => {
 
 			await loggedInClient.delete(`?${queryString}`);
 
-			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(targetUser.id) });
+			const deletionRequest = await em.findOne(DeletionRequestEntity, { targetRefId: targetUser.id });
 			expect(deletionRequest).toBeNull();
 		});
 	});

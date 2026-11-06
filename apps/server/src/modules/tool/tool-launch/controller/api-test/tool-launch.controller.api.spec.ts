@@ -62,7 +62,7 @@ describe('ToolLaunchController (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 	});
 
 	describe('[GET] tools/context/{contextExternalToolId}/launch', () => {

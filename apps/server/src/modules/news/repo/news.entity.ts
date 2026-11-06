@@ -1,8 +1,8 @@
-import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { CourseEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
-import type { TeamEntity } from '@modules/team/repo';
-import type { User } from '@modules/user/repo';
+import { TeamEntity } from '@modules/team/repo';
+import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { NewsTarget, NewsTargetModel } from '../domain/type';
@@ -60,11 +60,11 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	school!: SchoolEntity;
 
-	@ManyToOne('User', { fieldName: 'creatorId', nullable: true })
+	@ManyToOne(() => User, { fieldName: 'creatorId', nullable: true })
 	@Index()
 	creator?: User;
 
-	@ManyToOne('User', { fieldName: 'updaterId', nullable: true })
+	@ManyToOne(() => User, { fieldName: 'updaterId', nullable: true })
 	@Index()
 	updater?: User;
 
@@ -109,7 +109,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
-	@ManyToOne(() => SchoolEntity)
+	@ManyToOne(() => SchoolEntity, { fieldName: 'target' })
 	target!: SchoolEntity;
 
 	constructor(props: NewsProperties) {
@@ -120,7 +120,7 @@ export class SchoolNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
-	@ManyToOne(() => CourseEntity)
+	@ManyToOne(() => CourseEntity, { fieldName: 'target' })
 	target!: CourseEntity;
 
 	constructor(props: NewsProperties) {
@@ -131,7 +131,7 @@ export class CourseNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
-	@ManyToOne('TeamEntity')
+	@ManyToOne(() => TeamEntity, { fieldName: 'target' })
 	target!: TeamEntity;
 
 	constructor(props: NewsProperties) {

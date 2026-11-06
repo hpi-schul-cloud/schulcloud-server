@@ -1,7 +1,7 @@
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Entity, Property, Index, Unique } from '@mikro-orm/core';
+import { ArrayType, ObjectId } from '@mikro-orm/mongodb';
+import { Entity, Property, Index, Unique } from '@mikro-orm/decorators/legacy';
 import { DomainOperationReport, DomainDeletionReport } from '../../domain/interface';
 import { DomainName } from '../../domain/types';
 
@@ -23,10 +23,10 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Index()
 	domain: DomainName;
 
-	@Property()
+	@Property({ type: ArrayType<DomainOperationReport> })
 	operations: DomainOperationReport[];
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, type: ArrayType<DomainDeletionReport> })
 	subdomainOperations?: DomainDeletionReport[];
 
 	@Property()

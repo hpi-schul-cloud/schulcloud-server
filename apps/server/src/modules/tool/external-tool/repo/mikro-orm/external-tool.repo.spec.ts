@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
@@ -24,6 +24,7 @@ import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import { ExternalToolEntity } from './external-tool.entity';
 import { ExternalToolRepo } from './external-tool.repo';
 import { ExternalToolRepoMapper } from './mapper';
+import { CustomParameterEntity } from './custom-parameter/custom-parameter.entity';
 
 describe(ExternalToolRepo.name, () => {
 	let module: TestingModule;
@@ -54,6 +55,53 @@ describe(ExternalToolRepo.name, () => {
 	afterEach(async () => {
 		await em.flush();
 		await cleanupCollections(em);
+	});
+
+	it('should create and reload all custom parameter string enum values', async () => {
+		const parameters = [
+			...Object.values(CustomParameterScope).map((scope) => {
+				return { scope };
+			}),
+			...Object.values(CustomParameterLocation).map((location) => {
+				return { location };
+			}),
+			...Object.values(CustomParameterType).map((type) => {
+				return { type };
+			}),
+		].map(
+			(values, index) =>
+				new CustomParameterEntity({
+					name: `parameter-${index}`,
+					displayName: `Parameter ${index}`,
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.QUERY,
+					type: CustomParameterType.STRING,
+					isOptional: true,
+					isProtected: false,
+					...values,
+				})
+		);
+		const source = externalToolEntityFactory.withBasicConfig().buildWithId({ parameters });
+		const entity = em.create(ExternalToolEntity, source);
+		await em.persist(entity).flush();
+		em.clear();
+
+		const stored = await em.findOneOrFail(ExternalToolEntity, entity.id);
+
+		expect(stored.parameters).toHaveLength(parameters.length);
+		if (!stored.parameters) {
+			throw new Error('Persisted custom parameters are missing');
+		}
+		const raw = await em.getCollection(ExternalToolEntity).findOne({ _id: entity._id });
+		stored.parameters.forEach((parameter, index) => {
+			const { name, scope, location, type } = parameters[index];
+			expect(parameter).toBeInstanceOf(CustomParameterEntity);
+			expect(parameter).toMatchObject({ name, scope, location, type });
+			expect(raw).toHaveProperty(`parameters.${index}.name`, name);
+			expect(raw).toHaveProperty(`parameters.${index}.scope`, scope);
+			expect(raw).toHaveProperty(`parameters.${index}.location`, location);
+			expect(raw).toHaveProperty(`parameters.${index}.type`, type);
+		});
 	});
 
 	const setup = async () => {
@@ -648,6 +696,24 @@ describe(ExternalToolRepo.name, () => {
 	});
 
 	describe('saveAll', () => {
+		it('should flush mixed scalar updates and inserts before a database-filtered read', async () => {
+			const existing = externalToolEntityFactory.withBasicConfig().buildWithId({ name: 'before-batch' });
+			await em.persist(existing).flush();
+			const updated = ExternalToolRepoMapper.mapEntityToDO(existing);
+			updated.name = 'after-batch';
+			const created = externalToolFactory.build({ name: 'created-in-batch' });
+
+			await repo.saveAll([updated, created]);
+
+			const collection = em.getCollection(ExternalToolEntity);
+			expect(await collection.findOne({ _id: existing._id })).toMatchObject({ name: 'after-batch' });
+			expect(await collection.findOne({ _id: new ObjectId(created.id) })).toMatchObject({ name: 'created-in-batch' });
+			em.clear();
+			expect((await repo.findNonMediaToolByName('after-batch'))?.id).toBe(existing.id);
+			expect(await repo.findNonMediaToolByName('before-batch')).toBeNull();
+			expect((await repo.findNonMediaToolByName('created-in-batch'))?.id).toBe(created.id);
+		});
+
 		describe('when the external tools passed do not exist', () => {
 			it('should save all the external tools', async () => {
 				const externalToolDOs: ExternalTool[] = externalToolFactory.buildList(5);

@@ -1,3 +1,4 @@
+import { wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 
@@ -33,6 +34,21 @@ describe(HealthCheckRepo.name, () => {
 	});
 
 	describe('upsertById', () => {
+		it('should preserve a non-ObjectId string key in storage, serialization and domain mapping', async () => {
+			const id = 'health-check-string-key';
+			const result = await repo.upsertById(id);
+			em.clear();
+
+			const entity = await em.findOneOrFail(HealthCheckEntity, id);
+			const document = await em.getCollection<{ _id: string; updatedAt: Date }>('healthchecks').findOne({ _id: id });
+
+			expect(document).toEqual({ _id: id, updatedAt: entity.updatedAt });
+			expect(wrap(entity).toObject()).toEqual({ id, updatedAt: entity.updatedAt });
+			expect(JSON.parse(JSON.stringify(entity))).toEqual({ id, updatedAt: entity.updatedAt.toISOString() });
+			expect(result.id).toBe(id);
+			expect(result.updatedAt).toEqual(entity.updatedAt);
+		});
+
 		describe('when called with some ID', () => {
 			const setup = () => {
 				const testId = 'test_health_check_id';

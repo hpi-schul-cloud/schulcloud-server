@@ -34,7 +34,7 @@ export class CourseGroupRepo extends BaseRepo<CourseGroupEntity> {
 
 	public async removeUserReference(userId: EntityId): Promise<number> {
 		const id = new ObjectId(userId);
-		const fieldName = getFieldName(this._em, 'students', CourseGroupEntity.name);
+		const fieldName = getFieldName(this._em, 'students', CourseGroupEntity);
 
 		const count = await this._em.nativeUpdate(this.entityName, { students: id }, {
 			$pull: { [fieldName]: id },

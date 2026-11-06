@@ -140,7 +140,7 @@ describe('UserRepo', () => {
 			expect(result).toEqual([]);
 		});
 
-		it('should find users and populate secondary schools', async () => {
+		it.each([false, true])('should populate secondary schools with cleared identity map: %s', async (clear) => {
 			const school = schoolEntityFactory.buildWithId();
 			const otherSchool = schoolEntityFactory.buildWithId();
 			const guestTeacherRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
@@ -149,6 +149,9 @@ describe('UserRepo', () => {
 				secondarySchools: [{ school: otherSchool, role: guestTeacherRole }],
 			});
 			await em.persist([school, otherSchool, guestTeacherRole, ...users]).flush();
+			if (clear) {
+				em.clear();
+			}
 
 			const result = await repo.findByIds(
 				users.map((user) => user.id),
@@ -158,6 +161,13 @@ describe('UserRepo', () => {
 			expect(result).toHaveLength(users.length);
 			expect(result.map((user) => user.id)).toEqual(expect.arrayContaining(users.map((user) => user.id)));
 			expect(result.every((user) => user.secondarySchools?.[0].schoolId === otherSchool.id)).toBeTruthy();
+			expect(
+				result.every(
+					(user) =>
+						user.secondarySchools?.[0].role.id === guestTeacherRole.id &&
+						user.secondarySchools[0].role.name === RoleName.GUESTTEACHER
+				)
+			).toBeTruthy();
 		});
 	});
 

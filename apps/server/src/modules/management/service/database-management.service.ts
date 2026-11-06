@@ -1,7 +1,6 @@
-import { MikroORM } from '@mikro-orm/core';
-import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { Collection, Db } from '@mikro-orm/mongodb/node_modules/mongodb';
+import { MikroORM, type MigrationInfo } from '@mikro-orm/core';
+import { MigrateOptions } from '@mikro-orm/migrations-mongodb';
+import { EntityManager, type MongoConnection, type MongoDriver } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Document } from 'mongodb';
 
@@ -9,15 +8,15 @@ import { Document } from 'mongodb';
 export class DatabaseManagementService {
 	constructor(
 		private em: EntityManager,
-		private readonly orm: MikroORM
+		private readonly orm: MikroORM<MongoDriver>
 	) {}
 
-	private get db(): Db {
+	private get db(): ReturnType<MongoConnection['getDb']> {
 		const connection = this.em.getConnection('write').getDb();
 		return connection;
 	}
 
-	public getDatabaseCollection(collectionName: string): Collection {
+	public getDatabaseCollection(collectionName: string): ReturnType<EntityManager['getCollection']> {
 		const collection = this.db.collection(collectionName);
 		return collection;
 	}
@@ -69,32 +68,32 @@ export class DatabaseManagementService {
 	}
 
 	public async syncIndexes(): Promise<void> {
-		await this.orm.getSchemaGenerator().ensureIndexes();
+		await this.orm.schema.ensureIndexes();
 	}
 
 	public async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
-		const migrator = this.orm.getMigrator();
+		const { migrator } = this.orm;
 		const params = this.migrationParams(only, from, to);
 		await migrator.up(params);
 	}
 
 	public async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
-		const migrator = this.orm.getMigrator();
+		const { migrator } = this.orm;
 		const params = this.migrationParams(only, from, to);
 
 		await migrator.down(params);
 	}
 
-	public async migrationPending(): Promise<UmzugMigration[]> {
-		const migrator = this.orm.getMigrator();
-		const pendingMigrations = await migrator.getPendingMigrations();
+	public async migrationPending(): Promise<MigrationInfo[]> {
+		const { migrator } = this.orm;
+		const pendingMigrations = await migrator.getPending();
 		return pendingMigrations;
 	}
 
 	public async migrationCreate(): Promise<void> {
-		const migrator = this.orm.getMigrator();
+		const { migrator } = this.orm;
 
-		await migrator.createInitialMigration();
+		await migrator.createInitial();
 	}
 
 	private migrationParams(only?: string, from?: string, to?: string): MigrateOptions {

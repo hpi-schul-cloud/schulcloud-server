@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { StorageProviderEncryptedStringType } from '../domain';
 

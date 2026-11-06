@@ -1,3 +1,4 @@
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { federalStateEntityFactory, schoolYearEntityFactory, storageProviderFactory } from '@modules/school/testing';
@@ -16,7 +17,10 @@ describe('Admin API - Schools (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: ['someotherkey'] } satisfies XApiKeyAuthGuardConfig)
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
