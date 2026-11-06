@@ -32,6 +32,11 @@ export class ServerPublicApiConfig {
 	@IsBoolean()
 	public featureTeamsEnabled = true;
 
+	@ConfigProperty('FEATURE_ROOM_SEARCH_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureRoomSearchEnabled = false;
+
 	@ConfigProperty('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE')
 	@StringToBoolean()
 	@IsBoolean()
