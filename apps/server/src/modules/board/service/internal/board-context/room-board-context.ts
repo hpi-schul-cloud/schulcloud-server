@@ -15,6 +15,9 @@ import { type PreparedBoardContext } from './prepared-board-context.interface';
 /**
  * Prepared context for Room-based boards.
  * Holds pre-fetched Room and RoomAuthorizable data.
+ * FeathersRosterService.hasBoardAccess duplicates the role mapping, and
+ * FeathersRosterService.getRoomsForUser duplicates the owner-based lock check.
+ * Keep both aligned when changing these rules.
  */
 export class RoomBoardContext implements PreparedBoardContext {
 	public readonly type = BoardExternalReferenceType.Room;
