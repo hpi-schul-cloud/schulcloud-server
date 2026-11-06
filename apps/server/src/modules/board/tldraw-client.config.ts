@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { InternalTldrawClientConfig } from '@infra/tldraw-client';
 import { IsString, IsUrl } from 'class-validator';
 
@@ -11,6 +11,7 @@ export class TldrawClientConfig implements InternalTldrawClientConfig {
 	public tldrawAdminApiClientBaseUrl!: string;
 
 	@ConfigProperty('TLDRAW_ADMIN_API_CLIENT__API_KEY')
+	@Secret()
 	@IsString()
 	public tldrawAdminApiClientApiKey!: string;
 }

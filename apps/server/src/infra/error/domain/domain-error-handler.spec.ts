@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ErrorLogger } from '@infra/logger';
 import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common/error';
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
@@ -222,6 +223,39 @@ describe('GlobalErrorFilter', () => {
 				domainErrorHandler.exec(axiosLoggable);
 
 				expect(logger.error).toHaveBeenCalledWith(axiosLoggable);
+			});
+		});
+	});
+
+	describe('execHttpContext', () => {
+		const setup = () => {
+			const error = new Error('test');
+			const request = {
+				method: 'GET',
+				url: '/rooms/1?ids=a&ids=b',
+				params: { roomId: '1' },
+				query: { ids: ['a', 'b'] },
+			};
+			const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
+
+			return { error, context };
+		};
+
+		it('should log params and query as objects, not as JSON strings', () => {
+			const { error, context } = setup();
+
+			domainErrorHandler.execHttpContext(error, context);
+
+			const loggable = logger.error.mock.calls[0][0];
+			expect(loggable.getLogMessage()).toMatchObject({
+				data: {
+					request: {
+						method: 'GET',
+						endpoint: '/rooms/1?ids=a&ids=b',
+						params: { roomId: '1' },
+						query: { ids: ['a', 'b'] },
+					},
+				},
 			});
 		});
 	});

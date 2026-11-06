@@ -4,7 +4,6 @@ import {
 	mediaSourceSyncOperationReportFactory,
 	mediaSourceSyncReportFactory,
 } from '@modules/media-source-sync/testing';
-import { type LogMessage } from '@shared/common/loggable';
 import { MediaActivationsSyncReportLoggable } from './media-activations-sync-report.loggable';
 
 describe(MediaActivationsSyncReportLoggable.name, () => {
@@ -33,11 +32,11 @@ describe(MediaActivationsSyncReportLoggable.name, () => {
 
 			const result = loggable.getLogMessage();
 
-			expect(result).toEqual<LogMessage>({
+			expect(result).toEqual({
 				message: `Media activations sync for ${format} had finished with ${report.successCount} activations synced.`,
 				data: {
 					mediaSourceDataFormat: format,
-					report: JSON.stringify(report),
+					report,
 				},
 			});
 		});
