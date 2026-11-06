@@ -259,6 +259,93 @@ const resolveMoveDestination = async (userId, parent) => {
 	throw new Forbidden('Missing write permission on the destination.');
 };
 
+/**
+ * When a directory changes owner, descendants that still have the previous owner
+ * change with it. Children stay attached by parent; listings are owner + parent.
+ * The walk matches removeFileById.
+ */
+const reassignDescendantOwners = async ({
+	directoryId,
+	previousOwnerId,
+	previousRefOwnerModel,
+	nextOwnerId,
+	nextRefOwnerModel,
+}) => {
+	const children = await FileModel.find({ parent: directoryId }).lean().exec();
+	const promises = children.map(async (child) => {
+		if (child.refOwnerModel === previousRefOwnerModel && equalIds(child.owner, previousOwnerId)) {
+			await FileModel.updateOne(
+				{ _id: child._id },
+				{ $set: { owner: nextOwnerId, refOwnerModel: nextRefOwnerModel } }
+			).exec();
+		}
+		if (child.isDirectory) {
+			await reassignDescendantOwners({
+				directoryId: child._id,
+				previousOwnerId,
+				previousRefOwnerModel,
+				nextOwnerId,
+				nextRefOwnerModel,
+			});
+		}
+	});
+	await Promise.all(promises);
+};
+
+/**
+ * Same-owner moves change parent only. The owner may become a course or team
+ * only when the caller owns the source. Same-school overlap is already asserted.
+ * @returns {{ update: Object, transferOwnership: Boolean }}
+ */
+const buildMoveUpdate = ({
+	userId,
+	sourceFile,
+	parent,
+	destinationOwnerId,
+	destinationRefOwnerModel,
+	destinationIsDirectory,
+}) => {
+	const sameOwner =
+		sourceFile.refOwnerModel === destinationRefOwnerModel && equalIds(sourceFile.owner, destinationOwnerId);
+	const callerOwnsSource = sourceFile.refOwnerModel === 'user' && equalIds(sourceFile.owner, userId);
+	const destinationIsCourseOrTeam = destinationRefOwnerModel === 'course' || destinationRefOwnerModel === 'teams';
+
+	if (sameOwner) {
+		return {
+			update: destinationIsDirectory ? { $set: { parent } } : { $unset: { parent: '' } },
+			transferOwnership: false,
+		};
+	}
+
+	if (!callerOwnsSource || !destinationIsCourseOrTeam) {
+		throw new Forbidden('Cannot change the owner of this file.');
+	}
+
+	if (destinationIsDirectory) {
+		return {
+			update: {
+				$set: {
+					parent,
+					owner: destinationOwnerId,
+					refOwnerModel: destinationRefOwnerModel,
+				},
+			},
+			transferOwnership: true,
+		};
+	}
+
+	return {
+		update: {
+			$set: {
+				owner: destinationOwnerId,
+				refOwnerModel: destinationRefOwnerModel,
+			},
+			$unset: { parent: '' },
+		},
+		transferOwnership: true,
+	};
+};
+
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
 	Stategy: AWSS3Strategy,
@@ -388,6 +475,9 @@ const fileStorageService = {
 	/**
 	 * Move file from one parent to another.
 	 * Requires write access on the source and the destination, in the same school.
+	 * Same-owner moves change parent only. The owner changes only when the caller
+	 * moves their own file into a course or team; a moved directory takes descendants
+	 * that still have the old owner with it.
 	 * Missing files are 404. Denied moves throw 403 and do not change the file.
 	 * @param _id, Object-ID of file to be patched
 	 * @param data, contains destination parent Object-ID
@@ -417,10 +507,7 @@ const fileStorageService = {
 
 		await assertCanWriteFile(userId, _id);
 
-		const { fileObject, teamObject, destinationOwnerId, destinationRefOwnerModel } = await resolveMoveDestination(
-			userId,
-			parent
-		);
+		const { fileObject, destinationOwnerId, destinationRefOwnerModel } = await resolveMoveDestination(userId, parent);
 
 		await assertSameSchoolMove({
 			userId,
@@ -429,28 +516,26 @@ const fileStorageService = {
 			destinationRefOwnerModel,
 		});
 
-		const update = { $set: {} };
-		if (fileObject) {
-			update.$set = {
-				parent,
-				owner: fileObject.owner,
-				refOwnerModel: fileObject.refOwnerModel,
-			};
-		} else if (equalIds(parent, userId)) {
-			update.$set = {
-				owner: userId,
-				refOwnerModel: 'user',
-			};
-			update.$unset = { parent: '' };
-		} else {
-			update.$set = {
-				owner: parent,
-				refOwnerModel: teamObject ? 'teams' : 'course',
-			};
-			update.$unset = { parent: '' };
-		}
+		const { update, transferOwnership } = buildMoveUpdate({
+			userId,
+			sourceFile,
+			parent,
+			destinationOwnerId,
+			destinationRefOwnerModel,
+			destinationIsDirectory: Boolean(fileObject),
+		});
 
-		return FileModel.updateOne({ _id }, update).exec();
+		const result = await FileModel.updateOne({ _id }, update).exec();
+		if (transferOwnership && sourceFile.isDirectory) {
+			await reassignDescendantOwners({
+				directoryId: sourceFile._id,
+				previousOwnerId: sourceFile.owner,
+				previousRefOwnerModel: sourceFile.refOwnerModel,
+				nextOwnerId: destinationOwnerId,
+				nextRefOwnerModel: destinationRefOwnerModel,
+			});
+		}
+		return result;
 	},
 };
 
