@@ -12,7 +12,10 @@ let config: Config.InitialOptions = {
 	// Keep faker in CJS for existing mocks; other ESM dependencies use Jest's native ESM support.
 	transformIgnorePatterns: ['/node_modules/(?!(@faker-js/faker)/)'],
 	transform: {
-		'node_modules/@faker-js/faker/.+\\.js$': ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }],
+		'node_modules/@faker-js/faker/.+\\.js$': [
+			'babel-jest',
+			{ presets: [['@babel/preset-env', { targets: { node: 'current' } }]] },
+		],
 		// NodeNext requires isolated transpilation; nest:test:typecheck checks source and test types separately.
 		'^.+\\.(t|j)s$': ['ts-jest', { tsconfig: { isolatedModules: true } }],
 	},

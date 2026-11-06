@@ -23,6 +23,8 @@ export interface CourseBoardContextData {
 /**
  * Prepared context for Course-based boards.
  * Holds pre-fetched course user data.
+ * FeathersRosterService.getAccessibleCourseBoards duplicates the role and lock
+ * rules for roster queries. Keep it aligned when changing these rules.
  */
 export class CourseBoardContext implements PreparedBoardContext {
 	public readonly type = BoardExternalReferenceType.Course;

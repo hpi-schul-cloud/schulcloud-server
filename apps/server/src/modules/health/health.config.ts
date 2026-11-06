@@ -14,4 +14,9 @@ export class HealthConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public excludeMongoDB = false;
+
+	@ConfigProperty('HEALTH_CHECKS_EXCLUDE_SESSION_STORAGE')
+	@StringToBoolean()
+	@IsBoolean()
+	public excludeSessionStorage = false;
 }
