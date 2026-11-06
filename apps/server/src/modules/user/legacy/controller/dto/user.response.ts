@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { type ObjectId } from '@mikro-orm/mongodb';
 import { ConsentsResponse, type ConsentsResponseProps } from './consents.response';
+import { ClassResponse } from './class.response';
 
 export type UserResponseProps = Omit<UserResponse, '_id' | 'consent'> & {
 	_id: string | ObjectId;
@@ -65,8 +66,8 @@ export class UserResponse {
 	@ApiProperty()
 	consent?: ConsentsResponse;
 
-	@ApiProperty({ type: [String] })
-	classes?: string[];
+	@ApiProperty({ type: [ClassResponse] })
+	classes?: ClassResponse[];
 
 	@ApiProperty()
 	importHash?: string;
