@@ -31,7 +31,7 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 	}
 
 	public async findByNamePrefix(prefix: string): Promise<FileEntity[]> {
-		const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 		const files = await this._em.find(
 			FileEntity,
 			{ name: { $re: `^${escaped}` } },

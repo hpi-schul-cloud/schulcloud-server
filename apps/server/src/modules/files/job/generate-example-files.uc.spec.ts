@@ -44,8 +44,8 @@ describe(GenerateExampleFilesUc.name, () => {
 		name: 'course',
 		school: { id: schoolId },
 		teachers: { getItems: () => [{ id: userId }] },
-		students: { getItems: () => [] },
-		substitutionTeachers: { getItems: () => [] },
+		students: { getItems: () => [{ id: new ObjectId().toHexString() }] },
+		substitutionTeachers: { getItems: () => [{ id: new ObjectId().toHexString() }] },
 	};
 
 	const writeConfig = async (config: object): Promise<string> => {
@@ -164,7 +164,80 @@ describe(GenerateExampleFilesUc.name, () => {
 		});
 	});
 
+	describe('generate with missing owners', () => {
+		it('should fail if no courses are found', async () => {
+			em.find.mockResolvedValue([] as never);
+			const path = await writeConfig({ counts: { course: 1 } });
+
+			await expect(uc.generate(path)).rejects.toThrow('No matching courses found');
+		});
+
+		it('should fail if no teams are found', async () => {
+			em.find.mockResolvedValue([] as never);
+			const path = await writeConfig({ counts: { teams: 1 } });
+
+			await expect(uc.generate(path)).rejects.toThrow('No matching teams found');
+		});
+
+		it('should filter courses and teams by configured userIds', async () => {
+			const path = await writeConfig({ userIds: [userId], counts: { course: 1, teams: 1 } });
+
+			await uc.generate(path);
+
+			const saved = filesRepo.save.mock.calls[0][0] as FileEntity[];
+			expect(saved).toHaveLength(2);
+		});
+	});
+
+	describe('generate with missing bucket', () => {
+		it('should create the bucket if it does not exist', async () => {
+			const provider = storageProviderFactory.buildWithId();
+			storageProviderRepo.findAll.mockResolvedValue([provider]);
+			const send = jest.fn().mockImplementation((command: object) => {
+				if (command.constructor.name === 'HeadBucketCommand') return Promise.reject(new Error('missing'));
+
+				return Promise.resolve({});
+			});
+			(uc as unknown as { s3Clients: Map<string, unknown> }).s3Clients.set(provider.id, { send });
+			const path = await writeConfig({ counts: { personal: 1 } });
+
+			await uc.generate(path);
+
+			const commandNames = send.mock.calls.map(([command]: [object]) => command.constructor.name);
+			expect(commandNames).toContain('CreateBucketCommand');
+		});
+	});
+
 	describe('remove', () => {
+		it('should skip storage deletion for directories and files without provider', async () => {
+			const send = jest.fn();
+			const provider = storageProviderFactory.buildWithId();
+			(uc as unknown as { s3Clients: Map<string, unknown> }).s3Clients.set(provider.id, { send });
+			const directory = { id: 'd', isDirectory: true, storageProvider: provider };
+			const noProvider = { id: 'n', isDirectory: false };
+			filesRepo.findByNamePrefix.mockResolvedValue([directory, noProvider] as unknown as FileEntity[]);
+			const path = await writeConfig({ counts: {} });
+
+			await uc.remove(path);
+
+			expect(send).not.toHaveBeenCalled();
+		});
+
+		it('should log a warning if deleting the storage object fails', async () => {
+			const logger = module.get<DeepMocked<LegacyLogger>>(LegacyLogger);
+			const provider = storageProviderFactory.buildWithId();
+			const send = jest.fn().mockRejectedValue(new Error('boom'));
+			(uc as unknown as { s3Clients: Map<string, unknown> }).s3Clients.set(provider.id, { send });
+			const file = { id: 'f', isDirectory: false, storageProvider: provider, bucket: 'b', storageFileName: 'k' };
+			filesRepo.findByNamePrefix.mockResolvedValue([file] as unknown as FileEntity[]);
+			const path = await writeConfig({ counts: {} });
+
+			await uc.remove(path);
+
+			expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('boom'));
+		});
+
+
 		it('should delete generated files and the invalid provider', async () => {
 			const invalid = storageProviderFactory.buildWithId({ accessKeyId: INVALID_PROVIDER_ACCESS_KEY_ID });
 			storageProviderRepo.findAll.mockResolvedValue([invalid]);

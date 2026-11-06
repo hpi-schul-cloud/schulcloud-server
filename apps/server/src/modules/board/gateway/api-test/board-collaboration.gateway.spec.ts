@@ -739,7 +739,7 @@ describe(BoardCollaborationGateway.name, () => {
 					cards: { title: string }[];
 				};
 
-				expect(success.cards.length).toEqual(0);
+				expect(success.cards).toHaveLength(0);
 			});
 		});
 
