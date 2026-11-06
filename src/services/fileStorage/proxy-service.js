@@ -27,7 +27,7 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
-const { equal: equalIds } = require('../../helper/compare').ObjectId;
+const { equal: equalIds, isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
 const AWSS3Strategy = require('./strategies/awsS3');
 
 const sanitizeObj = (obj) => {
@@ -139,6 +139,211 @@ const getRefOwnerModel = async (owner) => {
 	}
 
 	return refOwnerModel;
+};
+
+const normalizeSchoolIds = (...groups) => {
+	const ids = groups.flat().filter((id) => id !== undefined && id !== null && id !== '');
+	return [...new Set(ids.map((id) => String(id)))];
+};
+
+/**
+ * Schools live on the owner, not the file. Users and courses have schoolId.
+ * Teams may span schools via schoolIds and also keep schoolId.
+ * @param {ObjectId|String} ownerId
+ * @param {'user'|'course'|'teams'} refOwnerModel
+ * @returns {Promise<String[]>}
+ */
+const loadOwnerSchoolIds = async (ownerId, refOwnerModel) => {
+	if (refOwnerModel === 'user') {
+		const owner = await userModel.findById(ownerId).select('schoolId').lean().exec();
+		if (!owner) {
+			throw new Forbidden('Cannot resolve file owner.');
+		}
+		return normalizeSchoolIds(owner.schoolId);
+	}
+
+	if (refOwnerModel === 'course') {
+		const owner = await courseModel.findById(ownerId).select('schoolId').lean().exec();
+		if (!owner) {
+			throw new Forbidden('Cannot resolve file owner.');
+		}
+		return normalizeSchoolIds(owner.schoolId);
+	}
+
+	if (refOwnerModel === 'teams') {
+		const owner = await teamsModel.findById(ownerId).select('schoolId schoolIds').lean().exec();
+		if (!owner) {
+			throw new Forbidden('Cannot resolve file owner.');
+		}
+		return normalizeSchoolIds(owner.schoolId, owner.schoolIds);
+	}
+
+	throw new Forbidden('Cannot resolve file owner.');
+};
+
+const assertCanWriteFile = async (userId, fileId) => {
+	try {
+		await canWrite(userId, fileId);
+	} catch (err) {
+		if (err instanceof NotFound) {
+			throw err;
+		}
+		throw new Forbidden('Missing write permission.');
+	}
+};
+
+/**
+ * The acting user's school must be one of the source owner's schools, and the
+ * destination must include that same school. A team matches when schoolIds overlap.
+ */
+const assertSameSchoolMove = async ({ userId, sourceFile, destinationOwnerId, destinationRefOwnerModel }) => {
+	const actor = await userModel.findById(userId).select('schoolId').lean().exec();
+	if (!actor || !actor.schoolId) {
+		throw new NotFound('User not found');
+	}
+
+	const actorSchoolId = String(actor.schoolId);
+	const sourceSchools = await loadOwnerSchoolIds(sourceFile.owner, sourceFile.refOwnerModel);
+	if (!sourceSchools.includes(actorSchoolId)) {
+		throw new Forbidden('Cannot move a file from another school.');
+	}
+
+	const destinationSchools = await loadOwnerSchoolIds(destinationOwnerId, destinationRefOwnerModel);
+	if (!destinationSchools.includes(actorSchoolId)) {
+		throw new Forbidden('Cannot move a file into another school.');
+	}
+};
+
+/**
+ * Destination is a directory (canWrite), a team root (membership), or the caller's personal-files root.
+ * @returns {Promise<{fileObject: Object|null, teamObject: Object|null, destinationOwnerId: *, destinationRefOwnerModel: String}>}
+ */
+const resolveMoveDestination = async (userId, parent) => {
+	const fileObject = await FileModel.findOne({ _id: parent }).exec();
+	if (fileObject) {
+		if (!fileObject.isDirectory) {
+			throw new Forbidden('Destination is not a directory.');
+		}
+		await assertCanWriteFile(userId, parent);
+		return {
+			fileObject,
+			teamObject: null,
+			destinationOwnerId: fileObject.owner,
+			destinationRefOwnerModel: fileObject.refOwnerModel,
+		};
+	}
+
+	const teamObject = await teamsModel.findOne({ _id: parent }).exec();
+	if (teamObject) {
+		const teamMember = (teamObject.userIds || []).find((member) => equalIds(member.userId, userId));
+		if (!teamMember) {
+			throw new Forbidden('Missing write permission on the destination.');
+		}
+		return {
+			fileObject: null,
+			teamObject,
+			destinationOwnerId: teamObject._id,
+			destinationRefOwnerModel: 'teams',
+		};
+	}
+
+	if (equalIds(parent, userId)) {
+		return {
+			fileObject: null,
+			teamObject: null,
+			destinationOwnerId: userId,
+			destinationRefOwnerModel: 'user',
+		};
+	}
+
+	throw new Forbidden('Missing write permission on the destination.');
+};
+
+/**
+ * When a directory changes owner, descendants that still have the previous owner
+ * change with it. Children stay attached by parent; listings are owner + parent.
+ * The walk matches removeFileById.
+ */
+const reassignDescendantOwners = async ({
+	directoryId,
+	previousOwnerId,
+	previousRefOwnerModel,
+	nextOwnerId,
+	nextRefOwnerModel,
+}) => {
+	const children = await FileModel.find({ parent: directoryId }).lean().exec();
+	const promises = children.map(async (child) => {
+		if (child.refOwnerModel === previousRefOwnerModel && equalIds(child.owner, previousOwnerId)) {
+			await FileModel.updateOne(
+				{ _id: child._id },
+				{ $set: { owner: nextOwnerId, refOwnerModel: nextRefOwnerModel } }
+			).exec();
+		}
+		if (child.isDirectory) {
+			await reassignDescendantOwners({
+				directoryId: child._id,
+				previousOwnerId,
+				previousRefOwnerModel,
+				nextOwnerId,
+				nextRefOwnerModel,
+			});
+		}
+	});
+	await Promise.all(promises);
+};
+
+/**
+ * Same-owner moves change parent only. The owner may become a course or team
+ * only when the caller owns the source. Same-school overlap is already asserted.
+ * @returns {{ update: Object, transferOwnership: Boolean }}
+ */
+const buildMoveUpdate = ({
+	userId,
+	sourceFile,
+	parent,
+	destinationOwnerId,
+	destinationRefOwnerModel,
+	destinationIsDirectory,
+}) => {
+	const sameOwner =
+		sourceFile.refOwnerModel === destinationRefOwnerModel && equalIds(sourceFile.owner, destinationOwnerId);
+	const callerOwnsSource = sourceFile.refOwnerModel === 'user' && equalIds(sourceFile.owner, userId);
+	const destinationIsCourseOrTeam = destinationRefOwnerModel === 'course' || destinationRefOwnerModel === 'teams';
+
+	if (sameOwner) {
+		return {
+			update: destinationIsDirectory ? { $set: { parent } } : { $unset: { parent: '' } },
+			transferOwnership: false,
+		};
+	}
+
+	if (!callerOwnsSource || !destinationIsCourseOrTeam) {
+		throw new Forbidden('Cannot change the owner of this file.');
+	}
+
+	if (destinationIsDirectory) {
+		return {
+			update: {
+				$set: {
+					parent,
+					owner: destinationOwnerId,
+					refOwnerModel: destinationRefOwnerModel,
+				},
+			},
+			transferOwnership: true,
+		};
+	}
+
+	return {
+		update: {
+			$set: {
+				owner: destinationOwnerId,
+				refOwnerModel: destinationRefOwnerModel,
+			},
+			$unset: { parent: '' },
+		},
+		transferOwnership: true,
+	};
 };
 
 const fileStorageService = {
@@ -268,7 +473,12 @@ const fileStorageService = {
 		await filesRepo.removeFileById(_id);
 	},
 	/**
-	 * Move file from one parent to another
+	 * Move file from one parent to another.
+	 * Requires write access on the source and the destination, in the same school.
+	 * Same-owner moves change parent only. The owner changes only when the caller
+	 * moves their own file into a course or team; a moved directory takes descendants
+	 * that still have the old owner with it.
+	 * Missing files are 404. Denied moves throw 403 and do not change the file.
 	 * @param _id, Object-ID of file to be patched
 	 * @param data, contains destination parent Object-ID
 	 * @param params contains payload with userId, set by middleware
@@ -279,51 +489,53 @@ const fileStorageService = {
 			payload: { userId },
 		} = params;
 		const { parent } = data;
-		const update = { $set: {} };
-		const fileObject = await FileModel.findOne({ _id: parent }).exec();
-		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 
-		const permissionPromise = () => {
-			if (fileObject) {
-				return canWrite(userId, parent);
-			}
-
-			if (teamObject) {
-				return new Promise((resolve, reject) => {
-					const teamMember = teamObject.userIds.find((u) => equalIds(u.userId, userId));
-					if (teamMember) {
-						return resolve();
-					}
-					return reject(new Error());
-				});
-			}
-
-			return Promise.reject();
-		};
-
-		if (fileObject) {
-			update.$set = {
-				parent,
-				owner: fileObject.owner,
-				refOwnerModel: fileObject.refOwnerModel,
-			};
-		} else if (parent === userId.toString()) {
-			update.$set = {
-				owner: userId,
-				refOwnerModel: 'user',
-			};
-			update.$unset = { parent: '' };
-		} else {
-			update.$set = {
-				owner: parent,
-				refOwnerModel: teamObject ? 'teams' : 'course',
-			};
-			update.$unset = { parent: '' };
+		if (!parent || !isValidObjectId(parent)) {
+			throw new Forbidden('Missing destination.');
+		}
+		if (!isValidObjectId(_id)) {
+			throw new NotFound('File not found.');
+		}
+		if (equalIds(parent, _id)) {
+			throw new Forbidden('Cannot move a file into itself.');
 		}
 
-		return permissionPromise()
-			.then(() => FileModel.updateOne({ _id }, update).exec())
-			.catch((err) => new Forbidden(err));
+		const sourceFile = await FileModel.findOne({ _id }).lean().exec();
+		if (!sourceFile) {
+			throw new NotFound('File not found.');
+		}
+
+		await assertCanWriteFile(userId, _id);
+
+		const { fileObject, destinationOwnerId, destinationRefOwnerModel } = await resolveMoveDestination(userId, parent);
+
+		await assertSameSchoolMove({
+			userId,
+			sourceFile,
+			destinationOwnerId,
+			destinationRefOwnerModel,
+		});
+
+		const { update, transferOwnership } = buildMoveUpdate({
+			userId,
+			sourceFile,
+			parent,
+			destinationOwnerId,
+			destinationRefOwnerModel,
+			destinationIsDirectory: Boolean(fileObject),
+		});
+
+		const result = await FileModel.updateOne({ _id }, update).exec();
+		if (transferOwnership && sourceFile.isDirectory) {
+			await reassignDescendantOwners({
+				directoryId: sourceFile._id,
+				previousOwnerId: sourceFile.owner,
+				previousRefOwnerModel: sourceFile.refOwnerModel,
+				nextOwnerId: destinationOwnerId,
+				nextRefOwnerModel: destinationRefOwnerModel,
+			});
+		}
+		return result;
 	},
 };
 

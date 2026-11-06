@@ -263,35 +263,88 @@ describe('fileStorage services', () => {
 				.finally(() => done());
 		});
 
-		it('should move file to a new directory', (done) => {
+		const expectMoveRejected = async (userId, fileId, parent) => {
+			const before = await FileModel.findById(fileId).lean().exec();
+			let error;
+			try {
+				await fileStorageService.patch(fileId, { parent }, setContext(userId));
+			} catch (err) {
+				error = err;
+			}
+
+			expect(error, 'expected the move to be rejected').to.exist;
+			expect(error.code).to.be.equal(403);
+
+			const afterFile = await FileModel.findById(fileId).lean().exec();
+			expect(afterFile.owner.equals(before.owner)).to.be.true;
+			expect(afterFile.refOwnerModel).to.be.equal(before.refOwnerModel);
+			if (before.parent) {
+				expect(afterFile.parent.equals(before.parent)).to.be.true;
+			} else {
+				expect(afterFile.parent).to.equal(undefined);
+			}
+		};
+
+		it('should move a file into another directory of the same owner and keep that owner', async () => {
 			const context = setContext('0000d224816abba584714c8c');
 
-			fileStorageService
-				.patch(
-					'5ca613c4c7f5120b8c5bef37',
-					{
-						parent: '5ca613c4c7f5120b8c5bef36',
-					},
-					context
-				)
-				.then(() => done());
+			await fileStorageService.patch(
+				'5ca613c4c7f5120b8c5bef37',
+				{
+					parent: '5ca613c4c7f5120b8c5bef36',
+				},
+				context
+			);
+
+			const moved = await FileModel.findById('5ca613c4c7f5120b8c5bef37').lean().exec();
+			expect(moved.parent.equals('5ca613c4c7f5120b8c5bef36')).to.be.true;
+			expect(moved.owner.equals('0000dcfbfb5c7a3f00bf21ac')).to.be.true;
+			expect(moved.refOwnerModel).to.be.equal('course');
 		});
 
-		it('should reject moving file without permission', (done) => {
-			const context = setContext('0000d224816abba584714c8d');
+		it('should reject moving file without permission', async () => {
+			await expectMoveRejected('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef37', '5ca613c4c7f5120b8c5bef33');
+		});
 
-			fileStorageService
-				.patch(
-					'5ca613c4c7f5120b8c5bef37',
-					{
-						parent: '5ca613c4c7f5120b8c5bef33',
-					},
-					context
-				)
-				.then(({ code }) => {
-					expect(code).to.be.equal(403);
-					return done();
-				});
+		it('should reject moving a teacher file into a student personal folder by id', async () => {
+			await expectMoveRejected('0000d224816abba584714c8c', '5ca601745d629505e51252d8', '5ca613c4c7f5120b8c5bef38');
+
+			const teacherFile = await FileModel.findById('5ca601745d629505e51252d8').lean().exec();
+			expect(teacherFile.owner.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(teacherFile.refOwnerModel).to.be.equal('user');
+		});
+
+		it('should reject moving a file from another school into this school', async () => {
+			await expectMoveRejected('0000d224816abba584714c8f', '5ca613c4c7f5120b8c5bef39', '5ca613c4c7f5120b8c5bef3a');
+
+			const otherSchoolFile = await FileModel.findById('5ca613c4c7f5120b8c5bef39').lean().exec();
+			expect(otherSchoolFile.owner.equals('0000d224816abba584714c8f')).to.be.true;
+			expect(otherSchoolFile.refOwnerModel).to.be.equal('user');
+		});
+
+		it('should reject moving a writable course file into a personal folder', async () => {
+			await expectMoveRejected('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28', '5ca613c4c7f5120b8c5bef38');
+
+			const courseFile = await FileModel.findById('5ca613c4c7f5120b8c5bef28').lean().exec();
+			expect(courseFile.owner.equals('0000dcfbfb5c7a3f00bf21ac')).to.be.true;
+			expect(courseFile.refOwnerModel).to.be.equal('course');
+		});
+
+		it('should move the owner file into a same-school course folder and assign the course as owner', async () => {
+			const context = setContext('0000d224816abba584714c8c');
+
+			await fileStorageService.patch(
+				'5ca601745d629505e51252d7',
+				{
+					parent: '5ca613c4c7f5120b8c5bef36',
+				},
+				context
+			);
+
+			const moved = await FileModel.findById('5ca601745d629505e51252d7').lean().exec();
+			expect(moved.parent.equals('5ca613c4c7f5120b8c5bef36')).to.be.true;
+			expect(moved.owner.equals('0000dcfbfb5c7a3f00bf21ac')).to.be.true;
+			expect(moved.refOwnerModel).to.be.equal('course');
 		});
 	});
 
