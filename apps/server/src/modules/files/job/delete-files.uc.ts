@@ -35,26 +35,22 @@ export class DeleteFilesUc {
 		let batchCounter = 0;
 		let numberOfFilesInBatch = 0;
 		let numberOfProcessedFiles = 0;
-		const failingFileIds: string[] = [];
+		let numberOfFailingFilesTotal = 0;
 
 		do {
-			const offset = failingFileIds.length;
-			const files = await this.filesRepo.findForCleanup(thresholdDate, batchSize, offset);
+			const files = await this.filesRepo.findForCleanup(thresholdDate, batchSize, numberOfFailingFilesTotal);
+			numberOfFilesInBatch = files.length;
 
 			const promises = files.map((file) => this.deleteFile(file));
 			const results = await Promise.all(promises);
 
-			let numberOfFailingFilesInBatch = 0;
+			const filesDeletedOnS3 = results.filter((result) => result.success).map((result) => result.file);
+			const numberOfFailingFilesInBatch = results.filter((result) => !result.success).length;
+			numberOfFailingFilesTotal += numberOfFailingFilesInBatch;
 
-			results.forEach((result) => {
-				if (!result.success) {
-					failingFileIds.push(result.fileId);
-					numberOfFailingFilesInBatch += 1;
-				}
-			});
+			await this.deleteFilesFromRepo(filesDeletedOnS3);
 
-			numberOfFilesInBatch = files.length;
-			numberOfProcessedFiles += files.length;
+			numberOfProcessedFiles += numberOfFilesInBatch;
 			batchCounter += 1;
 
 			this.logger.log(
@@ -64,12 +60,12 @@ export class DeleteFilesUc {
 
 		this.logger.log(
 			`${
-				numberOfProcessedFiles - failingFileIds.length
+				numberOfProcessedFiles - numberOfFailingFilesTotal
 			} out of ${numberOfProcessedFiles} files were successfully deleted`
 		);
 
-		if (failingFileIds.length > 0) {
-			this.logger.error(`the following files could not be deleted: ${failingFileIds.toString()}`);
+		if (numberOfFailingFilesTotal > 0) {
+			this.logger.error(`there were ${numberOfFailingFilesTotal} files that could not be deleted`);
 		}
 
 		await this.authenticationClient.logout(accessToken);
@@ -100,18 +96,23 @@ export class DeleteFilesUc {
 		return client;
 	}
 
-	private async deleteFile(file: FileEntity): Promise<{ fileId: string; success: boolean }> {
+	private async deleteFile(file: FileEntity): Promise<{ file: FileEntity; success: boolean }> {
 		try {
 			if (!file.isDirectory) {
 				await this.deleteFileInStorage(file);
 			}
-			await this.filesRepo.delete(file);
 
-			return { fileId: file.id, success: true };
+			return { file, success: true };
 		} catch (error) {
 			this.logger.error(error);
 
-			return { fileId: file.id, success: false };
+			return { file, success: false };
+		}
+	}
+
+	private async deleteFilesFromRepo(files: FileEntity[]): Promise<void> {
+		if (files.length > 0) {
+			await this.filesRepo.delete(files);
 		}
 	}
 
