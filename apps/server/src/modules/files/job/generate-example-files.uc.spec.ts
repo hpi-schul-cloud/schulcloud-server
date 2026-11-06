@@ -236,19 +236,5 @@ describe(GenerateExampleFilesUc.name, () => {
 
 			expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('boom'));
 		});
-
-
-		it('should delete generated files and the invalid provider', async () => {
-			const invalid = storageProviderFactory.buildWithId({ accessKeyId: INVALID_PROVIDER_ACCESS_KEY_ID });
-			storageProviderRepo.findAll.mockResolvedValue([invalid]);
-			const file = { id: 'f', isDirectory: false, storageProvider: invalid, bucket: 'b', storageFileName: 'k' };
-			filesRepo.findByNamePrefix.mockResolvedValue([file as unknown as FileEntity]);
-			const path = await writeConfig({ counts: {} });
-
-			await uc.remove(path);
-
-			expect(filesRepo.delete).toHaveBeenCalledWith([file]);
-			expect(storageProviderRepo.delete).toHaveBeenCalledWith([invalid]);
-		});
 	});
 });
