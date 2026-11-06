@@ -45,5 +45,13 @@ describe('GenerateExampleFilesConsole', () => {
 
 			expect(generateExampleFilesUc.generate).toHaveBeenCalledWith(configPath);
 		});
+
+		it('should call UC remove if the remove option is set', async () => {
+			const configPath = 'path/to/config.json';
+
+			await console.generateExampleFiles(configPath, { remove: true });
+
+			expect(generateExampleFilesUc.remove).toHaveBeenCalledWith(configPath);
+		});
 	});
 });

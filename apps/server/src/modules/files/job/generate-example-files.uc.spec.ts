@@ -243,6 +243,52 @@ describe(GenerateExampleFilesUc.name, () => {
 		});
 	});
 
+	describe('nextTotal', () => {
+		it('should not append a filler line if the content already has the exact size', () => {
+			const { buildTextContent } = uc as unknown as { buildTextContent: (size: number, mb: string) => Buffer };
+			const footer = 'Gesamtgröße: 1.00 MByte';
+			const size = Buffer.byteLength('Beispieldatei\n') + Buffer.byteLength(footer);
+
+			const result = buildTextContent.call(uc, size, '1.00');
+
+			expect(result.toString()).toBe(`Beispieldatei\n${footer}`);
+		});
+
+		it('should use a generic mime type for unknown file extensions', async () => {
+			await writeFile(join(tmpDir, 'data.unknownext'), 'x');
+			const send = jest.fn().mockResolvedValue({});
+			const provider = storageProviderFactory.buildWithId();
+			storageProviderRepo.findAll.mockResolvedValue([provider]);
+			(uc as unknown as { s3Clients: Map<string, unknown> }).s3Clients.set(provider.id, { send });
+			const path = await writeConfig({ counts: { personal: 2 } });
+
+			await uc.generate(path);
+
+			const types = send.mock.calls.map(
+				([command]: [{ input: { ContentType?: string } }]) => command.input.ContentType
+			);
+			expect(types).toContain('application/octet-stream');
+			await rm(join(tmpDir, 'data.unknownext'));
+		});
+
+		it('should reuse an existing invalid provider', async () => {
+			const valid = storageProviderFactory.buildWithId();
+			const invalid = storageProviderFactory.buildWithId({ accessKeyId: INVALID_PROVIDER_ACCESS_KEY_ID });
+			storageProviderRepo.findAll.mockResolvedValue([valid, invalid]);
+			const path = await writeConfig({ counts: { teams: 1 }, brokenTeamsFiles: { unknownStorageProvider: 1 } });
+
+			await uc.generate(path);
+
+			expect(storageProviderRepo.save).not.toHaveBeenCalled();
+		});
+
+		it('should throw if the line length cannot be computed', () => {
+			const { nextTotal } = uc as unknown as { nextTotal: (written: number, dotCount: number) => number };
+
+			expect(() => nextTotal.call(uc, 1e12, 100)).toThrow('Unable to compute line length');
+		});
+	});
+
 	describe('remove', () => {
 		it('should delete generated files and the invalid provider', async () => {
 			const invalid = storageProviderFactory.buildWithId({ accessKeyId: INVALID_PROVIDER_ACCESS_KEY_ID });
