@@ -134,9 +134,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				for (const file of exampleFiles) {
-					expect(filesRepo.delete).toHaveBeenCalledWith(file);
-				}
+				expect(filesRepo.delete).toHaveBeenCalledWith(exampleFiles);
 
 				spy.mockRestore();
 			});
@@ -264,7 +262,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(filesRepo.delete).toHaveBeenCalledWith(exampleFiles[0]);
+				expect(filesRepo.delete).toHaveBeenCalledWith(exampleFiles);
 
 				spy.mockRestore();
 			});

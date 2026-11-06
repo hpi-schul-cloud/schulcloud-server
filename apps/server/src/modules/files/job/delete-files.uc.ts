@@ -10,6 +10,12 @@ import { FilesRepo } from '../repo';
 
 const NO_SUCH_BUCKET = 'NoSuchBucket';
 
+interface BatchStats {
+	batchCounter: number;
+	numberOfProcessedFiles: number;
+	numberOfFailingFilesTotal: number;
+}
+
 @Injectable()
 export class DeleteFilesUc {
 	private readonly s3ClientMap = new Map<string, S3Client>();
@@ -32,47 +38,52 @@ export class DeleteFilesUc {
 
 		await this.initializeS3ClientMap();
 
-		let batchCounter = 0;
-		let numberOfFilesInBatch = 0;
-		let numberOfProcessedFiles = 0;
-		const failingFileIds: string[] = [];
-
-		do {
-			const offset = failingFileIds.length;
-			const files = await this.filesRepo.findForCleanup(thresholdDate, batchSize, offset);
-
-			const promises = files.map((file) => this.deleteFile(file));
-			const results = await Promise.all(promises);
-
-			let numberOfFailingFilesInBatch = 0;
-
-			results.forEach((result) => {
-				if (!result.success) {
-					failingFileIds.push(result.fileId);
-					numberOfFailingFilesInBatch += 1;
-				}
-			});
-
-			numberOfFilesInBatch = files.length;
-			numberOfProcessedFiles += files.length;
-			batchCounter += 1;
-
-			this.logger.log(
-				`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files and ${numberOfFailingFilesInBatch} failed deletions`
-			);
-		} while (numberOfFilesInBatch > 0);
+		const { numberOfProcessedFiles, numberOfFailingFilesTotal } = await this.processBatches(thresholdDate, batchSize, {
+			batchCounter: 0,
+			numberOfProcessedFiles: 0,
+			numberOfFailingFilesTotal: 0,
+		});
 
 		this.logger.log(
 			`${
-				numberOfProcessedFiles - failingFileIds.length
+				numberOfProcessedFiles - numberOfFailingFilesTotal
 			} out of ${numberOfProcessedFiles} files were successfully deleted`
 		);
 
-		if (failingFileIds.length > 0) {
-			this.logger.error(`the following files could not be deleted: ${failingFileIds.toString()}`);
+		if (numberOfFailingFilesTotal > 0) {
+			this.logger.error(`there were ${numberOfFailingFilesTotal} files that could not be deleted`);
 		}
 
 		await this.authenticationClient.logout(accessToken);
+	}
+
+	private async processBatches(thresholdDate: Date, batchSize: number, stats: BatchStats): Promise<BatchStats> {
+		const files = await this.filesRepo.findForCleanup(thresholdDate, batchSize, stats.numberOfFailingFilesTotal);
+		const numberOfFilesInBatch = files.length;
+
+		const results = await Promise.all(files.map((file) => this.deleteFile(file)));
+
+		const filesDeletedOnS3 = results.filter((result) => result.success).map((result) => result.file);
+		const numberOfFailingFilesInBatch = results.filter((result) => !result.success).length;
+
+		await this.deleteFilesFromRepo(filesDeletedOnS3);
+
+		const batchCounter = stats.batchCounter + 1;
+		this.logger.log(
+			`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files and ${numberOfFailingFilesInBatch} failed deletions`
+		);
+
+		const newStats: BatchStats = {
+			batchCounter,
+			numberOfProcessedFiles: stats.numberOfProcessedFiles + numberOfFilesInBatch,
+			numberOfFailingFilesTotal: stats.numberOfFailingFilesTotal + numberOfFailingFilesInBatch,
+		};
+
+		if (numberOfFilesInBatch === 0) {
+			return newStats;
+		}
+
+		return this.processBatches(thresholdDate, batchSize, newStats);
 	}
 
 	private async initializeS3ClientMap(): Promise<void> {
@@ -100,18 +111,23 @@ export class DeleteFilesUc {
 		return client;
 	}
 
-	private async deleteFile(file: FileEntity): Promise<{ fileId: string; success: boolean }> {
+	private async deleteFile(file: FileEntity): Promise<{ file: FileEntity; success: boolean }> {
 		try {
 			if (!file.isDirectory) {
 				await this.deleteFileInStorage(file);
 			}
-			await this.filesRepo.delete(file);
 
-			return { fileId: file.id, success: true };
+			return { file, success: true };
 		} catch (error) {
 			this.logger.error(error);
 
-			return { fileId: file.id, success: false };
+			return { file, success: false };
+		}
+	}
+
+	private async deleteFilesFromRepo(files: FileEntity[]): Promise<void> {
+		if (files.length > 0) {
+			await this.filesRepo.delete(files);
 		}
 	}
 
