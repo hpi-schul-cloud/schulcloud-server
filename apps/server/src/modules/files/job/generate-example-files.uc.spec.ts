@@ -208,7 +208,55 @@ describe(GenerateExampleFilesUc.name, () => {
 		});
 	});
 
+	describe('generate with provider and user selection', () => {
+		it('should use the configured storage provider', async () => {
+			const first = storageProviderFactory.buildWithId();
+			const second = storageProviderFactory.buildWithId();
+			storageProviderRepo.findAll.mockResolvedValue([first, second]);
+			const path = await writeConfig({ storageProviderId: second.id, counts: { personal: 1 } });
+
+			await uc.generate(path);
+
+			const saved = filesRepo.save.mock.calls[0][0] as FileEntity[];
+			expect(saved[0].storageProvider?.id).toBe(second.id);
+		});
+
+		it('should fail if no usable storage provider exists', async () => {
+			storageProviderRepo.findAll.mockResolvedValue([]);
+			const path = await writeConfig({ counts: { personal: 1 } });
+
+			await expect(uc.generate(path)).rejects.toThrow('No usable storage provider');
+		});
+
+		it('should fail if not all configured users are found', async () => {
+			const path = await writeConfig({ userIds: [userId, new ObjectId().toHexString()], counts: { personal: 1 } });
+
+			await expect(uc.generate(path)).rejects.toThrow('Not all configured users were found');
+		});
+
+		it('should ignore empty sample files', async () => {
+			await writeFile(join(tmpDir, 'empty.txt'), '');
+			const path = await writeConfig({ counts: { personal: 1 } });
+
+			await expect(uc.generate(path)).resolves.toBeUndefined();
+			await rm(join(tmpDir, 'empty.txt'));
+		});
+	});
+
 	describe('remove', () => {
+		it('should delete generated files and the invalid provider', async () => {
+			const invalid = storageProviderFactory.buildWithId({ accessKeyId: INVALID_PROVIDER_ACCESS_KEY_ID });
+			storageProviderRepo.findAll.mockResolvedValue([invalid]);
+			const file = { id: 'f', isDirectory: false, storageProvider: invalid, bucket: 'b', storageFileName: 'k' };
+			filesRepo.findByNamePrefix.mockResolvedValue([file as unknown as FileEntity]);
+			const path = await writeConfig({ counts: {} });
+
+			await uc.remove(path);
+
+			expect(filesRepo.delete).toHaveBeenCalledWith([file]);
+			expect(storageProviderRepo.delete).toHaveBeenCalledWith([invalid]);
+		});
+
 		it('should skip storage deletion for directories and files without provider', async () => {
 			const send = jest.fn();
 			const provider = storageProviderFactory.buildWithId();
