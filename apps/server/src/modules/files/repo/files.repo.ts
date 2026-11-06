@@ -30,6 +30,17 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 		return files;
 	}
 
+	public async findByNamePrefix(prefix: string): Promise<FileEntity[]> {
+		const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+		const files = await this._em.find(
+			FileEntity,
+			{ name: { $re: `^${escaped}` } },
+			{ populate: ['storageProvider'] as never[] }
+		);
+
+		return files;
+	}
+
 	public async findByOwnerUserId(ownerUserId: EntityId): Promise<FileEntity[]> {
 		const filter = {
 			owner: new ObjectId(ownerUserId),

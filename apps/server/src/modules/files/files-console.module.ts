@@ -4,7 +4,7 @@ import { LoggerModule } from '@infra/logger';
 import { StorageProviderRepo } from '@modules/school/repo';
 import { Module } from '@nestjs/common';
 import { FILES_CONSOLE_CONFIG_TOKEN, FilesConsoleConfig } from './files-console.config';
-import { DeleteFilesConsole, DeleteFilesUc } from './job';
+import { DeleteFilesConsole, DeleteFilesUc, GenerateExampleFilesConsole, GenerateExampleFilesUc } from './job';
 import { FilesRepo } from './repo';
 
 @Module({
@@ -13,7 +13,14 @@ import { FilesRepo } from './repo';
 		ConfigurationModule.register(FILES_CONSOLE_CONFIG_TOKEN, FilesConsoleConfig),
 		AuthenticationClientModule.register(),
 	],
-	providers: [DeleteFilesConsole, DeleteFilesUc, FilesRepo, StorageProviderRepo],
+	providers: [
+		DeleteFilesConsole,
+		DeleteFilesUc,
+		GenerateExampleFilesConsole,
+		GenerateExampleFilesUc,
+		FilesRepo,
+		StorageProviderRepo,
+	],
 	exports: [],
 })
 export class FilesConsoleModule {}

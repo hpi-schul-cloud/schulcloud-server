@@ -1,0 +1,14 @@
+{
+  "counts": { "personal": 10, "course": 10, "teams": 3080 },
+  "brokenTeamsFiles": { "noStorageProvider": 10, "unknownStorageProvider": 11, "nonExistingBucket": 12, "markedDeleted": 3000, "directories": 14 },
+  "userIds": [
+    "0000d213816abba584714c0a",
+    "0000d224816abba584714c9c",
+    "0000d231816abba584714c9e",
+    "0000d231816abba584714c9f",
+    "58b40278dac20e0645353e3a",
+    "59ad4c412b442b7f81810285",
+    "5fa2c71bb229544f2c6966d9",
+    "5fa2c7e6b229544f2c696784"
+  ]
+}

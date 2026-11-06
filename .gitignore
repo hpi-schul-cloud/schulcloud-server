@@ -84,3 +84,5 @@ node_modules
 
 # Docker
 docker-compose.yml
+
+/test/sample-files/

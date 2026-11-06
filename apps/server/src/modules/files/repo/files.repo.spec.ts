@@ -58,7 +58,7 @@ describe(FilesRepo.name, () => {
 
 			const result = await repo.findForCleanup(thresholdDate, 3, 0);
 
-			expect(result.length).toEqual(1);
+			expect(result).toHaveLength(1);
 			expect(result[0].id).toEqual(file.id);
 		});
 
@@ -71,7 +71,7 @@ describe(FilesRepo.name, () => {
 			const thresholdDate = new Date();
 			const result = await repo.findForCleanup(thresholdDate, 3, 0);
 
-			expect(result.length).toEqual(0);
+			expect(result).toHaveLength(0);
 		});
 
 		it('should not return files where deletedAt is after threshold', async () => {
@@ -86,7 +86,7 @@ describe(FilesRepo.name, () => {
 
 			const result = await repo.findForCleanup(thresholdDate, 3, 0);
 
-			expect(result.length).toEqual(0);
+			expect(result).toHaveLength(0);
 		});
 
 		it('should return only the file with a matching deletedAt if other files are not due yet', async () => {
@@ -117,6 +117,62 @@ describe(FilesRepo.name, () => {
 			expect(ids).toHaveLength(2);
 			expect(ids).toEqual(expect.arrayContaining(marked.map((file) => file.id)));
 			expect(ids).not.toContain(withoutDeletedAt.id);
+		});
+	});
+
+	describe('findByNamePrefix', () => {
+		describe('when files with matching and non-matching names exist', () => {
+			const setup = async () => {
+				const matching = fileEntityFactory.buildList(2, {});
+				matching[0].name = 'prefix-file-1.txt';
+				matching[1].name = 'prefix-file-2.txt';
+				const other = fileEntityFactory.build();
+				other.name = 'other-prefix-file.txt';
+
+				await em.persist([...matching, other]).flush();
+				em.clear();
+
+				return { matching };
+			};
+
+			it('should return only files whose name starts with the prefix', async () => {
+				const { matching } = await setup();
+
+				const result = await repo.findByNamePrefix('prefix-');
+
+				expect(result.map((f) => f.id).sort()).toEqual(matching.map((f) => f.id).sort());
+			});
+		});
+
+		describe('when prefix contains regex special characters', () => {
+			const setup = async () => {
+				const special = fileEntityFactory.build();
+				special.name = 'a.b(1)-file.txt';
+				const lookalike = fileEntityFactory.build();
+				lookalike.name = 'axb(1)-file.txt';
+
+				await em.persist([special, lookalike]).flush();
+				em.clear();
+
+				return { special };
+			};
+
+			it('should treat the prefix literally', async () => {
+				const { special } = await setup();
+
+				const result = await repo.findByNamePrefix('a.b(1)');
+
+				expect(result).toHaveLength(1);
+				expect(result[0].id).toBe(special.id);
+			});
+		});
+
+		describe('when no file matches', () => {
+			it('should return an empty array', async () => {
+				const result = await repo.findByNamePrefix('nothing');
+
+				expect(result).toEqual([]);
+			});
 		});
 	});
 
