@@ -32,15 +32,16 @@ export class SchoolExternalToolService {
 		return schoolExternalTool;
 	}
 
-	public async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
+	public async findSchoolExternalTools(query: SchoolExternalToolQuery, enrich = true): Promise<SchoolExternalTool[]> {
 		let schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.find({
 			schoolId: query.schoolId,
 			toolId: query.toolId,
 			isDeactivated: query.isDeactivated,
 		});
 
-		schoolExternalTools = await this.enrichWithDataFromExternalTools(schoolExternalTools);
-
+		if (enrich) {
+			schoolExternalTools = await this.enrichWithDataFromExternalTools(schoolExternalTools);
+		}
 		return schoolExternalTools;
 	}
 

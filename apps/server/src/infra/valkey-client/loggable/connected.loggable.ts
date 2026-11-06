@@ -6,7 +6,7 @@ export class ConnectedLoggable implements Loggable {
 	// istanbul ignore next
 	public getLogMessage(): LoggableMessage {
 		const log = {
-			message: JSON.stringify(this.message),
+			message: this.message === undefined ? 'Connected to Valkey' : JSON.stringify(this.message),
 		};
 
 		return log;

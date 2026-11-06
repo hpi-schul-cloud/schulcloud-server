@@ -9,7 +9,7 @@ import { Module } from '@nestjs/common';
 			configConstructor: DatabaseConfig,
 			entities: HealthEntities,
 		}),
-		HealthApiModule,
+		HealthApiModule.registerWithSessionStorage(),
 	],
 })
 export class InternalServerModule {}
