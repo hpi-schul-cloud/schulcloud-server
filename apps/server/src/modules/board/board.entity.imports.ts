@@ -18,7 +18,7 @@ import {
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { MediaSourceEntity } from '@modules/media-source/entity';
-import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
+import { CourseNews, News, SchoolNews } from '@modules/news/repo';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
@@ -101,7 +101,6 @@ export const ENTITIES = [
 	SystemEntity,
 	Task,
 	TeamEntity,
-	TeamNews,
 	TeamUserEntity,
 	User,
 	UserLicenseEntity,

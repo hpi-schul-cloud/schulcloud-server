@@ -13,6 +13,5 @@ export * from './school.rule';
 export * from './submission.rule';
 export { SystemRule } from './system.rule';
 export * from './task.rule';
-export * from './team.rule';
 export * from './user-login-migration.rule';
 export * from './user.rule';

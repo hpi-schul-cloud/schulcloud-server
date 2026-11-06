@@ -6,14 +6,12 @@ import { VideoConferenceTargetModels } from './video-conference-target-models.en
 import { VideoConferenceEntity } from './video-conference.entity';
 
 const VideoConferenceTargetModelsMapping: Record<VideoConferenceScope, VideoConferenceTargetModels> = {
-	[VideoConferenceScope.EVENT]: VideoConferenceTargetModels.EVENTS,
 	[VideoConferenceScope.COURSE]: VideoConferenceTargetModels.COURSES,
 	[VideoConferenceScope.ROOM]: VideoConferenceTargetModels.ROOMS,
 	[VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT]: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 };
 
 const VideoConferencingScopeMapping: Record<VideoConferenceTargetModels, VideoConferenceScope> = {
-	[VideoConferenceTargetModels.EVENTS]: VideoConferenceScope.EVENT,
 	[VideoConferenceTargetModels.COURSES]: VideoConferenceScope.COURSE,
 	[VideoConferenceTargetModels.ROOMS]: VideoConferenceScope.ROOM,
 	[VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS]: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,

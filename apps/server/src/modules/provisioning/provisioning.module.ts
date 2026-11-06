@@ -17,7 +17,6 @@ import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { SystemModule } from '@modules/system/system.module';
-import { TeamModule } from '@modules/team';
 import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
@@ -60,7 +59,6 @@ import {
 		LoggerModule,
 		GroupModule,
 		GroupLicenseModule,
-		TeamModule,
 		CourseModule,
 		SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 		UserLicenseModule,

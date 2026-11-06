@@ -15,12 +15,10 @@ import { AccountService } from '@modules/account';
 import { AccountUc } from '@modules/account/api/account.uc';
 import { SystemRule } from '@modules/authorization-rules';
 import { ColumnBoardService } from '@modules/board';
-import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
 import { InternalServerModule } from '@modules/internal-server/internal-server.app.module';
 import { FeathersRosterService } from '@modules/roster';
 import { ServerModule } from '@modules/server/server.app.module';
-import { TeamService } from '@modules/team';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -96,10 +94,6 @@ async function bootstrap(): Promise<void> {
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
 
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
-
-	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
-
-	feathersExpress.services['nest-team-service'] = nestApp.get(TeamService);
 
 	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
 

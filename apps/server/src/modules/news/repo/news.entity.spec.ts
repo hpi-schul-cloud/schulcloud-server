@@ -1,7 +1,7 @@
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
-import { teamNewsFactory } from '../testing';
+import { schoolNewsFactory } from '../testing';
 import { News } from './news.entity';
 
 describe(News.name, () => {
@@ -13,7 +13,7 @@ describe(News.name, () => {
 		describe('when called on a news that contains some creator with given refId', () => {
 			const setup = () => {
 				const creator = userFactory.buildWithId();
-				const news = teamNewsFactory.build({
+				const news = schoolNewsFactory.build({
 					creator,
 				});
 
@@ -32,7 +32,7 @@ describe(News.name, () => {
 		describe('when called on a news that contains some creator with given refId', () => {
 			const setup = () => {
 				const updater = userFactory.buildWithId();
-				const news = teamNewsFactory.build({
+				const news = schoolNewsFactory.build({
 					updater,
 				});
 

@@ -55,13 +55,11 @@ describe('CalendarServiceSpec', () => {
 		it('should successfully find an event', async () => {
 			// Arrange
 			const title = 'eventTitle';
-			const teamId = 'teamId';
 
 			const event: CalendarEvent = {
 				data: [
 					{
 						attributes: {
-							'x-sc-teamid': teamId,
 							summary: title,
 						},
 					},
@@ -71,7 +69,7 @@ describe('CalendarServiceSpec', () => {
 				data: event,
 			});
 			httpService.get.mockReturnValue(of(axiosResponse));
-			calendarMapper.mapToDto.mockReturnValue({ title, teamId });
+			calendarMapper.mapToDto.mockReturnValue({ title });
 
 			// Act
 			const result: CalendarEventDto = await service.findEvent('userId', 'eventId');
@@ -79,7 +77,6 @@ describe('CalendarServiceSpec', () => {
 			// Assert
 			expect(calendarMapper.mapToDto).toHaveBeenCalledWith(event);
 			expect(result.title).toEqual(title);
-			expect(result.teamId).toEqual(teamId);
 		});
 
 		it('should throw if event cannot be found, because of invalid parameters', async () => {

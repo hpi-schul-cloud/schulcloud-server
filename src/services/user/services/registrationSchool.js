@@ -2,7 +2,7 @@ const { NotFound, GeneralError } = require('../../../errors');
 
 /**
  * Service to find a school belonging an id of unknown type, like from a registration link.
- * supports school, class, and teamIds.
+ * supports school and class IDs.
  */
 class RegistrationSchoolService {
 	constructor() {
@@ -28,8 +28,8 @@ class RegistrationSchoolService {
 
 	/**
 	 * returns the school for given Id. For a schoolId it returns the school itself,
-	 * for a classId the school the class belongs to, for a teamId the externalPersonSchool.
-	 * @param {ObjectId} id school, class, or team id.
+	 * for a classId the school the class belongs to.
+	 * @param {ObjectId} id school or class id.
 	 * @param {Object} params reserved for future use.
 	 */
 	async get(id, params) {
@@ -42,19 +42,11 @@ class RegistrationSchoolService {
 				.service('classes')
 				.get(id)
 				.catch(() => undefined),
-			this.app
-				.service('teams')
-				.get(id)
-				.catch(() => undefined),
 		];
-		const [schoolResponse, classResponse, teamResponse] = await Promise.all(promises);
+		const [schoolResponse, classResponse] = await Promise.all(promises);
 		let response;
 		if (schoolResponse) response = schoolResponse;
 		if (classResponse) response = this.app.service('schools').get(classResponse.schoolId);
-		if (teamResponse) {
-			const expertSchoolId = await this.getExternalPersonSchoolId();
-			response = this.app.service('schools').get(expertSchoolId);
-		}
 		if (!response) {
 			throw new NotFound('Id not found.');
 		}
