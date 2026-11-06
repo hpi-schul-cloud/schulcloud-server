@@ -62,7 +62,7 @@ const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
 			throw new NotFound('School not found.');
 		}
 
-		storageProviderId = school.storageProvider;
+		storageProviderId = await strategy.getStorageProviderIdForSchool(schoolId, school);
 		bucket = strategy.getBucket(schoolId);
 	}
 
@@ -181,7 +181,8 @@ const fileStorageService = {
 		const { schoolId } = creator;
 		const bucket = strategy.getBucket(schoolId);
 		const school = await schoolModel.findById(schoolId).lean().exec();
-		const storageProviderId = school.storageProvider;
+		const storageProviderId = await strategy.getStorageProviderIdForSchool(schoolId, school);
+		const storageFileName = strategy.getStorageFileName(schoolId, decodeURIComponent(data.storageFileName));
 
 		const props = sanitizeObj(
 			Object.assign(data, {
@@ -191,7 +192,7 @@ const fileStorageService = {
 				refOwnerModel,
 				permissions,
 				creator: creatorId,
-				storageFileName: decodeURIComponent(data.storageFileName),
+				storageFileName,
 				storageProviderId,
 				bucket,
 			})
