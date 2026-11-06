@@ -27,7 +27,7 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
-const { equal: equalIds } = require('../../helper/compare').ObjectId;
+const { equal: equalIds, isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
 const AWSS3Strategy = require('./strategies/awsS3');
 
 const sanitizeObj = (obj) => {
@@ -139,6 +139,124 @@ const getRefOwnerModel = async (owner) => {
 	}
 
 	return refOwnerModel;
+};
+
+const normalizeSchoolIds = (...groups) => {
+	const ids = groups.flat().filter((id) => id !== undefined && id !== null && id !== '');
+	return [...new Set(ids.map((id) => String(id)))];
+};
+
+/**
+ * Schools live on the owner, not the file. Users and courses have schoolId.
+ * Teams may span schools via schoolIds and also keep schoolId.
+ * @param {ObjectId|String} ownerId
+ * @param {'user'|'course'|'teams'} refOwnerModel
+ * @returns {Promise<String[]>}
+ */
+const loadOwnerSchoolIds = async (ownerId, refOwnerModel) => {
+	if (refOwnerModel === 'user') {
+		const owner = await userModel.findById(ownerId).select('schoolId').lean().exec();
+		if (!owner) {
+			throw new Forbidden('Cannot resolve file owner.');
+		}
+		return normalizeSchoolIds(owner.schoolId);
+	}
+
+	if (refOwnerModel === 'course') {
+		const owner = await courseModel.findById(ownerId).select('schoolId').lean().exec();
+		if (!owner) {
+			throw new Forbidden('Cannot resolve file owner.');
+		}
+		return normalizeSchoolIds(owner.schoolId);
+	}
+
+	if (refOwnerModel === 'teams') {
+		const owner = await teamsModel.findById(ownerId).select('schoolId schoolIds').lean().exec();
+		if (!owner) {
+			throw new Forbidden('Cannot resolve file owner.');
+		}
+		return normalizeSchoolIds(owner.schoolId, owner.schoolIds);
+	}
+
+	throw new Forbidden('Cannot resolve file owner.');
+};
+
+const assertCanWriteFile = async (userId, fileId) => {
+	try {
+		await canWrite(userId, fileId);
+	} catch (err) {
+		if (err instanceof NotFound) {
+			throw err;
+		}
+		throw new Forbidden('Missing write permission.');
+	}
+};
+
+/**
+ * The acting user's school must be one of the source owner's schools, and the
+ * destination must include that same school. A team matches when schoolIds overlap.
+ */
+const assertSameSchoolMove = async ({ userId, sourceFile, destinationOwnerId, destinationRefOwnerModel }) => {
+	const actor = await userModel.findById(userId).select('schoolId').lean().exec();
+	if (!actor || !actor.schoolId) {
+		throw new NotFound('User not found');
+	}
+
+	const actorSchoolId = String(actor.schoolId);
+	const sourceSchools = await loadOwnerSchoolIds(sourceFile.owner, sourceFile.refOwnerModel);
+	if (!sourceSchools.includes(actorSchoolId)) {
+		throw new Forbidden('Cannot move a file from another school.');
+	}
+
+	const destinationSchools = await loadOwnerSchoolIds(destinationOwnerId, destinationRefOwnerModel);
+	if (!destinationSchools.includes(actorSchoolId)) {
+		throw new Forbidden('Cannot move a file into another school.');
+	}
+};
+
+/**
+ * Destination is a directory (canWrite), a team root (membership), or the caller's personal-files root.
+ * @returns {Promise<{fileObject: Object|null, teamObject: Object|null, destinationOwnerId: *, destinationRefOwnerModel: String}>}
+ */
+const resolveMoveDestination = async (userId, parent) => {
+	const fileObject = await FileModel.findOne({ _id: parent }).exec();
+	if (fileObject) {
+		if (!fileObject.isDirectory) {
+			throw new Forbidden('Destination is not a directory.');
+		}
+		await assertCanWriteFile(userId, parent);
+		return {
+			fileObject,
+			teamObject: null,
+			destinationOwnerId: fileObject.owner,
+			destinationRefOwnerModel: fileObject.refOwnerModel,
+		};
+	}
+
+	const teamObject = await teamsModel.findOne({ _id: parent }).exec();
+	if (teamObject) {
+		const teamMember = (teamObject.userIds || []).find((member) => equalIds(member.userId, userId));
+		if (!teamMember) {
+			throw new Forbidden('Missing write permission on the destination.');
+		}
+		return {
+			fileObject: null,
+			teamObject,
+			destinationOwnerId: teamObject._id,
+			destinationRefOwnerModel: 'teams',
+		};
+	}
+
+	if (equalIds(parent, userId)) {
+		return {
+			fileObject: null,
+			teamObject: null,
+			destinationOwnerId: userId,
+			destinationRefOwnerModel: 'user',
+		};
+	}
+
+	throw new Forbidden('Missing write permission on the destination.');
 };
 
 const fileStorageService = {
@@ -268,7 +386,9 @@ const fileStorageService = {
 		await filesRepo.removeFileById(_id);
 	},
 	/**
-	 * Move file from one parent to another
+	 * Move file from one parent to another.
+	 * Requires write access on the source and the destination, in the same school.
+	 * Missing files are 404. Denied moves throw 403 and do not change the file.
 	 * @param _id, Object-ID of file to be patched
 	 * @param data, contains destination parent Object-ID
 	 * @param params contains payload with userId, set by middleware
@@ -279,35 +399,44 @@ const fileStorageService = {
 			payload: { userId },
 		} = params;
 		const { parent } = data;
+
+		if (!parent || !isValidObjectId(parent)) {
+			throw new Forbidden('Missing destination.');
+		}
+		if (!isValidObjectId(_id)) {
+			throw new NotFound('File not found.');
+		}
+		if (equalIds(parent, _id)) {
+			throw new Forbidden('Cannot move a file into itself.');
+		}
+
+		const sourceFile = await FileModel.findOne({ _id }).lean().exec();
+		if (!sourceFile) {
+			throw new NotFound('File not found.');
+		}
+
+		await assertCanWriteFile(userId, _id);
+
+		const { fileObject, teamObject, destinationOwnerId, destinationRefOwnerModel } = await resolveMoveDestination(
+			userId,
+			parent
+		);
+
+		await assertSameSchoolMove({
+			userId,
+			sourceFile,
+			destinationOwnerId,
+			destinationRefOwnerModel,
+		});
+
 		const update = { $set: {} };
-		const fileObject = await FileModel.findOne({ _id: parent }).exec();
-		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
-
-		const permissionPromise = () => {
-			if (fileObject) {
-				return canWrite(userId, parent);
-			}
-
-			if (teamObject) {
-				return new Promise((resolve, reject) => {
-					const teamMember = teamObject.userIds.find((u) => equalIds(u.userId, userId));
-					if (teamMember) {
-						return resolve();
-					}
-					return reject(new Error());
-				});
-			}
-
-			return Promise.reject();
-		};
-
 		if (fileObject) {
 			update.$set = {
 				parent,
 				owner: fileObject.owner,
 				refOwnerModel: fileObject.refOwnerModel,
 			};
-		} else if (parent === userId.toString()) {
+		} else if (equalIds(parent, userId)) {
 			update.$set = {
 				owner: userId,
 				refOwnerModel: 'user',
@@ -321,9 +450,7 @@ const fileStorageService = {
 			update.$unset = { parent: '' };
 		}
 
-		return permissionPromise()
-			.then(() => FileModel.updateOne({ _id }, update).exec())
-			.catch((err) => new Forbidden(err));
+		return FileModel.updateOne({ _id }, update).exec();
 	},
 };
 

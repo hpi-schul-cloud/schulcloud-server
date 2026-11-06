@@ -288,7 +288,8 @@ describe('fileStorage services', () => {
 					},
 					context
 				)
-				.then(({ code }) => {
+				.then(() => done(new Error('expected the move to be rejected')))
+				.catch(({ code }) => {
 					expect(code).to.be.equal(403);
 					return done();
 				});
