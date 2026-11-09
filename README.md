@@ -27,9 +27,9 @@ Note that not all the .md file here are up to date.
 ## Room invitation credentials
 
 New room invitations have an internal ObjectId (`id`) and a separate secret
-`invitationToken`, generated from 32 cryptographically random bytes and encoded as
-43 base64url characters. Authorized create, update, and list responses include the
-token. Metadata updates preserve it; clients cannot supply or change it.
+`invitationToken` (21 URL-safe NanoID characters). Authorized create-, update-, 
+and list-responses include the token. Metadata updates preserve it; clients cannot 
+supply or change it.
 
 Use `invitationToken ?? id` when building share/copy/QR URLs. Pass that value
 unchanged to `POST /api/v3/room-invitation-links/:roomInvitationLinkId`. Redemption
