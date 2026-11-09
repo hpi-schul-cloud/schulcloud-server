@@ -136,11 +136,16 @@ export class LoggingUtils {
 			return url;
 		}
 
+		// Like axios: a relative url is appended to the base url including its path (/api + /token = /api/token).
+		const isAbsoluteUrl = /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+		const fullUrl = baseUrl && !isAbsoluteUrl ? `${baseUrl.replace(/\/+$/, '')}/${url.replace(/^\/+/, '')}` : url;
+
 		// A relative URL without base URL can only be parsed against a placeholder; only its path, query and hash are logged.
+		// With a base URL, the combined URL must be absolute, otherwise it is redacted.
 		const isRelativeWithoutBase = !baseUrl && !URL.canParse(url);
 		let parsedUrl: URL;
 		try {
-			parsedUrl = new URL(url, baseUrl ?? 'https://relative.invalid');
+			parsedUrl = baseUrl ? new URL(fullUrl) : new URL(fullUrl, 'https://relative.invalid');
 		} catch {
 			return '[REDACTED]';
 		}

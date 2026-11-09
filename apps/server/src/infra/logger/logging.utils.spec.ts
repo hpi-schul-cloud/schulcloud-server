@@ -442,7 +442,7 @@ describe(LoggingUtils.name, () => {
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(render(result)).toContain("url: 'https://idp.example.org/token?access_token=[REDACTED]'");
+				expect(render(result)).toContain("url: 'https://idp.example.org/api/token?access_token=[REDACTED]'");
 			});
 
 			it('should keep a relative axios url without base url relative', () => {
