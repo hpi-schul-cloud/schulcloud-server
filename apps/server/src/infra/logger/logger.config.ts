@@ -14,11 +14,6 @@ export enum SyslogLevel {
 	EMERGENCY = 'emerg',
 }
 
-export enum LogFormat {
-	JSON = 'json',
-	PRETTY = 'pretty',
-}
-
 export const LOGGER_CONFIG_TOKEN = 'LOGGER_CONFIG_TOKEN';
 
 const levelNames = Object.values(SyslogLevel).join('|');
@@ -42,14 +37,6 @@ export class LoggerConfig {
 		message: `LOG_LEVELS must look like "default=notice,BoardModule=debug", allowed levels: ${levelNames.replaceAll('|', ', ')}`,
 	})
 	public logLevels?: string;
-
-	/**
-	 * json: one JSON object per line, for deployments and log collection.
-	 * pretty: human readable output for local development.
-	 */
-	@ConfigProperty('LOG_FORMAT')
-	@IsEnum(LogFormat)
-	public logFormat = LogFormat.JSON;
 
 	/**
 	 * By default, the application is terminated after an uncaughtException has been logged.

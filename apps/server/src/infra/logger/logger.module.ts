@@ -12,17 +12,16 @@ import { LOGGER_CONFIG_TOKEN, LoggerConfig, SyslogLevel } from './logger.config'
 const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
 	return {
 		provide: AUDIT_LOGGER_PROVIDER,
-		useFactory: (config: LoggerConfig): WinstonLogger =>
+		useFactory: (): WinstonLogger =>
 			winston.createLogger({
 				levels: winston.config.syslog.levels,
 				level: SyslogLevel.INFO,
 				transports: [
 					new winston.transports.Console({
-						format: createLogFormat(config.logFormat),
+						format: createLogFormat(),
 					}),
 				],
 			}),
-		inject: [LOGGER_CONFIG_TOKEN],
 	};
 };
 
@@ -43,7 +42,7 @@ const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
 						new winston.transports.Console({
 							handleExceptions: true,
 							handleRejections: true,
-							format: winston.format.combine(createLevelFilter(logLevels), createLogFormat(config.logFormat)),
+							format: winston.format.combine(createLevelFilter(logLevels), createLogFormat()),
 						}),
 					],
 				};

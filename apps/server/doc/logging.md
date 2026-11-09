@@ -48,18 +48,13 @@ When the logger is injected into a factory (`useFactory`), there is no class to 
 
 ## Output format
 
-`LOG_FORMAT` switches the output:
-
-- `json` (default, used in deployments): one JSON object per line, with the fields `timestamp`, `level`, `context`, `module`, `message`, and if present `data` and `error`, followed by any further fields.
-- `pretty` (set in `.env.development` and `.env.test`): readable output for local development.
+Every environment writes one JSON object per line, with the fields `timestamp`, `level`, `context`, `module`, `message`, and if present `data` and `error`, followed by any further fields. Locally you see the same format as in the deployments.
 
 ```
 {"timestamp":"2026-11-03T11:55:09.671Z","level":"info","context":"BoardCopyService","module":"BoardModule","message":"Board copied","data":{"boardId":"0000d231816abba584714c9e"}}
 ```
 
-```
-[NestWinston] 22751 2026-11-03 12:55:09.672     LOG [BoardModule/BoardCopyService] Board copied - { data: { boardId: '0000d231816abba584714c9e' } } +0ms
-```
+To read it locally, pipe the output through `jq`, e.g. `npm run nest:start:dev | jq -R 'fromjson? // .'` (lines that are not JSON are printed as they are).
 
 The fields `trace_id` and `span_id` are reserved for tracing (OpenTelemetry) and are removed from entries until then.
 

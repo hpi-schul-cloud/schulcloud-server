@@ -1,8 +1,6 @@
 import { SecretRegistry } from '@infra/configuration';
 import winston from 'winston';
 
-// winston stores the finished log line under this symbol (MESSAGE from triple-beam)
-const MESSAGE = Symbol.for('message');
 const MASK = '***';
 // The scheme is case-insensitive (RFC 7617), so basic and BASIC are decoded as well.
 const BASIC_AUTH = /\b(Basic)\s+([A-Za-z0-9+/]+={0,2})/gi;
@@ -98,20 +96,6 @@ export const maskSecretsInFields = winston.format((info) => {
 	const record = info as Record<string, unknown>;
 	for (const key of Object.keys(record)) {
 		record[key] = maskSecretsInValue(record[key], visited);
-	}
-
-	return info;
-});
-
-/**
- * Masks the values of config properties marked with @Secret() in the finished log line of the pretty format.
- * Must be the last format, so it covers everything that ends up in the line. The JSON format uses maskSecretsInFields.
- */
-export const maskSecrets = winston.format((info) => {
-	const record = info as unknown as Record<symbol, unknown>;
-	const line = record[MESSAGE];
-	if (typeof line === 'string') {
-		record[MESSAGE] = maskSecretsInText(line);
 	}
 
 	return info;

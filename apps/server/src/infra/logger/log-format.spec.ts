@@ -1,12 +1,11 @@
 import { SecretRegistry } from '@infra/configuration';
 import { createLogFormat } from './log-format';
-import { LogFormat } from './logger.config';
 
 // winston stores the final output under this symbol (MESSAGE from triple-beam)
 const MESSAGE = Symbol.for('message');
 
-const render = (logFormat: LogFormat, info: Record<string, unknown>): string => {
-	const result = createLogFormat(logFormat).transform({ level: 'info', message: '', ...info });
+const render = (info: Record<string, unknown>): string => {
+	const result = createLogFormat().transform({ level: 'info', message: '', ...info });
 	if (!result || typeof result === 'boolean') {
 		throw new Error('log entry was filtered out');
 	}
@@ -17,7 +16,7 @@ const render = (logFormat: LogFormat, info: Record<string, unknown>): string => 
 describe('createLogFormat', () => {
 	describe('when the log format is json', () => {
 		it('should write the entry as valid JSON', () => {
-			const output = render(LogFormat.JSON, { message: 'user created', context: 'UserService' });
+			const output = render({ message: 'user created', context: 'UserService' });
 
 			expect(JSON.parse(output)).toEqual(
 				expect.objectContaining({ level: 'info', message: 'user created', context: 'UserService' })
@@ -25,14 +24,14 @@ describe('createLogFormat', () => {
 		});
 
 		it('should add an ISO timestamp', () => {
-			const output = render(LogFormat.JSON, { message: 'user created' });
+			const output = render({ message: 'user created' });
 
 			const { timestamp } = JSON.parse(output) as { timestamp: string };
 			expect(new Date(timestamp).toISOString()).toBe(timestamp);
 		});
 
 		it('should write the entry in one line', () => {
-			const output = render(LogFormat.JSON, { message: 'first line\nsecond line' });
+			const output = render({ message: 'first line\nsecond line' });
 
 			expect(output).not.toContain('\n');
 		});
@@ -40,7 +39,7 @@ describe('createLogFormat', () => {
 
 	describe('when the log format is json and fields are added', () => {
 		it('should start every line with timestamp, level, context and message', () => {
-			const output = render(LogFormat.JSON, {
+			const output = render({
 				extra: 'value',
 				error: { message: 'boom' },
 				data: { userId: '123' },
@@ -62,14 +61,14 @@ describe('createLogFormat', () => {
 		});
 
 		it('should not write the fields reserved for tracing', () => {
-			const output = render(LogFormat.JSON, { message: 'user created', trace_id: 'abc', span_id: 'def' });
+			const output = render({ message: 'user created', trace_id: 'abc', span_id: 'def' });
 
 			expect(JSON.parse(output)).not.toHaveProperty('trace_id');
 			expect(JSON.parse(output)).not.toHaveProperty('span_id');
 		});
 
 		it('should keep message and stack of a raw error', () => {
-			const output = render(LogFormat.JSON, { message: 'uncaughtException: boom', error: new Error('boom') });
+			const output = render({ message: 'uncaughtException: boom', error: new Error('boom') });
 
 			const { error } = JSON.parse(output) as { error: { message: string; stack: string } };
 			expect(error.message).toBe('boom');
@@ -79,7 +78,7 @@ describe('createLogFormat', () => {
 		it('should redact sensitive values of a raw error', () => {
 			const error = Object.assign(new Error('boom'), { accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload' });
 
-			const output = render(LogFormat.JSON, { message: 'uncaughtException: boom', error });
+			const output = render({ message: 'uncaughtException: boom', error });
 
 			expect(output).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload');
 		});
@@ -88,7 +87,7 @@ describe('createLogFormat', () => {
 			const data: Record<string, unknown> = { name: 'loop' };
 			data.self = data;
 
-			const output = render(LogFormat.JSON, { message: 'circular', data });
+			const output = render({ message: 'circular', data });
 
 			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { name: 'loop', self: '[Circular]' } }));
 		});
@@ -96,30 +95,9 @@ describe('createLogFormat', () => {
 		it('should keep the internal level used by winston to filter entries', () => {
 			const info = { level: 'info', message: 'user created', [Symbol.for('level')]: 'info' };
 
-			const result = createLogFormat(LogFormat.JSON).transform(info) as unknown as Record<symbol, unknown>;
+			const result = createLogFormat().transform(info) as unknown as Record<symbol, unknown>;
 
 			expect(result[Symbol.for('level')]).toBe('info');
-		});
-	});
-
-	describe('when the log format is pretty', () => {
-		it('should write the entry in the readable nest format', () => {
-			const output = render(LogFormat.PRETTY, { message: 'user created', context: 'UserService' });
-
-			expect(output).toContain('[UserService]');
-			expect(output).toContain('user created');
-			expect(() => JSON.parse(output) as unknown).toThrow();
-		});
-
-		it('should show the module together with the context', () => {
-			const output = render(LogFormat.PRETTY, {
-				message: 'user created',
-				context: 'UserService',
-				module: 'UserModule',
-			});
-
-			expect(output).toContain('[UserModule/UserService]');
-			expect(output).not.toContain('"module"');
 		});
 	});
 });
@@ -135,8 +113,8 @@ describe('createLogFormat with secrets', () => {
 		SecretRegistry.clear();
 	});
 
-	it.each([LogFormat.JSON, LogFormat.PRETTY])('should mask secret values in %s logs', (logFormat) => {
-		const output = render(logFormat, { message: `token request with ${clientSecret}`, data: { body: clientSecret } });
+	it('should mask secret values', () => {
+		const output = render({ message: `token request with ${clientSecret}`, data: { body: clientSecret } });
 
 		expect(output).not.toContain(clientSecret);
 		expect(output).toContain('token request with ***');
@@ -145,7 +123,7 @@ describe('createLogFormat with secrets', () => {
 	it('should mask a secret inside a Basic auth header', () => {
 		const header = `Basic ${Buffer.from(`my-client:${clientSecret}`).toString('base64')}`;
 
-		const output = render(LogFormat.JSON, { message: 'request failed', data: { authorization: header } });
+		const output = render({ message: 'request failed', data: { authorization: header } });
 
 		expect(output).not.toContain(header);
 		expect(output).toContain('Basic ***');
@@ -154,7 +132,7 @@ describe('createLogFormat with secrets', () => {
 	it.each(['basic', 'BASIC'])('should mask a secret inside a %s auth header', (scheme) => {
 		const header = `${scheme} ${Buffer.from(`my-client:${clientSecret}`).toString('base64')}`;
 
-		const output = render(LogFormat.JSON, { message: 'request failed', data: { authorization: header } });
+		const output = render({ message: 'request failed', data: { authorization: header } });
 
 		expect(output).not.toContain(header);
 		expect(output).toContain(`${scheme} ***`);
@@ -164,7 +142,7 @@ describe('createLogFormat with secrets', () => {
 		it('should keep valid JSON when a number field equals a numeric secret', () => {
 			SecretRegistry.register('12345678');
 
-			const output = render(LogFormat.JSON, { message: 'imported', data: { count: 12345678 } });
+			const output = render({ message: 'imported', data: { count: 12345678 } });
 
 			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { count: '***' } }));
 		});
@@ -172,19 +150,19 @@ describe('createLogFormat with secrets', () => {
 		it('should keep valid JSON when an escape sequence is followed by text that looks like a secret', () => {
 			SecretRegistry.register('nsecret-looking-value');
 
-			const output = render(LogFormat.JSON, { message: 'line one\nsecret-looking-value' });
+			const output = render({ message: 'line one\nsecret-looking-value' });
 
 			expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'line one\nsecret-looking-value' }));
 		});
 
 		it('should mask secrets inside arrays', () => {
-			const output = render(LogFormat.JSON, { message: 'clients', data: { secrets: [clientSecret, 'public-value'] } });
+			const output = render({ message: 'clients', data: { secrets: [clientSecret, 'public-value'] } });
 
 			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { secrets: ['***', 'public-value'] } }));
 		});
 
 		it('should mask a secret used as field name', () => {
-			const output = render(LogFormat.JSON, { message: 'lookup', data: { [clientSecret]: true } });
+			const output = render({ message: 'lookup', data: { [clientSecret]: true } });
 
 			expect(output).not.toContain(clientSecret);
 			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { '***': true } }));
@@ -193,7 +171,7 @@ describe('createLogFormat with secrets', () => {
 		it('should not change the data passed to the logger', () => {
 			const data = { body: clientSecret };
 
-			render(LogFormat.JSON, { message: 'request', data });
+			render({ message: 'request', data });
 
 			expect(data.body).toBe(clientSecret);
 		});
@@ -202,7 +180,7 @@ describe('createLogFormat with secrets', () => {
 	it('should keep Basic auth headers without secret', () => {
 		const header = `Basic ${Buffer.from('user:not-a-registered-value').toString('base64')}`;
 
-		const output = render(LogFormat.JSON, { message: `header ${header}` });
+		const output = render({ message: `header ${header}` });
 
 		expect(output).toContain(header);
 	});
@@ -211,7 +189,7 @@ describe('createLogFormat with secrets', () => {
 		const secretWithQuote = 'secret"with\\quote';
 		SecretRegistry.register(secretWithQuote);
 
-		const output = render(LogFormat.JSON, { message: `value ${secretWithQuote}` });
+		const output = render({ message: `value ${secretWithQuote}` });
 
 		expect(output).toContain('value ***');
 		expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'value ***' }));
@@ -231,7 +209,7 @@ describe('createLogFormat with secrets', () => {
 		])('should mask the secret encoded with %s', (_, encoded) => {
 			const url = `https://example.com/files?key=${encoded}&id=1`;
 
-			const output = render(LogFormat.JSON, { message: 'request failed', data: { url } });
+			const output = render({ message: 'request failed', data: { url } });
 
 			expect(output).not.toContain(encoded);
 			expect(output).toContain('https://example.com/files?key=***&id=1');
@@ -239,7 +217,7 @@ describe('createLogFormat with secrets', () => {
 	});
 
 	it('should keep text that is not a registered secret', () => {
-		const output = render(LogFormat.JSON, { message: 'user created' });
+		const output = render({ message: 'user created' });
 
 		expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'user created' }));
 	});
