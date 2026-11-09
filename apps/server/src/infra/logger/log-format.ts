@@ -2,7 +2,7 @@ import { utilities } from 'nest-winston';
 import winston from 'winston';
 import { LogFormat } from './logger.config';
 import { LoggingUtils } from './logging.utils';
-import { maskSecrets } from './secret-masking';
+import { maskSecrets, maskSecretsInFields } from './secret-masking';
 
 // Reserved for tracing (OpenTelemetry). Set only by tracing, never by log messages.
 const RESERVED_TRACING_FIELDS = ['trace_id', 'span_id'];
@@ -53,8 +53,9 @@ const createJsonFormat = (): winston.Logform.Format =>
 	winston.format.combine(
 		winston.format.timestamp(),
 		orderFields(),
-		winston.format.json({ deterministic: false }),
-		maskSecrets()
+		// Before serializing: masking the finished JSON line could break it (see maskSecretsInFields).
+		maskSecretsInFields(),
+		winston.format.json({ deterministic: false })
 	);
 
 export const createLogFormat = (logFormat: LogFormat): winston.Logform.Format =>

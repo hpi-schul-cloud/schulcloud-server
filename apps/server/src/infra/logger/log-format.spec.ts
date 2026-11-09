@@ -151,6 +151,48 @@ describe('createLogFormat with secrets', () => {
 		expect(output).toContain('Basic ***');
 	});
 
+	it.each(['basic', 'BASIC'])('should mask a secret inside a %s auth header', (scheme) => {
+		const header = `${scheme} ${Buffer.from(`my-client:${clientSecret}`).toString('base64')}`;
+
+		const output = render(LogFormat.JSON, { message: 'request failed', data: { authorization: header } });
+
+		expect(output).not.toContain(header);
+		expect(output).toContain(`${scheme} ***`);
+	});
+
+	describe('when masking would touch the JSON syntax', () => {
+		it('should keep valid JSON when a number field equals a numeric secret', () => {
+			SecretRegistry.register('12345678');
+
+			const output = render(LogFormat.JSON, { message: 'imported', data: { count: 12345678 } });
+
+			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { count: '***' } }));
+		});
+
+		it('should keep valid JSON when an escape sequence is followed by text that looks like a secret', () => {
+			SecretRegistry.register('nsecret-looking-value');
+
+			const output = render(LogFormat.JSON, { message: 'line one\nsecret-looking-value' });
+
+			expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'line one\nsecret-looking-value' }));
+		});
+
+		it('should mask a secret used as field name', () => {
+			const output = render(LogFormat.JSON, { message: 'lookup', data: { [clientSecret]: true } });
+
+			expect(output).not.toContain(clientSecret);
+			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { '***': true } }));
+		});
+
+		it('should not change the data passed to the logger', () => {
+			const data = { body: clientSecret };
+
+			render(LogFormat.JSON, { message: 'request', data });
+
+			expect(data.body).toBe(clientSecret);
+		});
+	});
+
 	it('should keep Basic auth headers without secret', () => {
 		const header = `Basic ${Buffer.from('user:not-a-registered-value').toString('base64')}`;
 
