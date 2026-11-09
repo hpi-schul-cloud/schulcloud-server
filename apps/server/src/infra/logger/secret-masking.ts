@@ -49,13 +49,10 @@ const maskBasicAuth = (text: string): string =>
 		containsSecret(Buffer.from(encoded, 'base64').toString('utf8')) ? `${scheme} ${MASK}` : match
 	);
 
-export const maskSecretsInText = (text: string): string => {
+const maskSecretsInText = (text: string): string => {
 	const pattern = getSecretPattern();
-	if (!pattern) {
-		return text;
-	}
 
-	return maskBasicAuth(text).replace(pattern, MASK);
+	return pattern ? maskBasicAuth(text).replace(pattern, MASK) : text;
 };
 
 const maskSecretsInValue = (value: unknown, visited: WeakSet<object>): unknown => {
