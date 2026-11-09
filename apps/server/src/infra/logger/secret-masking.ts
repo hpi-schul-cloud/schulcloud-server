@@ -11,13 +11,26 @@ let cachedPattern: RegExp | undefined;
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
-// Matches each secret as it is and as it appears inside a JSON string (quotes or backslashes escaped).
+const lowerCaseHex = (encoded: string): string => encoded.replace(/%[0-9A-F]{2}/g, (hex) => hex.toLowerCase());
+
+// Secrets end up in URLs (query parameters, form bodies), where characters like + / = are percent-encoded.
+// encodeURIComponent and URLSearchParams encode slightly different characters, some clients use lower case hex.
+const getUrlEncodedVariants = (secret: string): string[] => {
+	const encoded = [encodeURIComponent(secret), new URLSearchParams({ v: secret }).toString().slice('v='.length)];
+
+	return encoded.flatMap((value) => [value, lowerCaseHex(value)]);
+};
+
+// Matches each secret as it is, as it appears inside a JSON string (quotes or backslashes escaped) and URL-encoded.
 const getSecretPattern = (): RegExp | undefined => {
 	if (cachedVersion !== SecretRegistry.getVersion()) {
 		const variants = new Set<string>();
 		for (const secret of SecretRegistry.getSecrets()) {
 			variants.add(secret);
 			variants.add(JSON.stringify(secret).slice(1, -1));
+			for (const encoded of getUrlEncodedVariants(secret)) {
+				variants.add(encoded);
+			}
 		}
 
 		const sortedVariants = [...variants].sort((a, b) => b.length - a.length);

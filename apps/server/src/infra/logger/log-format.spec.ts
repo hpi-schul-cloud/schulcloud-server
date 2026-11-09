@@ -169,6 +169,27 @@ describe('createLogFormat with secrets', () => {
 		expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'value ***' }));
 	});
 
+	describe('when a secret is URL-encoded', () => {
+		const base64Key = 'aB3+dE6/gH9=kL2+mN5/pQ8=';
+
+		beforeEach(() => {
+			SecretRegistry.register(base64Key);
+		});
+
+		it.each([
+			['encodeURIComponent', encodeURIComponent(base64Key)],
+			['URLSearchParams', new URLSearchParams({ key: base64Key }).toString().slice('key='.length)],
+			['lower case hex', encodeURIComponent(base64Key).replace(/%[0-9A-F]{2}/g, (hex) => hex.toLowerCase())],
+		])('should mask the secret encoded with %s', (_, encoded) => {
+			const url = `https://example.com/files?key=${encoded}&id=1`;
+
+			const output = render(LogFormat.JSON, { message: 'request failed', data: { url } });
+
+			expect(output).not.toContain(encoded);
+			expect(output).toContain('https://example.com/files?key=***&id=1');
+		});
+	});
+
 	it('should keep text that is not a registered secret', () => {
 		const output = render(LogFormat.JSON, { message: 'user created' });
 
