@@ -1,6 +1,7 @@
 import { type Loggable, type LoggableMessage, type LogMessage } from '@shared/common/loggable';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import util from 'node:util';
+import { AxiosErrorLoggable } from '@infra/error';
 import { LoggingUtils } from './logging.utils';
 
 // Renders everything that ends up in the log entry, so tests can check that a value is (not) logged anywhere.
@@ -292,6 +293,36 @@ describe(LoggingUtils.name, () => {
 				expect(error.accessToken).toBe('eyJhbGciOiJIUzI1NiJ9.payload');
 			});
 
+			it('should keep an enumerable error cause', () => {
+				class WrappingError extends Error {
+					constructor(message: string, cause: Error) {
+						super(message);
+						this.cause = cause;
+					}
+				}
+				const error = new WrappingError('outer', new Error('inner'));
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.error).toEqual(
+					expect.objectContaining({ cause: expect.objectContaining({ name: 'Error', message: 'inner' }) })
+				);
+			});
+
+			it('should not call a toJSON function copied onto the error', () => {
+				const error = Object.assign(new Error('request failed'), {
+					toJSON: () => {
+						return { password: 'restored-secret-value' };
+					},
+				});
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(JSON.stringify(result)).not.toContain('restored-secret-value');
+			});
+
 			it('should replace a circular error cause with circular marker', () => {
 				const error = new Error('boom');
 				error.cause = error;
@@ -465,6 +496,19 @@ describe(LoggingUtils.name, () => {
 				expectNoSecrets(render(result));
 				expect(render(result)).toContain('Error: token request failed');
 				expect(render(result)).toContain('AxiosError: Request failed with status code 401');
+			});
+
+			it('should not log credentials of an AxiosErrorLoggable nested in another error', () => {
+				const error = Object.assign(new Error('deletion failed'), {
+					error: new AxiosErrorLoggable(buildAxiosError(), 'DELETION_ERROR'),
+				});
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(JSON.stringify(result));
+				expectNoSecrets(render(result));
+				expect(JSON.stringify(result)).toContain('invalid_client');
 			});
 
 			it('should not modify the original axios error', () => {

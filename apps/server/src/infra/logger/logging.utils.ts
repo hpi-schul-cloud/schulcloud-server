@@ -54,7 +54,8 @@ export class LoggingUtils {
 	}
 
 	private static redactSensitiveObject(value: unknown, visited = new WeakSet<object>()): unknown {
-		if (value instanceof Error) {
+		// Copies of axios errors (e.g. inside AxiosErrorLoggable) are plain objects, but carry the same request config.
+		if (value instanceof Error || isAxiosError(value)) {
 			return this.redactError(value, visited);
 		}
 
@@ -73,7 +74,7 @@ export class LoggingUtils {
 		return value;
 	}
 
-	private static redactError(error: Error, visited: WeakSet<object>): unknown {
+	private static redactError(error: Error | AxiosError, visited: WeakSet<object>): unknown {
 		if (visited.has(error)) {
 			return '[Circular]';
 		}
@@ -87,9 +88,12 @@ export class LoggingUtils {
 			stack: error.stack === undefined ? undefined : this.redactBearerToken(error.stack),
 		};
 
-		const ownProperties = isAxiosError(error) ? this.getSafeAxiosErrorProperties(error) : { ...error };
-		for (const [key, val] of Object.entries(ownProperties)) {
-			redactedError[key] = this.redactEntryValue(key, val, visited);
+		const ownProperties = isAxiosError(error) ? this.getSafeAxiosErrorProperties(error) : error;
+		for (const [key, val] of this.getLoggableEntries(ownProperties)) {
+			// The cause is handled below, an enumerable cause (this.cause = cause) would otherwise be logged twice.
+			if (key !== 'cause') {
+				redactedError[key] = this.redactEntryValue(key, val, visited);
+			}
 		}
 
 		if (error.cause !== undefined) {
@@ -173,11 +177,16 @@ export class LoggingUtils {
 		visited.add(value);
 		const result: Record<string, unknown> = {};
 
-		for (const [key, val] of Object.entries(value)) {
+		for (const [key, val] of this.getLoggableEntries(value)) {
 			result[key] = this.redactEntryValue(key, val, visited);
 		}
 
 		return result;
+	}
+
+	// Functions are left out: JSON.stringify would call a copied toJSON and could restore what was redacted.
+	private static getLoggableEntries(value: object): [string, unknown][] {
+		return Object.entries(value).filter(([, val]) => typeof val !== 'function');
 	}
 
 	private static redactEntryValue(key: string, value: unknown, visited: WeakSet<object>): unknown {
