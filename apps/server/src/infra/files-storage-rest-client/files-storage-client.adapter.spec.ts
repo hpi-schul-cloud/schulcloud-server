@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { ErrorLogger, Logger } from '@infra/logger';
+import { Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { REQUEST } from '@nestjs/core';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -29,10 +29,6 @@ describe(FilesStorageClientAdapter.name, () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: ErrorLogger,
-					useValue: createMock<ErrorLogger>(),
 				},
 				{
 					provide: HttpService,

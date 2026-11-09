@@ -1,5 +1,5 @@
 import { ICurrentUser } from '@infra/auth-guard';
-import { ErrorLogger, LoggingUtils } from '@infra/logger';
+import { Logger, LoggingUtils } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Loggable, LogMessageDataObject } from '@shared/common/loggable';
@@ -9,7 +9,7 @@ import { ErrorLoggable } from '../loggable';
 
 @Injectable()
 export class DomainErrorHandler {
-	constructor(private readonly logger: ErrorLogger) {}
+	constructor(private readonly logger: Logger) {}
 
 	public exec(error: unknown): void {
 		const loggable = this.createErrorLoggable(error);

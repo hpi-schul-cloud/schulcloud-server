@@ -3,7 +3,6 @@ import { Module, Provider } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import winston, { Logger as WinstonLogger } from 'winston';
 import { AUDIT_LOGGER_PROVIDER, AuditLogger } from './audit-logger';
-import { ErrorLogger } from './error-logger';
 import { LegacyLogger } from './legacy-logger.service';
 import { createLogFormat } from './log-format';
 import { createLevelFilter, getMostVerboseLevel, parseLogLevels } from './log-levels';
@@ -52,7 +51,7 @@ const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
 			inject: [LOGGER_CONFIG_TOKEN],
 		}),
 	],
-	providers: [LegacyLogger, Logger, ErrorLogger, createAuditLoggerProvider(), AuditLogger],
-	exports: [LegacyLogger, Logger, ErrorLogger, AuditLogger],
+	providers: [LegacyLogger, Logger, createAuditLoggerProvider(), AuditLogger],
+	exports: [LegacyLogger, Logger, AuditLogger],
 })
 export class LoggerModule {}

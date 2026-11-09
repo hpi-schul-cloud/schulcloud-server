@@ -6,7 +6,6 @@
  *********************************************************** */
 
 export { AUDIT_LOGGER_PROVIDER, AuditLogger } from './audit-logger';
-export { ErrorLogger } from './error-logger';
 export { LegacyLogger } from './legacy-logger.service';
 export { Logger } from './logger';
 export { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';

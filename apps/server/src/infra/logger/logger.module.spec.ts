@@ -1,6 +1,5 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 import { AuditLogger } from './audit-logger';
-import { ErrorLogger } from './error-logger';
 import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
 import { LoggerModule } from './logger.module';
@@ -22,6 +21,5 @@ describe(LoggerModule.name, () => {
 		expect(await module.resolve(Logger)).toBeInstanceOf(Logger);
 		expect(await module.resolve(LegacyLogger)).toBeInstanceOf(LegacyLogger);
 		expect(await module.resolve(AuditLogger)).toBeInstanceOf(AuditLogger);
-		expect(await module.resolve(ErrorLogger)).toBeInstanceOf(ErrorLogger);
 	});
 });

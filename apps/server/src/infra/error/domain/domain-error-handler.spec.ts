@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { ErrorLogger } from '@infra/logger';
+import { Logger } from '@infra/logger';
 import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -79,21 +79,21 @@ class SampleLoggableFromBusinessException extends BusinessError implements Logga
 describe('GlobalErrorFilter', () => {
 	let module: TestingModule;
 	let domainErrorHandler: DomainErrorHandler;
-	let logger: DeepMocked<ErrorLogger>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				DomainErrorHandler,
 				{
-					provide: ErrorLogger,
-					useValue: createMock<ErrorLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
 
 		domainErrorHandler = module.get(DomainErrorHandler);
-		logger = module.get(ErrorLogger);
+		logger = module.get(Logger);
 	});
 
 	afterEach(() => {
