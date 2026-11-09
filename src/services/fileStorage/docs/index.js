@@ -189,44 +189,6 @@ module.exports = {
 					},
 				},
 			},
-			patch: {
-				parameters: [
-					{
-						description: 'File ID to be moved',
-						required: true,
-						name: 'id',
-						in: 'query',
-						type: 'String (ObjectID)',
-					},
-					{
-						description: 'File ID to be moved',
-						name: 'id',
-						in: 'path',
-						type: 'String (ObjectID)',
-					},
-					{
-						description: 'ID of parent folder or team/course/user',
-						type: 'String (ObjectID)',
-						name: 'parent',
-					},
-				],
-				description: '',
-				summary: 'Moves a file with given Object ID either in query or path to a new destination',
-				responses: {
-					200: {
-						description: 'OK - file moved',
-					},
-					403: {
-						description: 'File operation is forbidden due to missing permissions',
-					},
-					404: {
-						description: 'File not found',
-					},
-					500: {
-						description: 'Error performing operation',
-					},
-				},
-			},
 		},
 	},
 	directoryService: {
