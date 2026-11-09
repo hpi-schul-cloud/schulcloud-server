@@ -177,6 +177,12 @@ describe('createLogFormat with secrets', () => {
 			expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'line one\nsecret-looking-value' }));
 		});
 
+		it('should mask secrets inside arrays', () => {
+			const output = render(LogFormat.JSON, { message: 'clients', data: { secrets: [clientSecret, 'public-value'] } });
+
+			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { secrets: ['***', 'public-value'] } }));
+		});
+
 		it('should mask a secret used as field name', () => {
 			const output = render(LogFormat.JSON, { message: 'lookup', data: { [clientSecret]: true } });
 
