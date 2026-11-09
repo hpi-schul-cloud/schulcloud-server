@@ -89,6 +89,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 
 	// ExternalToolElement, MediaExternalToolElement
 	// --------------------------------------------------------------------------
+	@Index()
 	@Property({ type: ObjectIdType, fieldName: 'contextExternalTool', nullable: true })
 	contextExternalToolId: EntityId | undefined;
 
