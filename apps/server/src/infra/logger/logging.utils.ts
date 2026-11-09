@@ -55,7 +55,7 @@ export class LoggingUtils {
 
 	private static redactSensitiveObject(value: unknown, visited = new WeakSet<object>()): unknown {
 		// Copies of axios errors (e.g. inside AxiosErrorLoggable) are plain objects, but carry the same request config.
-		if (value instanceof Error || isAxiosError(value)) {
+		if (value instanceof Error || (isAxiosError(value) && typeof value.message === 'string')) {
 			return this.redactError(value, visited);
 		}
 
@@ -84,8 +84,8 @@ export class LoggingUtils {
 		// A plain object instead of the Error itself: message and stack are not enumerable, so JSON output would drop them.
 		const redactedError: Record<string, unknown> = {
 			name: this.getErrorName(error),
-			message: this.redactBearerToken(error.message),
-			stack: error.stack === undefined ? undefined : this.redactBearerToken(error.stack),
+			message: typeof error.message === 'string' ? this.redactBearerToken(error.message) : error.message,
+			stack: typeof error.stack === 'string' ? this.redactBearerToken(error.stack) : error.stack,
 		};
 
 		const ownProperties = isAxiosError(error) ? this.getSafeAxiosErrorProperties(error) : error;
@@ -138,7 +138,8 @@ export class LoggingUtils {
 
 		// Like axios: a relative url is appended to the base url including its path (/api + /token = /api/token).
 		const isAbsoluteUrl = /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
-		const fullUrl = baseUrl && !isAbsoluteUrl ? `${baseUrl.replace(/\/+$/, '')}/${url.replace(/^\/+/, '')}` : url;
+		const fullUrl =
+			baseUrl && !isAbsoluteUrl ? `${this.trimSlashes(baseUrl, 'end')}/${this.trimSlashes(url, 'start')}` : url;
 
 		// A relative URL without base URL can only be parsed against a placeholder; only its path, query and hash are logged.
 		// With a base URL, the combined URL must be absolute, otherwise it is redacted.
@@ -163,6 +164,20 @@ export class LoggingUtils {
 			: parsedUrl.toString();
 
 		return redactedUrl.replaceAll('REDACTED_VALUE', '[REDACTED]');
+	}
+
+	// A loop instead of a regular expression: /\/+$/ backtracks on input with many slashes (polynomial runtime).
+	private static trimSlashes(value: string, side: 'start' | 'end'): string {
+		let start = 0;
+		let end = value.length;
+		while (side === 'start' && start < end && value[start] === '/') {
+			start += 1;
+		}
+		while (side === 'end' && end > start && value[end - 1] === '/') {
+			end -= 1;
+		}
+
+		return value.slice(start, end);
 	}
 
 	private static redactSensitiveArray(value: unknown[], visited: WeakSet<object>): unknown {

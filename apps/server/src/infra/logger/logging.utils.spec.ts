@@ -445,6 +445,18 @@ describe(LoggingUtils.name, () => {
 				expect(render(result)).toContain("url: 'https://idp.example.org/api/token?access_token=[REDACTED]'");
 			});
 
+			it('should join base url and relative url with exactly one slash', () => {
+				const axiosError = buildAxiosError('/token');
+				if (axiosError.config) {
+					axiosError.config.baseURL = 'https://idp.example.org/api///';
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: 'https://idp.example.org/api/token'");
+			});
+
 			it('should keep a relative axios url without base url relative', () => {
 				const axiosError = buildAxiosError('/token?access_token=abc123secret');
 				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
