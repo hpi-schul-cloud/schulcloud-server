@@ -1,4 +1,5 @@
 // Loggable classes that existed before SVSDEV-345. Remove a file here when replacing its class with a plain log call.
+// This list can only shrink, see apps/server/src/infra/logger/legacy-loggables.spec.ts.
 module.exports = [
 	'apps/server/src/apps/helpers/app-start-loggable.ts',
 	'apps/server/src/apps/helpers/metrics.server.ts',

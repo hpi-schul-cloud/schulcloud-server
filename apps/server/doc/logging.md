@@ -105,7 +105,7 @@ Before the simple API above, the logger only accepted **loggables**: classes imp
 
 Don't write new loggable classes. A lint rule forbids them. Exceptions that implement `Loggable` to add data to their error log are still fine, see [Exception Handling](./exception-handling.md).
 
-Existing loggables are listed in `eslint.legacy-loggables.js`. When you work on code that uses one, replace it with a plain log call, delete the loggable and remove it from that list. They are not converted as a separate project.
+Existing loggables are listed in `eslint.legacy-loggables.js`. When you work on code that uses one, replace it with a plain log call, delete the loggable and remove it from that list. They are not converted as a separate project. The list can only shrink: `apps/server/src/infra/logger/legacy-loggables.spec.ts` fails if it gets a new entry or still lists a file whose loggable is gone.
 
 ## Legacy logger
 
