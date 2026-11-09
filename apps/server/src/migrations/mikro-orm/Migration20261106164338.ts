@@ -5,7 +5,7 @@ export class Migration20261106164338 extends Migration {
 		// all teams-files should be marked for getting deleted at a specific date
 		const result = await this.getCollection('files').updateMany(
 			{ refOwnerModel: 'teams' },
-			{ $set: { deletedAt: new Date('2026-11-05T10:00:00Z') } }
+			{ $set: { deletedAt: new Date('2026-11-01T10:00:00Z') } }
 		);
 
 		console.info(`Marked ${result.modifiedCount} teams-files for deletion.`);
