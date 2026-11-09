@@ -13,23 +13,35 @@ describe('UseRoomInvitationLinkUrlParams', () => {
 				return { link };
 			};
 
-			it('should accept both redemption formats but only ids for management', async () => {
+			it('should accept the invitation token for redemption', async () => {
 				const { link } = setup();
-				const tokenParams = plainToInstance(UseRoomInvitationLinkUrlParams, {
-					roomInvitationLinkId: link.invitationToken,
-				});
-				const legacyParams = plainToInstance(UseRoomInvitationLinkUrlParams, { roomInvitationLinkId: link.id });
-				const managementParams = plainToInstance(RoomInvitationLinkUrlParams, {
+				const params = plainToInstance(UseRoomInvitationLinkUrlParams, {
 					roomInvitationLinkId: link.invitationToken,
 				});
 
-				const tokenErrors = await validate(tokenParams);
-				const legacyErrors = await validate(legacyParams);
-				const managementErrors = await validate(managementParams);
+				const errors = await validate(params);
 
-				expect(tokenErrors).toEqual([]);
-				expect(legacyErrors).toEqual([]);
-				expect(managementErrors).toHaveLength(1);
+				expect(errors).toEqual([]);
+			});
+
+			it('should accept the legacy id for redemption', async () => {
+				const { link } = setup();
+				const params = plainToInstance(UseRoomInvitationLinkUrlParams, { roomInvitationLinkId: link.id });
+
+				const errors = await validate(params);
+
+				expect(errors).toEqual([]);
+			});
+
+			it('should reject the invitation token for management', async () => {
+				const { link } = setup();
+				const params = plainToInstance(RoomInvitationLinkUrlParams, {
+					roomInvitationLinkId: link.invitationToken,
+				});
+
+				const errors = await validate(params);
+
+				expect(errors).toHaveLength(1);
 			});
 		});
 
