@@ -28,7 +28,7 @@ export class VideoConferenceFeatureService {
 		}
 
 		/* need to be replace with
-		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
+		const [authorizableUser, scopeResource]: [User, Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.videoConferenceService.loadScopeResources(scopeId, scope),
 		]);

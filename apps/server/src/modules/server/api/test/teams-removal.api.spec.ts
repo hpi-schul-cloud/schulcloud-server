@@ -1,9 +1,9 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AmqpConnection, AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { teamFactory } from '@modules/team/testing';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -59,10 +59,10 @@ describe.each(serverVariants)('Teams Controller (API): $name', ({ module: server
 	describe('POST /:teamId/create-room', () => {
 		describe('when the caller is anonymous', () => {
 			const setup = async () => {
-				const team = teamFactory.buildWithId();
+				const teamId = new ObjectId().toHexString();
 				const initialRoomCount = await countRooms();
 
-				return { path: `${team.id}/create-room`, initialRoomCount, expectedStatus: HttpStatus.NOT_FOUND };
+				return { path: `${teamId}/create-room`, initialRoomCount, expectedStatus: HttpStatus.NOT_FOUND };
 			};
 
 			it('should return not found without creating a room', async () => {
@@ -81,14 +81,14 @@ describe.each(serverVariants)('Teams Controller (API): $name', ({ module: server
 			describe.each(roles)('when the caller is an authenticated %s', (role) => {
 				const setup = async () => {
 					const { account, user } = UserAndAccountTestFactory.buildByRole(role);
-					const team = teamFactory.buildWithId();
+					const teamId = new ObjectId().toHexString();
 					await em.persist([account, user, user.school, ...user.roles.getItems()]).flush();
 					const loggedInClient = await testApiClient.login(account);
 					const initialRoomCount = await countRooms();
 
 					return {
 						loggedInClient,
-						path: `${team.id}/create-room`,
+						path: `${teamId}/create-room`,
 						initialRoomCount,
 						expectedStatus: HttpStatus.NOT_FOUND,
 					};
@@ -109,11 +109,11 @@ describe.each(serverVariants)('Teams Controller (API): $name', ({ module: server
 		if (serverModule === AdminApiServerTestModule) {
 			describe('when an API-key header is provided', () => {
 				const setup = async () => {
-					const team = teamFactory.buildWithId();
+					const teamId = new ObjectId().toHexString();
 					const apiClient = new TestApiClient(app, 'teams', 'teams-removal-test-key', true);
 					const initialRoomCount = await countRooms();
 
-					return { apiClient, path: `${team.id}/create-room`, initialRoomCount, expectedStatus: HttpStatus.NOT_FOUND };
+					return { apiClient, path: `${teamId}/create-room`, initialRoomCount, expectedStatus: HttpStatus.NOT_FOUND };
 				};
 
 				it('should return not found without creating a room', async () => {
