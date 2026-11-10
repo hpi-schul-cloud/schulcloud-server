@@ -19,7 +19,6 @@ import { type UserLoginMigrationPublicApiConfig } from '@modules/user-login-migr
 import { type VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { type ServerPublicApiConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
-import { type TeamPublicApiConfig } from '@modules/team';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
@@ -42,7 +41,6 @@ export class ConfigResponseMapper {
 		userImportConfig: UserImportPublicApiConfig,
 		userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
 		fwuConfig: FwuPublicApiConfig,
-		teamConfig: TeamPublicApiConfig,
 		notificationConfig: NotificationPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
@@ -65,7 +63,6 @@ export class ConfigResponseMapper {
 			...userImportConfig,
 			...userLoginMigrationConfig,
 			...fwuConfig,
-			...teamConfig,
 			...notificationConfig,
 		});
 

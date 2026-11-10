@@ -1,4 +1,3 @@
-import { CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
@@ -7,7 +6,6 @@ import { CourseEntity } from '@modules/course/repo';
 import { RoleName } from '@modules/role';
 import { Room, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
-import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
@@ -23,7 +21,7 @@ import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 
-type ConferenceResource = CourseEntity | Room | TeamEntity | VideoConferenceElement;
+type ConferenceResource = CourseEntity | Room | VideoConferenceElement;
 
 @Injectable()
 export class VideoConferenceService {
@@ -32,11 +30,9 @@ export class VideoConferenceService {
 		private readonly boardNodeService: BoardNodeService,
 		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig,
 		private readonly courseService: CourseService,
-		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
-		private readonly teamRepo: TeamRepo,
 		private readonly userService: UserService,
 		private readonly videoConferenceRepo: VideoConferenceRepo
 	) {}
@@ -52,10 +48,10 @@ export class VideoConferenceService {
 		return true;
 	}
 
-	public async isExternalPersonOrTeamExpert(
+	public async isExternalPerson(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
-		scopeId: string
+		_scopeId: string
 	): Promise<boolean> {
 		let isExternalPerson = false;
 		switch (conferenceScope) {
@@ -65,17 +61,6 @@ export class VideoConferenceService {
 				const user = await this.userService.findById(userId);
 				isExternalPerson = this.existsOnlyExternalPersonRole(user.roles);
 
-				return isExternalPerson;
-			}
-			case VideoConferenceScope.EVENT: {
-				const team = await this.teamRepo.findById(scopeId);
-				const teamUser = team.teamUsers.find((userInTeam: TeamUserEntity) => userInTeam.user.id === userId);
-
-				if (teamUser === undefined) {
-					throw new ForbiddenException(ErrorStatus.UNKNOWN_USER, 'Cannot find user in team.');
-				}
-
-				isExternalPerson = teamUser.role.name === RoleName.TEAMEXPERT;
 				return isExternalPerson;
 			}
 			default:
@@ -101,8 +86,6 @@ export class VideoConferenceService {
 
 		if (scope === VideoConferenceScope.COURSE) {
 			scopeResource = await this.courseService.findById(scopeId);
-		} else if (scope === VideoConferenceScope.EVENT) {
-			scopeResource = await this.teamRepo.findById(scopeId);
 		} else if (scope === VideoConferenceScope.ROOM) {
 			scopeResource = await this.roomService.getSingleRoom(scopeId);
 		} else if (scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT) {
@@ -232,16 +215,6 @@ export class VideoConferenceService {
 					title: ensureMinTitleLength(course.name),
 				};
 			}
-			case VideoConferenceScope.EVENT: {
-				const event = await this.calendarService.findEvent(userId, scopeId);
-
-				return {
-					scopeId: event.teamId,
-					scopeName: VideoConferenceScope.EVENT,
-					logoutUrl: `${this.hostUrl}/teams/${event.teamId}?activeTab=events`,
-					title: ensureMinTitleLength(event.title),
-				};
-			}
 			case VideoConferenceScope.ROOM: {
 				const room = await this.roomService.getSingleRoom(scopeId);
 
@@ -276,7 +249,7 @@ export class VideoConferenceService {
 
 		const role = await this.determineBbbRole(userId, scopeInfo.scopeId, scope);
 
-		const isBbbGuest = await this.isExternalPersonOrTeamExpert(userId, scope, scopeInfo.scopeId);
+		const isBbbGuest = await this.isExternalPerson(userId, scope, scopeInfo.scopeId);
 
 		return { role, isGuest: isBbbGuest };
 	}

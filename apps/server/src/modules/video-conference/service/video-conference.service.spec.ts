@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { CalendarService } from '@infra/calendar';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
@@ -22,8 +22,6 @@ import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membershi
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { TeamRepo } from '@modules/team/repo';
-import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
@@ -47,11 +45,9 @@ describe(VideoConferenceService.name, () => {
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let courseService: DeepMocked<CourseService>;
-	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let roomService: DeepMocked<RoomService>;
-	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let config: VideoConferenceConfig;
@@ -77,10 +73,6 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<CourseService>(),
 				},
 				{
-					provide: CalendarService,
-					useValue: createMock<CalendarService>(),
-				},
-				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
@@ -97,10 +89,6 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<RoomService>(),
 				},
 				{
-					provide: TeamRepo,
-					useValue: createMock<TeamRepo>(),
-				},
-				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
@@ -115,11 +103,9 @@ describe(VideoConferenceService.name, () => {
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		boardNodeService = module.get(BoardNodeService);
 		courseService = module.get(CourseService);
-		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
 		roomMembershipService = module.get(RoomMembershipService);
 		roomService = module.get(RoomService);
-		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
@@ -170,7 +156,7 @@ describe(VideoConferenceService.name, () => {
 		});
 	});
 
-	describe('isExternalPersonOrTeamExpert', () => {
+	describe('isExternalPerson', () => {
 		describe('when user has EXTERNALPERSON role for a course conference', () => {
 			const setup = () => {
 				const user = userDoFactory
@@ -193,7 +179,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -201,7 +187,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -229,7 +215,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -237,7 +223,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -265,7 +251,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -273,7 +259,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
+				await service.isExternalPerson(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -298,7 +284,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call the user service to find the user by id', async () => {
 				const { userId, scopeId } = setup();
 
-				await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -306,7 +292,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 			});
@@ -334,7 +320,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPerson(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 				expect(userService.findById).toHaveBeenCalledWith(userId);
@@ -360,77 +346,9 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a BadRequestException', async () => {
 				const { userId, scopeId } = setup();
 
-				const func = () =>
-					service.isExternalPersonOrTeamExpert(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
+				const func = () => service.isExternalPerson(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
 
 				await expect(func()).rejects.toThrow(new BadRequestException('Unknown scope name.'));
-			});
-		});
-
-		describe('when user has EXTERNALPERSON role for a event conference', () => {
-			const setup = () => {
-				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
-					.build({ id: new ObjectId().toHexString() });
-				const userId = user.id as EntityId;
-				const scopeId = new ObjectId().toHexString();
-
-				const teamUser = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
-				const team = teamFactory
-					.withTeamUser([teamUser])
-					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
-					.build();
-				teamRepo.findById.mockResolvedValue(team);
-
-				userService.findById.mockResolvedValue(user);
-
-				return {
-					user,
-					userId,
-					conferenceScope: VideoConferenceScope.EVENT,
-					scopeId,
-				};
-			};
-
-			it('should return true', async () => {
-				const { conferenceScope, userId, scopeId } = setup();
-
-				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
-
-				expect(result).toBe(true);
-			});
-
-			it('should call teamRepo.findById', async () => {
-				const { conferenceScope, userId, scopeId } = setup();
-
-				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
-
-				expect(teamRepo.findById).toHaveBeenCalledWith(scopeId);
-			});
-		});
-
-		describe('when user does not exist in team', () => {
-			const setup = () => {
-				const user = userDoFactory.buildWithId();
-				const userId = user.id as EntityId;
-				const scopeId = new ObjectId().toHexString();
-				const team = teamFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build({ teamUsers: [] });
-				teamRepo.findById.mockResolvedValue(team);
-
-				return {
-					user,
-					userId,
-					scopeId,
-				};
-			};
-
-			it('should throw a ForbiddenException', async () => {
-				const { scopeId } = setup();
-
-				const func = () =>
-					service.isExternalPersonOrTeamExpert('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
-
-				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.UNKNOWN_USER));
 			});
 		});
 	});
@@ -667,48 +585,6 @@ describe(VideoConferenceService.name, () => {
 				const result = await service.determineBbbRole(userId, elementId, conferenceScope);
 
 				expect(result).toBe(BBBRole.VIEWER);
-			});
-		});
-
-		// can be removed when team / course / user is passed from UC
-		// missing when course / team loading throw an error, but also not nessasary if it is passed to UC.
-		describe('when user has START_MEETING permission and is in team(event) scope', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const entity = teamFactory.buildWithId();
-				const conferenceScope = VideoConferenceScope.EVENT;
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
-				teamRepo.findById.mockResolvedValueOnce(entity);
-
-				return {
-					user,
-					userId: user.id,
-					entity,
-					entityId: entity.id,
-					conferenceScope,
-				};
-			};
-
-			it('should call the correct authorization order', async () => {
-				const { user, entity, userId, conferenceScope, entityId } = setup();
-
-				await service.determineBbbRole(userId, entityId, conferenceScope);
-
-				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
-					user,
-					entity,
-					AuthorizationContextBuilder.read([Permission.START_MEETING])
-				);
-			});
-
-			it('should return BBBRole.MODERATOR', async () => {
-				const { userId, conferenceScope, entityId } = setup();
-
-				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
-
-				expect(result).toBe(BBBRole.MODERATOR);
 			});
 		});
 
@@ -1214,25 +1090,6 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
-		describe('when conference scope is VideoConferenceScope.EVENT', () => {
-			it('should return scope information for a event', async () => {
-				const { userId, scopeId } = setup();
-				const teamId = 'team-id';
-				const event = { title: 'Event', teamId };
-				calendarService.findEvent.mockResolvedValue(event);
-
-				const result = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.EVENT);
-
-				expect(result).toEqual({
-					scopeId: teamId,
-					scopeName: VideoConferenceScope.EVENT,
-					logoutUrl: `${service.hostUrl}/teams/${teamId}?activeTab=events`,
-					title: event.title,
-				});
-				expect(calendarService.findEvent).toHaveBeenCalledWith(userId, scopeId);
-			});
-		});
-
 		describe('when conference scope title is empty', () => {
 			it('should return scope information with a title of two characters', async () => {
 				const { userId } = setup();
@@ -1276,9 +1133,6 @@ describe(VideoConferenceService.name, () => {
 			const userId = user.id as EntityId;
 			const roomUser = userFactory.buildWithId();
 			const scopeId = new ObjectId().toHexString();
-			const team = teamFactory
-				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXTERNALPERSON }), new ObjectId().toHexString())
-				.build();
 			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupFactory.build({
 				type: GroupTypes.ROOM,
@@ -1314,7 +1168,6 @@ describe(VideoConferenceService.name, () => {
 				room,
 				roomUser,
 				scopeId,
-				team,
 				element,
 			};
 		};
@@ -1419,24 +1272,6 @@ describe(VideoConferenceService.name, () => {
 				const result = await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
 
 				expect(result).toEqual({ role: BBBRole.VIEWER, isGuest: false });
-			});
-		});
-
-		describe('when conference scope is VideoConferenceScope.EVENT', () => {
-			const setupForEvent = () => {
-				const { userId, scopeId, team, conferenceScope } = setup(VideoConferenceScope.EVENT);
-				teamRepo.findById.mockResolvedValue(team);
-				calendarService.findEvent.mockResolvedValue({ title: 'Event', teamId: team.id });
-
-				return { userId, conferenceScope, scopeId };
-			};
-
-			it('should throw a ForbiddenException if the user is not an expert for an event conference', async () => {
-				const { userId, conferenceScope, scopeId } = setupForEvent();
-
-				const func = () => service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
-
-				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.UNKNOWN_USER));
 			});
 		});
 	});

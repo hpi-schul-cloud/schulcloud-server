@@ -13,7 +13,6 @@ export const ModuleName = {
 	PSEUDONYM: 'pseudonyms',
 	TASK: 'task',
 	TASK_SUBMISSION: 'submissions',
-	TEAM: 'teams',
 	USER: 'user',
 	USER_CALENDAR: 'calendar',
 	USER_REGISTRATIONPIN: 'registrationPin',

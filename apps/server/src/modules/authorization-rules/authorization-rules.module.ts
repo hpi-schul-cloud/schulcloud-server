@@ -12,7 +12,6 @@ import {
 	SubmissionRule,
 	SystemRule,
 	TaskRule,
-	TeamRule,
 	UserLoginMigrationRule,
 	UserRule,
 } from './rules';
@@ -28,7 +27,6 @@ import {
 		SchoolRule,
 		SubmissionRule,
 		TaskRule,
-		TeamRule,
 		UserRule,
 		UserLoginMigrationRule,
 		LegacySchoolRule,

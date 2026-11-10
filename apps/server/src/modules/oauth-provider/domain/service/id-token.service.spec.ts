@@ -1,8 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
-import { TeamRepo } from '@modules/team/repo';
-import { teamFactory } from '@modules/team/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
@@ -20,7 +18,6 @@ describe('IdTokenService', () => {
 
 	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
 	let pseudonymService: DeepMocked<PseudonymService>;
-	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -36,10 +33,6 @@ describe('IdTokenService', () => {
 					useValue: createMock<PseudonymService>(),
 				},
 				{
-					provide: TeamRepo,
-					useValue: createMock<TeamRepo>(),
-				},
-				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
@@ -50,7 +43,6 @@ describe('IdTokenService', () => {
 
 		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
 		pseudonymService = module.get(PseudonymService);
-		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 
 		await setupEntities([User]);
@@ -105,13 +97,11 @@ describe('IdTokenService', () => {
 
 		describe('when scopes contain groups', () => {
 			const setup = () => {
-				const team = teamFactory.buildWithId();
 				const user = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 				const displayName = 'display name';
 				const tool = externalToolFactory.withOauth2Config().buildWithId();
 				const pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
-				teamRepo.findByUserId.mockResolvedValue([team]);
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -120,7 +110,6 @@ describe('IdTokenService', () => {
 				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
-					team,
 					user,
 					displayName,
 					tool,
@@ -130,19 +119,14 @@ describe('IdTokenService', () => {
 			};
 
 			it('should return the correct id token', async () => {
-				const { user, team, iframeSubject } = setup();
+				const { user, iframeSubject } = setup();
 
 				const result = await service.createIdToken('userId', [OauthScope.GROUPS], 'clientId');
 
 				expect(result).toEqual<IdToken>({
 					iframe: iframeSubject,
 					schoolId: user.schoolId,
-					groups: [
-						{
-							gid: team.id,
-							displayName: team.name,
-						},
-					],
+					groups: [],
 				});
 			});
 		});
