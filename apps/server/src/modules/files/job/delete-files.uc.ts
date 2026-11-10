@@ -36,25 +36,31 @@ export class DeleteFilesUc {
 			password: this.config.cronjobToken,
 		});
 
-		await this.initializeS3ClientMap();
+		try {
+			await this.initializeS3ClientMap();
 
-		const { numberOfProcessedFiles, numberOfFailingFilesTotal } = await this.processBatches(thresholdDate, batchSize, {
-			batchCounter: 0,
-			numberOfProcessedFiles: 0,
-			numberOfFailingFilesTotal: 0,
-		});
+			const { numberOfProcessedFiles, numberOfFailingFilesTotal } = await this.processBatches(
+				thresholdDate,
+				batchSize,
+				{
+					batchCounter: 0,
+					numberOfProcessedFiles: 0,
+					numberOfFailingFilesTotal: 0,
+				}
+			);
 
-		this.logger.log(
-			`${
-				numberOfProcessedFiles - numberOfFailingFilesTotal
-			} out of ${numberOfProcessedFiles} files were successfully deleted`
-		);
+			this.logger.log(
+				`${
+					numberOfProcessedFiles - numberOfFailingFilesTotal
+				} out of ${numberOfProcessedFiles} files were successfully deleted`
+			);
 
-		if (numberOfFailingFilesTotal > 0) {
-			this.logger.error(`there were ${numberOfFailingFilesTotal} files that could not be deleted`);
+			if (numberOfFailingFilesTotal > 0) {
+				this.logger.error(`there were ${numberOfFailingFilesTotal} files that could not be deleted`);
+			}
+		} finally {
+			await this.authenticationClient.logout(accessToken);
 		}
-
-		await this.authenticationClient.logout(accessToken);
 	}
 
 	private async processBatches(thresholdDate: Date, batchSize: number, stats: BatchStats): Promise<BatchStats> {
