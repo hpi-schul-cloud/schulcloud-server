@@ -232,27 +232,13 @@ const removeSubstitutionDuplicates = (hook) => {
 	}
 };
 
-const courseInviteHook = async (context) => {
-	if (context.path === 'courses' && context.params.query && context.params.query.link) {
-		// link is used as "authorization"
-		const dbLink = await context.app.service('link').get(context.params.query.link);
-		delete context.params.query.link;
-		if (dbLink) return restrictToCurrentSchool(context);
-	}
-
+const getPermissionHook = async (context) => {
 	return restrictToUsersOwnCourses(context);
-};
+}
 
 const patchPermissionHook = async (context) => {
-	const query = context.params.query || {};
 	const defaultPermissionHook = (ctx) =>
 		Promise.resolve(checkScopePermissions(['COURSE_EDIT'])(ctx)).then((_ctx) => restrictToUsersOwnCourses(_ctx));
-
-	if (query.link) {
-		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
-		delete context.params.query.link;
-		if (dbLink) return context;
-	}
 
 	return defaultPermissionHook(context);
 };
@@ -283,8 +269,8 @@ module.exports = {
 	removeColumnBoard,
 	removeContextExternalTools,
 	removeSubstitutionDuplicates,
-	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
 	restrictChangesToSyncedCourse,
+	getPermissionHook,
 };

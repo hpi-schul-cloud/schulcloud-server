@@ -31,11 +31,11 @@ const {
 	deleteWholeClassFromCourse,
 	removeColumnBoard,
 	removeContextExternalTools,
-	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
 	removeSubstitutionDuplicates,
 	restrictChangesToSyncedCourse,
+	getPermissionHook
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
@@ -112,7 +112,7 @@ const courseHooks = {
 			mapPaginationQuery,
 			addCollation,
 		],
-		get: [courseInviteHook, iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist))],
+		get: [getPermissionHook, iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist))],
 		create: [
 			injectUserId,
 			hasPermission('COURSE_CREATE'),
