@@ -2,7 +2,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20261110134024 extends Migration {
 	public async up(): Promise<void> {
-		const results = await this.getCollection('links').deleteMany({ target: /coursse/ });
+		const results = await this.getCollection('links').deleteMany({ target: /\/courses\// });
 
 		console.log(`Removed ${results.deletedCount} links`);
 	}
