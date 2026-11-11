@@ -11,11 +11,11 @@ let config: Config.InitialOptions = {
 	testPathIgnorePatterns: ['^src', '^test'],
 	// Jest bypasses Node 24's native require(esm); compile ESM-only test dependencies to CJS for its custom runtime
 	transformIgnorePatterns: [
-		'/node_modules/(?!(@faker-js/faker|sanitize-html|htmlparser2|dom-serializer|domelementtype|domutils|entities|domhandler|request-filtering-agent)/)',
+		'/node_modules/(?!(@faker-js/faker|sanitize-html|htmlparser2|dom-serializer|domelementtype|domutils|entities|domhandler|request-filtering-agent|promise-breaker)/)',
 	],
 	transform: {
 		'node_modules/@faker-js/faker/.+\\.js$': ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }],
-		'node_modules/request-filtering-agent/.+\\.js$': [
+		'node_modules/(request-filtering-agent|promise-breaker)/.+\\.js$': [
 			'babel-jest',
 			{ presets: [['@babel/preset-env', { targets: { node: 'current' } }]] },
 		],
