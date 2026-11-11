@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoomInvitationLink, type RoomInvitationLinkProps } from '../domain/do/room-invitation-link.do';
 import { BaseFactory } from '@testing/factory/base.factory';
+import { nanoid } from 'nanoid';
 
 class RoomInvitationLinkTestFactory extends BaseFactory<RoomInvitationLink, RoomInvitationLinkProps> {}
 
@@ -10,6 +11,7 @@ export const roomInvitationLinkTestFactory = RoomInvitationLinkTestFactory.defin
 		const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 		const props: RoomInvitationLinkProps = {
 			id: new ObjectId().toHexString(),
+			invitationToken: nanoid(21),
 			title: `room invitation link #${sequence}`,
 			restrictedToCreatorSchool: true,
 			isUsableByExternalPersons: false,

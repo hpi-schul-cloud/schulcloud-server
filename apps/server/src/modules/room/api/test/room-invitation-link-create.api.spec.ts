@@ -16,6 +16,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import { type RoomProps } from '../../../room/domain';
 import { type RoomEntity } from '../../../room/repo';
 import { type CreateRoomInvitationLinkBodyParams } from '../dto/request/create-room-invitation-link.body.params';
+import { RoomInvitationLinkEntity } from '../../repo/entity/room-invitation-link.entity';
+import { type RoomInvitationLinkResponse } from '../dto/response/room-invitation-link.response';
 
 const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 
@@ -92,13 +94,6 @@ describe('Room Invitation Link Controller (API)', () => {
 				]);
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
-
-				return { loggedInClient, teacherUser, roomEntity };
-			};
-
-			it('should create a room invitation link and return 201', async () => {
-				const { loggedInClient, roomEntity, teacherUser } = await setup();
-
 				const params: CreateRoomInvitationLinkBodyParams = {
 					roomId: roomEntity.id,
 					title: 'Room invitation link for teachers',
@@ -109,7 +104,17 @@ describe('Room Invitation Link Controller (API)', () => {
 					requiresConfirmation: false,
 				};
 
+				return { loggedInClient, teacherUser, params };
+			};
+
+			it('should create a room invitation link with a server-generated token and return 201', async () => {
+				const { loggedInClient, teacherUser, params } = await setup();
+
 				const response = await loggedInClient.post(undefined, params);
+				const { body }: { body: RoomInvitationLinkResponse } = response;
+				em.clear();
+				const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, body.id);
+
 				expect(response.status).toBe(HttpStatus.CREATED);
 				expect(response.body).toMatchObject({
 					...params,
@@ -118,6 +123,24 @@ describe('Room Invitation Link Controller (API)', () => {
 					creatorUserId: teacherUser.id,
 					creatorSchoolId: teacherUser.school.id,
 				});
+				expect(ObjectId.isValid(body.id)).toBe(true);
+				expect(body.invitationToken).toMatch(/^[A-Za-z0-9_-]{21}$/);
+				expect(persisted.invitationToken).toBe(body.invitationToken);
+			});
+
+			it('should ignore a client-supplied invitationToken and persist a server-generated token instead', async () => {
+				const { loggedInClient, params } = await setup();
+				const suppliedToken = 'a'.repeat(21);
+
+				const response = await loggedInClient.post(undefined, { ...params, invitationToken: suppliedToken });
+				const { body }: { body: RoomInvitationLinkResponse } = response;
+				em.clear();
+				const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, body.id);
+
+				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(body.invitationToken).toMatch(/^[A-Za-z0-9_-]{21}$/);
+				expect(body.invitationToken).not.toBe(suppliedToken);
+				expect(persisted.invitationToken).toBe(body.invitationToken);
 			});
 		});
 
