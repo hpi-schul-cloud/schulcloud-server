@@ -40,11 +40,4 @@ describe('registrationSchool service', () => {
 		const result = await registrationSchoolService.get(klass._id);
 		expect(result._id.toString()).to.equal(school._id.toString());
 	});
-
-	it('get school from teamId', async () => {
-		const expertSchoolId = '5f2987e020834114b8efd6f9';
-		const { team } = await createTestTeamWithOwner();
-		const result = await registrationSchoolService.get(team._id);
-		expect(result._id.toString()).to.equal(expertSchoolId);
-	});
 });

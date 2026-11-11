@@ -88,6 +88,38 @@ describe(FilesRepo.name, () => {
 
 			expect(result.length).toEqual(0);
 		});
+
+		describe('when multiple files with different deletedAt values exist', () => {
+			it('should return only the file with a matching deletedAt', async () => {
+				const thresholdDate = new Date();
+				const matching = fileEntityFactory.build({ deletedAt: new Date(thresholdDate.getTime() - 10) });
+				const tooNew = fileEntityFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
+				const notMarked = fileEntityFactory.build({ deletedAt: undefined });
+
+				await em.persist([matching, tooNew, notMarked]).flush();
+				em.clear();
+
+				const result = await repo.findForCleanup(thresholdDate, 3, 0);
+
+				expect(result.map((file) => file.id)).toEqual([matching.id]);
+			});
+
+			it('should not return a file without deletedAt but return the others with a matching deletedAt', async () => {
+				const thresholdDate = new Date();
+				const marked = fileEntityFactory.buildList(2, { deletedAt: new Date(thresholdDate.getTime() - 10) });
+				const withoutDeletedAt = fileEntityFactory.build({ deletedAt: undefined });
+
+				await em.persist([...marked, withoutDeletedAt]).flush();
+				em.clear();
+
+				const result = await repo.findForCleanup(thresholdDate, 3, 0);
+
+				const ids = result.map((file) => file.id);
+				expect(ids).toHaveLength(2);
+				expect(ids).toEqual(expect.arrayContaining(marked.map((file) => file.id)));
+				expect(ids).not.toContain(withoutDeletedAt.id);
+			});
+		});
 	});
 
 	describe('findByOwnerUserId', () => {
