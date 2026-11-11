@@ -17,7 +17,7 @@ const TEAM_PERMISSIONS = [
 
 export class Migration20261109173119 extends Migration {
 	public async up(): Promise<void> {
-		await this.dropTeamsCollection();
+		await this.renameTeamsToTeamsIds();
 		await this.deleteTeamNews();
 		await this.removeTeamRolesAndPermissions();
 		await this.removeStudentTeamCreationFlag();
@@ -30,18 +30,28 @@ export class Migration20261109173119 extends Migration {
 
 	// ---------
 
-	private async dropTeamsCollection(): Promise<void> {
-		const collections = await this.driver.getConnection().getDb().listCollections({ name: 'teams' }).toArray();
-		if (collections.length === 0) {
-			console.info('Collection teams does not exist. Nothing to drop.');
+	private async renameTeamsToTeamsIds(): Promise<void> {
+		const db = this.driver.getConnection().getDb();
+		const teamsCollections = await db.listCollections({ name: 'teams' }).toArray();
+		if (teamsCollections.length === 0) {
+			console.info('Collection teams does not exist. Nothing to rename.');
 			return;
 		}
 
-		const teams = this.getCollection('teams');
-		const deleteResult = await teams.deleteMany({});
-		await teams.drop();
+		const existing = await db.listCollections({ name: 'teams_ids' }).toArray();
+		if (existing.length > 0) {
+			await db.collection('teams_ids').drop();
+			console.info('Dropped existing collection teams_ids.');
+		}
 
-		console.info(`Deleted ${deleteResult.deletedCount} teams and dropped the collection.`);
+		await db.renameCollection('teams', 'teams_ids');
+		console.info('Renamed collection teams to teams_ids.');
+
+		// Keep only id, name, description and features
+		const result = await this.getCollection('teams_ids').updateMany({}, [
+			{ $project: { name: 1, description: 1, features: 1 } },
+		]);
+		console.info(`Reduced ${result.modifiedCount} documents in teams_ids to id, name, description, features.`);
 	}
 
 	private async deleteTeamNews(): Promise<void> {
