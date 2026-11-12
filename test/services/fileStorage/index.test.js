@@ -262,37 +262,6 @@ describe('fileStorage services', () => {
 				})
 				.finally(() => done());
 		});
-
-		it('should move file to a new directory', (done) => {
-			const context = setContext('0000d224816abba584714c8c');
-
-			fileStorageService
-				.patch(
-					'5ca613c4c7f5120b8c5bef37',
-					{
-						parent: '5ca613c4c7f5120b8c5bef36',
-					},
-					context
-				)
-				.then(() => done());
-		});
-
-		it('should reject moving file without permission', (done) => {
-			const context = setContext('0000d224816abba584714c8d');
-
-			fileStorageService
-				.patch(
-					'5ca613c4c7f5120b8c5bef37',
-					{
-						parent: '5ca613c4c7f5120b8c5bef33',
-					},
-					context
-				)
-				.then(({ code }) => {
-					expect(code).to.be.equal(403);
-					return done();
-				});
-		});
 	});
 
 	describe('signed url service', () => {

@@ -267,64 +267,6 @@ const fileStorageService = {
 		// remove file for user
 		await filesRepo.removeFileById(_id);
 	},
-	/**
-	 * Move file from one parent to another
-	 * @param _id, Object-ID of file to be patched
-	 * @param data, contains destination parent Object-ID
-	 * @param params contains payload with userId, set by middleware
-	 * @returns {Promise}
-	 */
-	async patch(_id, data, params) {
-		const {
-			payload: { userId },
-		} = params;
-		const { parent } = data;
-		const update = { $set: {} };
-		const fileObject = await FileModel.findOne({ _id: parent }).exec();
-		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
-
-		const permissionPromise = () => {
-			if (fileObject) {
-				return canWrite(userId, parent);
-			}
-
-			if (teamObject) {
-				return new Promise((resolve, reject) => {
-					const teamMember = teamObject.userIds.find((u) => equalIds(u.userId, userId));
-					if (teamMember) {
-						return resolve();
-					}
-					return reject(new Error());
-				});
-			}
-
-			return Promise.reject();
-		};
-
-		if (fileObject) {
-			update.$set = {
-				parent,
-				owner: fileObject.owner,
-				refOwnerModel: fileObject.refOwnerModel,
-			};
-		} else if (parent === userId.toString()) {
-			update.$set = {
-				owner: userId,
-				refOwnerModel: 'user',
-			};
-			update.$unset = { parent: '' };
-		} else {
-			update.$set = {
-				owner: parent,
-				refOwnerModel: teamObject ? 'teams' : 'course',
-			};
-			update.$unset = { parent: '' };
-		}
-
-		return permissionPromise()
-			.then(() => FileModel.updateOne({ _id }, update).exec())
-			.catch((err) => new Forbidden(err));
-	},
 };
 
 const signedUrlService = {
