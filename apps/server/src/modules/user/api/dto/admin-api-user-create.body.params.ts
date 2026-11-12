@@ -1,7 +1,7 @@
 import { RoleName } from '@modules/role';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
-import { IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AdminApiUserCreateBodyParams {
 	@IsEmail()
@@ -39,6 +39,14 @@ export class AdminApiUserCreateBodyParams {
 		enumName: 'RoleName',
 	})
 	roleNames!: RoleName[];
+
+	@IsBoolean()
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Require the user to change the generated initial password after logging in.',
+		default: false,
+	})
+	forcePasswordChange?: boolean;
 
 	@IsMongoId()
 	@ApiProperty({
