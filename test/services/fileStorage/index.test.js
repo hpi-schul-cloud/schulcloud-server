@@ -1,15 +1,18 @@
 const { expect } = require('chai');
 const assert = require('assert');
 const { ObjectId } = require('mongoose').Types;
+const { v4: uuidv4 } = require('uuid');
 const sinon = require('sinon');
 const appPromise = require('../../../src/app');
-const { FileModel } = require('../../../src/services/fileStorage/model');
+const { FileModel, FileUploadIntentModel } = require('../../../src/services/fileStorage/model');
 const { schoolModel } = require('../../../src/services/school/model');
 const { userModel } = require('../../../src/services/user/model');
 const RoleModel = require('../../../src/services/role/model');
 const { teamsModel } = require('../../../src/services/teams/model');
 const { courseModel } = require('../../../src/services/user-group/model');
 const fixtures = require('./fixtures');
+
+fixtures.schools[0].storageProvider = new ObjectId();
 
 const setContext = (userId) => {
 	return {
@@ -28,6 +31,22 @@ class AWSStrategy {
 
 	generateSignedUrl() {
 		return Promise.resolve('https://something.com');
+	}
+
+	getBucket(schoolId) {
+		return `bucket-${schoolId}`;
+	}
+
+	getObjectMetadata({ flatFileName, uploadId, fileType }) {
+		return Promise.resolve({
+			ContentLength: 1200,
+			ContentType: fileType,
+			Metadata: {
+				'upload-id': uploadId,
+				name: encodeURIComponent('test.jpg'),
+				'flat-name': encodeURIComponent(flatFileName),
+			},
+		});
 	}
 
 	getSignedUrl() {
@@ -61,11 +80,16 @@ describe('fileStorage services', () => {
 			courseModel.create(fixtures.courses),
 		];
 
-		return Promise.all(promises);
+		await Promise.all(promises);
+		await schoolModel.updateOne(
+			{ _id: fixtures.schools[0]._id },
+			{ $set: { storageProvider: fixtures.schools[0].storageProvider } }
+		).exec();
 	});
 
 	after(async () => {
 		const promises = [
+			...fixtures.users.map((user) => FileUploadIntentModel.deleteMany({ creator: user._id }).exec()),
 			...fixtures.teams.map((_) => teamsModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.schools.map((_) => schoolModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
@@ -78,6 +102,24 @@ describe('fileStorage services', () => {
 		await server.close();
 	});
 
+	const createUploadIntent = async ({ userId, data }) => {
+		const user = await userModel.findById(userId).lean().exec();
+		const school = await schoolModel.findById(user.schoolId).lean().exec();
+
+		return FileUploadIntentModel.create({
+			creator: userId,
+			owner: data.owner || userId,
+			parent: data.parent,
+			name: data.name,
+			type: data.type,
+			storageFileName: data.storageFileName,
+			bucket: `bucket-${user.schoolId}`,
+			storageProviderId: school.storageProvider,
+			uploadId: uuidv4(),
+			expiresAt: new Date(Date.now() + 60 * 1000),
+		});
+	};
+
 	describe('file service', () => {
 		const params = {
 			name: 'test.jpg',
@@ -88,6 +130,11 @@ describe('fileStorage services', () => {
 			bucket: 'bucket-test',
 			storageProviderId: new ObjectId(),
 		};
+		const createFileData = (owner) => ({
+			...params,
+			...(owner ? { owner } : {}),
+			storageFileName: `storage-${uuidv4()}.jpg`,
+		});
 
 		const created = [];
 
@@ -103,71 +150,87 @@ describe('fileStorage services', () => {
 			assert.ok(app.service('fileStorage'));
 		});
 
-		it('should create a course file object', (done) => {
+		it('should create a course file object', async () => {
 			const context = setContext('0000d224816abba584714c8e');
+			const data = createFileData('0000dcfbfb5c7a3f00bf21ac');
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
 
-			fileStorageService
-				.create({ owner: '0000dcfbfb5c7a3f00bf21ac', ...params }, context)
-				.then((res) => {
-					// eslint-disable-next-line eqeqeq
-					const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
-					const { _id, isDirectory, refOwnerModel, permissions } = res;
+			const res = await fileStorageService.create(data, context);
+			const isEqual = ['name', 'type', 'size', 'storageFileName', 'thumbnail'].every(
+				(key) => data[key].toString() === res[key].toString()
+			);
+			const { _id, isDirectory, refOwnerModel, permissions } = res;
 
-					expect(permissions[0]._id.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(permissions).to.have.lengthOf(3);
-					expect(refOwnerModel).to.be.equal('course');
-					expect(isDirectory).to.be.false;
-					expect(isEqual).to.be.true;
+			expect(permissions[0].refId.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(permissions).to.have.lengthOf(3);
+			expect(refOwnerModel).to.be.equal('course');
+			expect(isDirectory).to.be.false;
+			expect(isEqual).to.be.true;
 
-					created.push(_id);
-					return done();
-				})
-				.catch(() => done());
+			created.push(_id);
 		});
 
-		it('should create a team file object', (done) => {
+		it('should create a team file object', async () => {
 			const context = setContext('0000d224816abba584714c8e');
+			const data = createFileData('5cf9303bec9d6ac639fefd42');
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
 
-			fileStorageService
-				.create({ owner: '5cf9303bec9d6ac639fefd42', ...params }, context)
-				.then((res) => {
-					// eslint-disable-next-line eqeqeq
-					const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
-					const { _id, isDirectory, refOwnerModel, permissions } = res;
+			const res = await fileStorageService.create(data, context);
+			const isEqual = ['name', 'type', 'size', 'storageFileName', 'thumbnail'].every(
+				(key) => data[key].toString() === res[key].toString()
+			);
+			const { _id, isDirectory, refOwnerModel, permissions } = res;
 
-					expect(permissions[0]._id.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(permissions).to.have.lengthOf(6);
-					expect(refOwnerModel).to.be.equal('teams');
-					expect(isDirectory).to.be.false;
-					expect(isEqual).to.be.true;
+			expect(permissions[0].refId.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(permissions).to.have.lengthOf(6);
+			expect(refOwnerModel).to.be.equal('teams');
+			expect(isDirectory).to.be.false;
+			expect(isEqual).to.be.true;
 
-					created.push(_id);
-					return done();
-				})
-				.catch(() => done());
+			created.push(_id);
 		});
 
-		it('should create a user file object', (done) => {
+		it('should create a user file object', async () => {
 			const context = setContext('0000d224816abba584714c8e');
+			const data = createFileData();
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
 
-			fileStorageService
-				.create({ ...params }, context)
-				.then((res) => {
-					// eslint-disable-next-line eqeqeq
-					const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
-					const { _id, isDirectory, refOwnerModel, owner, permissions } = res;
+			const res = await fileStorageService.create(data, context);
+			const isEqual = ['name', 'type', 'size', 'storageFileName', 'thumbnail'].every(
+				(key) => data[key].toString() === res[key].toString()
+			);
+			const { _id, isDirectory, refOwnerModel, owner, permissions } = res;
 
-					expect(refOwnerModel).to.be.equal('user');
-					expect(permissions[0]._id.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(permissions).to.have.lengthOf(1);
-					expect(owner.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(isDirectory).to.be.false;
-					expect(isEqual).to.be.true;
+			expect(refOwnerModel).to.be.equal('user');
+			expect(permissions[0].refId.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(permissions).to.have.lengthOf(1);
+			expect(owner.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(isDirectory).to.be.false;
+			expect(isEqual).to.be.true;
 
-					created.push(_id);
-					return done();
-				})
-				.catch(() => done());
+			created.push(_id);
+		});
+
+		it('rejects file metadata without an upload intent', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			try {
+				await fileStorageService.create({ ...params, storageFileName: 'unknown-object' }, context);
+				throw new Error('Expected file creation to be rejected');
+			} catch (error) {
+				expect(error.code).to.equal(403);
+			}
+		});
+
+		it('rejects metadata when S3 object size does not match', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			const data = createFileData();
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
+			try {
+				await fileStorageService.create({ ...data, size: 5 }, context);
+				throw new Error('Expected file creation to be rejected');
+			} catch (error) {
+				expect(error.code).to.equal(400);
+			}
 		});
 
 		it('should get a file list', (done) => {
@@ -307,6 +370,7 @@ describe('fileStorage services', () => {
 				{
 					filename: 'test.txt',
 					fileType: 'text/plain',
+					flatFileName: 'chosen-object-key',
 				},
 				context
 			);
@@ -314,6 +378,9 @@ describe('fileStorage services', () => {
 			expect(url).to.be.equal('https://something.com');
 			expect(header['Content-Type']).to.be.equal('text/plain');
 			expect(header['x-amz-meta-name']).to.be.equal('test.txt');
+			expect(header['x-amz-meta-upload-id']).to.match(/^[0-9a-f-]{36}$/);
+			expect(header['x-amz-meta-flat-name']).to.match(/^[0-9a-f-]{36}-test\.txt$/);
+			expect(header['x-amz-meta-flat-name']).to.not.equal('chosen-object-key');
 		});
 
 		it('return a signed url for putting blobs to a folder', (done) => {
