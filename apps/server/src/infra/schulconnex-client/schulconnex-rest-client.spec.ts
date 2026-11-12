@@ -4,7 +4,6 @@ import { type OauthAdapterService, OAuthTokenDto } from '@infra/oauth-adapter';
 import { type HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of } from 'rxjs';
-import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import {
 	type SchulconnexPoliciesInfoLicenseResponse,
 	type SchulconnexPoliciesInfoResponse,
@@ -69,7 +68,9 @@ describe(SchulconnexRestClient.name, () => {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const badOptionsClient = new SchulconnexRestClient(badConfig, httpService, oauthAdapterService, logger);
 
-				expect(logger.debug).toHaveBeenCalledWith(new SchulconnexConfigurationMissingLoggable());
+				expect(logger.debug).toHaveBeenCalledWith(
+					'SchulconnexRestClient: Missing configuration. Please check your environment variables in SCHULCONNEX_CLIENT.'
+				);
 			});
 
 			it('should reject promise if configuration is missing', async () => {

@@ -18,9 +18,7 @@ export class LdapUserCouldNotBeAuthenticatedLoggableException extends BusinessEr
 		const message: LoggableMessage = {
 			type: this.type,
 			stack: this.stack,
-			data: {
-				error: JSON.stringify(this.error),
-			},
+			error: this.error,
 		};
 
 		return message;

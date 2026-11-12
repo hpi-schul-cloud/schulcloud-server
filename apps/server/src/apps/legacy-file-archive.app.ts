@@ -21,10 +21,12 @@ async function bootstrap(): Promise<void> {
 
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(LegacyFileArchiveApiModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(LegacyFileArchiveApiModule, nestExpressAdapter, { bufferLogs: true });
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestApp.flushLogs();
 
 	const config = new DocumentBuilder()
 		.addServer('/api/v1/') // add default path as server to have correct urls ald let 'try out' work

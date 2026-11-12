@@ -20,7 +20,7 @@ describe(LdapUserCouldNotBeAuthenticatedLoggableException.name, () => {
 			expect(message).toEqual({
 				type: 'UNAUTHORIZED_EXCEPTION',
 				stack: expect.any(String),
-				data: { error: JSON.stringify(err) },
+				error: err,
 			});
 		});
 	});

@@ -17,7 +17,7 @@ export class BiloMediaQueryBadResponseLoggable implements Loggable {
 
 		return {
 			message: `${this.badResponseReports.length} bad response(s) from bilo media query is/are found`,
-			data: { reports: JSON.stringify(loggableReports) },
+			data: { reports: loggableReports },
 		};
 	}
 }

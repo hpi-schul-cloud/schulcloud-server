@@ -20,13 +20,11 @@ export class ExternalSystemLogoutFailedLoggableException extends InternalServerE
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,
 			message: `Request to logout external system ${this.systemId} for user ${this.userId} had failed`,
+			// The logger keeps only safe fields of axios errors: method, URL, status, code and response body.
+			error: this.axiosError,
 			data: {
 				userId: this.userId,
 				systemId: this.systemId,
-				axiosError: JSON.stringify({
-					status: this.axiosError.status,
-					data: this.axiosError.response?.data ?? this.axiosError.message,
-				}),
 			},
 		};
 	}

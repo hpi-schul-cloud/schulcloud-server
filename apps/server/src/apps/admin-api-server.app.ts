@@ -24,7 +24,8 @@ async function bootstrap(): Promise<void> {
 
 	const nestAdminServerApp = await NestFactory.create<NestExpressApplication>(
 		AdminApiServerModule,
-		nestAdminServerExpressAdapter
+		nestAdminServerExpressAdapter,
+		{ bufferLogs: true }
 	);
 	const logger = await nestAdminServerApp.resolve(Logger);
 	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
@@ -32,6 +33,8 @@ async function bootstrap(): Promise<void> {
 	nestAdminServerApp.use(createRequestLoggerMiddleware(loggerConfig));
 
 	nestAdminServerApp.useLogger(legacyLogger);
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestAdminServerApp.flushLogs();
 	nestAdminServerApp.enableCors();
 	nestAdminServerApp.useBodyParser('json', { limit: '4mb' });
 

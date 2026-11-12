@@ -25,7 +25,9 @@ async function bootstrap(): Promise<void> {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp: NestExpressApplication = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
+	const nestApp: NestExpressApplication = await NestFactory.create(ManagementServerModule, nestExpressAdapter, {
+		bufferLogs: true,
+	});
 	const orm = nestApp.get(MikroORM);
 
 	nestApp.useBodyParser('text');
@@ -35,6 +37,8 @@ async function bootstrap(): Promise<void> {
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestApp.flushLogs();
 
 	// load the legacy feathers/express server
 	const createLegacyApp = legacyAppPromise as LegacyAppFactory;

@@ -17,7 +17,12 @@ export class MediaMetadataSyncReportLoggable implements Loggable {
 			message,
 			data: {
 				mediaSourceDataFormat: this.mediaSourceDataFormat,
-				report: JSON.stringify(this.report),
+				report: {
+					...this.report,
+					operations: this.report.operations.map((operation) => {
+						return { ...operation };
+					}),
+				},
 			},
 		};
 	}

@@ -7,3 +7,5 @@
 
 export { ConfigProperty, Configuration } from './configuration.decorator';
 export { ConfigurationModule } from './configuration.module';
+export { SecretRegistry } from './secret-registry';
+export { Secret } from './secret.decorator';

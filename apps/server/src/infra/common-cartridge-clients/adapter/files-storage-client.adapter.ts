@@ -1,5 +1,5 @@
 import { AxiosErrorLoggable } from '@infra/error';
-import { ErrorLogger, Logger } from '@infra/logger';
+import { Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
@@ -19,7 +19,6 @@ import { AdapterUtils } from './adapter.utils';
 export class FilesStorageClientAdapter {
 	constructor(
 		private readonly logger: Logger,
-		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
 		private readonly httpService: HttpService,
 		@Inject(FILE_STORAGE_CLIENT_CONFIG_TOKEN) public readonly config: InternalFilesStorageClientConfig,
@@ -79,9 +78,9 @@ export class FilesStorageClientAdapter {
 			return FilesStorageClientAdapter.isStream(response.data) ? response.data : null;
 		} catch (error: unknown) {
 			if (error instanceof AxiosError) {
-				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.getStream'));
+				this.logger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.getStream'));
 			} else {
-				this.errorLogger.error(
+				this.logger.error(
 					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.getStream`, {
 						error: util.inspect(error),
 					})
@@ -132,9 +131,9 @@ export class FilesStorageClientAdapter {
 			return response.data as FileRecordResponse;
 		} catch (error: unknown) {
 			if (error instanceof AxiosError) {
-				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.upload'));
+				this.logger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.upload'));
 			} else {
-				this.errorLogger.error(
+				this.logger.error(
 					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.upload`, {
 						error: util.inspect(error),
 					})
@@ -178,9 +177,9 @@ export class FilesStorageClientAdapter {
 			return response.data;
 		} catch (error: unknown) {
 			if (error instanceof AxiosError) {
-				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.uploadTempFile'));
+				this.logger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.uploadTempFile'));
 			} else {
-				this.errorLogger.error(
+				this.logger.error(
 					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.uploadTempFile`, {
 						error: util.inspect(error),
 					})

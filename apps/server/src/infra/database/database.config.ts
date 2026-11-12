@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsOptional, IsString, IsUrl } from 'class-validator';
 import { InternalDatabaseConfig } from './interfaces';
@@ -17,6 +17,7 @@ export class DatabaseConfig implements InternalDatabaseConfig {
 	public dbUsername?: string;
 
 	@ConfigProperty('DB_PASSWORD')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public dbPassword?: string;

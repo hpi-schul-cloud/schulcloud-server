@@ -10,7 +10,6 @@ import { Inject } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SchulconnexPersonenInfoParams } from './request';
 import {
 	SchulconnexPoliciesInfoErrorResponse,
@@ -89,7 +88,9 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 
 	private checkOptions(): boolean {
 		if (!this.config.apiUrl || !this.config.clientId || !this.config.clientSecret || !this.config.tokenEndpoint) {
-			this.logger.debug(new SchulconnexConfigurationMissingLoggable());
+			this.logger.debug(
+				'SchulconnexRestClient: Missing configuration. Please check your environment variables in SCHULCONNEX_CLIENT.'
+			);
 			return false;
 		}
 		return true;

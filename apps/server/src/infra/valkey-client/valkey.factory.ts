@@ -4,7 +4,7 @@ import Valkey from 'iovalkey';
 import * as dns from 'node:dns';
 import * as util from 'node:util';
 import { InMemoryClient, ValkeyClient } from './clients';
-import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
+import { DiscoveredSentinalHostsLoggable } from './loggable';
 import { type SentinalHost, type StorageClient } from './types';
 import { type ValkeyConfig, ValkeyMode } from './valkey.config';
 
@@ -30,7 +30,7 @@ export class ValkeyFactory {
 			domainErrorHandler.exec(error);
 		});
 		storageClient.on('connect', (msg: unknown) => {
-			logger.info(new ConnectedLoggable(msg));
+			logger.info('Valkey client connected', { event: msg });
 		});
 
 		return storageClient;

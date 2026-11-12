@@ -45,7 +45,7 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 				message: expectedMessage,
 				data: {
 					mediaSourceDataFormat,
-					report: JSON.stringify(report),
+					report,
 				},
 			});
 		});
