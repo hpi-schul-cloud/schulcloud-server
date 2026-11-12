@@ -298,20 +298,29 @@
 	},
 	{
 		"_id": {
-			"$oid": "6af328d2af543221fe425e96"
+			"$oid": "6aee05ecaa214b0cb0a5f483"
 		},
 		"name": "Migration20261106164338",
 		"executed_at": {
-			"$date": "2026-11-10T14:23:14.841Z"
+			"$date": "2026-11-06T16:53:00.378Z"
 		}
 	},
 	{
 		"_id": {
-			"$oid": "6af328d2af543221fe425e97"
+			"$oid": "6af1ff2a5d8e91a229512a2c"
 		},
 		"name": "Migration20261109170512",
 		"executed_at": {
-			"$date": "2026-11-10T14:23:14.846Z"
+			"$date": "2026-11-09T17:13:14.698Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "6af2f9ab0d8e346b9e54ae83"
+		},
+		"name": "Migration20261109173119",
+		"executed_at": {
+			"$date": "2026-11-10T11:02:03.813Z"
 		}
 	},
 	{
