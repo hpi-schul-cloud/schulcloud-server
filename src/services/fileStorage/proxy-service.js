@@ -470,7 +470,12 @@ const signedUrlService = {
 			bucket: strategy.getBucket(creator.schoolId),
 			storageProviderId: school.storageProvider,
 			uploadId,
-			expiresAt: new Date(Date.now() + Configuration.get('STORAGE_SIGNED_URL_EXPIRE') * 1000),
+			expiresAt: new Date(
+				Date.now() +
+					(Configuration.get('STORAGE_SIGNED_URL_EXPIRE') +
+						Configuration.get('STORAGE_UPLOAD_FINALIZATION_GRACE_SECONDS')) *
+						1000
+			),
 		});
 
 		return {

@@ -3,6 +3,7 @@ const assert = require('assert');
 const { ObjectId } = require('mongoose').Types;
 const { v4: uuidv4 } = require('uuid');
 const sinon = require('sinon');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
 const { FileModel, FileUploadIntentModel } = require('../../../src/services/fileStorage/model');
 const { schoolModel } = require('../../../src/services/school/model');
@@ -210,6 +211,57 @@ describe('fileStorage services', () => {
 
 			expect(file.storageFileName).to.equal(storageFileName);
 			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
+		});
+
+		it('creates file metadata after the signed URL expires while the upload intent is still valid', async () => {
+			const clock = sinon.useFakeTimers({ now: Date.now(), toFake: ['Date'] });
+			try {
+				const issuedAt = Date.now();
+				const urlLifetime = Configuration.get('STORAGE_SIGNED_URL_EXPIRE') * 1000;
+				const gracePeriod = Configuration.get('STORAGE_UPLOAD_FINALIZATION_GRACE_SECONDS') * 1000;
+				const { header } = await signedUrlService.create(
+					{ filename: 'test.jpg', fileType: 'image/jpg' },
+					setContext('0000d224816abba584714c8e')
+				);
+				const storageFileName = decodeURIComponent(header['x-amz-meta-flat-name']);
+				const intent = await FileUploadIntentModel.findOne({ storageFileName }).lean().exec();
+				expect(intent.expiresAt.getTime()).to.equal(issuedAt + urlLifetime + gracePeriod);
+
+				clock.tick(urlLifetime + 1);
+				const file = await fileStorageService.create(
+					{ ...params, storageFileName },
+					setContext('0000d224816abba584714c8e')
+				);
+				created.push(file._id);
+
+				expect(file.storageFileName).to.equal(storageFileName);
+			} finally {
+				clock.restore();
+			}
+		});
+
+		it('rejects file metadata creation after the upload intent expires', async () => {
+			const clock = sinon.useFakeTimers({ now: Date.now(), toFake: ['Date'] });
+			try {
+				const { header } = await signedUrlService.create(
+					{ filename: 'test.jpg', fileType: 'image/jpg' },
+					setContext('0000d224816abba584714c8e')
+				);
+				const storageFileName = decodeURIComponent(header['x-amz-meta-flat-name']);
+				const intent = await FileUploadIntentModel.findOne({ storageFileName }).lean().exec();
+
+				clock.setSystemTime(intent.expiresAt.getTime() + 1);
+				await assert.rejects(
+					fileStorageService.create(
+						{ ...params, storageFileName },
+						setContext('0000d224816abba584714c8e')
+					),
+					{ code: 403, message: 'No valid upload authorization was found for this file.' }
+				);
+				expect(await FileModel.exists({ storageFileName })).to.equal(null);
+			} finally {
+				clock.restore();
+			}
 		});
 
 		it('persists the verified upload type instead of the submitted type', async () => {
