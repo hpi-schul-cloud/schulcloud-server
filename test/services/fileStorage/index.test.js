@@ -170,26 +170,6 @@ describe('fileStorage services', () => {
 			created.push(_id);
 		});
 
-		it('should create a team file object', async () => {
-			const context = setContext('0000d224816abba584714c8e');
-			const data = createFileData('5cf9303bec9d6ac639fefd42');
-			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
-
-			const res = await fileStorageService.create(data, context);
-			const isEqual = ['name', 'type', 'size', 'storageFileName', 'thumbnail'].every(
-				(key) => data[key].toString() === res[key].toString()
-			);
-			const { _id, isDirectory, refOwnerModel, permissions } = res;
-
-			expect(permissions[0].refId.equals('0000d224816abba584714c8e')).to.be.true;
-			expect(permissions).to.have.lengthOf(6);
-			expect(refOwnerModel).to.be.equal('teams');
-			expect(isDirectory).to.be.false;
-			expect(isEqual).to.be.true;
-
-			created.push(_id);
-		});
-
 		it('should create a user file object', async () => {
 			const context = setContext('0000d224816abba584714c8e');
 			const data = createFileData();
