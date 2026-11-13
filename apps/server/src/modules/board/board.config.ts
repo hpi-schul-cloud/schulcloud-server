@@ -64,11 +64,6 @@ export class BoardConfig extends BoardPublicApiConfig {
 	@IsBoolean()
 	public featureSchulconnexMediaLicenseEnabled = false;
 
-	@ConfigProperty('FEATURE_SCHULCONNEX_GROUP_SCHOOL_MEDIA_LICENSE_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
-
 	@ConfigProperty('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
