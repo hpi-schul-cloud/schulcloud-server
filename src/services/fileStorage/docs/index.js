@@ -474,19 +474,25 @@ module.exports = {
 						type: 'String (ObjectID)',
 						name: 'parent',
 					},
+					{
+						description: 'ID of file owner; defaults to the requesting user',
+						type: 'String (ObjectID)',
+						name: 'owner',
+					},
 				],
 				description: '',
-				summary: 'Creates a new signed url for the given file information',
+				summary: 'Creates a signed URL with a server-generated key and upload intent',
 				responses: {
 					200: {
 						description: 'Returns the data signed url and meta properties',
 						example: {
 							signedUrl: {
-								url: 'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url: 'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/9e8d53a4-f910-4f15-9eaa-38e2fe4b5a26-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 								header: {
 									'Content-Type': 'image/gif',
 									'x-amz-meta-name': '24-1.gif',
-									'x-amz-meta-flat-name': '1561200908775-24-1.gif',
+									'x-amz-meta-flat-name': '9e8d53a4-f910-4f15-9eaa-38e2fe4b5a26-24-1.gif',
+									'x-amz-meta-upload-id': '7d68d4d1-b235-44a8-a20f-61df1e86c63d',
 								},
 							},
 						},

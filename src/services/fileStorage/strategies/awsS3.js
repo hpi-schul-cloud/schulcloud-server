@@ -383,6 +383,29 @@ class AWSS3Strategy {
 		return promisify(safeAwsObject.s3.getSignedUrl.bind(safeAwsObject.s3), safeAwsObject.s3)('putObject', params);
 	}
 
+	async getObjectMetadata({ storageProviderId, bucket, flatFileName }) {
+		this.checkSignedUrlParameter(storageProviderId, bucket, flatFileName);
+
+		let awsObject;
+		if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
+			awsObject = await this.getAwsObjectForMultipleProvider(bucket, storageProviderId);
+		} else {
+			awsObject = await this.getAwsObjectForSingleProviderFromDiskConfig(
+				bucket,
+				this.awsClientHelper,
+				this.awsConfig
+			);
+		}
+
+		return promisify(
+			awsObject.s3.headObject.bind(awsObject.s3),
+			awsObject.s3
+		)({
+			Bucket: bucket,
+			Key: flatFileName,
+		});
+	}
+
 	checkSignedUrlParameter(storageProviderId, bucket, flatFileName) {
 		if (!storageProviderId || !bucket || !flatFileName) {
 			throw new BadRequest('Missing parameters by getSignedUrl.', { storageProviderId, bucket, flatFileName });

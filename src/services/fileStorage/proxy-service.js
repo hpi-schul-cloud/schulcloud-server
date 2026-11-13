@@ -2,6 +2,7 @@ const fs = require('fs');
 const url = require('url');
 const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { v4: uuidv4 } = require('uuid');
 const { filesRepo } = require('./repo');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
@@ -19,7 +20,7 @@ const {
 	createDefaultPermissions,
 	createPermission,
 } = require('./utils');
-const { FileModel, SecurityCheckStatusTypes } = require('./model');
+const { FileModel, FileUploadIntentModel, SecurityCheckStatusTypes } = require('./model');
 const { schoolModel } = require('../school/model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
@@ -174,14 +175,45 @@ const fileStorageService = {
 			throw new GeneralError('Can not create default Permissions', err);
 		});
 
-		const fileOwner = owner || creatorId;
-
 		const strategy = this.getStrategy();
 		const creator = await userModel.findById(creatorId).lean().exec();
+		if (!creator) {
+			throw new NotFound('User not found');
+		}
 		const { schoolId } = creator;
 		const bucket = strategy.getBucket(schoolId);
 		const school = await schoolModel.findById(schoolId).lean().exec();
+		if (!school) {
+			throw new NotFound('School not found.');
+		}
 		const storageProviderId = school.storageProvider;
+		const storageFileName = decodeURIComponent(data.storageFileName);
+		const fileOwner = owner || creatorId;
+		const uploadIntent = await FileUploadIntentModel.findOne({
+			creator: creatorId,
+			owner: fileOwner,
+			parent: parent || { $exists: false },
+			name: data.name,
+			storageFileName,
+			bucket,
+			storageProviderId,
+			expiresAt: { $gt: new Date() },
+		})
+			.lean()
+			.exec();
+
+		if (!uploadIntent) {
+			throw new Forbidden('No valid upload authorization was found for this file.');
+		}
+
+		if (parent) {
+			await canCreate(creatorId, parent).catch((err) => {
+				if (!err) {
+					throw new Forbidden();
+				}
+				throw err;
+			});
+		}
 
 		const props = sanitizeObj(
 			Object.assign(data, {
@@ -191,25 +223,55 @@ const fileStorageService = {
 				refOwnerModel,
 				permissions,
 				creator: creatorId,
-				storageFileName: decodeURIComponent(data.storageFileName),
+				type: uploadIntent.type,
+				storageFileName,
 				storageProviderId,
 				bucket,
 			})
 		);
+
+		const objectMetadata = await strategy.getObjectMetadata({
+			storageProviderId,
+			bucket,
+			flatFileName: storageFileName,
+			uploadId: uploadIntent.uploadId,
+			fileType: uploadIntent.type,
+		});
+		if (
+			objectMetadata.ContentLength !== Number(data.size) ||
+			objectMetadata.ContentType !== uploadIntent.type ||
+			objectMetadata.Metadata?.['upload-id'] !== uploadIntent.uploadId ||
+			objectMetadata.Metadata?.name !== encodeURIComponent(data.name) ||
+			objectMetadata.Metadata?.['flat-name'] !== encodeURIComponent(storageFileName)
+		) {
+			throw new BadRequest('Uploaded object does not match the authorized upload.');
+		}
 
 		const asyncErrorHandler = (err = {}) => {
 			const message = err.message || 'Error during async file operation after upload.';
 			logger.error({ message, stack: err.stack });
 		};
 
-		// create db entry for new file
-		// check for create permissions on parent
-		if (parent) {
-			await canCreate(creatorId, parent);
+		// Use the intent ID as the file ID to prevent a race condition where two requests create files
+		// with the same intent: MongoDB rejects the second file because _id is unique.
+		// Unlike a transaction, this also works on standalone MongoDB.
+		let file;
+		try {
+			file = await FileModel.create({ ...props, _id: uploadIntent._id });
+		} catch (err) {
+			if (err.code === 11000) {
+				throw new Forbidden('Upload authorization is no longer valid.');
+			}
+			throw err;
 		}
 
-		let file = await FileModel.findOne(props).lean().exec();
-		if (!file) file = await FileModel.create(props);
+		// Delete the intent only after the file is created, so a failed upload can be retried.
+		// If deletion fails, only log it: the file already exists and still needs its security check.
+		await FileUploadIntentModel.deleteOne({ _id: uploadIntent._id })
+			.exec()
+			.catch((err) => {
+				logger.error({ message: `Could not delete upload intent ${uploadIntent._id}.`, stack: err.stack });
+			});
 
 		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
 
@@ -372,48 +434,75 @@ const signedUrlService = {
 	 * @param action the AWS action, e.g. putObject
 	 * @returns {Promise}
 	 */
-	create({ parent, filename, fileType, flatFileName: _flatFileName }, params) {
+	async create({ parent, filename, fileType, owner }, params) {
 		const {
 			payload: { userId },
 		} = params;
-		const flatFileName = _flatFileName || generateFileNameSuffix(filename);
-
-		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
+		const flatFileName = generateFileNameSuffix(filename);
+		const uploadId = uuidv4();
 
 		const header = {
 			name: encodeURIComponent(filename),
 			'flat-name': encodeURIComponent(flatFileName),
+			'upload-id': uploadId,
 			thumbnail: '',
 		};
 
-		return parentPromise
-			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
-			.then(() => {
-				if (this.fileRegexCheck(filename)) {
-					throw new BadRequest(`Die Datei '${filename}' ist nicht erlaubt!`);
-				}
-
-				return this.getStrategy().generateSignedUrl({
-					userId,
-					flatFileName,
-					fileType,
-					header,
-				});
-			})
-			.then((res) => ({
-				url: res,
-				header: {
-					'Content-Type': fileType,
-					'x-amz-meta-name': header.name,
-					'x-amz-meta-flat-name': header['flat-name'],
-				},
-			}))
-			.catch((err) => {
+		if (this.fileRegexCheck(filename)) {
+			throw new BadRequest(`Die Datei '${filename}' ist nicht erlaubt!`);
+		}
+		if (parent) {
+			await canCreate(userId, parent).catch((err) => {
 				if (!err) {
 					throw new Forbidden();
 				}
 				throw err;
 			});
+		}
+
+		const strategy = this.getStrategy();
+		const url = await strategy.generateSignedUrl({
+			userId,
+			flatFileName,
+			fileType,
+			header,
+		});
+		const creator = await userModel.findById(userId).lean().exec();
+		if (!creator) {
+			throw new NotFound('User not found');
+		}
+		const school = await schoolModel.findById(creator.schoolId).lean().exec();
+		if (!school) {
+			throw new NotFound('School not found.');
+		}
+
+		await FileUploadIntentModel.create({
+			creator: userId,
+			owner: owner || userId,
+			parent: parent || undefined,
+			name: filename,
+			type: fileType,
+			storageFileName: flatFileName,
+			bucket: strategy.getBucket(creator.schoolId),
+			storageProviderId: school.storageProvider,
+			uploadId,
+			expiresAt: new Date(
+				Date.now() +
+					(Configuration.get('STORAGE_SIGNED_URL_EXPIRE') +
+						Configuration.get('STORAGE_UPLOAD_FINALIZATION_GRACE_SECONDS')) *
+						1000
+			),
+		});
+
+		return {
+			url,
+			header: {
+				'Content-Type': fileType,
+				'x-amz-meta-name': header.name,
+				'x-amz-meta-flat-name': header['flat-name'],
+				'x-amz-meta-upload-id': uploadId,
+			},
+		};
 	},
 
 	async find({ query, payload: { userId, fileStorageType } }) {
@@ -702,20 +791,21 @@ const newFileService = {
 		const { name, owner, parent, studentCanEdit } = data;
 		const fType = name.split('.').pop();
 		const buffer = fs.readFileSync(`src/services/fileStorage/resources/fake.${fType}`);
-		const flatFileName = generateFileNameSuffix(name);
+		let flatFileName;
 
 		return signedUrlService
 			.create(
 				{
 					fileType: returnFileType(name),
 					parent,
-					// filename: name,
-					flatFileName,
+					filename: name,
+					owner,
 				},
 				params
 			)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;
+				flatFileName = decodeURIComponent(headers['x-amz-meta-flat-name']);
 				if (Configuration.get('REQUEST_OPTION__KEEP_ALIVE')) {
 					headers.Connection = 'Keep-Alive';
 				}
