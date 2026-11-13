@@ -31,27 +31,8 @@ export class Migration20261109173119 extends Migration {
 	// ---------
 
 	private async renameTeamsToTeamsIds(): Promise<void> {
-		const db = this.driver.getConnection().getDb();
-		const teamsCollections = await db.listCollections({ name: 'teams' }).toArray();
-		if (teamsCollections.length === 0) {
-			console.info('Collection teams does not exist. Nothing to rename.');
-			return;
-		}
-
-		const existing = await db.listCollections({ name: 'teams_ids' }).toArray();
-		if (existing.length > 0) {
-			await db.collection('teams_ids').drop();
-			console.info('Dropped existing collection teams_ids.');
-		}
-
-		await db.renameCollection('teams', 'teams_ids');
-		console.info('Renamed collection teams to teams_ids.');
-
-		// Keep only id, name, description and features
-		const result = await this.getCollection('teams_ids').updateMany({}, [
-			{ $project: { name: 1, description: 1, features: 1 } },
-		]);
-		console.info(`Reduced ${result.modifiedCount} documents in teams_ids to id, name, description, features.`);
+		// code was removed because of strange side effects
+		// original intention is now carried by Migration20261112160434
 	}
 
 	private async deleteTeamNews(): Promise<void> {
