@@ -266,6 +266,26 @@ describe('course service', () => {
 			}
 		});
 
+		it('can not GET course the user is not in even with a valid link', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const course = await testObjects.createTestCourse({ schoolId });
+			const link = await app.service('link').create({ target: `/courses/${course._id}` });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { link: link._id };
+
+			try {
+				await app.service('courses').get(course._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('You are not in that course.');
+			} finally {
+				await app.service('link').remove(link._id);
+			}
+		});
+
 		it('can not FIND course the user is not in', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
@@ -303,6 +323,54 @@ describe('course service', () => {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
 				expect(err.message).to.equal(`User ${teacher._id} ist nicht Teil des Kurses`);
+			}
+		});
+
+		it('can not PATCH course the user is not in even with a valid link', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const course = await testObjects.createTestCourse({ schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const storedCourse = await courseModel.findById(course._id).lean().exec();
+			const link = await app.service('link').create({ target: `/courses/${course._id}` });
+			params.query = { link: link._id };
+
+			try {
+				try {
+					await app.service('courses').patch(course._id, { description: 'unauthorized change' }, params);
+					throw new Error('should have failed');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed');
+					expect(err.code).to.equal(403);
+					expect(err.message).to.equal(`User ${teacher._id} ist nicht Teil des Kurses`);
+				}
+				expect(await courseModel.findById(course._id).lean().exec()).to.deep.equal(storedCourse);
+			} finally {
+				await app.service('link').remove(link._id);
+			}
+		});
+
+		it('can not PATCH course as a member without COURSE_EDIT even with a valid link', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const course = await testObjects.createTestCourse({ schoolId, userIds: [student._id] });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			const storedCourse = await courseModel.findById(course._id).lean().exec();
+			const link = await app.service('link').create({ target: `/courses/${course._id}` });
+			params.query = { link: link._id };
+
+			try {
+				try {
+					await app.service('courses').patch(course._id, { description: 'unauthorized change' }, params);
+					throw new Error('should have failed');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed');
+					expect(err.code).to.equal(403);
+					expect(err.message).to.equal('Missing one of the required permissions COURSE_EDIT.');
+				}
+				expect(await courseModel.findById(course._id).lean().exec()).to.deep.equal(storedCourse);
+			} finally {
+				await app.service('link').remove(link._id);
 			}
 		});
 
