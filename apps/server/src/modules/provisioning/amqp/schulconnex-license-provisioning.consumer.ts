@@ -43,9 +43,7 @@ export class SchulconnexLicenseProvisioningConsumer implements OnModuleInit {
 		await RequestContext.create(this.orm.em, async () => {
 			await this.schulconnexLicenseProvisioningService.provisionExternalLicenses(
 				payload.userId,
-				payload.externalLicenses,
-				payload.schoolId,
-				payload.systemId
+				payload.externalLicenses
 			);
 
 			await this.schulconnexToolProvisioningService.provisionSchoolExternalTools(
