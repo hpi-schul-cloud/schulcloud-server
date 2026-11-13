@@ -90,6 +90,24 @@ describe('Admin API - Users (API)', () => {
 				);
 			});
 
+			it('should persist forcePasswordChange when requested', async () => {
+				const { body } = await setup();
+				const response = await testApiClient.post('', { ...body, forcePasswordChange: true });
+				const { userId } = response.body as AdminApiUserCreateResponse;
+
+				const loaded = await em.findOneOrFail(User, userId);
+				expect(loaded.forcePasswordChange).toBe(true);
+			});
+
+			it('should default forcePasswordChange to false when omitted', async () => {
+				const { body } = await setup();
+				const response = await testApiClient.post('', body);
+				const { userId } = response.body as AdminApiUserCreateResponse;
+
+				const loaded = await em.findOneOrFail(User, userId);
+				expect(loaded.forcePasswordChange).toBe(false);
+			});
+
 			it('should persist account', async () => {
 				const { body } = await setup();
 				const response = await testApiClient.post('', body);
