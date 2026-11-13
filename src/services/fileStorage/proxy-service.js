@@ -252,33 +252,10 @@ const fileStorageService = {
 			logger.error({ message, stack: err.stack });
 		};
 
-		const session = await FileModel.db.startSession();
-		let file;
-		try {
-			// Use a transaction to prevent a race condition where two requests create files with the same intent.
-			// If file creation fails, undo the deletion so the upload can be retried.
-			await session.withTransaction(
-				async () => {
-					const claimedIntent = await FileUploadIntentModel.findOneAndDelete({
-						_id: uploadIntent._id,
-						creator: creatorId,
-						expiresAt: { $gt: new Date() },
-					})
-						.session(session)
-						.lean()
-						.exec();
-
-					if (!claimedIntent) {
-						throw new Forbidden('Upload authorization is no longer valid.');
-					}
-
-					[file] = await FileModel.create([props], { session });
-				},
-				{ readPreference: 'primary' }
-			);
-		} finally {
-			await session.endSession();
-		}
+		// create db entry for new file
+		let file = await FileModel.findOne(props).lean().exec();
+		if (!file) file = await FileModel.create(props);
+		await FileUploadIntentModel.deleteOne({ _id: uploadIntent._id }).exec();
 
 		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
 

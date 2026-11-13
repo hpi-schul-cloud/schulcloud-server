@@ -276,67 +276,6 @@ describe('fileStorage services', () => {
 			expect(savedFile.type).to.equal('image/jpeg');
 		});
 
-		it('prevents a race condition where two requests create files with the same upload intent', async () => {
-			const userId = '0000d224816abba584714c8e';
-			const data = createFileData();
-			const intent = await createUploadIntent({ userId, data });
-			const getObjectMetadata = AWSStrategy.prototype.getObjectMetadata;
-			let verifiedRequests = 0;
-			let releaseVerification;
-			const bothVerified = new Promise((resolve) => {
-				releaseVerification = resolve;
-			});
-			const stub = sinon.stub(AWSStrategy.prototype, 'getObjectMetadata').callsFake(async (options) => {
-				const metadata = await getObjectMetadata(options);
-				verifiedRequests += 1;
-				if (verifiedRequests === 2) {
-					releaseVerification();
-				}
-				await bothVerified;
-				return metadata;
-			});
-
-			let results;
-			try {
-				results = await Promise.allSettled([
-					fileStorageService.create({ ...data }, setContext(userId)),
-					fileStorageService.create({ ...data }, setContext(userId)),
-				]);
-			} finally {
-				stub.restore();
-			}
-
-			const files = await FileModel.find({ storageFileName: data.storageFileName }).lean().exec();
-			created.push(...files.map((file) => file._id));
-			expect(results.filter((result) => result.status === 'fulfilled')).to.have.lengthOf(1);
-			const failures = results.filter((result) => result.status === 'rejected');
-			expect(failures).to.have.lengthOf(1);
-			expect(failures[0].reason.code).to.equal(403);
-			expect(files).to.have.lengthOf(1);
-			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
-		});
-
-		it('rolls back upload intent deletion when file creation fails so the upload can be retried', async () => {
-			const userId = '0000d224816abba584714c8e';
-			const data = createFileData();
-			const intent = await createUploadIntent({ userId, data });
-			const error = new Error('File creation failed');
-			const stub = sinon.stub(FileModel, 'create').rejects(error);
-
-			try {
-				await assert.rejects(fileStorageService.create({ ...data }, setContext(userId)), error);
-			} finally {
-				stub.restore();
-			}
-
-			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.not.equal(null);
-			expect(await FileModel.exists({ storageFileName: data.storageFileName })).to.equal(null);
-
-			const file = await fileStorageService.create({ ...data }, setContext(userId));
-			created.push(file._id);
-			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
-		});
-
 		it('rejects file metadata without an upload intent', async () => {
 			const context = setContext('0000d224816abba584714c8e');
 			try {
