@@ -266,7 +266,12 @@ const fileStorageService = {
 		}
 
 		// Delete the intent only after the file is created, so a failed upload can be retried.
-		await FileUploadIntentModel.deleteOne({ _id: uploadIntent._id }).exec();
+		// If deletion fails, only log it: the file already exists and still needs its security check.
+		await FileUploadIntentModel.deleteOne({ _id: uploadIntent._id })
+			.exec()
+			.catch((err) => {
+				logger.error({ message: `Could not delete upload intent ${uploadIntent._id}.`, stack: err.stack });
+			});
 
 		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
 

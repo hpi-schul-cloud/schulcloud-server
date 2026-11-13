@@ -137,6 +137,38 @@ describe('fileStorage services', () => {
 			storageFileName: `storage-${uuidv4()}.jpg`,
 		});
 
+		const prepareUpload = async () => {
+			const userId = '0000d224816abba584714c8e';
+			const data = createFileData();
+			const intent = await createUploadIntent({ userId, data });
+			const objectMetadata = {
+				ContentLength: data.size,
+				ContentType: intent.type,
+				Metadata: {
+					'upload-id': intent.uploadId,
+					name: encodeURIComponent(data.name),
+					'flat-name': encodeURIComponent(data.storageFileName),
+				},
+			};
+
+			return { userId, data, intent, objectMetadata };
+		};
+
+		const expectUploadToBeRejected = async ({ userId, data, intent, objectMetadata }) => {
+			const stub = sinon.stub(AWSStrategy.prototype, 'getObjectMetadata').resolves(objectMetadata);
+			try {
+				await assert.rejects(fileStorageService.create({ ...data }, setContext(userId)), {
+					code: 400,
+					message: 'Uploaded object does not match the authorized upload.',
+				});
+			} finally {
+				stub.restore();
+			}
+
+			expect(await FileModel.exists({ storageFileName: data.storageFileName })).to.equal(null);
+			expect(await FileUploadIntentModel.exists({ _id: intent._id })).to.not.equal(null);
+		};
+
 		const created = [];
 
 		after((done) => {
@@ -337,6 +369,25 @@ describe('fileStorage services', () => {
 			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
 		});
 
+		it('returns the created file when deleting the upload intent fails', async () => {
+			const userId = '0000d224816abba584714c8e';
+			const data = createFileData();
+			await createUploadIntent({ userId, data });
+			const stub = sinon.stub(FileUploadIntentModel, 'deleteOne').returns({
+				exec: () => Promise.reject(new Error('Upload intent deletion failed')),
+			});
+
+			let file;
+			try {
+				file = await fileStorageService.create({ ...data }, setContext(userId));
+			} finally {
+				stub.restore();
+			}
+
+			created.push(file._id);
+			expect(await FileModel.exists({ _id: file._id })).to.not.equal(null);
+		});
+
 		it('rejects file metadata without an upload intent', async () => {
 			const context = setContext('0000d224816abba584714c8e');
 			try {
@@ -347,16 +398,46 @@ describe('fileStorage services', () => {
 			}
 		});
 
-		it('rejects metadata when S3 object size does not match', async () => {
-			const context = setContext('0000d224816abba584714c8e');
-			const data = createFileData();
-			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
-			try {
-				await fileStorageService.create({ ...data, size: 5 }, context);
-				throw new Error('Expected file creation to be rejected');
-			} catch (error) {
-				expect(error.code).to.equal(400);
-			}
+		it('rejects file metadata creation when the S3 object size does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.ContentLength = 5;
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 content type does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.ContentType = 'text/html';
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 upload-id metadata does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.Metadata['upload-id'] = uuidv4();
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 name metadata does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.Metadata.name = encodeURIComponent('other.jpg');
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 flat-name metadata does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.Metadata['flat-name'] = encodeURIComponent('other-object.jpg');
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 upload metadata is missing', async () => {
+			const upload = await prepareUpload();
+			delete upload.objectMetadata.Metadata;
+
+			await expectUploadToBeRejected(upload);
 		});
 
 		it('should get a file list', (done) => {

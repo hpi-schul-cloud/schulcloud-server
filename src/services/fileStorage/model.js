@@ -148,6 +148,8 @@ const fileUploadIntentSchema = new Schema({
 });
 
 fileUploadIntentSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+// Speed up finding the upload intent when file metadata is created
+fileUploadIntentSchema.index({ storageFileName: 1 });
 
 const FileUploadIntentModel = mongoose.model('fileUploadIntent', fileUploadIntentSchema);
 
