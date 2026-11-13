@@ -74,10 +74,10 @@ import { Module } from '@nestjs/common';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
+import { ReleasesApiModule } from '../releases';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
-import { ReleaseApiModule } from './release-api.module';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
@@ -158,7 +158,7 @@ const serverModules = [
 	OAuthApiModule,
 	MoinSchuleClassModule,
 	DeletionPublicApiModule,
-	ReleaseApiModule,
+	ReleasesApiModule,
 ];
 
 const providers = [ServerUc];

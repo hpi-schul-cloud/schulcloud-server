@@ -17,17 +17,14 @@ export class RoomItemResponse {
 	@ApiProperty()
 	schoolId: string;
 
-	@ApiPropertyOptional({ type: Date })
-	startDate?: Date;
-
-	@ApiPropertyOptional({ type: Date })
-	endDate?: Date;
-
 	@ApiProperty({ type: Date })
 	createdAt: Date;
 
 	@ApiProperty({ type: Date })
 	updatedAt: Date;
+
+	@ApiPropertyOptional({ type: Date })
+	archivedAt?: Date;
 
 	@ApiProperty({
 		type: 'object',
@@ -52,10 +49,9 @@ export class RoomItemResponse {
 		this.color = room.color;
 		this.schoolId = room.schoolId;
 
-		this.startDate = room.startDate;
-		this.endDate = room.endDate;
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
+		this.archivedAt = room.archivedAt;
 
 		this.allowedOperations = room.allowedOperations;
 		this.isLocked = room.isLocked;

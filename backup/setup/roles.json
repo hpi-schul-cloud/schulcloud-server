@@ -58,7 +58,6 @@
 			"SUBMISSIONS_CREATE",
 			"SUBMISSIONS_EDIT",
 			"SUBMISSIONS_VIEW",
-			"TEAM_VIEW",
 			"TOOL_VIEW",
 			"TOPIC_VIEW"
 		],
@@ -105,7 +104,6 @@
 			"SCHOOL_NEWS_EDIT",
 			"SCHOOL_CHAT_MANAGE",
 			"SCHOOL_LOGO_MANAGE",
-			"SCHOOL_STUDENT_TEAM_MANAGE",
 			"STUDENT_CREATE",
 			"STUDENT_DELETE",
 			"STUDENT_EDIT",
@@ -118,9 +116,6 @@
 			"TEACHER_EDIT",
 			"TEACHER_LIST",
 			"TEACHER_SKIP_REGISTRATION",
-			"TEAM_INVITE_EXTERNAL",
-			"TEAM_CREATE",
-			"TEAM_EDIT",
 			"SCHOOL_PERMISSION_VIEW",
 			"SCHOOL_PERMISSION_CHANGE",
 			"SYSTEM_EDIT",
@@ -184,8 +179,6 @@
 			"TEACHER_DELETE",
 			"TEACHER_EDIT",
 			"TEACHER_LIST",
-			"TEAM_CREATE",
-			"TEAM_EDIT",
 			"TOOL_CREATE",
 			"TOOL_EDIT",
 			"YEARS_EDIT",
@@ -245,10 +238,6 @@
 			"SUBMISSIONS_SCHOOL_VIEW",
 			"TASK_DASHBOARD_TEACHER_VIEW_V3",
 			"TEACHER_LIST",
-			"TEAM_CREATE",
-			"TEAM_EDIT",
-			"TEAM_INVITE_EXTERNAL",
-			"TEAM_INVITE_EXTERNAL",
 			"TOOL_CREATE",
 			"TOOL_EDIT",
 			"TOOL_NEW_VIEW",
@@ -290,8 +279,6 @@
 		"permissions": [
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
-			"TEAM_CREATE",
-			"TEAM_EDIT",
 			"TOOL_CREATE_ETHERPAD",
 			"SCHOOL_LIST_ROOM_MEMBERS"
 		],
@@ -316,122 +303,6 @@
 		"permissions": [
 			"HELPDESK_EDIT",
 			"HELPDESK_VIEW"
-		],
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "5bb5c190fb457b1c3c0c7e0f"
-		},
-		"name": "teammember",
-		"updatedAt": {
-			"$date": "2023-05-05T07:39:11.036Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [],
-		"permissions": [
-			"NEWS_VIEW",
-			"UPLOAD_FILES",
-			"JOIN_MEETING"
-		],
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "5bb5c391fb457b1c3c0c7e10"
-		},
-		"name": "teamexpert",
-		"updatedAt": {
-			"$date": "2023-05-05T07:39:11.040Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [],
-		"permissions": [
-			"CALENDAR_VIEW",
-			"NEWS_VIEW",
-			"UPLOAD_FILES",
-			"JOIN_MEETING"
-		],
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "5bb5c49efb457b1c3c0c7e11"
-		},
-		"name": "teamleader",
-		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [
-			{
-				"$oid": "5bb5c190fb457b1c3c0c7e0f"
-			}
-		],
-		"permissions": [
-			"ADD_SCHOOL_MEMBERS",
-			"CALENDAR_CREATE",
-			"CALENDAR_EDIT",
-			"CHANGE_TEAM_ROLES",
-			"CREATE_TOPICS_AND_TASKS",
-			"EDIT_ALL_FILES",
-			"NEWS_CREATE",
-			"START_MEETING"
-		],
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "5bb5c545fb457b1c3c0c7e13"
-		},
-		"name": "teamadministrator",
-		"updatedAt": {
-			"$date": "2023-05-05T07:39:11.028Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [
-			{
-				"$oid": "5bb5c49efb457b1c3c0c7e11"
-			}
-		],
-		"permissions": [
-			"DEFAULT_FILE_PERMISSIONS",
-			"INVITE_ADMINISTRATORS",
-			"INVITE_EXTERNAL_PERSONS",
-			"NEWS_EDIT",
-			"REMOVE_MEMBERS",
-			"RENAME_TEAM",
-			"LEAVE_TEAM"
-		],
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "5bb5c62bfb457b1c3c0c7e14"
-		},
-		"name": "teamowner",
-		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [
-			{
-				"$oid": "5bb5c545fb457b1c3c0c7e13"
-			}
-		],
-		"permissions": [
-			"DELETE_TEAM",
-			"TEAM_EXPORT_TO_ROOM"
 		],
 		"__v": 0
 	},
@@ -647,6 +518,7 @@
 		"permissions": [
 			"ROOM_EDIT_ROOM",
 			"ROOM_DELETE_ROOM",
+			"ROOM_ARCHIVE_ROOM",
 			"ROOM_SHARE_ROOM",
 			"ROOM_COPY_ROOM",
 			"ROOM_EDIT_CONTENT",
@@ -700,7 +572,7 @@
 		"permissions": [],
 		"roles": []
 	},
-			{
+	{
 		"_id": {
 			"$oid": "6a2ba34a62260ccf8422a996"
 		},

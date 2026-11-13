@@ -1,4 +1,4 @@
-import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -23,6 +23,7 @@ export interface ContextExternalToolEntityProps {
 	ltiDeepLink?: LtiDeepLinkEmbeddable;
 }
 
+@Index({ properties: ['schoolTool', 'contextType'] })
 @Entity({ tableName: 'context-external-tools' })
 export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne()

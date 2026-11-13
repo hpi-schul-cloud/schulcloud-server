@@ -131,10 +131,79 @@ describe('Room Invitation Link Controller (API)', () => {
 					const response = await loggedInClient.put(roomInvitationLink.id, params);
 
 					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body).toMatchObject({ invitationToken: roomInvitationLink.invitationToken });
 					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).resolves.toMatchObject({
 						id: roomInvitationLink.id,
 						title: 'Room Inivitation renamed',
+						invitationToken: roomInvitationLink.invitationToken,
 					});
+				});
+			});
+
+			describe('when the request tries to change the token', () => {
+				it('should ignore the supplied token and reject redemption by internal id after updating', async () => {
+					const { loggedInClient, roomInvitationLink } = await setup();
+					const params = {
+						title: roomInvitationLink.title,
+						activeUntil: inOneWeek,
+						requiresConfirmation: false,
+						isUsableByExternalPersons: false,
+						isUsableByStudents: false,
+						restrictedToCreatorSchool: false,
+						invitationToken: 'a'.repeat(21),
+					};
+
+					const response = await loggedInClient.put(roomInvitationLink.id, params);
+					em.clear();
+					const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id);
+					const redemption = await loggedInClient.post(roomInvitationLink.id);
+
+					expect(response.status).toBe(HttpStatus.OK);
+					expect(persisted.invitationToken).toBe(roomInvitationLink.invitationToken);
+					expect(response.body).toMatchObject({ invitationToken: roomInvitationLink.invitationToken });
+					expect(redemption.status).toBe(HttpStatus.NOT_FOUND);
+				});
+			});
+
+			describe('when updating a legacy invitation', () => {
+				it('should preserve its original URL without creating a token', async () => {
+					const { loggedInClient, roomInvitationLink } = await setup();
+					await em.nativeUpdate(RoomInvitationLinkEntity, roomInvitationLink.id, { invitationToken: null });
+					em.clear();
+
+					const response = await loggedInClient.put(roomInvitationLink.id, {
+						title: roomInvitationLink.title,
+						activeUntil: inOneWeek,
+						requiresConfirmation: false,
+						isUsableByExternalPersons: false,
+						isUsableByStudents: false,
+						restrictedToCreatorSchool: false,
+					});
+					em.clear();
+					const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id);
+					const redemption = await loggedInClient.post(roomInvitationLink.id);
+
+					expect(response.status).toBe(HttpStatus.OK);
+					expect(response.body).not.toHaveProperty('invitationToken');
+					expect([null, undefined]).toContain(persisted.invitationToken);
+					expect(redemption.status).toBe(HttpStatus.CREATED);
+				});
+			});
+
+			describe('when a token is used instead of the management id', () => {
+				it('should return 400', async () => {
+					const { loggedInClient, roomInvitationLink } = await setup();
+
+					const response = await loggedInClient.put(roomInvitationLink.invitationToken, {
+						title: roomInvitationLink.title,
+						activeUntil: inOneWeek,
+						requiresConfirmation: false,
+						isUsableByExternalPersons: false,
+						isUsableByStudents: false,
+						restrictedToCreatorSchool: false,
+					});
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 				});
 			});
 		});
