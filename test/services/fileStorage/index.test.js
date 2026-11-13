@@ -191,6 +191,39 @@ describe('fileStorage services', () => {
 			created.push(_id);
 		});
 
+		it('finalizes a root upload requested with a null parent', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			const { header } = await signedUrlService.create(
+				{ parent: null, filename: 'test.jpg', fileType: 'image/jpg' },
+				context
+			);
+			const storageFileName = decodeURIComponent(header['x-amz-meta-flat-name']);
+			const intent = await FileUploadIntentModel.findOne({ storageFileName }).lean().exec();
+
+			expect(intent).to.not.have.property('parent');
+
+			const file = await fileStorageService.create(
+				{ ...params, storageFileName },
+				setContext('0000d224816abba584714c8e')
+			);
+			created.push(file._id);
+
+			expect(file.storageFileName).to.equal(storageFileName);
+			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
+		});
+
+		it('persists the verified upload type instead of the submitted type', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			const data = { ...createFileData(), type: 'image/jpeg' };
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
+
+			const file = await fileStorageService.create({ ...data, type: 'text/html' }, context);
+			created.push(file._id);
+
+			const savedFile = await FileModel.findById(file._id).lean().exec();
+			expect(savedFile.type).to.equal('image/jpeg');
+		});
+
 		it('rejects file metadata without an upload intent', async () => {
 			const context = setContext('0000d224816abba584714c8e');
 			try {

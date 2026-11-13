@@ -223,6 +223,7 @@ const fileStorageService = {
 				refOwnerModel,
 				permissions,
 				creator: creatorId,
+				type: uploadIntent.type,
 				storageFileName,
 				storageProviderId,
 				bucket,
@@ -462,7 +463,7 @@ const signedUrlService = {
 		await FileUploadIntentModel.create({
 			creator: userId,
 			owner: owner || userId,
-			parent,
+			parent: parent || undefined,
 			name: filename,
 			type: fileType,
 			storageFileName: flatFileName,
