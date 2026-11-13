@@ -252,33 +252,21 @@ const fileStorageService = {
 			logger.error({ message, stack: err.stack });
 		};
 
-		const session = await FileModel.db.startSession();
+		// Use the intent ID as the file ID to prevent a race condition where two requests create files
+		// with the same intent: MongoDB rejects the second file because _id is unique.
+		// Unlike a transaction, this also works on standalone MongoDB.
 		let file;
 		try {
-			// Use a transaction to prevent a race condition where two requests create files with the same intent.
-			// If file creation fails, undo the deletion so the upload can be retried.
-			await session.withTransaction(
-				async () => {
-					const claimedIntent = await FileUploadIntentModel.findOneAndDelete({
-						_id: uploadIntent._id,
-						creator: creatorId,
-						expiresAt: { $gt: new Date() },
-					})
-						.session(session)
-						.lean()
-						.exec();
-
-					if (!claimedIntent) {
-						throw new Forbidden('Upload authorization is no longer valid.');
-					}
-
-					[file] = await FileModel.create([props], { session });
-				},
-				{ readPreference: 'primary' }
-			);
-		} finally {
-			await session.endSession();
+			file = await FileModel.create({ ...props, _id: uploadIntent._id });
+		} catch (err) {
+			if (err.code === 11000) {
+				throw new Forbidden('Upload authorization is no longer valid.');
+			}
+			throw err;
 		}
+
+		// Delete the intent only after the file is created, so a failed upload can be retried.
+		await FileUploadIntentModel.deleteOne({ _id: uploadIntent._id }).exec();
 
 		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
 

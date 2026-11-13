@@ -316,7 +316,7 @@ describe('fileStorage services', () => {
 			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
 		});
 
-		it('rolls back upload intent deletion when file creation fails so the upload can be retried', async () => {
+		it('keeps the upload intent when file creation fails so the upload can be retried', async () => {
 			const userId = '0000d224816abba584714c8e';
 			const data = createFileData();
 			const intent = await createUploadIntent({ userId, data });
