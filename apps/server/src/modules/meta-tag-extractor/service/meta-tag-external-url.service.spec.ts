@@ -171,12 +171,137 @@ describe(MetaTagExternalUrlService.name, () => {
 
 				const ogImages = [{ name: 'rock.jpg', width: 2000 }];
 
-				const mockedStream = mockReadstream([mockHtmlStart({ ogImages })]);
-				mockedAxios.get.mockResolvedValue({ data: mockedStream });
+				mockedAxios.get
+					.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+					.mockResolvedValueOnce({
+						data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']),
+						headers: { 'content-type': 'image/jpeg' },
+					});
 
 				const result = await service.tryExtractMetaTags(url);
 
-				expect(result?.originalImageUrl).toBeDefined();
+				expect(result?.originalImageUrl).toEqual('https://example.com/rock.jpg');
+			});
+
+			it('should fetch the image', async () => {
+				const url = new URL('https://de.wikipedia.org/example-article');
+
+				const cancelTokenSource = createCancelTokenSource();
+				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+				const ogImages = [{ name: 'rock.jpg', width: 2000 }];
+
+				mockedAxios.get
+					.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+					.mockResolvedValueOnce({ data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']) });
+
+				await service.tryExtractMetaTags(url);
+
+				expect(mockedAxios.get).toHaveBeenNthCalledWith(
+					2,
+					'https://example.com/rock.jpg',
+					expect.objectContaining({ responseType: 'stream' })
+				);
+			});
+
+			describe('when the image is an svg', () => {
+				const setup = (imageName: string, imageResponse: { chunks: string[]; contentType?: string }) => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const title = 'Great Title';
+					const ogImages = [{ name: imageName, width: 2000 }];
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ title, ogImages })]) })
+						.mockResolvedValueOnce({
+							data: mockReadstream(imageResponse.chunks),
+							headers: imageResponse.contentType ? { 'content-type': imageResponse.contentType } : {},
+						});
+
+					return { url, title };
+				};
+
+				describe('when the content is svg', () => {
+					it('should return no image', async () => {
+						const { url, title } = setup('image', {
+							chunks: [
+								'\uFEFF<?xml version="1.0" encoding="UTF-8"?>\n<!-- comment -->\n',
+								'<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n<svg xmlns="http://www.w3.org/2000/svg"></svg>',
+							],
+						});
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.title).toEqual(title);
+						expect(result?.originalImageUrl).toBeUndefined();
+					});
+				});
+
+				describe('when the content-type is image/svg+xml', () => {
+					it('should return no image', async () => {
+						const { url } = setup('image', {
+							chunks: ['some content'],
+							contentType: 'image/svg+xml; charset=utf-8',
+						});
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.originalImageUrl).toBeUndefined();
+					});
+				});
+
+				describe('when the file extension is .svg', () => {
+					it('should return no image', async () => {
+						const { url } = setup('logo.SVG', { chunks: ['some content'] });
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.originalImageUrl).toBeUndefined();
+					});
+				});
+			});
+
+			describe('when the image could not be fetched', () => {
+				it('should return the meta data without image', async () => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const title = 'Great Title';
+					const ogImages = [{ name: 'rock.jpg', width: 2000 }];
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ title, ogImages })]) })
+						.mockRejectedValueOnce({ response: { status: 404 } });
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.title).toEqual(title);
+					expect(result?.originalImageUrl).toBeUndefined();
+				});
+			});
+
+			describe('when the image response is empty', () => {
+				it('should keep the image', async () => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const ogImages = [{ name: 'rock.jpg', width: 2000 }];
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+						.mockResolvedValueOnce({ data: mockReadstream([]) });
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.originalImageUrl).toEqual('https://example.com/rock.jpg');
+				});
 			});
 
 			describe('when multiple images are present', () => {
@@ -192,8 +317,9 @@ describe(MetaTagExternalUrlService.name, () => {
 						{ name: 'scissors.jpg', width: 300 },
 					];
 
-					const mockedStream = mockReadstream([mockHtmlStart({ ogImages })]);
-					mockedAxios.get.mockResolvedValue({ data: mockedStream });
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+						.mockResolvedValueOnce({ data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']) });
 
 					const result = await service.tryExtractMetaTags(url);
 

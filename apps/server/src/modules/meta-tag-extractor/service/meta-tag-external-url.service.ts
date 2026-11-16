@@ -16,11 +16,13 @@ export class MetaTagExternalUrlService {
 			}
 
 			const { ogTitle, ogDescription, ogImage } = result;
+			const imageUrl = this.getImageUrl(ogImage, url);
+			const originalImageUrl = imageUrl && (await this.isAllowedImage(new URL(imageUrl))) ? imageUrl : undefined;
 
 			return {
 				title: ogTitle ?? '',
 				description: ogDescription ?? '',
-				originalImageUrl: this.getImageUrl(ogImage, url),
+				originalImageUrl,
 				url: url.toString(),
 				type: MetaDataEntityType.EXTERNAL,
 			};
@@ -41,9 +43,55 @@ export class MetaTagExternalUrlService {
 		}
 	}
 
+	private async isAllowedImage(imageUrl: URL): Promise<boolean> {
+		let image: { content: string; contentType?: string };
+		try {
+			image = await this.fetchImagePartly(imageUrl);
+		} catch {
+			return false;
+		}
+
+		const { content, contentType } = image;
+		if (!content) {
+			return true;
+		}
+
+		const isSvg =
+			/\.svgz?$/i.test(imageUrl.pathname) ||
+			/^image\/svg\+xml\b/i.test(contentType ?? '') ||
+			this.isSvgContent(content);
+
+		return !isSvg;
+	}
+
+	private isSvgContent(content: string): boolean {
+		const contentWithoutPreamble = content
+			.replace(/^\uFEFF/, '')
+			.replace(/<\?xml[\s\S]*?\?>/gi, '')
+			.replace(/<!--[\s\S]*?-->/g, '')
+			.replace(/<!DOCTYPE[^>[]*(\[[\s\S]*?\])?\s*>/gi, '')
+			.trimStart();
+
+		return /^<svg[\s>]/i.test(contentWithoutPreamble);
+	}
+
 	private async fetchHtmlPartly(url: URL, maxLength = 50000): Promise<string> {
+		const { content } = await this.fetchContentPartly(url, maxLength, 'Unable to fetch html for meta tag extraction');
+		return content;
+	}
+
+	private fetchImagePartly(url: URL, maxLength = 10000): Promise<{ content: string; contentType?: string }> {
+		return this.fetchContentPartly(url, maxLength, 'Unable to fetch image for meta tag extraction');
+	}
+
+	private async fetchContentPartly(
+		url: URL,
+		maxLength: number,
+		errorMessage: string
+	): Promise<{ content: string; contentType?: string }> {
 		const source = axios.CancelToken.source();
-		let html = '';
+		let content = '';
+		let contentType: string | undefined;
 
 		try {
 			const response = await axios.get(url.toString(), {
@@ -52,10 +100,13 @@ export class MetaTagExternalUrlService {
 				cancelToken: source.token,
 			});
 
+			const headerValue: unknown = response.headers?.['content-type'];
+			contentType = typeof headerValue === 'string' ? headerValue : undefined;
+
 			const stream = response.data as NodeJS.ReadableStream;
 			stream.on('data', (chunk: Buffer) => {
-				html += chunk.toString('utf-8');
-				if (html.length >= maxLength) {
+				content += chunk.toString('utf-8');
+				if (content.length >= maxLength) {
 					source.cancel(`Request canceled after receiving ${maxLength} characters.`);
 				}
 			});
@@ -68,10 +119,10 @@ export class MetaTagExternalUrlService {
 			// mocking the internal axios cancelation mechanism (including throwing this cancelation error) was not possible... so:
 			// istanbul ignore next
 			if (!axios.isCancel(error)) {
-				throw new InvalidLinkUrlLoggableException(url.toString(), 'Unable to fetch html for meta tag extraction');
+				throw new InvalidLinkUrlLoggableException(url.toString(), errorMessage);
 			}
 		}
-		return html.slice(0, maxLength);
+		return { content: content.slice(0, maxLength), contentType };
 	}
 
 	private getImageUrl(images: ImageObject[], url: URL): string | undefined {
