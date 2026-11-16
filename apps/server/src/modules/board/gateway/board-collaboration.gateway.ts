@@ -2,6 +2,7 @@ import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { Inject, UsePipes } from '@nestjs/common';
+import { type CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -53,7 +54,7 @@ import {
 import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
 
 // Using a variable here to access the exchange name in the decorator
-const websocketOptions = {
+const websocketOptions: { path: string; cors: CorsOptions } = {
 	path: '',
 	cors: {
 		origin: '',
@@ -80,7 +81,10 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		private readonly metricsService: MetricsService,
 		@Inject(BOARD_CONFIG_TOKEN) private readonly boardConfig: BoardConfig
 	) {
-		websocketOptions.cors.origin = this.boardConfig.hostUrl;
+		websocketOptions.cors.origin = (requestOrigin, callback): void =>
+			requestOrigin === this.boardConfig.hostUrl
+				? callback(null, true)
+				: callback(new Error(`Origin ${requestOrigin ?? ''} is not allowed`), false);
 		websocketOptions.path = this.boardConfig.basePath;
 	}
 
