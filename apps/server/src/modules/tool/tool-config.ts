@@ -35,11 +35,6 @@ export class ToolConfig extends ToolPublicApiConfig {
 	@StringToBoolean()
 	public featureSchulconnexMediaLicenseEnabled = false;
 
-	@ConfigProperty('FEATURE_SCHULCONNEX_GROUP_SCHOOL_MEDIA_LICENSE_ENABLED')
-	@IsBoolean()
-	@StringToBoolean()
-	public featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
-
 	@ConfigProperty('CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES')
 	@IsNumber()
 	@StringToNumber()
