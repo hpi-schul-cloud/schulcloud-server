@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import net from 'net';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/types/lib/types';
+import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import { MetaData, MetaDataEntityType } from '../types';
 
 @Injectable()
 export class MetaTagExternalUrlService {
+	// Prevent SSRF: the agents reject connections to private, loopback, link-local and other non-public IPs.
+	// The check happens on the resolved IP at connect time, so it also covers DNS rebinding and redirects.
+	private readonly httpAgent = new RequestFilteringHttpAgent();
+
+	private readonly httpsAgent = new RequestFilteringHttpsAgent();
+
 	public async tryExtractMetaTags(url: URL): Promise<MetaData | undefined> {
 		try {
 			const html = await this.fetchHtmlPartly(url);
@@ -17,7 +25,7 @@ export class MetaTagExternalUrlService {
 
 			const { ogTitle, ogDescription, ogImage } = result;
 			const imageUrl = this.getImageUrl(ogImage, url);
-			const originalImageUrl = imageUrl && (await this.isAllowedImage(new URL(imageUrl))) ? imageUrl : undefined;
+			const originalImageUrl = imageUrl && (await this.isAllowedImage(imageUrl)) ? imageUrl.toString() : undefined;
 
 			return {
 				title: ogTitle ?? '',
@@ -44,6 +52,10 @@ export class MetaTagExternalUrlService {
 	}
 
 	private async isAllowedImage(imageUrl: URL): Promise<boolean> {
+		if (!this.isAllowedImageUrl(imageUrl)) {
+			return false;
+		}
+
 		let image: { content: string; contentType?: string };
 		try {
 			image = await this.fetchImagePartly(imageUrl);
@@ -62,6 +74,14 @@ export class MetaTagExternalUrlService {
 			this.isSvgContent(content);
 
 		return !isSvg;
+	}
+
+	// same restrictions as for the page url (see MetaTagExtractorService.parseValidUrl)
+	private isAllowedImageUrl(imageUrl: URL): boolean {
+		const isHttps = imageUrl.protocol === 'https:';
+		const isIpAddress = net.isIP(imageUrl.hostname.replace(/^\[|\]$/g, '')) !== 0;
+
+		return isHttps && !isIpAddress;
 	}
 
 	private isSvgContent(content: string): boolean {
@@ -98,6 +118,8 @@ export class MetaTagExternalUrlService {
 				headers: { 'User-Agent': 'Open Graph Scraper' },
 				responseType: 'stream',
 				cancelToken: source.token,
+				httpAgent: this.httpAgent,
+				httpsAgent: this.httpsAgent,
 			});
 
 			const headerValue: unknown = response.headers?.['content-type'];
@@ -125,7 +147,7 @@ export class MetaTagExternalUrlService {
 		return { content: content.slice(0, maxLength), contentType };
 	}
 
-	private getImageUrl(images: ImageObject[], url: URL): string | undefined {
+	private getImageUrl(images: ImageObject[], url: URL): URL | undefined {
 		const image = this.pickImage(images);
 		if (!image) {
 			return undefined;
@@ -135,7 +157,7 @@ export class MetaTagExternalUrlService {
 		baseUrl.pathname = '';
 
 		const imageUrl = new URL(image.url, baseUrl.toString());
-		return imageUrl.toString();
+		return imageUrl;
 	}
 
 	private pickImage(images: ImageObject[], minWidth = 400): ImageObject | undefined {

@@ -1,6 +1,7 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 import axios, { type CancelTokenSource } from 'axios';
 import Stream from 'node:stream';
+import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 
 jest.mock('axios');
@@ -202,6 +203,59 @@ describe(MetaTagExternalUrlService.name, () => {
 					'https://example.com/rock.jpg',
 					expect.objectContaining({ responseType: 'stream' })
 				);
+			});
+
+			it('should use request filtering agents for page and image requests', async () => {
+				const url = new URL('https://de.wikipedia.org/example-article');
+
+				const cancelTokenSource = createCancelTokenSource();
+				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+				const ogImages = [{ name: 'rock.jpg', width: 2000 }];
+
+				mockedAxios.get
+					.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+					.mockResolvedValueOnce({ data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']) });
+
+				await service.tryExtractMetaTags(url);
+
+				const expectedAgents = expect.objectContaining({
+					httpAgent: expect.any(RequestFilteringHttpAgent),
+					httpsAgent: expect.any(RequestFilteringHttpsAgent),
+				});
+				expect(mockedAxios.get).toHaveBeenNthCalledWith(1, url.toString(), expectedAgents);
+				expect(mockedAxios.get).toHaveBeenNthCalledWith(2, 'https://example.com/rock.jpg', expectedAgents);
+			});
+
+			describe('when the image url is not allowed', () => {
+				const setup = (imageUrl: string) => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const title = 'Great Title';
+					const html = `<html><head><title>${title}</title><meta property="og:image" content="${imageUrl}" /></head></html>`;
+
+					mockedAxios.get.mockResolvedValueOnce({ data: mockReadstream([html]) });
+
+					return { url, title };
+				};
+
+				it.each([
+					['http scheme', 'http://example.com/rock.jpg'],
+					['ftp scheme', 'ftp://example.com/rock.jpg'],
+					['IPv4 address', 'https://127.0.0.1/rock.jpg'],
+					['IPv6 address', 'https://[::1]/rock.jpg'],
+				])('should not fetch the image and return no image for %s', async (_, imageUrl) => {
+					const { url, title } = setup(imageUrl);
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.title).toEqual(title);
+					expect(result?.originalImageUrl).toBeUndefined();
+					expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+				});
 			});
 
 			describe('when the image is an svg', () => {
