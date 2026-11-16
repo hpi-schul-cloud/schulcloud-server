@@ -104,8 +104,20 @@ describe(BoardCollaborationGateway.name, () => {
 
 		em.clear();
 
-		return { columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
+		return { columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes, teacherAuthJwt };
 	};
+
+	describe('origin validation', () => {
+		it('should reject a connection attempt from an unknown origin', async () => {
+			const { teacherAuthJwt } = await setup();
+
+			const maliciousClient = await getSocketApiClient(app, teacherAuthJwt, 'https://evil.example');
+
+			const error = await waitForEvent(maliciousClient, 'connect_error');
+
+			expect(error).toBeDefined();
+		});
+	});
 
 	describe('validation errors', () => {
 		it('should answer with failure', async () => {
