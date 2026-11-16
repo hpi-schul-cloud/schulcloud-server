@@ -117,6 +117,21 @@ describe(BoardCollaborationGateway.name, () => {
 
 			expect(error).toBeDefined();
 		});
+
+		it('should accept a connection attempt without an Origin header (same-origin simple request)', async () => {
+			const { teacherAuthJwt } = await setup();
+
+			const sameOriginClient = await getSocketApiClient(app, teacherAuthJwt, null);
+
+			const connectedSocket = await new Promise<unknown>((resolve, reject) => {
+				sameOriginClient.on('connect', () => resolve(sameOriginClient));
+				sameOriginClient.on('connect_error', reject);
+			});
+
+			expect(connectedSocket).toBeDefined();
+
+			sameOriginClient.disconnect();
+		});
 	});
 
 	describe('validation errors', () => {

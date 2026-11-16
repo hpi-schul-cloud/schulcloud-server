@@ -85,13 +85,17 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	) {
 		this.logger.setContext(BoardCollaborationGateway.name);
 		websocketOptions.cors.origin = (requestOrigin, callback): void => {
-			if (requestOrigin === this.boardConfig.hostUrl) {
+			// Browsers omit the Origin header for simple same-origin GET requests (e.g. the initial
+			// polling handshake), so a missing header is treated as same-origin and allowed. A real
+			// cross-site request always sends a (then mismatching) Origin header and gets rejected.
+			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Origin
+			if (requestOrigin === undefined || requestOrigin === this.boardConfig.hostUrl) {
 				callback(null, true);
 			} else {
 				this.logger.warn(
-					`Rejected websocket connection attempt from disallowed origin "${requestOrigin ?? ''}", expected "${this.boardConfig.hostUrl}"`
+					`Rejected websocket connection attempt from disallowed origin "${requestOrigin}", expected "${this.boardConfig.hostUrl}"`
 				);
-				callback(new Error(`Origin ${requestOrigin ?? ''} is not allowed`), false);
+				callback(new Error(`Origin ${requestOrigin} is not allowed`), false);
 			}
 		};
 		websocketOptions.path = this.boardConfig.basePath;
