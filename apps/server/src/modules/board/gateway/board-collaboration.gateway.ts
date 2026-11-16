@@ -1,4 +1,5 @@
 import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
+import { LegacyLogger } from '@infra/logger';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { Inject, UsePipes } from '@nestjs/common';
@@ -79,12 +80,20 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
+		private readonly logger: LegacyLogger,
 		@Inject(BOARD_CONFIG_TOKEN) private readonly boardConfig: BoardConfig
 	) {
-		websocketOptions.cors.origin = (requestOrigin, callback): void =>
-			requestOrigin === this.boardConfig.hostUrl
-				? callback(null, true)
-				: callback(new Error(`Origin ${requestOrigin ?? ''} is not allowed`), false);
+		this.logger.setContext(BoardCollaborationGateway.name);
+		websocketOptions.cors.origin = (requestOrigin, callback): void => {
+			if (requestOrigin === this.boardConfig.hostUrl) {
+				callback(null, true);
+			} else {
+				this.logger.warn(
+					`Rejected websocket connection attempt from disallowed origin "${requestOrigin ?? ''}", expected "${this.boardConfig.hostUrl}"`
+				);
+				callback(new Error(`Origin ${requestOrigin ?? ''} is not allowed`), false);
+			}
+		};
 		websocketOptions.path = this.boardConfig.basePath;
 	}
 
