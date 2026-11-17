@@ -99,7 +99,17 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	private getCurrentUser(socket: Socket): ICurrentUser {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
+		this.trackSchoolConnection(socket, user.schoolId);
 		return user;
+	}
+
+	private trackSchoolConnection(socket: Socket, schoolId: string): void {
+		if (this.connectedSchoolsBySocketId.has(socket.id)) {
+			return;
+		}
+
+		this.connectedSchoolsBySocketId.set(socket.id, schoolId);
+		this.metricsService.incrementSchoolConnectionCount(schoolId);
 	}
 
 	public handleConnection(socket: Socket): void {
@@ -110,8 +120,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 			return;
 		}
 
-		this.connectedSchoolsBySocketId.set(socket.id, user.schoolId);
-		this.metricsService.incrementSchoolConnectionCount(user.schoolId);
+		this.trackSchoolConnection(socket, user.schoolId);
 	}
 
 	public handleDisconnect(socket: Socket): void {

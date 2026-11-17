@@ -109,6 +109,31 @@ describe(BoardCollaborationGateway.name, () => {
 	};
 
 	describe('connection metrics', () => {
+		it('should start tracking a socket when its authenticated user becomes available after connect', () => {
+			const gateway = app.get(BoardCollaborationGateway);
+			const metricsService = app.get(MetricsService);
+			const incrementSpy = jest.spyOn(metricsService, 'incrementSchoolConnectionCount');
+			const decrementSpy = jest.spyOn(metricsService, 'decrementSchoolConnectionCount');
+			const socket = {
+				id: 'late-auth-metrics-test-socket',
+				handshake: { user: undefined },
+			} as unknown as ServerSocket;
+
+			gateway.handleConnection(socket);
+			socket.handshake.user = { schoolId: 'metrics-test-school' } as NonNullable<ServerSocket['handshake']['user']>;
+			gateway['getCurrentUser'](socket);
+			gateway['getCurrentUser'](socket);
+			socket.handshake.user = undefined;
+			gateway.handleDisconnect(socket);
+
+			expect(incrementSpy).toHaveBeenCalledTimes(1);
+			expect(incrementSpy).toHaveBeenCalledWith('metrics-test-school');
+			expect(decrementSpy).toHaveBeenCalledTimes(1);
+			expect(decrementSpy).toHaveBeenCalledWith('metrics-test-school');
+			incrementSpy.mockRestore();
+			decrementSpy.mockRestore();
+		});
+
 		it('should decrement the school recorded at connect when handshake user is unavailable at disconnect', () => {
 			const gateway = app.get(BoardCollaborationGateway);
 			const metricsService = app.get(MetricsService);
