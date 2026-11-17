@@ -70,6 +70,8 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	@WebSocketServer()
 	private readonly server!: Server;
 
+	private readonly connectedSchoolsBySocketId = new Map<string, string>();
+
 	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly orm: MikroORM,
@@ -103,14 +105,24 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	public handleConnection(socket: Socket): void {
 		this.updateTotalUserCount();
 		this.updateTotalBoardCount();
-		const { schoolId } = this.getCurrentUser(socket);
-		this.metricsService.incrementSchoolConnectionCount(schoolId);
+		const { user } = socket.handshake;
+		if (!user) {
+			return;
+		}
+
+		this.connectedSchoolsBySocketId.set(socket.id, user.schoolId);
+		this.metricsService.incrementSchoolConnectionCount(user.schoolId);
 	}
 
 	public handleDisconnect(socket: Socket): void {
 		this.updateTotalUserCount();
 		this.updateTotalBoardCount();
-		const { schoolId } = this.getCurrentUser(socket);
+		const schoolId = this.connectedSchoolsBySocketId.get(socket.id);
+		if (schoolId === undefined) {
+			return;
+		}
+
+		this.connectedSchoolsBySocketId.delete(socket.id);
 		this.metricsService.decrementSchoolConnectionCount(schoolId);
 	}
 
