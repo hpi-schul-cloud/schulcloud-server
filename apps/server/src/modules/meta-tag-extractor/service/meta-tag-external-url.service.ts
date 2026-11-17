@@ -10,7 +10,9 @@ import { MetaData, MetaDataEntityType } from '../types';
 
 const FETCH_TIMEOUT_MS = 10000;
 
-const SUPPORTED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
+const BINARY_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
+const DYNAMIC_IMAGE_EXTENSIONS = ['.php', '.asp', '.aspx', '.ashx', '.jsp', '.do', '.action', '.cfm', '.cgi', '.pl'];
+const SUPPORTED_IMAGE_EXTENSIONS = new Set([...BINARY_IMAGE_EXTENSIONS, ...DYNAMIC_IMAGE_EXTENSIONS]);
 
 @Injectable()
 export class MetaTagExternalUrlService {
@@ -227,7 +229,7 @@ export class MetaTagExternalUrlService {
 			const { pathname } = new URL(imageUrl, 'https://base.invalid');
 			const extension = posix.extname(pathname).toLowerCase();
 
-			return extension === '' || SUPPORTED_IMAGE_EXTENSIONS.includes(extension);
+			return extension === '' || SUPPORTED_IMAGE_EXTENSIONS.has(extension);
 		} catch {
 			return false;
 		}

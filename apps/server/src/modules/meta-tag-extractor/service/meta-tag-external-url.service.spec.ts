@@ -558,7 +558,7 @@ describe(MetaTagExternalUrlService.name, () => {
 					const ogImages = [
 						{ name: 'logo.svg', width: 500 },
 						{ name: 'banner.bmp', width: 600 },
-						{ name: 'image.php', width: 700 },
+						{ name: 'document.pdf', width: 700 },
 						{ name: 'rock.jpg', width: 2000 },
 					];
 
@@ -615,7 +615,7 @@ describe(MetaTagExternalUrlService.name, () => {
 			});
 
 			describe('when checking the file extension of the image url', () => {
-				const setup = (imageName: string) => {
+				const setup = (imageName: string, imageBytes: Buffer | string = jpegBytes) => {
 					const url = new URL('https://de.wikipedia.org/example-article');
 
 					const cancelTokenSource = createCancelTokenSource();
@@ -625,7 +625,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 					mockedAxios.get
 						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
-						.mockResolvedValueOnce({ data: mockReadstream([jpegBytes]) });
+						.mockResolvedValueOnce({ data: mockReadstream([imageBytes]) });
 
 					return { url };
 				};
@@ -641,17 +641,56 @@ describe(MetaTagExternalUrlService.name, () => {
 					}
 				);
 
-				it.each(['logo.svg', 'logo.svgz', 'icon.ico', 'image.bmp', 'photo.heic', 'image.php', 'image.jpg.svg'])(
-					'should drop %s without fetching it',
-					async (imageName) => {
+				describe('when the image is served by a dynamic image generator', () => {
+					it.each([
+						'thumb.php?src=photo',
+						'legacy/image.asp?id=1',
+						'GetImage.aspx?id=1',
+						'ImageHandler.ashx?id=1',
+						'image.jsp?id=1',
+						'showImage.do?id=1',
+						'image.action?id=1',
+						'image.CFM?id=1',
+						'cgi-bin/thumb.cgi?id=1',
+						'cgi-bin/thumb.pl?id=1',
+					])('should fetch and keep %s if it returns a raster image', async (imageName) => {
 						const { url } = setup(imageName);
 
 						const result = await service.tryExtractMetaTags(url);
 
+						expect(result?.originalImageUrl).toEqual(`https://example.com/${imageName}`);
+						expect(mockedAxios.get).toHaveBeenNthCalledWith(2, `https://example.com/${imageName}`, expect.anything());
+					});
+
+					it('should drop the image if it returns an svg', async () => {
+						const { url } = setup('thumb.php?src=logo', '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+
+						const result = await service.tryExtractMetaTags(url);
+
 						expect(result?.originalImageUrl).toBeUndefined();
-						expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-					}
-				);
+						expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+					});
+				});
+
+				it.each([
+					'logo.svg',
+					'logo.svgz',
+					'icon.ico',
+					'image.bmp',
+					'photo.heic',
+					'image.jpg.svg',
+					'chart.axd?id=1',
+					'document.pdf',
+					'page.html',
+					'image.php.svg',
+				])('should drop %s without fetching it', async (imageName) => {
+					const { url } = setup(imageName);
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.originalImageUrl).toBeUndefined();
+					expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+				});
 			});
 		});
 
