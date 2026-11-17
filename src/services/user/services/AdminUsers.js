@@ -5,7 +5,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 
 const { Forbidden, BadRequest } = require('../../../errors');
-const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
+const { hasSchoolPermission, blockDisposableEmail, restrictToCurrentSchool, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { sendRegistrationLink, protectImmutableAttributes } = require('../hooks/userService');
 
@@ -28,6 +28,12 @@ class AdminUsers {
 			});
 			this.role = role.data[0];
 		}
+	}
+
+	async get(_id, _params) {
+		if (!_id) throw new BadRequest('id is required');
+		const user = await this.app.service('usersModel').get(_id, _params);
+		return user;
 	}
 
 	async create(_data, _params) {
@@ -54,6 +60,7 @@ class AdminUsers {
 		await this.setRole();
 		const params = await this.prepareParams(_id, _params);
 		await this.checkIfExternallyManaged(params.query.schoolId);
+		await this.checkIfUserIsEditable(params.query);
 
 		const { email, password, createAccount } = _data;
 		await this.checkMail(email, _id);
@@ -91,6 +98,16 @@ class AdminUsers {
 		if (isExternal) {
 			throw new Forbidden('Creating, editing, or removing students or teachers is only possible in the source system.');
 		}
+	}
+
+	/**
+	 * The user must match the restricted query (id, role and school) before
+	 * anything else, like the account, is changed.
+	 * @param {Object} query - restricted query created by prepareParams
+	 */
+	async checkIfUserIsEditable(query) {
+		const user = await userModel.exists(query);
+		if (!user) throw new BadRequest('user could not be edit');
 	}
 
 	/**
@@ -173,9 +190,9 @@ class AdminUsers {
 const adminHookGenerator = (kind) => ({
 	before: {
 		all: [authenticate('jwt')],
-		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
-		update: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
-		patch: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
+		create: [restrictToCurrentSchool, hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
+		update: [restrictToCurrentSchool,hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
+		patch: [restrictToCurrentSchool, hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
 	},
 	after: {
 		all: [transformToDataTransferObject],
