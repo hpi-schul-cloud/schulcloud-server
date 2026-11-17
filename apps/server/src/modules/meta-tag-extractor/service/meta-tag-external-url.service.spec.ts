@@ -381,6 +381,64 @@ describe(MetaTagExternalUrlService.name, () => {
 
 					expect(result?.originalImageUrl).toBeUndefined();
 				});
+
+				describe('when the content is an ISO-BMFF ftyp box', () => {
+					const ftypBox = ({
+						majorBrand,
+						minorVersion = '\x00\x00\x00\x00',
+						compatibleBrands = [],
+						declaredSize,
+					}: {
+						majorBrand: string;
+						minorVersion?: string;
+						compatibleBrands?: string[];
+						declaredSize?: number;
+					}): Buffer => {
+						const body = Buffer.from(`ftyp${majorBrand}${minorVersion}${compatibleBrands.join('')}`, 'latin1');
+						const size = Buffer.alloc(4);
+						size.writeUInt32BE(declaredSize ?? body.length + 4);
+						return Buffer.concat([size, body]);
+					};
+
+					it.each([
+						['major brand avif', ftypBox({ majorBrand: 'avif' })],
+						['major brand avis', ftypBox({ majorBrand: 'avis' })],
+						['compatible brand avif', ftypBox({ majorBrand: 'mif1', compatibleBrands: ['miaf', 'avif'] })],
+						['compatible brand avis', ftypBox({ majorBrand: 'msf1', compatibleBrands: ['avis'] })],
+						[
+							'declared box size larger than the received content',
+							ftypBox({ majorBrand: 'avif', declaredSize: 0x10000 }),
+						],
+					])('should return the image for %s', async (_, imageBytes) => {
+						const { url } = setup(imageBytes);
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.originalImageUrl).toEqual('https://example.com/image');
+					});
+
+					it.each([
+						['heic brands only', ftypBox({ majorBrand: 'heic', compatibleBrands: ['mif1', 'heic'] })],
+						['mp4 brands only', ftypBox({ majorBrand: 'isom', compatibleBrands: ['iso2', 'mp41'] })],
+						['avif only as minor version', ftypBox({ majorBrand: 'mif1', minorVersion: 'avif' })],
+						[
+							'avif outside the declared box size',
+							ftypBox({ majorBrand: 'mif1', compatibleBrands: ['miaf', 'avif'], declaredSize: 20 }),
+						],
+						[
+							'avif beyond the sampled 64 bytes',
+							ftypBox({ majorBrand: 'mif1', compatibleBrands: [...Array<string>(12).fill('miaf'), 'avif'] }),
+						],
+						['truncated compatible brand', ftypBox({ majorBrand: 'mif1', compatibleBrands: ['av'], declaredSize: 24 })],
+						['avif brand without ftyp box', Buffer.from('\x00\x00\x00\x18moovavif', 'latin1')],
+					])('should return no image for %s', async (_, imageBytes) => {
+						const { url } = setup(imageBytes);
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.originalImageUrl).toBeUndefined();
+					});
+				});
 			});
 
 			describe('when the image could not be fetched', () => {

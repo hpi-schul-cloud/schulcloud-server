@@ -93,9 +93,24 @@ export class MetaTagExternalUrlService {
 		const isPng = startsWith([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 		const isGif = asciiAt('GIF87a') || asciiAt('GIF89a');
 		const isWebp = asciiAt('RIFF') && asciiAt('WEBP', 8);
-		const isAvif = asciiAt('ftyp', 4) && (asciiAt('avif', 8) || asciiAt('avis', 8));
+		const isAvif = this.isAvif(content);
 
 		return isJpeg || isPng || isGif || isWebp || isAvif;
+	}
+
+	private isAvif(content: Buffer): boolean {
+		const asciiAt = (text: string, offset = 0): boolean =>
+			content.subarray(offset, offset + text.length).toString('latin1') === text;
+
+		if (asciiAt('ftyp', 4)) {
+			const boxEnd = Math.min(content.readUInt32BE(0), content.length);
+			for (let offset = 8; offset + 4 <= boxEnd; offset += 4) {
+				if (offset !== 12 && (asciiAt('avif', offset) || asciiAt('avis', offset))) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private async fetchHtmlPartly(url: URL, maxLength = 50000, timeoutMs = FETCH_TIMEOUT_MS): Promise<string> {
