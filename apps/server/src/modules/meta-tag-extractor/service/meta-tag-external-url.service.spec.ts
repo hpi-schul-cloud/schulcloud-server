@@ -490,6 +490,110 @@ describe(MetaTagExternalUrlService.name, () => {
 
 					expect(result?.originalImageUrl).toEqual('https://example.com/paper.jpg');
 				});
+
+				it('should skip images with unsupported file extensions', async () => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const ogImages = [
+						{ name: 'logo.svg', width: 500 },
+						{ name: 'banner.bmp', width: 600 },
+						{ name: 'image.php', width: 700 },
+						{ name: 'rock.jpg', width: 2000 },
+					];
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+						.mockResolvedValueOnce({ data: mockReadstream([jpegBytes]) });
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.originalImageUrl).toEqual('https://example.com/rock.jpg');
+					expect(mockedAxios.get).toHaveBeenNthCalledWith(2, 'https://example.com/rock.jpg', expect.anything());
+				});
+			});
+
+			describe('when images have no width', () => {
+				it('should fall back to the first image with supported file extension', async () => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const html = `<html><head>
+						<meta property="og:image" content="https://example.com/logo.svg" />
+						<meta property="og:image" content="https://example.com/photo.png" />
+					</head></html>`;
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([html]) })
+						.mockResolvedValueOnce({ data: mockReadstream([jpegBytes]) });
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.originalImageUrl).toEqual('https://example.com/photo.png');
+				});
+			});
+
+			describe('when the image url is malformed', () => {
+				it('should return the meta data without image', async () => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const title = 'Great Title';
+					const html = `<html><head><title>${title}</title><meta property="og:image" content="https://[invalid/photo.png" /></head></html>`;
+
+					mockedAxios.get.mockResolvedValueOnce({ data: mockReadstream([html]) });
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.title).toEqual(title);
+					expect(result?.originalImageUrl).toBeUndefined();
+				});
+			});
+
+			describe('when checking the file extension of the image url', () => {
+				const setup = (imageName: string) => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const ogImages = [{ name: imageName, width: 2000 }];
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+						.mockResolvedValueOnce({ data: mockReadstream([jpegBytes]) });
+
+					return { url };
+				};
+
+				it.each(['photo.JPEG', 'photo.png?size=large', 'photo.webp#preview', 'photo.gif', 'photo.avif', 'image'])(
+					'should keep %s',
+					async (imageName) => {
+						const { url } = setup(imageName);
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.originalImageUrl).toEqual(`https://example.com/${imageName}`);
+					}
+				);
+
+				it.each(['logo.svg', 'logo.svgz', 'icon.ico', 'image.bmp', 'photo.heic', 'image.php', 'image.jpg.svg'])(
+					'should drop %s without fetching it',
+					async (imageName) => {
+						const { url } = setup(imageName);
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.originalImageUrl).toBeUndefined();
+						expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+					}
+				);
 			});
 		});
 

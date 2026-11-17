@@ -3,11 +3,14 @@ import axios from 'axios';
 import net from 'net';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/types/lib/types';
+import { posix } from 'path';
 import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import { MetaData, MetaDataEntityType } from '../types';
 
 const FETCH_TIMEOUT_MS = 10000;
+
+const SUPPORTED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
 
 @Injectable()
 export class MetaTagExternalUrlService {
@@ -196,10 +199,22 @@ export class MetaTagExternalUrlService {
 	}
 
 	private pickImage(images: ImageObject[], minWidth = 400): ImageObject | undefined {
-		const sortedImages = [...images];
+		const supportedImages = images.filter((image) => this.hasSupportedFileExtension(image.url));
+		const sortedImages = [...supportedImages];
 		sortedImages.sort((a, b) => (a.width && b.width ? Number(a.width) - Number(b.width) : 0));
 		const smallestBigEnoughImage = sortedImages.find((i) => i.width && i.width >= minWidth);
-		const fallbackImage = images[0] && images[0].width === undefined ? images[0] : undefined;
+		const fallbackImage = supportedImages[0] && supportedImages[0].width === undefined ? supportedImages[0] : undefined;
 		return smallestBigEnoughImage ?? fallbackImage;
+	}
+
+	private hasSupportedFileExtension(imageUrl: string): boolean {
+		try {
+			const { pathname } = new URL(imageUrl, 'https://base.invalid');
+			const extension = posix.extname(pathname).toLowerCase();
+
+			return extension === '' || SUPPORTED_IMAGE_EXTENSIONS.includes(extension);
+		} catch {
+			return false;
+		}
 	}
 }
