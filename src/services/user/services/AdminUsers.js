@@ -149,6 +149,7 @@ class AdminUsers {
 
 	/**
 	 * Update the account email if email will be changed on user.
+	 * Accounts of external systems keep the username of their system.
 	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
 	 * @param {*} email
 	 * @param {*} userId
@@ -157,7 +158,7 @@ class AdminUsers {
 		if (email) {
 			email = email.toLowerCase();
 			const account = await this.app.service('nest-account-service').findByUserId(userId.toString());
-			if (account) {
+			if (account && !account.systemId) {
 				await this.app.service('nest-account-service').updateUsername(account.id, email);
 			}
 		}
@@ -176,7 +177,9 @@ class AdminUsers {
 			if (email) {
 				const { email: oldMail } = await this.app.service('usersModel').get(userId);
 				const account = await this.app.service('nest-account-service').findByUserIdOrFail(userId.toString());
-				await this.app.service('nest-account-service').updateUsername(account.id, oldMail);
+				if (!account.systemId) {
+					await this.app.service('nest-account-service').updateUsername(account.id, oldMail);
+				}
 			}
 			throw err;
 		}

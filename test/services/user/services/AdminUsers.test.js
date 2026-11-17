@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const sinon = require('sinon');
 const { MethodNotAllowed } = require('@feathersjs/errors');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
@@ -291,11 +292,39 @@ describe('AdminUsersService', () => {
 			expect(notUpdatedAccount.username).equals(username);
 		};
 
-		// TODO: AdminUsers.updateAccount does not skip accounts of external systems yet, so the username is changed anyway
-		it.skip('do not update account if from external system (student, patch)', () =>
+		it('do not update account if from external system (student, patch)', () =>
 			doNotUpdateAccountIfSystemIdIsSet('student', 'patch', adminStudentsService));
-		it.skip('do not update account if from external system (teacher, patch)', () =>
+		it('do not update account if from external system (teacher, patch)', () =>
 			doNotUpdateAccountIfSystemIdIsSet('teacher', 'patch', adminTeachersService));
+
+		const patchEmailWhileSavingTheUserFails = async (isExternalAccount) => {
+			const school = await testObjects.createTestSchool();
+			const system = isExternalAccount ? await testObjects.createTestSystem() : null;
+			const user = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+			const username = isExternalAccount ? 'hans-kunz' : user.email;
+			const account = await testObjects.createTestAccount({ username, password: 'password' }, system, user);
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+			params.query = {};
+
+			const usersModelPatch = sinon
+				.stub(app.service('usersModel'), 'patch')
+				.rejects(new Error('saving the user failed'));
+			try {
+				await expect(
+					adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz' }, params)
+				).to.be.rejectedWith('saving the user failed');
+			} finally {
+				usersModelPatch.restore();
+			}
+
+			const notUpdatedAccount = await accountService.findById(account.id);
+			expect(notUpdatedAccount.username).to.equal(username);
+		};
+
+		it('restores the account username if saving the user fails', () => patchEmailWhileSavingTheUserFails(false));
+		it('does not change the account of an external system if saving the user fails', () =>
+			patchEmailWhileSavingTheUserFails(true));
 
 		const doNotPatchUserIfExternallyManaged = async (role, type, service) => {
 			const school = await testObjects.createTestSchool({
