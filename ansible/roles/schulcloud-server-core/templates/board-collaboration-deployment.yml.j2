@@ -70,6 +70,24 @@ spec:
         - secretRef:
             name: session-valkey-password
         command: ['/nodejs/bin/node', 'dist/apps/server/apps/board-collaboration.app']
+        readinessProbe:
+          tcpSocket:
+            port: 4450
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 4450
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          tcpSocket:
+            port: 4450
+          timeoutSeconds: 4
+          failureThreshold: 36
+          periodSeconds: 5
         resources:
           limits:
             cpu: {{ BOARD_COLLABORATION_CPU_LIMITS|default("2000m", true) }}
