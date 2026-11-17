@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import net from 'net';
+import net from 'node:net';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/types/lib/types';
-import { posix } from 'path';
+import { posix } from 'node:path';
 import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import { MetaData, MetaDataEntityType } from '../types';
