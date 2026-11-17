@@ -71,20 +71,26 @@ spec:
             name: session-valkey-password
         command: ['/nodejs/bin/node', 'dist/apps/server/apps/board-collaboration.app']
         readinessProbe:
-          tcpSocket:
+          httpGet:
+            path: /internal/health
             port: 4450
+            scheme: HTTP
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 5
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: /internal/health
             port: 4450
+            scheme: HTTP
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
-          tcpSocket:
+          httpGet:
+            path: /internal/health
             port: 4450
+            scheme: HTTP
           timeoutSeconds: 4
           failureThreshold: 36
           periodSeconds: 5
