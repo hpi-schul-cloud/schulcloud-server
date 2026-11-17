@@ -58,7 +58,7 @@ export class MetaTagExternalUrlService {
 			return false;
 		}
 
-		let image: { content: string; contentType?: string };
+		let image: { content: Buffer; contentType?: string };
 		try {
 			image = await this.fetchImagePartly(imageUrl);
 		} catch {
@@ -66,16 +66,9 @@ export class MetaTagExternalUrlService {
 		}
 
 		const { content, contentType } = image;
-		if (!content) {
-			return false;
-		}
+		const isDeclaredAsSvg = /\.svgz?$/i.test(imageUrl.pathname) || /^image\/svg\+xml\b/i.test(contentType ?? '');
 
-		const isSvg =
-			/\.svgz?$/i.test(imageUrl.pathname) ||
-			/^image\/svg\+xml\b/i.test(contentType ?? '') ||
-			this.isSvgContent(content);
-
-		return !isSvg;
+		return !isDeclaredAsSvg && this.isSupportedRasterImage(content);
 	}
 
 	// same restrictions as for the page url (see MetaTagExtractorService.parseValidUrl)
@@ -86,15 +79,20 @@ export class MetaTagExternalUrlService {
 		return isHttps && !isIpAddress;
 	}
 
-	private isSvgContent(content: string): boolean {
-		const contentWithoutPreamble = content
-			.replace(/^\uFEFF/, '')
-			.replace(/<\?xml[\s\S]*?\?>/gi, '')
-			.replace(/<!--[\s\S]*?-->/g, '')
-			.replace(/<!DOCTYPE[^>[]*(\[[\s\S]*?\])?\s*>/gi, '')
-			.trimStart();
+	// Allowlist by magic bytes: anything not positively identified (e.g. SVG in any XML form, empty or truncated content) is rejected.
+	private isSupportedRasterImage(content: Buffer): boolean {
+		const startsWith = (bytes: number[], offset = 0): boolean =>
+			content.length >= offset + bytes.length && bytes.every((byte, index) => content[offset + index] === byte);
+		const asciiAt = (text: string, offset = 0): boolean =>
+			content.subarray(offset, offset + text.length).toString('latin1') === text;
 
-		return /^<svg[\s>]/i.test(contentWithoutPreamble);
+		const isJpeg = startsWith([0xff, 0xd8, 0xff]);
+		const isPng = startsWith([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+		const isGif = asciiAt('GIF87a') || asciiAt('GIF89a');
+		const isWebp = asciiAt('RIFF') && asciiAt('WEBP', 8);
+		const isAvif = asciiAt('ftyp', 4) && (asciiAt('avif', 8) || asciiAt('avis', 8));
+
+		return isJpeg || isPng || isGif || isWebp || isAvif;
 	}
 
 	private async fetchHtmlPartly(url: URL, maxLength = 50000, timeoutMs = FETCH_TIMEOUT_MS): Promise<string> {
@@ -104,14 +102,14 @@ export class MetaTagExternalUrlService {
 			timeoutMs,
 			'Unable to fetch html for meta tag extraction'
 		);
-		return content;
+		return content.toString('utf-8').slice(0, maxLength);
 	}
 
 	private fetchImagePartly(
 		url: URL,
-		maxLength = 10000,
+		maxLength = 64,
 		timeoutMs = FETCH_TIMEOUT_MS
-	): Promise<{ content: string; contentType?: string }> {
+	): Promise<{ content: Buffer; contentType?: string }> {
 		return this.fetchContentPartly(url, maxLength, timeoutMs, 'Unable to fetch image for meta tag extraction');
 	}
 
@@ -120,9 +118,10 @@ export class MetaTagExternalUrlService {
 		maxLength: number,
 		timeoutMs: number,
 		errorMessage: string
-	): Promise<{ content: string; contentType?: string }> {
+	): Promise<{ content: Buffer; contentType?: string }> {
 		const source = axios.CancelToken.source();
-		let content = '';
+		const chunks: Buffer[] = [];
+		let receivedLength = 0;
 		let contentType: string | undefined;
 		let stream: NodeJS.ReadableStream | undefined;
 		let timedOut = false;
@@ -152,10 +151,12 @@ export class MetaTagExternalUrlService {
 
 			const responseStream = response.data as NodeJS.ReadableStream;
 			stream = responseStream;
-			responseStream.on('data', (chunk: Buffer) => {
-				content += chunk.toString('utf-8');
-				if (content.length >= maxLength) {
-					source.cancel(`Request canceled after receiving ${maxLength} characters.`);
+			responseStream.on('data', (chunk: Buffer | string) => {
+				const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+				chunks.push(buffer);
+				receivedLength += buffer.length;
+				if (receivedLength >= maxLength) {
+					source.cancel(`Request canceled after receiving ${maxLength} bytes.`);
 				}
 			});
 
@@ -178,7 +179,7 @@ export class MetaTagExternalUrlService {
 		} finally {
 			clearTimeout(deadlineTimer);
 		}
-		return { content: content.slice(0, maxLength), contentType };
+		return { content: Buffer.concat(chunks).subarray(0, maxLength), contentType };
 	}
 
 	private getImageUrl(images: ImageObject[], url: URL): URL | undefined {

@@ -43,7 +43,9 @@ describe(MetaTagExternalUrlService.name, () => {
 			activeIntervals.length = 0;
 		});
 
-		const mockReadstream = (chunks: string[]) => {
+		const jpegBytes = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
+
+		const mockReadstream = (chunks: (string | Buffer)[]) => {
 			const mockedStream = new Stream.Readable();
 			jest.spyOn(mockedStream, '_read').mockImplementation();
 
@@ -175,7 +177,7 @@ describe(MetaTagExternalUrlService.name, () => {
 				mockedAxios.get
 					.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
 					.mockResolvedValueOnce({
-						data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']),
+						data: mockReadstream([jpegBytes]),
 						headers: { 'content-type': 'image/jpeg' },
 					});
 
@@ -194,7 +196,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 				mockedAxios.get
 					.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
-					.mockResolvedValueOnce({ data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']) });
+					.mockResolvedValueOnce({ data: mockReadstream([jpegBytes]) });
 
 				await service.tryExtractMetaTags(url);
 
@@ -215,7 +217,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 				mockedAxios.get
 					.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
-					.mockResolvedValueOnce({ data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']) });
+					.mockResolvedValueOnce({ data: mockReadstream([jpegBytes]) });
 
 				await service.tryExtractMetaTags(url);
 
@@ -259,7 +261,7 @@ describe(MetaTagExternalUrlService.name, () => {
 			});
 
 			describe('when the image is an svg', () => {
-				const setup = (imageName: string, imageResponse: { chunks: string[]; contentType?: string }) => {
+				const setup = (imageName: string, imageResponse: { chunks: (string | Buffer)[]; contentType?: string }) => {
 					const url = new URL('https://de.wikipedia.org/example-article');
 
 					const cancelTokenSource = createCancelTokenSource();
@@ -279,13 +281,19 @@ describe(MetaTagExternalUrlService.name, () => {
 				};
 
 				describe('when the content is svg', () => {
-					it('should return no image', async () => {
-						const { url, title } = setup('image', {
-							chunks: [
-								'\uFEFF<?xml version="1.0" encoding="UTF-8"?>\n<!-- comment -->\n',
-								'<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n<svg xmlns="http://www.w3.org/2000/svg"></svg>',
-							],
-						});
+					it.each([
+						[
+							'with preamble',
+							'\uFEFF<?xml version="1.0" encoding="UTF-8"?>\n<!-- comment -->\n<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n<svg xmlns="http://www.w3.org/2000/svg"></svg>',
+						],
+						['with namespaced root', '<s:svg xmlns:s="http://www.w3.org/2000/svg"></s:svg>'],
+						[
+							'with processing instruction before root',
+							'<?xml-stylesheet href="style.css"?><svg xmlns="http://www.w3.org/2000/svg"></svg>',
+						],
+						['with comment longer than the sample', `<!--${'a'.repeat(20000)}--><svg></svg>`],
+					])('should return no image %s', async (_, svg) => {
+						const { url, title } = setup('image', { chunks: [svg] });
 
 						const result = await service.tryExtractMetaTags(url);
 
@@ -297,7 +305,7 @@ describe(MetaTagExternalUrlService.name, () => {
 				describe('when the content-type is image/svg+xml', () => {
 					it('should return no image', async () => {
 						const { url } = setup('image', {
-							chunks: ['some content'],
+							chunks: [jpegBytes],
 							contentType: 'image/svg+xml; charset=utf-8',
 						});
 
@@ -309,7 +317,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 				describe('when the file extension is .svg', () => {
 					it('should return no image', async () => {
-						const { url } = setup('logo.SVG', { chunks: ['some content'] });
+						const { url } = setup('logo.SVG', { chunks: [jpegBytes] });
 
 						const result = await service.tryExtractMetaTags(url);
 
@@ -328,6 +336,50 @@ describe(MetaTagExternalUrlService.name, () => {
 
 						expect(result?.originalImageUrl).toBeUndefined();
 					});
+				});
+			});
+
+			describe('when the image format is checked by its content', () => {
+				const setup = (imageBytes: Buffer) => {
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const ogImages = [{ name: 'image', width: 2000 }];
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
+						.mockResolvedValueOnce({ data: mockReadstream([imageBytes]) });
+
+					return { url };
+				};
+
+				it.each([
+					['jpeg', jpegBytes],
+					['png', Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00])],
+					['gif87a', Buffer.from('GIF87a...')],
+					['gif89a', Buffer.from('GIF89a...')],
+					['webp', Buffer.from('RIFF\x00\x00\x00\x00WEBPVP8 ')],
+					['avif', Buffer.from('\x00\x00\x00\x1cftypavif')],
+				])('should return the image for %s', async (_, imageBytes) => {
+					const { url } = setup(imageBytes);
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.originalImageUrl).toEqual('https://example.com/image');
+				});
+
+				it.each([
+					['unknown binary', Buffer.from([0x00, 0x01, 0x02, 0x03])],
+					['html', Buffer.from('<!DOCTYPE html><html></html>')],
+					['truncated png signature', Buffer.from([0x89, 0x50, 0x4e])],
+				])('should return no image for %s', async (_, imageBytes) => {
+					const { url } = setup(imageBytes);
+
+					const result = await service.tryExtractMetaTags(url);
+
+					expect(result?.originalImageUrl).toBeUndefined();
 				});
 			});
 
@@ -377,7 +429,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 				const createStalledStream = () => {
 					const stalledStream = new Stream.Readable({ read: () => {} });
-					stalledStream.push('\xFF\xD8\xFF\xE0JFIF');
+					stalledStream.push(jpegBytes);
 					return stalledStream;
 				};
 
@@ -432,7 +484,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 					mockedAxios.get
 						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ ogImages })]) })
-						.mockResolvedValueOnce({ data: mockReadstream(['\xFF\xD8\xFF\xE0JFIF']) });
+						.mockResolvedValueOnce({ data: mockReadstream([jpegBytes]) });
 
 					const result = await service.tryExtractMetaTags(url);
 
