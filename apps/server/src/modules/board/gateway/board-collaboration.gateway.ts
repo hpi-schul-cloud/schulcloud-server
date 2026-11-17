@@ -100,14 +100,18 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		return user;
 	}
 
-	public handleConnection(): void {
+	public handleConnection(socket: Socket): void {
 		this.updateTotalUserCount();
 		this.updateTotalBoardCount();
+		const { schoolId } = this.getCurrentUser(socket);
+		this.metricsService.incrementSchoolConnectionCount(schoolId);
 	}
 
-	public handleDisconnect(): void {
+	public handleDisconnect(socket: Socket): void {
 		this.updateTotalUserCount();
 		this.updateTotalBoardCount();
+		const { schoolId } = this.getCurrentUser(socket);
+		this.metricsService.decrementSchoolConnectionCount(schoolId);
 	}
 
 	private updateTotalUserCount(): void {
