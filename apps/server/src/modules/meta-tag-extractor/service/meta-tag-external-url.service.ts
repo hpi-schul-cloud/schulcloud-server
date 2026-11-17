@@ -7,6 +7,8 @@ import { RequestFilteringHttpAgent, RequestFilteringHttpsAgent } from 'request-f
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import { MetaData, MetaDataEntityType } from '../types';
 
+const FETCH_TIMEOUT_MS = 10000;
+
 @Injectable()
 export class MetaTagExternalUrlService {
 	// Prevent SSRF: the agents reject connections to private, loopback, link-local and other non-public IPs.
@@ -65,7 +67,7 @@ export class MetaTagExternalUrlService {
 
 		const { content, contentType } = image;
 		if (!content) {
-			return true;
+			return false;
 		}
 
 		const isSvg =
@@ -95,25 +97,48 @@ export class MetaTagExternalUrlService {
 		return /^<svg[\s>]/i.test(contentWithoutPreamble);
 	}
 
-	private async fetchHtmlPartly(url: URL, maxLength = 50000): Promise<string> {
-		const { content } = await this.fetchContentPartly(url, maxLength, 'Unable to fetch html for meta tag extraction');
+	private async fetchHtmlPartly(url: URL, maxLength = 50000, timeoutMs = FETCH_TIMEOUT_MS): Promise<string> {
+		const { content } = await this.fetchContentPartly(
+			url,
+			maxLength,
+			timeoutMs,
+			'Unable to fetch html for meta tag extraction'
+		);
 		return content;
 	}
 
-	private fetchImagePartly(url: URL, maxLength = 10000): Promise<{ content: string; contentType?: string }> {
-		return this.fetchContentPartly(url, maxLength, 'Unable to fetch image for meta tag extraction');
+	private fetchImagePartly(
+		url: URL,
+		maxLength = 10000,
+		timeoutMs = FETCH_TIMEOUT_MS
+	): Promise<{ content: string; contentType?: string }> {
+		return this.fetchContentPartly(url, maxLength, timeoutMs, 'Unable to fetch image for meta tag extraction');
 	}
 
 	private async fetchContentPartly(
 		url: URL,
 		maxLength: number,
+		timeoutMs: number,
 		errorMessage: string
 	): Promise<{ content: string; contentType?: string }> {
 		const source = axios.CancelToken.source();
 		let content = '';
 		let contentType: string | undefined;
+		let stream: NodeJS.ReadableStream | undefined;
+		let timedOut = false;
+		let deadlineTimer: NodeJS.Timeout | undefined;
 
-		try {
+		// absolute deadline covering connection, headers and body streaming
+		const deadline = new Promise<never>((_resolve, reject) => {
+			deadlineTimer = setTimeout(() => {
+				timedOut = true;
+				source.cancel(`Request canceled after ${timeoutMs} ms.`);
+				(stream as { destroy?: () => void } | undefined)?.destroy?.();
+				reject(new Error(`Request timed out after ${timeoutMs} ms.`));
+			}, timeoutMs);
+		});
+
+		const download = async (): Promise<void> => {
 			const response = await axios.get(url.toString(), {
 				headers: { 'User-Agent': 'Open Graph Scraper' },
 				responseType: 'stream',
@@ -125,8 +150,9 @@ export class MetaTagExternalUrlService {
 			const headerValue: unknown = response.headers?.['content-type'];
 			contentType = typeof headerValue === 'string' ? headerValue : undefined;
 
-			const stream = response.data as NodeJS.ReadableStream;
-			stream.on('data', (chunk: Buffer) => {
+			const responseStream = response.data as NodeJS.ReadableStream;
+			stream = responseStream;
+			responseStream.on('data', (chunk: Buffer) => {
 				content += chunk.toString('utf-8');
 				if (content.length >= maxLength) {
 					source.cancel(`Request canceled after receiving ${maxLength} characters.`);
@@ -134,15 +160,23 @@ export class MetaTagExternalUrlService {
 			});
 
 			await new Promise((resolve, reject) => {
-				stream.on('end', resolve);
-				stream.on('error', reject);
+				responseStream.on('end', resolve);
+				// axios destroys the stream without an error when the request is canceled
+				responseStream.on('close', resolve);
+				responseStream.on('error', reject);
 			});
+		};
+
+		try {
+			await Promise.race([download(), deadline]);
 		} catch (error) {
 			// mocking the internal axios cancelation mechanism (including throwing this cancelation error) was not possible... so:
 			// istanbul ignore next
-			if (!axios.isCancel(error)) {
+			if (timedOut || !axios.isCancel(error)) {
 				throw new InvalidLinkUrlLoggableException(url.toString(), errorMessage);
 			}
+		} finally {
+			clearTimeout(deadlineTimer);
 		}
 		return { content: content.slice(0, maxLength), contentType };
 	}

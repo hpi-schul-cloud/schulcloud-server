@@ -339,6 +339,52 @@ describe(MetaTagExternalUrlService.name, () => {
 				});
 			});
 
+			describe('when the image server stalls', () => {
+				const setup = (imageResponse: Promise<unknown>) => {
+					jest.useFakeTimers();
+					const url = new URL('https://de.wikipedia.org/example-article');
+
+					const cancelTokenSource = createCancelTokenSource();
+					jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+					const title = 'Great Title';
+					const description = 'Great Description';
+					const ogImages = [{ name: 'rock.jpg', width: 2000 }];
+
+					mockedAxios.get
+						.mockResolvedValueOnce({ data: mockReadstream([mockHtmlStart({ title, description, ogImages })]) })
+						.mockReturnValueOnce(imageResponse);
+
+					return { url, title, description, cancelTokenSource };
+				};
+
+				afterEach(() => {
+					jest.useRealTimers();
+				});
+
+				const createStalledStream = () => {
+					const stalledStream = new Stream.Readable({ read: () => {} });
+					stalledStream.push('\xFF\xD8\xFF\xE0JFIF');
+					return stalledStream;
+				};
+
+				it.each([
+					['while streaming the body', () => Promise.resolve({ data: createStalledStream() })],
+					['while connecting', () => new Promise(() => {})],
+				])('should cancel the image request and return the meta data without image %s', async (_, response) => {
+					const { url, title, description, cancelTokenSource } = setup(response());
+
+					const resultPromise = service.tryExtractMetaTags(url);
+					await jest.advanceTimersByTimeAsync(20000);
+					const result = await resultPromise;
+
+					expect(result?.title).toEqual(title);
+					expect(result?.description).toEqual(description);
+					expect(result?.originalImageUrl).toBeUndefined();
+					expect(cancelTokenSource.cancel).toHaveBeenCalledWith('Request canceled after 10000 ms.');
+				});
+			});
+
 			describe('when the image response is empty', () => {
 				it('should keep the image', async () => {
 					const url = new URL('https://de.wikipedia.org/example-article');
@@ -396,6 +442,31 @@ describe(MetaTagExternalUrlService.name, () => {
 				const result = await service.tryExtractMetaTags(url);
 
 				expect(result?.originalImageUrl).toBeUndefined();
+			});
+		});
+
+		describe('when the page server stalls', () => {
+			afterEach(() => {
+				jest.useRealTimers();
+			});
+
+			it('should cancel the request and return undefined', async () => {
+				jest.useFakeTimers();
+				const url = new URL('https://de.wikipedia.org/example-article');
+
+				const cancelTokenSource = createCancelTokenSource();
+				jest.spyOn(axios.CancelToken, 'source').mockReturnValue(cancelTokenSource);
+
+				const stalledStream = new Stream.Readable({ read: () => {} });
+				stalledStream.push(mockHtmlStart());
+				mockedAxios.get.mockResolvedValueOnce({ data: stalledStream });
+
+				const resultPromise = service.tryExtractMetaTags(url);
+				await jest.advanceTimersByTimeAsync(10000);
+				const result = await resultPromise;
+
+				expect(result).toBeUndefined();
+				expect(cancelTokenSource.cancel).toHaveBeenCalledWith('Request canceled after 10000 ms.');
 			});
 		});
 
