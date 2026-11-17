@@ -316,6 +316,19 @@ describe(MetaTagExternalUrlService.name, () => {
 						expect(result?.originalImageUrl).toBeUndefined();
 					});
 				});
+
+				describe('when the response is empty', () => {
+					it.each([
+						['the file extension is .svg', 'logo.svg', undefined],
+						['the content-type is image/svg+xml', 'image', 'image/svg+xml'],
+					])('should return no image if %s', async (_, imageName, contentType) => {
+						const { url } = setup(imageName, { chunks: [], contentType });
+
+						const result = await service.tryExtractMetaTags(url);
+
+						expect(result?.originalImageUrl).toBeUndefined();
+					});
+				});
 			});
 
 			describe('when the image could not be fetched', () => {
@@ -386,7 +399,7 @@ describe(MetaTagExternalUrlService.name, () => {
 			});
 
 			describe('when the image response is empty', () => {
-				it('should keep the image', async () => {
+				it('should return no image', async () => {
 					const url = new URL('https://de.wikipedia.org/example-article');
 
 					const cancelTokenSource = createCancelTokenSource();
@@ -400,7 +413,7 @@ describe(MetaTagExternalUrlService.name, () => {
 
 					const result = await service.tryExtractMetaTags(url);
 
-					expect(result?.originalImageUrl).toEqual('https://example.com/rock.jpg');
+					expect(result?.originalImageUrl).toBeUndefined();
 				});
 			});
 
