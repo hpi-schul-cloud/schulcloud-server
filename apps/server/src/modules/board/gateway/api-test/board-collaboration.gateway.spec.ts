@@ -1,5 +1,5 @@
 import { ConfigurationModule } from '@infra/configuration';
-import { MongoIoAdapter } from '@infra/socketio';
+import { MongoIoAdapter, type Socket as ServerSocket } from '@infra/socketio';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -12,6 +12,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { type Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
+import { MetricsService } from '../../metrics/metrics.service';
 import {
 	BoardExternalReferenceType,
 	BoardLayout,
@@ -131,6 +132,68 @@ describe(BoardCollaborationGateway.name, () => {
 			expect(connectedSocket).toBeDefined();
 
 			sameOriginClient.disconnect();
+		});
+	});
+
+	describe('connection metrics', () => {
+		it('should start tracking a socket when its authenticated user becomes available after connect', () => {
+			const gateway = app.get(BoardCollaborationGateway);
+			const metricsService = app.get(MetricsService);
+			const incrementSpy = jest.spyOn(metricsService, 'incrementSchoolConnectionCount');
+			const decrementSpy = jest.spyOn(metricsService, 'decrementSchoolConnectionCount');
+			const socket = {
+				id: 'late-auth-metrics-test-socket',
+				handshake: { user: undefined },
+			} as unknown as ServerSocket;
+
+			gateway.handleConnection(socket);
+			socket.handshake.user = { schoolId: 'metrics-test-school' } as NonNullable<ServerSocket['handshake']['user']>;
+			gateway['getCurrentUser'](socket);
+			gateway['getCurrentUser'](socket);
+			socket.handshake.user = undefined;
+			gateway.handleDisconnect(socket);
+
+			expect(incrementSpy).toHaveBeenCalledTimes(1);
+			expect(incrementSpy).toHaveBeenCalledWith('metrics-test-school');
+			expect(decrementSpy).toHaveBeenCalledTimes(1);
+			expect(decrementSpy).toHaveBeenCalledWith('metrics-test-school');
+			incrementSpy.mockRestore();
+			decrementSpy.mockRestore();
+		});
+
+		it('should decrement the school recorded at connect when handshake user is unavailable at disconnect', () => {
+			const gateway = app.get(BoardCollaborationGateway);
+			const metricsService = app.get(MetricsService);
+			const incrementSpy = jest.spyOn(metricsService, 'incrementSchoolConnectionCount');
+			const decrementSpy = jest.spyOn(metricsService, 'decrementSchoolConnectionCount');
+			const socket = {
+				id: 'metrics-test-socket',
+				handshake: { user: { schoolId: 'metrics-test-school' } },
+			} as unknown as ServerSocket;
+
+			gateway.handleConnection(socket);
+			socket.handshake.user = undefined;
+			gateway.handleDisconnect(socket);
+
+			expect(incrementSpy).toHaveBeenCalledWith('metrics-test-school');
+			expect(decrementSpy).toHaveBeenCalledWith('metrics-test-school');
+			incrementSpy.mockRestore();
+			decrementSpy.mockRestore();
+		});
+
+		it('should not decrement a school for an untracked socket', () => {
+			const gateway = app.get(BoardCollaborationGateway);
+			const metricsService = app.get(MetricsService);
+			const decrementSpy = jest.spyOn(metricsService, 'decrementSchoolConnectionCount');
+			const socket = {
+				id: 'untracked-metrics-test-socket',
+				handshake: { user: undefined },
+			} as unknown as ServerSocket;
+
+			gateway.handleDisconnect(socket);
+
+			expect(decrementSpy).not.toHaveBeenCalled();
+			decrementSpy.mockRestore();
 		});
 	});
 

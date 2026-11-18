@@ -1,4 +1,5 @@
 const { BadRequest } = require('../../../errors');
+const { v4: uuidv4 } = require('uuid');
 
 const s3FileNameFilterExpression = /[^0-9A-Za-z\-_.]+/g;
 /**
@@ -23,12 +24,11 @@ const whitelistFileName = (fileName) => {
 };
 
 /**
- * adds a timestamp prefix to filename and ensures maxlength of 1024 characters
+ * adds a random prefix to filename and ensures maxlength of 1024 characters
  */
 const generateFileNameSuffix = (fileName) => {
 	const whitelistedFileName = whitelistFileName(fileName);
-	const now = Date.now();
-	const fileNameWithSuffix = `${now}-${whitelistedFileName}`;
+	const fileNameWithSuffix = `${uuidv4()}-${whitelistedFileName}`;
 	const result = fileNameWithSuffix.substring(0, 1024);
 	return result;
 };

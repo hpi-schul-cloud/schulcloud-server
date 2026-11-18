@@ -134,10 +134,30 @@ fileSchema.index({ createdAt: 1 });
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
 
+const fileUploadIntentSchema = new Schema({
+	creator: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+	owner: { type: Schema.Types.ObjectId, required: true },
+	parent: { type: Schema.Types.ObjectId, ref: 'file' },
+	name: { type: String, required: true },
+	type: { type: String, required: true },
+	storageFileName: { type: String, required: true },
+	bucket: { type: String, required: true },
+	storageProviderId: { type: Schema.Types.ObjectId, ref: 'storageProvider' },
+	uploadId: { type: String, required: true, unique: true },
+	expiresAt: { type: Date, required: true },
+});
+
+fileUploadIntentSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+// Speed up finding the upload intent when file metadata is created
+fileUploadIntentSchema.index({ storageFileName: 1 });
+
+const FileUploadIntentModel = mongoose.model('fileUploadIntent', fileUploadIntentSchema);
+
 module.exports = {
 	FileModel,
 	FileSchema: fileSchema,
 	SecurityCheckStatusTypes,
 	permissionSchema,
 	FilePermissionModel,
+	FileUploadIntentModel,
 };
