@@ -1,15 +1,19 @@
 const { expect } = require('chai');
 const assert = require('assert');
 const { ObjectId } = require('mongoose').Types;
+const { v4: uuidv4 } = require('uuid');
 const sinon = require('sinon');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
-const { FileModel } = require('../../../src/services/fileStorage/model');
+const { FileModel, FileUploadIntentModel } = require('../../../src/services/fileStorage/model');
 const { schoolModel } = require('../../../src/services/school/model');
 const { userModel } = require('../../../src/services/user/model');
 const RoleModel = require('../../../src/services/role/model');
 const { teamsModel } = require('../../../src/services/teams/model');
 const { courseModel } = require('../../../src/services/user-group/model');
 const fixtures = require('./fixtures');
+
+fixtures.schools[0].storageProvider = new ObjectId();
 
 const setContext = (userId) => {
 	return {
@@ -28,6 +32,22 @@ class AWSStrategy {
 
 	generateSignedUrl() {
 		return Promise.resolve('https://something.com');
+	}
+
+	getBucket(schoolId) {
+		return `bucket-${schoolId}`;
+	}
+
+	getObjectMetadata({ flatFileName, uploadId, fileType }) {
+		return Promise.resolve({
+			ContentLength: 1200,
+			ContentType: fileType,
+			Metadata: {
+				'upload-id': uploadId,
+				name: encodeURIComponent('test.jpg'),
+				'flat-name': encodeURIComponent(flatFileName),
+			},
+		});
 	}
 
 	getSignedUrl() {
@@ -61,11 +81,16 @@ describe('fileStorage services', () => {
 			courseModel.create(fixtures.courses),
 		];
 
-		return Promise.all(promises);
+		await Promise.all(promises);
+		await schoolModel.updateOne(
+			{ _id: fixtures.schools[0]._id },
+			{ $set: { storageProvider: fixtures.schools[0].storageProvider } }
+		).exec();
 	});
 
 	after(async () => {
 		const promises = [
+			...fixtures.users.map((user) => FileUploadIntentModel.deleteMany({ creator: user._id }).exec()),
 			...fixtures.teams.map((_) => teamsModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.schools.map((_) => schoolModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
@@ -78,6 +103,24 @@ describe('fileStorage services', () => {
 		await server.close();
 	});
 
+	const createUploadIntent = async ({ userId, data }) => {
+		const user = await userModel.findById(userId).lean().exec();
+		const school = await schoolModel.findById(user.schoolId).lean().exec();
+
+		return FileUploadIntentModel.create({
+			creator: userId,
+			owner: data.owner || userId,
+			parent: data.parent,
+			name: data.name,
+			type: data.type,
+			storageFileName: data.storageFileName,
+			bucket: `bucket-${user.schoolId}`,
+			storageProviderId: school.storageProvider,
+			uploadId: uuidv4(),
+			expiresAt: new Date(Date.now() + 60 * 1000),
+		});
+	};
+
 	describe('file service', () => {
 		const params = {
 			name: 'test.jpg',
@@ -87,6 +130,43 @@ describe('fileStorage services', () => {
 			thumbnail: 'thumbnail.jpg',
 			bucket: 'bucket-test',
 			storageProviderId: new ObjectId(),
+		};
+		const createFileData = (owner) => ({
+			...params,
+			...(owner ? { owner } : {}),
+			storageFileName: `storage-${uuidv4()}.jpg`,
+		});
+
+		const prepareUpload = async () => {
+			const userId = '0000d224816abba584714c8e';
+			const data = createFileData();
+			const intent = await createUploadIntent({ userId, data });
+			const objectMetadata = {
+				ContentLength: data.size,
+				ContentType: intent.type,
+				Metadata: {
+					'upload-id': intent.uploadId,
+					name: encodeURIComponent(data.name),
+					'flat-name': encodeURIComponent(data.storageFileName),
+				},
+			};
+
+			return { userId, data, intent, objectMetadata };
+		};
+
+		const expectUploadToBeRejected = async ({ userId, data, intent, objectMetadata }) => {
+			const stub = sinon.stub(AWSStrategy.prototype, 'getObjectMetadata').resolves(objectMetadata);
+			try {
+				await assert.rejects(fileStorageService.create({ ...data }, setContext(userId)), {
+					code: 400,
+					message: 'Uploaded object does not match the authorized upload.',
+				});
+			} finally {
+				stub.restore();
+			}
+
+			expect(await FileModel.exists({ storageFileName: data.storageFileName })).to.equal(null);
+			expect(await FileUploadIntentModel.exists({ _id: intent._id })).to.not.equal(null);
 		};
 
 		const created = [];
@@ -103,71 +183,261 @@ describe('fileStorage services', () => {
 			assert.ok(app.service('fileStorage'));
 		});
 
-		it('should create a course file object', (done) => {
+		it('should create a course file object', async () => {
 			const context = setContext('0000d224816abba584714c8e');
+			const data = createFileData('0000dcfbfb5c7a3f00bf21ac');
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
 
-			fileStorageService
-				.create({ owner: '0000dcfbfb5c7a3f00bf21ac', ...params }, context)
-				.then((res) => {
-					// eslint-disable-next-line eqeqeq
-					const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
-					const { _id, isDirectory, refOwnerModel, permissions } = res;
+			const res = await fileStorageService.create(data, context);
+			const isEqual = ['name', 'type', 'size', 'storageFileName', 'thumbnail'].every(
+				(key) => data[key].toString() === res[key].toString()
+			);
+			const { _id, isDirectory, refOwnerModel, permissions } = res;
 
-					expect(permissions[0]._id.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(permissions).to.have.lengthOf(3);
-					expect(refOwnerModel).to.be.equal('course');
-					expect(isDirectory).to.be.false;
-					expect(isEqual).to.be.true;
+			expect(permissions[0].refId.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(permissions).to.have.lengthOf(3);
+			expect(refOwnerModel).to.be.equal('course');
+			expect(isDirectory).to.be.false;
+			expect(isEqual).to.be.true;
 
-					created.push(_id);
-					return done();
-				})
-				.catch(() => done());
+			created.push(_id);
 		});
 
-		it('should create a team file object', (done) => {
+		it('should create a user file object', async () => {
 			const context = setContext('0000d224816abba584714c8e');
+			const data = createFileData();
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
 
-			fileStorageService
-				.create({ owner: '5cf9303bec9d6ac639fefd42', ...params }, context)
-				.then((res) => {
-					// eslint-disable-next-line eqeqeq
-					const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
-					const { _id, isDirectory, refOwnerModel, permissions } = res;
+			const res = await fileStorageService.create(data, context);
+			const isEqual = ['name', 'type', 'size', 'storageFileName', 'thumbnail'].every(
+				(key) => data[key].toString() === res[key].toString()
+			);
+			const { _id, isDirectory, refOwnerModel, owner, permissions } = res;
 
-					expect(permissions[0]._id.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(permissions).to.have.lengthOf(6);
-					expect(refOwnerModel).to.be.equal('teams');
-					expect(isDirectory).to.be.false;
-					expect(isEqual).to.be.true;
+			expect(refOwnerModel).to.be.equal('user');
+			expect(permissions[0].refId.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(permissions).to.have.lengthOf(1);
+			expect(owner.equals('0000d224816abba584714c8e')).to.be.true;
+			expect(isDirectory).to.be.false;
+			expect(isEqual).to.be.true;
 
-					created.push(_id);
-					return done();
-				})
-				.catch(() => done());
+			created.push(_id);
 		});
 
-		it('should create a user file object', (done) => {
+		it('finalizes a root upload requested with a null parent', async () => {
 			const context = setContext('0000d224816abba584714c8e');
+			const { header } = await signedUrlService.create(
+				{ parent: null, filename: 'test.jpg', fileType: 'image/jpg' },
+				context
+			);
+			const storageFileName = decodeURIComponent(header['x-amz-meta-flat-name']);
+			const intent = await FileUploadIntentModel.findOne({ storageFileName }).lean().exec();
 
-			fileStorageService
-				.create({ ...params }, context)
-				.then((res) => {
-					// eslint-disable-next-line eqeqeq
-					const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
-					const { _id, isDirectory, refOwnerModel, owner, permissions } = res;
+			expect(intent).to.not.have.property('parent');
 
-					expect(refOwnerModel).to.be.equal('user');
-					expect(permissions[0]._id.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(permissions).to.have.lengthOf(1);
-					expect(owner.equals('0000d224816abba584714c8e')).to.be.true;
-					expect(isDirectory).to.be.false;
-					expect(isEqual).to.be.true;
+			const file = await fileStorageService.create(
+				{ ...params, storageFileName },
+				setContext('0000d224816abba584714c8e')
+			);
+			created.push(file._id);
 
-					created.push(_id);
-					return done();
-				})
-				.catch(() => done());
+			expect(file.storageFileName).to.equal(storageFileName);
+			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
+		});
+
+		it('creates file metadata after the signed URL expires while the upload intent is still valid', async () => {
+			const clock = sinon.useFakeTimers({ now: Date.now(), toFake: ['Date'] });
+			try {
+				const issuedAt = Date.now();
+				const urlLifetime = Configuration.get('STORAGE_SIGNED_URL_EXPIRE') * 1000;
+				const gracePeriod = Configuration.get('STORAGE_UPLOAD_FINALIZATION_GRACE_SECONDS') * 1000;
+				const { header } = await signedUrlService.create(
+					{ filename: 'test.jpg', fileType: 'image/jpg' },
+					setContext('0000d224816abba584714c8e')
+				);
+				const storageFileName = decodeURIComponent(header['x-amz-meta-flat-name']);
+				const intent = await FileUploadIntentModel.findOne({ storageFileName }).lean().exec();
+				expect(intent.expiresAt.getTime()).to.equal(issuedAt + urlLifetime + gracePeriod);
+
+				clock.tick(urlLifetime + 1);
+				const file = await fileStorageService.create(
+					{ ...params, storageFileName },
+					setContext('0000d224816abba584714c8e')
+				);
+				created.push(file._id);
+
+				expect(file.storageFileName).to.equal(storageFileName);
+			} finally {
+				clock.restore();
+			}
+		});
+
+		it('rejects file metadata creation after the upload intent expires', async () => {
+			const clock = sinon.useFakeTimers({ now: Date.now(), toFake: ['Date'] });
+			try {
+				const { header } = await signedUrlService.create(
+					{ filename: 'test.jpg', fileType: 'image/jpg' },
+					setContext('0000d224816abba584714c8e')
+				);
+				const storageFileName = decodeURIComponent(header['x-amz-meta-flat-name']);
+				const intent = await FileUploadIntentModel.findOne({ storageFileName }).lean().exec();
+
+				clock.setSystemTime(intent.expiresAt.getTime() + 1);
+				await assert.rejects(
+					fileStorageService.create(
+						{ ...params, storageFileName },
+						setContext('0000d224816abba584714c8e')
+					),
+					{ code: 403, message: 'No valid upload authorization was found for this file.' }
+				);
+				expect(await FileModel.exists({ storageFileName })).to.equal(null);
+			} finally {
+				clock.restore();
+			}
+		});
+
+		it('persists the verified upload type instead of the submitted type', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			const data = { ...createFileData(), type: 'image/jpeg' };
+			await createUploadIntent({ userId: '0000d224816abba584714c8e', data });
+
+			const file = await fileStorageService.create({ ...data, type: 'text/html' }, context);
+			created.push(file._id);
+
+			const savedFile = await FileModel.findById(file._id).lean().exec();
+			expect(savedFile.type).to.equal('image/jpeg');
+		});
+
+		it('prevents a race condition where two requests create files with the same upload intent', async () => {
+			const userId = '0000d224816abba584714c8e';
+			const data = createFileData();
+			const intent = await createUploadIntent({ userId, data });
+			const getObjectMetadata = AWSStrategy.prototype.getObjectMetadata;
+			let verifiedRequests = 0;
+			let releaseVerification;
+			const bothVerified = new Promise((resolve) => {
+				releaseVerification = resolve;
+			});
+			const stub = sinon.stub(AWSStrategy.prototype, 'getObjectMetadata').callsFake(async (options) => {
+				const metadata = await getObjectMetadata(options);
+				verifiedRequests += 1;
+				if (verifiedRequests === 2) {
+					releaseVerification();
+				}
+				await bothVerified;
+				return metadata;
+			});
+
+			let results;
+			try {
+				results = await Promise.allSettled([
+					fileStorageService.create({ ...data }, setContext(userId)),
+					fileStorageService.create({ ...data }, setContext(userId)),
+				]);
+			} finally {
+				stub.restore();
+			}
+
+			const files = await FileModel.find({ storageFileName: data.storageFileName }).lean().exec();
+			created.push(...files.map((file) => file._id));
+			expect(results.filter((result) => result.status === 'fulfilled')).to.have.lengthOf(1);
+			const failures = results.filter((result) => result.status === 'rejected');
+			expect(failures).to.have.lengthOf(1);
+			expect(failures[0].reason.code).to.equal(403);
+			expect(files).to.have.lengthOf(1);
+			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
+		});
+
+		it('keeps the upload intent when file creation fails so the upload can be retried', async () => {
+			const userId = '0000d224816abba584714c8e';
+			const data = createFileData();
+			const intent = await createUploadIntent({ userId, data });
+			const error = new Error('File creation failed');
+			const stub = sinon.stub(FileModel, 'create').rejects(error);
+
+			try {
+				await assert.rejects(fileStorageService.create({ ...data }, setContext(userId)), error);
+			} finally {
+				stub.restore();
+			}
+
+			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.not.equal(null);
+			expect(await FileModel.exists({ storageFileName: data.storageFileName })).to.equal(null);
+
+			const file = await fileStorageService.create({ ...data }, setContext(userId));
+			created.push(file._id);
+			expect(await FileUploadIntentModel.findById(intent._id).lean().exec()).to.equal(null);
+		});
+
+		it('returns the created file when deleting the upload intent fails', async () => {
+			const userId = '0000d224816abba584714c8e';
+			const data = createFileData();
+			await createUploadIntent({ userId, data });
+			const stub = sinon.stub(FileUploadIntentModel, 'deleteOne').returns({
+				exec: () => Promise.reject(new Error('Upload intent deletion failed')),
+			});
+
+			let file;
+			try {
+				file = await fileStorageService.create({ ...data }, setContext(userId));
+			} finally {
+				stub.restore();
+			}
+
+			created.push(file._id);
+			expect(await FileModel.exists({ _id: file._id })).to.not.equal(null);
+		});
+
+		it('rejects file metadata without an upload intent', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			try {
+				await fileStorageService.create({ ...params, storageFileName: 'unknown-object' }, context);
+				throw new Error('Expected file creation to be rejected');
+			} catch (error) {
+				expect(error.code).to.equal(403);
+			}
+		});
+
+		it('rejects file metadata creation when the S3 object size does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.ContentLength = 5;
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 content type does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.ContentType = 'text/html';
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 upload-id metadata does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.Metadata['upload-id'] = uuidv4();
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 name metadata does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.Metadata.name = encodeURIComponent('other.jpg');
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 flat-name metadata does not match', async () => {
+			const upload = await prepareUpload();
+			upload.objectMetadata.Metadata['flat-name'] = encodeURIComponent('other-object.jpg');
+
+			await expectUploadToBeRejected(upload);
+		});
+
+		it('rejects file metadata creation when the S3 upload metadata is missing', async () => {
+			const upload = await prepareUpload();
+			delete upload.objectMetadata.Metadata;
+
+			await expectUploadToBeRejected(upload);
 		});
 
 		it('should get a file list', (done) => {
@@ -307,6 +577,7 @@ describe('fileStorage services', () => {
 				{
 					filename: 'test.txt',
 					fileType: 'text/plain',
+					flatFileName: 'chosen-object-key',
 				},
 				context
 			);
@@ -314,6 +585,9 @@ describe('fileStorage services', () => {
 			expect(url).to.be.equal('https://something.com');
 			expect(header['Content-Type']).to.be.equal('text/plain');
 			expect(header['x-amz-meta-name']).to.be.equal('test.txt');
+			expect(header['x-amz-meta-upload-id']).to.match(/^[0-9a-f-]{36}$/);
+			expect(header['x-amz-meta-flat-name']).to.match(/^[0-9a-f-]{36}-test\.txt$/);
+			expect(header['x-amz-meta-flat-name']).to.not.equal('chosen-object-key');
 		});
 
 		it('return a signed url for putting blobs to a folder', (done) => {

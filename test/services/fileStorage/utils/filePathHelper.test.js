@@ -74,14 +74,10 @@ describe('filePathHelper', () => {
 	});
 
 	describe('when filenames are prefixed using generateFileNameSuffix', () => {
-		it('should add current time stamp in front of filename', () => {
+		it('should add a unique random identifier in front of filename', () => {
 			const suffixedFileName = generateFileNameSuffix('sampleFileName.ext');
-			const now = Date.now();
-			const fileDateSuffix = suffixedFileName.split('-')[0]; // extract timestamp suffix
-			const timestamp = Number.parseInt(fileDateSuffix, 10);
-			expect(timestamp).to.be.a('number');
-			const timespan = now - timestamp;
-			expect(timespan, 'expect a small value, when filename generation just happened').to.be.a('number').lessThan(100);
+			expect(suffixedFileName).to.match(/^[0-9a-f-]{36}-samplefilename\.ext$/);
+			expect(generateFileNameSuffix('sampleFileName.ext')).to.not.equal(suffixedFileName);
 		});
 	});
 });
