@@ -114,9 +114,13 @@ describe(BoardCollaborationGateway.name, () => {
 
 			const maliciousClient = await getSocketApiClient(app, teacherAuthJwt, 'https://evil.example');
 
-			const error = await waitForEvent(maliciousClient, 'connect_error');
+			try {
+				const error = await waitForEvent(maliciousClient, 'connect_error');
 
-			expect(error).toBeDefined();
+				expect(error).toBeDefined();
+			} finally {
+				maliciousClient.disconnect();
+			}
 		});
 
 		it('should accept a connection attempt without an Origin header (same-origin simple request)', async () => {
