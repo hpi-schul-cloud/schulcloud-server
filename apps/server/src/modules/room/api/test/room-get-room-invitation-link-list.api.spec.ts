@@ -103,9 +103,14 @@ describe('Room Invitation Link Controller (API)', () => {
 			) => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
-				const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(3, {
+				const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(2, {
 					roomId: room.id,
 				});
+				const legacyLink = roomInvitationLinkEntityFactory.build({
+					roomId: room.id,
+					invitationToken: undefined,
+				});
+				roomInvitationLinks.push(legacyLink);
 				const roomRoles = RoomRolesTestFactory.createRoomRoles();
 				const roomRole = roomRoles[roleKey];
 
@@ -142,7 +147,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			it.each(cases)(
 				'should return $expectedStatus for $userType with $roleKey',
 				async ({ userType, roleKey, expectedStatus }) => {
-					const { loggedInClient, room } = await setup(
+					const { loggedInClient, room, roomInvitationLinks } = await setup(
 						userType as 'teacher' | 'student',
 						roleKey as keyof ReturnType<typeof RoomRolesTestFactory.createRoomRoles>
 					);
@@ -150,8 +155,17 @@ describe('Room Invitation Link Controller (API)', () => {
 					const response = await loggedInClient.get(`/${room.id}/room-invitation-links`);
 
 					if (expectedStatus === HttpStatus.OK) {
+						const { body }: { body: RoomInvitationLinkListResponse } = response;
 						expect(response.status).toBe(HttpStatus.OK);
-						expect((response.body as RoomInvitationLinkListResponse).roomInvitationLinks).toHaveLength(3);
+						expect(body.roomInvitationLinks).toHaveLength(roomInvitationLinks.length);
+						for (const link of roomInvitationLinks) {
+							const returnedLink = body.roomInvitationLinks.find((item) => item.id === link.id);
+							expect(returnedLink).toBeDefined();
+							expect(returnedLink?.invitationToken).toBe(link.invitationToken);
+							if (!link.invitationToken) {
+								expect(returnedLink).not.toHaveProperty('invitationToken');
+							}
+						}
 					} else {
 						expect(response.status).toBe(HttpStatus.FORBIDDEN);
 					}

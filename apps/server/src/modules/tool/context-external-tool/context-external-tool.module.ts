@@ -1,7 +1,6 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
-import { GroupLicenseModule } from '@modules/group-license';
 import { GroupModule } from '@modules/group';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
@@ -31,7 +30,6 @@ import { ContextExternalToolValidationService } from './service/context-external
 		LoggerModule,
 		UserLicenseModule,
 		SchoolLicenseModule,
-		GroupLicenseModule,
 		GroupModule,
 		UserModule,
 		AuthorizationModule,

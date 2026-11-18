@@ -4,6 +4,7 @@ import { type EntityId } from '@shared/domain/types';
 
 export interface RoomInvitationLinkProps extends AuthorizableObject {
 	id: EntityId;
+	invitationToken?: string;
 	title: string;
 	restrictedToCreatorSchool: boolean;
 	isUsableByExternalPersons: boolean;
@@ -17,10 +18,10 @@ export interface RoomInvitationLinkProps extends AuthorizableObject {
 
 export type RoomInvitationLinkUpdateProps = Omit<
 	RoomInvitationLinkProps,
-	'roomId' | 'creatorUserId' | 'creatorSchoolId'
+	'roomId' | 'creatorUserId' | 'creatorSchoolId' | 'invitationToken'
 >;
 
-export type RoomInvitationLinkDto = Omit<RoomInvitationLinkProps, 'id'>;
+export type RoomInvitationLinkDto = Omit<RoomInvitationLinkProps, 'id' | 'invitationToken'>;
 
 export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 	constructor(props: RoomInvitationLinkProps) {
@@ -35,6 +36,10 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 		delete copyProps.domainObject;
 
 		return copyProps;
+	}
+
+	get invitationToken(): string | undefined {
+		return this.props.invitationToken;
 	}
 
 	set requiresConfirmation(value: boolean) {

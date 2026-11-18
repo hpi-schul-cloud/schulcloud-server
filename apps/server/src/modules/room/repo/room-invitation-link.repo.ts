@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { RoomInvitationLink } from '../domain/do/room-invitation-link.do';
 import { EntityId } from '@shared/domain/types';
@@ -16,6 +16,26 @@ export class RoomInvitationLinkRepo {
 		const entity = await this.em.findOneOrFail(RoomInvitationLinkEntity, id);
 		const domainobject = this.roomInvitationLinkDomainMapper.mapEntityToDo(entity);
 		return domainobject;
+	}
+
+	public async findByInvitationCredential(credential: string): Promise<RoomInvitationLink | null> {
+		const isValidObjectId = ObjectId.isValid(credential);
+		let entity: RoomInvitationLinkEntity | null = null;
+
+		if (isValidObjectId) {
+			const fetchedEntity = await this.em.findOne(RoomInvitationLinkEntity, { id: credential, invitationToken: null });
+			if (fetchedEntity && (fetchedEntity.invitationToken === undefined || fetchedEntity.invitationToken === null)) {
+				// Also reject tokens on an entity already loaded in the ORM identity map.
+				entity = fetchedEntity;
+			}
+		} else {
+			const entityByToken = await this.em.findOne(RoomInvitationLinkEntity, { invitationToken: credential });
+			if (entityByToken) {
+				entity = entityByToken;
+			}
+		}
+
+		return entity ? this.roomInvitationLinkDomainMapper.mapEntityToDo(entity) : null;
 	}
 
 	public async findByIds(ids: EntityId[]): Promise<RoomInvitationLink[]> {
