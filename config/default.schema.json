@@ -326,6 +326,12 @@
 			"default": 60,
 			"description": "Expiration time in seconds for signedUrl used by antivirus"
 		},
+		"STORAGE_UPLOAD_FINALIZATION_GRACE_SECONDS": {
+			"type": "integer",
+			"minimum": 1,
+			"default": 3600,
+			"description": "Additional time in seconds after signed upload URL expiry to complete the transfer and finalize legacy file metadata."
+		},
 		"ENABLE_FILE_SECURITY_CHECK": {
 			"type": "boolean",
 			"description": "enables antivirus check for files",

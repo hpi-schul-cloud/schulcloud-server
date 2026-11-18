@@ -7,6 +7,8 @@ export class MetricsService {
 
 	private totalBoardCounter: Gauge<string>;
 
+	private connectionsPerSchoolGauge: Gauge<'school_id'>;
+
 	private executionTimesSummary: Map<string, Summary<string>> = new Map();
 
 	private actionCounters: Map<string, Counter<string>> = new Map();
@@ -24,8 +26,15 @@ export class MetricsService {
 			help: 'Total number of boards per pod',
 		});
 
+		this.connectionsPerSchoolGauge = new Gauge({
+			name: 'sc_boards_connections_per_school',
+			help: 'Number of connected board socket connections per school and pod',
+			labelNames: ['school_id'],
+		});
+
 		register.registerMetric(this.totalUserCounter);
 		register.registerMetric(this.totalBoardCounter);
+		register.registerMetric(this.connectionsPerSchoolGauge);
 	}
 
 	public setExecutionTime(actionName: string, value: number): void {
@@ -48,6 +57,14 @@ export class MetricsService {
 
 	public setTotalUserCount(value: number): void {
 		this.totalUserCounter.set(value);
+	}
+
+	public incrementSchoolConnectionCount(schoolId: string): void {
+		this.connectionsPerSchoolGauge.inc({ school_id: schoolId });
+	}
+
+	public decrementSchoolConnectionCount(schoolId: string): void {
+		this.connectionsPerSchoolGauge.dec({ school_id: schoolId });
 	}
 
 	public setTotalBoardCount(value: number): void {

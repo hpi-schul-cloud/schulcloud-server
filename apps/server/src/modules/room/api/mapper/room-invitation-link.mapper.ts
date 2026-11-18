@@ -6,6 +6,7 @@ export class RoomInvitationLinkMapper {
 	public static mapToRoomInvitationLinkResponse(link: RoomInvitationLinkProps): RoomInvitationLinkResponse {
 		const response = new RoomInvitationLinkResponse({
 			id: link.id,
+			invitationToken: link.invitationToken,
 			title: link.title,
 			restrictedToCreatorSchool: link.restrictedToCreatorSchool,
 			isUsableByExternalPersons: link.isUsableByExternalPersons,

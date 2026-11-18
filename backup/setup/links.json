@@ -214,13 +214,5 @@
 			"$date": "2020-05-28T06:37:54.346Z"
 		},
 		"__v": 0
-	},
-	{
-		"_id": "6LmdBLPHXB",
-		"target": "http://localhost:4000/courses/0000dcfbfb5c7a3f00bf21ab/addStudent",
-		"createdAt": {
-			"$date": "2020-09-18T11:15:59.818Z"
-		},
-		"__v": 0
 	}
 ]

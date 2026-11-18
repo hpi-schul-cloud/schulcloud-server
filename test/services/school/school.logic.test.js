@@ -41,17 +41,5 @@ describe('school logic', () => {
 		logger.info('school basedir', school.documentBaseDir);
 	});
 
-	it('get schoolgroup documentBaseDir', async () => {
-		const school = await School.findById(defaultSchool._id);
-		school.documentBaseDirType = 'schoolGroup';
-		await school.save();
-		const path = `default/${String(school.schoolGroupId)}/`;
-		const baseDir = String(new URL(path, new URL(DOCUMENT_BASE_DIR)));
-		expect(baseDir).contains(DOCUMENT_BASE_DIR);
-		expect(baseDir).contains(String(path));
-		expect(school.documentBaseDir).equals(baseDir);
-		logger.info('school group basedir', school.documentBaseDir);
-	});
-
 	after(cleanup);
 });

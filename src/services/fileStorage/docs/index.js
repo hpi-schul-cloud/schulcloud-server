@@ -189,44 +189,6 @@ module.exports = {
 					},
 				},
 			},
-			patch: {
-				parameters: [
-					{
-						description: 'File ID to be moved',
-						required: true,
-						name: 'id',
-						in: 'query',
-						type: 'String (ObjectID)',
-					},
-					{
-						description: 'File ID to be moved',
-						name: 'id',
-						in: 'path',
-						type: 'String (ObjectID)',
-					},
-					{
-						description: 'ID of parent folder or team/course/user',
-						type: 'String (ObjectID)',
-						name: 'parent',
-					},
-				],
-				description: '',
-				summary: 'Moves a file with given Object ID either in query or path to a new destination',
-				responses: {
-					200: {
-						description: 'OK - file moved',
-					},
-					403: {
-						description: 'File operation is forbidden due to missing permissions',
-					},
-					404: {
-						description: 'File not found',
-					},
-					500: {
-						description: 'Error performing operation',
-					},
-				},
-			},
 		},
 	},
 	directoryService: {
@@ -474,19 +436,25 @@ module.exports = {
 						type: 'String (ObjectID)',
 						name: 'parent',
 					},
+					{
+						description: 'ID of file owner; defaults to the requesting user',
+						type: 'String (ObjectID)',
+						name: 'owner',
+					},
 				],
 				description: '',
-				summary: 'Creates a new signed url for the given file information',
+				summary: 'Creates a signed URL with a server-generated key and upload intent',
 				responses: {
 					200: {
 						description: 'Returns the data signed url and meta properties',
 						example: {
 							signedUrl: {
-								url: 'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url: 'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/9e8d53a4-f910-4f15-9eaa-38e2fe4b5a26-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 								header: {
 									'Content-Type': 'image/gif',
 									'x-amz-meta-name': '24-1.gif',
-									'x-amz-meta-flat-name': '1561200908775-24-1.gif',
+									'x-amz-meta-flat-name': '9e8d53a4-f910-4f15-9eaa-38e2fe4b5a26-24-1.gif',
+									'x-amz-meta-upload-id': '7d68d4d1-b235-44a8-a20f-61df1e86c63d',
 								},
 							},
 						},
