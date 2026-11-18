@@ -1997,6 +1997,16 @@ describe('AccountService', () => {
 			});
 		});
 
+		describe('When password does not fit the password pattern', () => {
+			it('should throw ValidationError', async () => {
+				const weakPassword = '12345678a';
+
+				await expect(accountService.replaceMyTemporaryPassword('userId', weakPassword, weakPassword)).rejects.toThrow(
+					ValidationError
+				);
+			});
+		});
+
 		describe('When account does not exists', () => {
 			const setup = () => {
 				const mockSchool = schoolEntityFactory.buildWithId();
