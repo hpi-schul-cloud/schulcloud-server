@@ -267,5 +267,43 @@ describe(AxiosErrorLoggable.name, () => {
 
 			expect(toJsonResult.response).toBe('raw-response');
 		});
+
+		describe('when the request used a presigned S3 url', () => {
+			const presignedUrl =
+				'https://bucket.s3.example.org/file.pdf?X-Amz-Credential=AKIAEXAMPLEKEY%2F20261119%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Expires=300&X-Amz-Signature=0123456789abcdef';
+
+			it('should not show the signature and access key in inspect output', () => {
+				const axiosError = axiosErrorFactory.withError({ error: 'denied' }).build({ config: { url: presignedUrl } });
+
+				const inspected = util.inspect(new AxiosErrorLoggable(axiosError, 'mockType'), { depth: null });
+
+				expect(inspected).not.toContain('AKIAEXAMPLEKEY');
+				expect(inspected).not.toContain('0123456789abcdef');
+				expect(inspected).toContain('X-Amz-Expires=300');
+			});
+
+			it('should not show the signature and access key in axios toJSON output', () => {
+				const axiosError = axiosErrorFactory.withError({ error: 'denied' }).build({
+					toJSON: () => {
+						return { config: { url: presignedUrl } };
+					},
+				});
+
+				const axiosErrorLoggable = new AxiosErrorLoggable(axiosError, 'mockType');
+				const internalAxiosError = (axiosErrorLoggable as unknown as { axiosError: AxiosError }).axiosError;
+
+				expect(JSON.stringify(internalAxiosError.toJSON())).not.toContain('0123456789abcdef');
+			});
+		});
+
+		it('should decode a text response body received as binary', () => {
+			const body = Buffer.from('<Error><Code>SignatureDoesNotMatch</Code></Error>');
+			const axiosError = axiosErrorFactory.withError({ error: 'denied' }).build();
+			Object.assign(axiosError.response ?? {}, { data: body, headers: { 'Content-Type': 'application/xml' } });
+
+			const result = new AxiosErrorLoggable(axiosError, 'mockType').getLogMessage();
+
+			expect(JSON.stringify(result)).toContain('SignatureDoesNotMatch');
+		});
 	});
 });

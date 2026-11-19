@@ -64,9 +64,11 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 	}
 
 	private redactAxiosError(axiosError: AxiosError): AxiosError {
+		// The url can carry credentials or a presigned signature; util.inspect and toJSON of this copy show it.
 		const redactedConfig = axiosError.config
 			? {
 					...axiosError.config,
+					url: LoggingUtils.redactUrl(axiosError.config.url, axiosError.config.baseURL),
 					headers: this.redactHeaders(axiosError.config.headers),
 				}
 			: axiosError.config;
@@ -74,7 +76,7 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 		const redactedResponse = axiosError.response
 			? {
 					...axiosError.response,
-					data: LoggingUtils.redactSensitiveValue(axiosError.response.data),
+					data: this.redactResponseBody(axiosError.response.data, axiosError.response.headers),
 					headers: this.redactHeaders(axiosError.response.headers),
 				}
 			: axiosError.response;
@@ -112,6 +114,9 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 		const configRecord = config as Record<string, unknown>;
 		return {
 			...configRecord,
+			...(typeof configRecord.url === 'string'
+				? { url: LoggingUtils.redactUrl(configRecord.url, this.asString(configRecord.baseURL)) }
+				: {}),
 			headers: this.redactHeaders(configRecord.headers),
 		};
 	}
@@ -124,9 +129,17 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 		const responseRecord = response as Record<string, unknown>;
 		return {
 			...responseRecord,
-			data: LoggingUtils.redactSensitiveValue(responseRecord.data),
+			data: this.redactResponseBody(responseRecord.data, responseRecord.headers),
 			headers: this.redactHeaders(responseRecord.headers),
 		};
+	}
+
+	private redactResponseBody(body: unknown, headers: unknown): unknown {
+		return LoggingUtils.redactSensitiveValue(LoggingUtils.prepareResponseBody(body, headers));
+	}
+
+	private asString(value: unknown): string | undefined {
+		return typeof value === 'string' ? value : undefined;
 	}
 
 	private redactHeaders(headers: unknown): unknown {
