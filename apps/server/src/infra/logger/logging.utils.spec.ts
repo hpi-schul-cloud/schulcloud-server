@@ -1,5 +1,6 @@
 import { type Loggable, type LoggableMessage, type LogMessage } from '@shared/common/loggable';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { PassThrough } from 'node:stream';
 import util from 'node:util';
 import { AxiosErrorLoggable } from '@infra/error';
 import { LoggingUtils } from './logging.utils';
@@ -431,6 +432,61 @@ describe(LoggingUtils.name, () => {
 
 				expect(render(result)).not.toContain('url-password');
 				expect(render(result)).toContain("url: 'https://idp.example.org/token'");
+			});
+
+			it('should redact the signature and access key of a presigned S3 url (signature version 4)', () => {
+				const axiosError = buildAxiosError(
+					'https://bucket.s3.example.org/file.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLEKEY%2F20261119%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Expires=300&X-Amz-Signature=0123456789abcdef'
+				);
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const output = render(LoggingUtils.createMessageWithContext(loggable));
+
+				expect(output).not.toContain('AKIAEXAMPLEKEY');
+				expect(output).not.toContain('0123456789abcdef');
+				expect(output).toContain('X-Amz-Expires=300');
+			});
+
+			it('should redact the signature and access key of a presigned S3 url (signature version 2)', () => {
+				const axiosError = buildAxiosError(
+					'https://bucket.s3.example.org/file.pdf?AWSAccessKeyId=AKIAEXAMPLEKEY&Expires=1763550000&Signature=c2lnbmF0dXJl%3D'
+				);
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const output = render(LoggingUtils.createMessageWithContext(loggable));
+
+				expect(output).not.toContain('AKIAEXAMPLEKEY');
+				expect(output).not.toContain('c2lnbmF0dXJl');
+				expect(output).toContain('Expires=1763550000');
+			});
+
+			it('should not walk through a stream response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				const stream = Object.assign(new PassThrough(), {
+					req: {
+						path: '/file.pdf?X-Amz-Signature=0123456789abcdef',
+						headers: `Authorization: Basic ${basicCredentials}`,
+					},
+				});
+				Object.assign(axiosError.response ?? {}, { data: stream });
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(render(result));
+				expect(render(result)).not.toContain('0123456789abcdef');
+				expect(result.error).toEqual(expect.objectContaining({ responseData: '[Stream]' }));
+				stream.destroy();
+			});
+
+			it('should log only the size of a binary response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				Object.assign(axiosError.response ?? {}, { data: Buffer.from('binary file content') });
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.error).toEqual(expect.objectContaining({ responseData: '[Binary 19 bytes]' }));
 			});
 
 			it('should resolve a relative axios url against its base url', () => {

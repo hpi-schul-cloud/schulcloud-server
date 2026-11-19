@@ -1,5 +1,6 @@
 import { type Loggable } from '@shared/common/loggable';
 import { type AxiosError, isAxiosError } from 'axios';
+import { Stream } from 'node:stream';
 import util from 'node:util';
 import { type LogMessageWithContext } from './types';
 
@@ -53,6 +54,18 @@ export class LoggingUtils {
 		);
 	}
 
+	// Presigned S3 URLs carry a working signature and the access key id; the URL could be used until it expires.
+	private static isSensitiveQueryParamName(name: string): boolean {
+		const lower = name.toLowerCase();
+
+		return (
+			this.isSensitiveFieldName(name) ||
+			lower.includes('signature') ||
+			lower.includes('credential') ||
+			lower === 'awsaccesskeyid'
+		);
+	}
+
 	private static redactSensitiveObject(value: unknown, visited = new WeakSet<object>()): unknown {
 		// Copies of axios errors (e.g. inside AxiosErrorLoggable) are plain objects, but carry the same request config.
 		if (value instanceof Error || (isAxiosError(value) && typeof value.message === 'string')) {
@@ -61,6 +74,15 @@ export class LoggingUtils {
 
 		if (typeof value === 'string') {
 			return this.redactBearerToken(value);
+		}
+
+		// A stream body (axios responseType 'stream') references the socket and the raw request with its headers.
+		if (value instanceof Stream) {
+			return '[Stream]';
+		}
+
+		if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+			return `[Binary ${value.byteLength} bytes]`;
 		}
 
 		if (Array.isArray(value)) {
@@ -154,7 +176,7 @@ export class LoggingUtils {
 		parsedUrl.username = '';
 		parsedUrl.password = '';
 		for (const name of new Set(parsedUrl.searchParams.keys())) {
-			if (this.isSensitiveFieldName(name)) {
+			if (this.isSensitiveQueryParamName(name)) {
 				parsedUrl.searchParams.set(name, 'REDACTED_VALUE');
 			}
 		}
