@@ -168,6 +168,26 @@ describe('createLogFormat with secrets', () => {
 			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { '***': true } }));
 		});
 
+		it('should mask a secret in an object that is referenced twice', () => {
+			const shared = { body: clientSecret };
+
+			const output = render({ message: 'request', data: { first: shared, second: shared } });
+
+			expect(output).not.toContain(clientSecret);
+			expect(JSON.parse(output)).toEqual(
+				expect.objectContaining({ data: { first: { body: '***' }, second: { body: '***' } } })
+			);
+		});
+
+		it('should mask a secret in a circular object', () => {
+			const data: Record<string, unknown> = { body: clientSecret };
+			data.self = data;
+
+			const output = render({ message: 'request', data });
+
+			expect(output).not.toContain(clientSecret);
+		});
+
 		it('should not change the data passed to the logger', () => {
 			const data = { body: clientSecret };
 

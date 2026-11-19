@@ -55,7 +55,7 @@ const maskSecretsInText = (text: string): string => {
 	return pattern ? maskBasicAuth(text).replace(pattern, MASK) : text;
 };
 
-const maskSecretsInValue = (value: unknown, visited: WeakSet<object>): unknown => {
+const maskSecretsInValue = (value: unknown, copies: WeakMap<object, unknown>): unknown => {
 	if (typeof value === 'string') {
 		return maskSecretsInText(value);
 	}
@@ -65,18 +65,32 @@ const maskSecretsInValue = (value: unknown, visited: WeakSet<object>): unknown =
 		return containsSecret(String(value)) ? MASK : value;
 	}
 
-	if (typeof value !== 'object' || value === null || value instanceof Date || visited.has(value)) {
+	if (typeof value !== 'object' || value === null || value instanceof Date) {
 		return value;
 	}
 
-	visited.add(value);
-	if (Array.isArray(value)) {
-		return value.map((item) => maskSecretsInValue(item, visited));
+	// An object referenced twice (or circularly) gets the same masked copy, never the unmasked original.
+	if (copies.has(value)) {
+		return copies.get(value);
 	}
 
-	return Object.fromEntries(
-		Object.entries(value).map(([key, item]) => [maskSecretsInText(key), maskSecretsInValue(item, visited)])
-	);
+	if (Array.isArray(value)) {
+		const maskedArray: unknown[] = [];
+		copies.set(value, maskedArray);
+		for (const item of value) {
+			maskedArray.push(maskSecretsInValue(item, copies));
+		}
+
+		return maskedArray;
+	}
+
+	const maskedRecord: Record<string, unknown> = {};
+	copies.set(value, maskedRecord);
+	for (const [key, item] of Object.entries(value)) {
+		maskedRecord[maskSecretsInText(key)] = maskSecretsInValue(item, copies);
+	}
+
+	return maskedRecord;
 };
 
 /**
@@ -89,10 +103,10 @@ export const maskSecretsInFields = winston.format((info) => {
 		return info;
 	}
 
-	const visited = new WeakSet<object>();
+	const copies = new WeakMap<object, unknown>();
 	const record = info as Record<string, unknown>;
 	for (const key of Object.keys(record)) {
-		record[key] = maskSecretsInValue(record[key], visited);
+		record[key] = maskSecretsInValue(record[key], copies);
 	}
 
 	return info;
