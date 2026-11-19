@@ -77,7 +77,7 @@ LOG_LEVELS="default=notice,BoardModule=debug,BoardCopyService=warning"
 
 The logger redacts some values on its own:
 
-- values of fields whose name contains `auth`, `token`, `secret` or `cookie`, or starts with `x-api`
+- values of fields whose name contains `auth`, `token`, `secret` or `cookie`, starts with `x-api`, or ends with `password`, `passwd`, `credential` or `credentials`
 - bearer tokens in strings
 - errors from HTTP calls (axios): only method, URL (without credentials and sensitive query parameters), status, error code and the start of the response body are logged, never headers, request body or config
 

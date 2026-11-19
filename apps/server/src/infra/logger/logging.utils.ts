@@ -100,7 +100,12 @@ export class LoggingUtils {
 			lower.startsWith('x-api') ||
 			lower.includes('auth') ||
 			lower.includes('token') ||
-			lower.includes('secret')
+			lower.includes('secret') ||
+			// endsWith, so flags such as forcePasswordChange stay readable
+			lower.endsWith('password') ||
+			lower.endsWith('passwd') ||
+			lower.endsWith('credential') ||
+			lower.endsWith('credentials')
 		);
 	}
 

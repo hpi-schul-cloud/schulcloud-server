@@ -658,6 +658,27 @@ describe(LoggingUtils.name, () => {
 		});
 	});
 
+	describe('when a field name points to a password or credential', () => {
+		it('should mask password and credential fields', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				password: 'correct-horse-battery-staple',
+				searchUserPassword: 'ldap-bind-password-123',
+				clientCredentials: { id: 'client', key: 'k' },
+			});
+
+			const logged = JSON.stringify(result);
+			expect(logged).not.toContain('correct-horse-battery-staple');
+			expect(logged).not.toContain('ldap-bind-password-123');
+			expect(result).toMatchObject({ clientCredentials: '[REDACTED]' });
+		});
+
+		it('should keep flags that only mention a password', () => {
+			const result = LoggingUtils.redactSensitiveValue({ forcePasswordChange: true });
+
+			expect(result).toEqual({ forcePasswordChange: true });
+		});
+	});
+
 	describe('when values have no useful own properties', () => {
 		it('should log an ObjectId as its hex string', () => {
 			const id = new ObjectId();
