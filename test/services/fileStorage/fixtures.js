@@ -1,5 +1,9 @@
 const { ObjectId } = require('mongoose').Types;
 
+// role ids reference the seeded roles, which have a unique name index
+const studentRoleId = '0000d186816abba584714c99';
+const teacherRoleId = '0000d186816abba584714c98';
+
 module.exports = {
 	schools: [
 		{
@@ -15,7 +19,7 @@ module.exports = {
 			schoolId: '0000e186816abba584714c55',
 			firstName: 'Max',
 			lastName: 'Musterschueler',
-			roles: ['0000d186816aaaa584714c98'],
+			roles: [studentRoleId],
 		},
 		{
 			_id: new ObjectId('0000d224816abba584714c8d'),
@@ -23,7 +27,7 @@ module.exports = {
 			schoolId: '0000e186816abba584714c55',
 			firstName: 'Peter',
 			lastName: 'Musterschueler',
-			roles: ['0000d186816aaaa584714c98'],
+			roles: [studentRoleId],
 		},
 		{
 			_id: new ObjectId('0000d224816abba584714c8e'),
@@ -31,17 +35,7 @@ module.exports = {
 			schoolId: '0000e186816abba584714c55',
 			firstName: 'Max',
 			lastName: 'Musterlehrer',
-			roles: ['0000d186816aaaa584714c99'],
-		},
-	],
-	roles: [
-		{
-			_id: new ObjectId('0000d186816aaaa584714c98'),
-			name: 'student',
-		},
-		{
-			_id: new ObjectId('0000d186816aaaa584714c99'),
-			name: 'teacher',
+			roles: [teacherRoleId],
 		},
 	],
 	courses: [
@@ -180,7 +174,7 @@ module.exports = {
 			refOwnerModel: 'course',
 			permissions: [
 				{
-					refId: '0000d186816aaaa584714c98',
+					refId: studentRoleId,
 					refPermModel: 'role',
 					read: true,
 					delete: true,
@@ -203,7 +197,7 @@ module.exports = {
 			storageFileName: 'test',
 			permissions: [
 				{
-					refId: '0000d186816aaaa584714c98',
+					refId: studentRoleId,
 					refPermModel: 'role',
 					read: true,
 					delete: true,
@@ -222,7 +216,7 @@ module.exports = {
 			refOwnerModel: 'course',
 			permissions: [
 				{
-					refId: '0000d186816aaaa584714c98',
+					refId: studentRoleId,
 					refPermModel: 'role',
 					read: true,
 					delete: false,
@@ -242,7 +236,7 @@ module.exports = {
 			refOwnerModel: 'course',
 			permissions: [
 				{
-					refId: '0000d186816aaaa584714c98',
+					refId: studentRoleId,
 					refPermModel: 'role',
 					read: true,
 					write: true,
@@ -259,7 +253,7 @@ module.exports = {
 			refOwnerModel: 'course',
 			permissions: [
 				{
-					refId: '0000d186816aaaa584714c98',
+					refId: studentRoleId,
 					refPermModel: 'role',
 					read: true,
 					write: true,
@@ -285,6 +279,62 @@ module.exports = {
 					write: true,
 					delete: true,
 					create: true,
+				},
+			],
+			isDirectory: false,
+			storageFileName: 'undefined',
+			type: 'any/type',
+			size: 123,
+			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
+		},
+		{
+			_id: new ObjectId('5ca613c4c7f5120b8c5bef38'),
+			owner: new ObjectId('0000dcfbfb5c7a3f00bf21ac'),
+			refOwnerModel: 'course',
+			permissions: [
+				{
+					refId: studentRoleId,
+					refPermModel: 'role',
+					read: true,
+				},
+			],
+			isDirectory: true,
+			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
+		},
+		{
+			_id: new ObjectId('5ca613c4c7f5120b8c5bef39'),
+			owner: new ObjectId('0000dcfbfb5c7a3f00bf21ac'),
+			parent: new ObjectId('5ca613c4c7f5120b8c5bef38'),
+			refOwnerModel: 'course',
+			permissions: [
+				{
+					refId: studentRoleId,
+					refPermModel: 'role',
+					read: true,
+				},
+			],
+			isDirectory: false,
+			storageFileName: 'undefined',
+			type: 'any/type',
+			size: 123,
+			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: new ObjectId('6037ac756b73f213eede43b4'),
+		},
+		{
+			_id: new ObjectId('5ca613c4c7f5120b8c5bef3a'),
+			owner: new ObjectId('0000dcfbfb5c7a3f00bf21ac'),
+			parent: new ObjectId('5ca613c4c7f5120b8c5bef38'),
+			refOwnerModel: 'course',
+			permissions: [
+				{
+					refId: studentRoleId,
+					refPermModel: 'role',
+					read: false,
 				},
 			],
 			isDirectory: false,
