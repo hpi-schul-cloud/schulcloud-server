@@ -1,7 +1,7 @@
 import { type Loggable } from '@shared/common/loggable';
 import { type AxiosError, isAxiosError } from 'axios';
-import { Stream } from 'node:stream';
 import util from 'node:util';
+import { summarizeOpaqueLogValue } from './opaque-log-value';
 import { type LogMessageWithContext } from './types';
 
 export class LoggingUtils {
@@ -18,6 +18,54 @@ export class LoggingUtils {
 
 	public static redactSensitiveValue(value: unknown): unknown {
 		return this.redactSensitiveObject(value);
+	}
+
+	/**
+	 * Prepares the body of a failed response for logging, because external APIs explain their errors there.
+	 * Text is truncated. A text body received as binary (axios responseType 'arraybuffer') is decoded first.
+	 * Other binary bodies and streams are logged as a short summary.
+	 */
+	public static prepareResponseBody(body: unknown, headers: unknown): unknown {
+		return this.truncateText(this.decodeTextBody(body, this.getContentType(headers)) ?? body);
+	}
+
+	/**
+	 * Removes credentials and the values of sensitive query parameters from a request URL.
+	 * A relative URL is resolved against its base URL like axios does.
+	 */
+	public static redactUrl(url: string | undefined, baseUrl: string | undefined): string | undefined {
+		if (!url) {
+			return url;
+		}
+
+		// Like axios: a relative url is appended to the base url including its path (/api + /token = /api/token).
+		const isAbsoluteUrl = /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+		const fullUrl =
+			baseUrl && !isAbsoluteUrl ? `${this.trimSlashes(baseUrl, 'end')}/${this.trimSlashes(url, 'start')}` : url;
+
+		// A relative URL without base URL can only be parsed against a placeholder; only its path, query and hash are logged.
+		// With a base URL, the combined URL must be absolute, otherwise it is redacted.
+		const isRelativeWithoutBase = !baseUrl && !URL.canParse(url);
+		let parsedUrl: URL;
+		try {
+			parsedUrl = baseUrl ? new URL(fullUrl) : new URL(fullUrl, 'https://relative.invalid');
+		} catch {
+			return '[REDACTED]';
+		}
+
+		parsedUrl.username = '';
+		parsedUrl.password = '';
+		for (const name of new Set(parsedUrl.searchParams.keys())) {
+			if (this.isSensitiveQueryParamName(name)) {
+				parsedUrl.searchParams.set(name, 'REDACTED_VALUE');
+			}
+		}
+
+		const redactedUrl = isRelativeWithoutBase
+			? `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`
+			: parsedUrl.toString();
+
+		return redactedUrl.replaceAll('REDACTED_VALUE', '[REDACTED]');
 	}
 
 	// Error and validation log messages have no message of their own, so it is taken from the error or the type.
@@ -43,8 +91,10 @@ export class LoggingUtils {
 	}
 
 	private static isSensitiveFieldName(name: string): boolean {
-		const lower = name.toLowerCase();
+		return this.isSensitiveLowerCaseName(name.toLowerCase());
+	}
 
+	private static isSensitiveLowerCaseName(lower: string): boolean {
 		return (
 			lower.includes('cookie') ||
 			lower.startsWith('x-api') ||
@@ -59,10 +109,10 @@ export class LoggingUtils {
 		const lower = name.toLowerCase();
 
 		return (
-			this.isSensitiveFieldName(name) ||
+			this.isSensitiveLowerCaseName(lower) ||
 			lower.includes('signature') ||
 			lower.includes('credential') ||
-			lower === 'awsaccesskeyid'
+			lower.includes('awsaccesskeyid')
 		);
 	}
 
@@ -76,13 +126,9 @@ export class LoggingUtils {
 			return this.redactBearerToken(value);
 		}
 
-		// A stream body (axios responseType 'stream') references the socket and the raw request with its headers.
-		if (value instanceof Stream) {
-			return '[Stream]';
-		}
-
-		if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
-			return `[Binary ${value.byteLength} bytes]`;
+		const summary = typeof value === 'object' && value !== null ? summarizeOpaqueLogValue(value) : undefined;
+		if (summary !== undefined) {
+			return summary;
 		}
 
 		if (Array.isArray(value)) {
@@ -131,7 +177,7 @@ export class LoggingUtils {
 	}
 
 	// Axios errors carry the full request config (headers, auth, body) with our credentials. Only these fields are logged.
-	// The response body is kept (redacted like any other value), because external APIs explain their errors there.
+	// The response body is kept (redacted like any other value), see prepareResponseBody.
 	private static getSafeAxiosErrorProperties(error: AxiosError): Record<string, unknown> {
 		return {
 			code: error.code,
@@ -139,8 +185,50 @@ export class LoggingUtils {
 			statusText: error.response?.statusText,
 			method: error.config?.method?.toUpperCase(),
 			url: this.redactUrl(error.config?.url, error.config?.baseURL),
-			responseData: this.truncateText(error.response?.data),
+			responseData: this.prepareResponseBody(error.response?.data, error.response?.headers),
 		};
+	}
+
+	// Plain objects and AxiosHeaders (which keeps headers as own properties); header names are case-insensitive.
+	private static getContentType(headers: unknown): unknown {
+		if (!this.isRecord(headers)) {
+			return undefined;
+		}
+
+		const name = Object.keys(headers).find((key) => key.toLowerCase() === 'content-type');
+
+		return name ? headers[name] : undefined;
+	}
+
+	private static decodeTextBody(body: unknown, contentType: unknown): string | undefined {
+		const maxDecodedBytes = 64 * 1024;
+		if (!(body instanceof ArrayBuffer || ArrayBuffer.isView(body)) || body.byteLength > maxDecodedBytes) {
+			return undefined;
+		}
+
+		if (!this.isTextContentType(contentType)) {
+			return undefined;
+		}
+
+		const bytes = ArrayBuffer.isView(body)
+			? new Uint8Array(body.buffer, body.byteOffset, body.byteLength)
+			: new Uint8Array(body);
+		try {
+			return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+		} catch {
+			// Not valid UTF-8 despite the content type, so it is summarized like other binary data.
+			return undefined;
+		}
+	}
+
+	private static isTextContentType(contentType: unknown): boolean {
+		if (typeof contentType !== 'string') {
+			return false;
+		}
+
+		const lower = contentType.toLowerCase();
+
+		return lower.startsWith('text/') || lower.includes('json') || lower.includes('xml');
 	}
 
 	// Error responses can be whole HTML pages.
@@ -151,41 +239,6 @@ export class LoggingUtils {
 		}
 
 		return `${value.slice(0, maxLength)}... [truncated ${value.length - maxLength} characters]`;
-	}
-
-	private static redactUrl(url: string | undefined, baseUrl: string | undefined): string | undefined {
-		if (!url) {
-			return url;
-		}
-
-		// Like axios: a relative url is appended to the base url including its path (/api + /token = /api/token).
-		const isAbsoluteUrl = /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
-		const fullUrl =
-			baseUrl && !isAbsoluteUrl ? `${this.trimSlashes(baseUrl, 'end')}/${this.trimSlashes(url, 'start')}` : url;
-
-		// A relative URL without base URL can only be parsed against a placeholder; only its path, query and hash are logged.
-		// With a base URL, the combined URL must be absolute, otherwise it is redacted.
-		const isRelativeWithoutBase = !baseUrl && !URL.canParse(url);
-		let parsedUrl: URL;
-		try {
-			parsedUrl = baseUrl ? new URL(fullUrl) : new URL(fullUrl, 'https://relative.invalid');
-		} catch {
-			return '[REDACTED]';
-		}
-
-		parsedUrl.username = '';
-		parsedUrl.password = '';
-		for (const name of new Set(parsedUrl.searchParams.keys())) {
-			if (this.isSensitiveQueryParamName(name)) {
-				parsedUrl.searchParams.set(name, 'REDACTED_VALUE');
-			}
-		}
-
-		const redactedUrl = isRelativeWithoutBase
-			? `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`
-			: parsedUrl.toString();
-
-		return redactedUrl.replaceAll('REDACTED_VALUE', '[REDACTED]');
 	}
 
 	// A loop instead of a regular expression: /\/+$/ backtracks on input with many slashes (polynomial runtime).
@@ -220,7 +273,13 @@ export class LoggingUtils {
 		const result: Record<string, unknown> = {};
 
 		for (const [key, val] of this.getLoggableEntries(value)) {
-			result[key] = this.redactEntryValue(key, val, visited);
+			// defineProperty instead of result[key]: a key "__proto__" (e.g. from parsed JSON) would set the prototype.
+			Object.defineProperty(result, key, {
+				value: this.redactEntryValue(key, val, visited),
+				enumerable: true,
+				writable: true,
+				configurable: true,
+			});
 		}
 
 		return result;

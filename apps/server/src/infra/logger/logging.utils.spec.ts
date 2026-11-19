@@ -3,6 +3,7 @@ import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios
 import { PassThrough } from 'node:stream';
 import util from 'node:util';
 import { AxiosErrorLoggable } from '@infra/error';
+import { ObjectId } from 'bson';
 import { LoggingUtils } from './logging.utils';
 
 // Renders everything that ends up in the log entry, so tests can check that a value is (not) logged anywhere.
@@ -489,6 +490,73 @@ describe(LoggingUtils.name, () => {
 				expect(result.error).toEqual(expect.objectContaining({ responseData: '[Binary 19 bytes]' }));
 			});
 
+			describe('when the response body was received as binary (responseType arraybuffer)', () => {
+				const buildBinaryAxiosError = (body: ArrayBuffer | Buffer, contentType?: string) => {
+					const axiosError = buildAxiosError();
+					Object.assign(axiosError.response ?? {}, {
+						data: body,
+						headers: contentType ? { 'Content-Type': contentType } : {},
+					});
+
+					return axiosError;
+				};
+
+				it('should decode a text body that the content type marks as text', () => {
+					const axiosError = buildBinaryAxiosError(
+						Buffer.from('<Error><Code>SignatureDoesNotMatch</Code></Error>'),
+						'application/xml'
+					);
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(
+						expect.objectContaining({ responseData: '<Error><Code>SignatureDoesNotMatch</Code></Error>' })
+					);
+				});
+
+				it('should decode a text body given as ArrayBuffer', () => {
+					const bytes = new TextEncoder().encode('{"error":"invalid_client"}');
+					const axiosError = buildBinaryAxiosError(bytes.buffer, 'application/json; charset=utf-8');
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(expect.objectContaining({ responseData: '{"error":"invalid_client"}' }));
+				});
+
+				it('should log only the size of a body that is not text', () => {
+					const axiosError = buildBinaryAxiosError(Buffer.from('%PDF-1.7 binary'), 'application/pdf');
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(expect.objectContaining({ responseData: '[Binary 15 bytes]' }));
+				});
+
+				it('should log only the size of a text body that is not valid UTF-8', () => {
+					const axiosError = buildBinaryAxiosError(Buffer.from([0xff, 0xfe, 0x41]), 'text/plain');
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(expect.objectContaining({ responseData: '[Binary 3 bytes]' }));
+				});
+
+				it('should decode the body of an AxiosErrorLoggable nested in another error', () => {
+					const axiosError = buildBinaryAxiosError(Buffer.from('quota exceeded'), 'text/plain');
+					const error = Object.assign(new Error('import failed'), {
+						error: new AxiosErrorLoggable(axiosError, 'IMPORT_ERROR'),
+					});
+					const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(render(result)).toContain('quota exceeded');
+					expectNoSecrets(render(result));
+				});
+			});
+
 			it('should resolve a relative axios url against its base url', () => {
 				const axiosError = buildAxiosError('/token?access_token=abc123secret');
 				if (axiosError.config) {
@@ -587,6 +655,36 @@ describe(LoggingUtils.name, () => {
 
 				expect(axiosError.config?.data).toContain(clientSecret);
 			});
+		});
+	});
+
+	describe('when values have no useful own properties', () => {
+		it('should log an ObjectId as its hex string', () => {
+			const id = new ObjectId();
+
+			const result = LoggingUtils.redactSensitiveValue({ schoolId: id });
+
+			expect(result).toEqual({ schoolId: id.toHexString() });
+		});
+
+		it('should log a web stream as stream marker', () => {
+			const result = LoggingUtils.redactSensitiveValue({ body: new ReadableStream() });
+
+			expect(result).toEqual({ body: '[Stream]' });
+		});
+
+		it('should log only the size of a blob', () => {
+			const result = LoggingUtils.redactSensitiveValue({ body: new Blob(['abc']) });
+
+			expect(result).toEqual({ body: '[Blob 3 bytes]' });
+		});
+
+		it('should keep a field named __proto__ as a normal field', () => {
+			const parsed = JSON.parse('{"__proto__":{"reason":"denied"}}') as Record<string, unknown>;
+
+			const result = LoggingUtils.redactSensitiveValue(parsed);
+
+			expect(JSON.stringify(result)).toBe('{"__proto__":{"reason":"denied"}}');
 		});
 	});
 

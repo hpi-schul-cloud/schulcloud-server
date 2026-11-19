@@ -1,5 +1,6 @@
 import { SecretRegistry } from '@infra/configuration';
 import winston from 'winston';
+import { summarizeOpaqueLogValue } from './opaque-log-value';
 
 const MASK = '***';
 // The scheme is case-insensitive (RFC 7617), so basic and BASIC are decoded as well.
@@ -69,6 +70,11 @@ const maskSecretsInValue = (value: unknown, copies: WeakMap<object, unknown>): u
 		return value;
 	}
 
+	const summary = summarizeOpaqueLogValue(value);
+	if (summary !== undefined) {
+		return summary;
+	}
+
 	// An object referenced twice (or circularly) gets the same masked copy, never the unmasked original.
 	if (copies.has(value)) {
 		return copies.get(value);
@@ -87,7 +93,13 @@ const maskSecretsInValue = (value: unknown, copies: WeakMap<object, unknown>): u
 	const maskedRecord: Record<string, unknown> = {};
 	copies.set(value, maskedRecord);
 	for (const [key, item] of Object.entries(value)) {
-		maskedRecord[maskSecretsInText(key)] = maskSecretsInValue(item, copies);
+		// defineProperty instead of maskedRecord[key]: a key "__proto__" (e.g. from parsed JSON) would set the prototype.
+		Object.defineProperty(maskedRecord, maskSecretsInText(key), {
+			value: maskSecretsInValue(item, copies),
+			enumerable: true,
+			writable: true,
+			configurable: true,
+		});
 	}
 
 	return maskedRecord;

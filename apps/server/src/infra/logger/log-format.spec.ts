@@ -1,4 +1,5 @@
 import { SecretRegistry } from '@infra/configuration';
+import { ObjectId } from 'bson';
 import { createLogFormat } from './log-format';
 
 // winston stores the final output under this symbol (MESSAGE from triple-beam)
@@ -179,13 +180,56 @@ describe('createLogFormat with secrets', () => {
 			);
 		});
 
-		it('should mask a secret in a circular object', () => {
+		it('should mask a secret in a circular object and keep the line valid JSON', () => {
 			const data: Record<string, unknown> = { body: clientSecret };
 			data.self = data;
 
 			const output = render({ message: 'request', data });
 
 			expect(output).not.toContain(clientSecret);
+			expect(JSON.parse(output)).toEqual(
+				expect.objectContaining({ data: { body: '***', self: expect.any(String) as unknown } })
+			);
+		});
+
+		it('should mask a secret in an array that is referenced twice', () => {
+			const shared = [clientSecret];
+
+			const output = render({ message: 'request', data: { first: shared, second: shared } });
+
+			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { first: ['***'], second: ['***'] } }));
+		});
+
+		it('should mask a secret in a circular array and keep the line valid JSON', () => {
+			const list: unknown[] = [clientSecret];
+			list.push(list);
+
+			const output = render({ message: 'request', data: { list } });
+
+			expect(output).not.toContain(clientSecret);
+			expect(() => JSON.parse(output) as unknown).not.toThrow();
+		});
+
+		it('should log an ObjectId logged directly as its hex string', () => {
+			const id = new ObjectId();
+
+			const output = render({ message: 'lookup', data: { schoolId: id } });
+
+			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { schoolId: id.toHexString() } }));
+		});
+
+		it('should log only the size of a buffer logged directly', () => {
+			const output = render({ message: 'upload', data: { content: Buffer.from('abc') } });
+
+			expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { content: '[Binary 3 bytes]' } }));
+		});
+
+		it('should keep a field named __proto__ as a normal field', () => {
+			const data = JSON.parse('{"__proto__":{"reason":"denied"}}') as Record<string, unknown>;
+
+			const output = render({ message: 'response', data });
+
+			expect(output).toContain('"__proto__":{"reason":"denied"}');
 		});
 
 		it('should not change the data passed to the logger', () => {
