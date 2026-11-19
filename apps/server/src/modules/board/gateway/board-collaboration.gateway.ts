@@ -70,6 +70,8 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	@WebSocketServer()
 	private readonly server!: Server;
 
+	private readonly connectedSchoolsBySocketId = new Map<string, string>();
+
 	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly orm: MikroORM,
@@ -97,17 +99,40 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	private getCurrentUser(socket: Socket): ICurrentUser {
 		const { user } = socket.handshake;
 		if (!user) throw new WsException('Not Authenticated.');
+		this.trackSchoolConnection(socket, user.schoolId);
 		return user;
 	}
 
-	public handleConnection(): void {
-		this.updateTotalUserCount();
-		this.updateTotalBoardCount();
+	private trackSchoolConnection(socket: Socket, schoolId: string): void {
+		if (this.connectedSchoolsBySocketId.has(socket.id)) {
+			return;
+		}
+
+		this.connectedSchoolsBySocketId.set(socket.id, schoolId);
+		this.metricsService.incrementSchoolConnectionCount(schoolId);
 	}
 
-	public handleDisconnect(): void {
+	public handleConnection(socket: Socket): void {
 		this.updateTotalUserCount();
 		this.updateTotalBoardCount();
+		const { user } = socket.handshake;
+		if (!user) {
+			return;
+		}
+
+		this.trackSchoolConnection(socket, user.schoolId);
+	}
+
+	public handleDisconnect(socket: Socket): void {
+		this.updateTotalUserCount();
+		this.updateTotalBoardCount();
+		const schoolId = this.connectedSchoolsBySocketId.get(socket.id);
+		if (schoolId === undefined) {
+			return;
+		}
+
+		this.connectedSchoolsBySocketId.delete(socket.id);
+		this.metricsService.decrementSchoolConnectionCount(schoolId);
 	}
 
 	private updateTotalUserCount(): void {

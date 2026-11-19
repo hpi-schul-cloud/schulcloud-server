@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import net from 'net';
-import { basename } from 'path';
+import net from 'node:net';
+import { basename } from 'node:path';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import type { MetaData } from '../types';
 import { MetaDataEntityType } from '../types';

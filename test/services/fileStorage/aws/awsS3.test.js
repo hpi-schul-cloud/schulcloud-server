@@ -2,6 +2,7 @@ const chai = require('chai');
 const { default: chaiHttp } = require('chai-http');
 const { default: chaiAsPromised } = require('chai-as-promised');
 const { expect } = require('chai');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const { schoolModel } = require('../../../../src/services/school/model');
 const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
@@ -132,5 +133,23 @@ describe('AWS file storage strategy', () => {
 					expect(err).to.not.be.undefined;
 					expect(err.code).to.equal(400);
 				}));
+	});
+
+	describe('object metadata', () => {
+		it('retrieves metadata from the uploaded S3 object', async () => {
+			const featureEnabled = Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED');
+			Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', false);
+			try {
+				const metadata = await aws.getObjectMetadata({
+					storageProviderId: '000000000000000000000001',
+					bucket: 'bucket-test',
+					flatFileName: 'testKey',
+				});
+				expect(metadata.ContentLength).to.equal(5);
+				expect(metadata.ContentType).to.equal('mime/image');
+			} finally {
+				Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', featureEnabled);
+			}
+		});
 	});
 });

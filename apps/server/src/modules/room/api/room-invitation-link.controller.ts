@@ -18,6 +18,7 @@ import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swag
 import { ApiValidationError, BusinessError } from '@shared/common/error';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
+import { UseRoomInvitationLinkUrlParams } from './dto/request/use-room-invitation-link.url.params';
 import { RoomInvitationLinksQueryParams } from './dto/request/room-invitation-links.query.params';
 import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
 import { RoomIdResponse } from './dto/response/room-id.response';
@@ -106,11 +107,12 @@ export class RoomInvitationLinkController {
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: BusinessError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: RoomInvitationLinkError })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@ApiExtraModels(RoomInvitationLinkError)
 	public async useLink(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomInvitationLinkUrlParams
+		@Param() urlParams: UseRoomInvitationLinkUrlParams
 	): Promise<RoomIdResponse> {
 		const roomId = await this.roomInvitationLinkUc.useLink(currentUser.userId, urlParams.roomInvitationLinkId);
 

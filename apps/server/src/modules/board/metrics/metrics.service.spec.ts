@@ -39,6 +39,20 @@ describe(MetricsService.name, () => {
 		});
 	});
 
+	describe('school connection count', () => {
+		it('should increment and decrement the gauge for a school', () => {
+			const schoolId = 'school-id';
+			const incrementSpy = jest.spyOn(service['connectionsPerSchoolGauge'], 'inc');
+			const decrementSpy = jest.spyOn(service['connectionsPerSchoolGauge'], 'dec');
+
+			service.incrementSchoolConnectionCount(schoolId);
+			service.decrementSchoolConnectionCount(schoolId);
+
+			expect(incrementSpy).toHaveBeenCalledWith({ school_id: schoolId });
+			expect(decrementSpy).toHaveBeenCalledWith({ school_id: schoolId });
+		});
+	});
+
 	describe('setTotalBoardCount', () => {
 		it('should set the total board count gauge', () => {
 			const spy = jest.spyOn(service['totalBoardCounter'], 'set');
