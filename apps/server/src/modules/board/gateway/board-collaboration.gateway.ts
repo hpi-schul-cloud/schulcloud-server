@@ -55,15 +55,13 @@ import {
 } from './dto';
 import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
 
-// Using a variable here to access the exchange name in the decorator
 type GatewayCorsOptions = CorsOptions & { origin: CustomOrigin };
 
 const websocketOptions: { path: string; cors: GatewayCorsOptions } = {
 	path: '',
 	cors: {
 		// Rejects everything until the constructor installs the real origin check
-		// istanbul ignore next
-		origin: (_requestOrigin, callback): void => callback(new Error('Origin check not initialized'), false),
+		origin: (_requestOrigin, callback): void => callback(new Error('Origin check not initialized'), false), // NOSONAR
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 		preflightContinue: false,
 		optionsSuccessStatus: 204,
