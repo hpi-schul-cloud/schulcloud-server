@@ -106,6 +106,23 @@ describe('Board Import Controller (API)', () => {
 			});
 		});
 
+		describe('when the link contains credentials', () => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const { link } = boardImportJobFactory.build({ link: 'https://user:password@example.com/board' });
+
+				return { loggedInClient, link };
+			};
+
+			it('should return status 400', async () => {
+				const { loggedInClient, link } = await setup();
+
+				const response = await loggedInClient.post('', { link });
+
+				expect(response.status).toEqual(400);
+			});
+		});
+
 		describe('when the link is missing', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
