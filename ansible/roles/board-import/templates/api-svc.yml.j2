@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: board-import-api-svc
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: board-import-api
+spec:
+  type: ClusterIP
+  selector:
+    app: board-import-api
+  ports:
+    - name: api
+      protocol: TCP
+      port: {{ BOARD_IMPORT_API_PORT }}
+      targetPort: {{ BOARD_IMPORT_API_PORT }}
