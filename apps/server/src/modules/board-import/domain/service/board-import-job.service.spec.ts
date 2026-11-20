@@ -49,7 +49,7 @@ describe(BoardImportJobService.name, () => {
 				jest.useFakeTimers({ now });
 
 				const { userId, link } = boardImportJobFactory.build();
-				const status = BoardImportJobStatus.FAILED;
+				const status = BoardImportJobStatus.WAITING;
 				const expiresAt = new Date(now.getTime() + config.jobRetentionInDays * 24 * 60 * 60 * 1000);
 
 				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
@@ -57,7 +57,7 @@ describe(BoardImportJobService.name, () => {
 				return { userId, link, status, expiresAt };
 			};
 
-			it('should save a failed job that expires after the retention time', async () => {
+			it('should save a waiting job that expires after the retention time', async () => {
 				const { userId, link, status, expiresAt } = setup();
 
 				const job = await service.create(userId, link);
