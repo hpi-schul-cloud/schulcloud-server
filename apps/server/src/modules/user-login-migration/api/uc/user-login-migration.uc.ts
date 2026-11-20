@@ -83,7 +83,8 @@ export class UserLoginMigrationUc {
 		currentUserId: EntityId,
 		targetSystemId: EntityId,
 		code: string,
-		redirectUri: string
+		redirectUri: string,
+		codeVerifier?: string
 	): Promise<void> {
 		const userLoginMigration = await this.userLoginMigrationService.findMigrationByUser(currentUserId);
 
@@ -91,7 +92,12 @@ export class UserLoginMigrationUc {
 			throw new InvalidUserLoginMigrationLoggableException(currentUserId, targetSystemId);
 		}
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, redirectUri, code);
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
+			targetSystemId,
+			redirectUri,
+			code,
+			codeVerifier
+		);
 
 		this.logger.info(new UserMigrationStartedLoggable(currentUserId, userLoginMigration));
 

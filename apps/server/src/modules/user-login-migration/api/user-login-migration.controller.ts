@@ -230,7 +230,14 @@ export class UserLoginMigrationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: Oauth2MigrationParams
 	): Promise<void> {
-		await this.userLoginMigrationUc.migrate(jwt, currentUser.userId, body.systemId, body.code, body.redirectUri);
+		await this.userLoginMigrationUc.migrate(
+			jwt,
+			currentUser.userId,
+			body.systemId,
+			body.code,
+			body.redirectUri,
+			body.codeVerifier
+		);
 	}
 
 	@Post('force-migration')
