@@ -2,6 +2,7 @@ import { CoreModule } from '@core/core.module';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { User } from '@modules/user';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -9,14 +10,18 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { BoardImportApiModule } from '../../board-import-api.module';
+import { ENTITIES } from '../../board-import.entity.imports';
 import { BoardImportJobStatus } from '../../domain';
-import { boardImportJobFactory } from '../../testing';
+import { BoardImportJobEntity } from '../../repo/entity';
+import { type BoardImportJobResponse } from '../dto';
+import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 
 const baseRouteName = 'board-import/jobs';
 
 describe('Board Import Controller (API)', () => {
 	let app: INestApplication;
 	let jwtConfig: TestJwtModuleConfig;
+	let em: EntityManager;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -30,7 +35,7 @@ describe('Board Import Controller (API)', () => {
 					},
 				]),
 				BoardImportApiModule,
-				MongoMemoryDatabaseModule.forRoot({ entities: [User] }),
+				MongoMemoryDatabaseModule.forRoot({ entities: [User, ...ENTITIES] }),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
 		}).compile();
@@ -38,6 +43,7 @@ describe('Board Import Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
@@ -50,7 +56,7 @@ describe('Board Import Controller (API)', () => {
 			.withJwt(teacherUser, jwtConfig)
 			.build(teacherAccount);
 
-		return { loggedInClient };
+		return { loggedInClient, teacherUser };
 	};
 
 	describe('[POST] board-import/jobs', () => {
@@ -86,6 +92,16 @@ describe('Board Import Controller (API)', () => {
 
 				expect(response.status).toEqual(201);
 				expect(response.body).toEqual({ id: expect.any(String), status });
+			});
+
+			it('should store the job', async () => {
+				const { loggedInClient, link, status } = await setup();
+
+				const response = await loggedInClient.post('', { link });
+
+				const { id } = response.body as BoardImportJobResponse;
+				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+				expect(entity).toMatchObject({ link, status });
 			});
 		});
 
@@ -154,6 +170,45 @@ describe('Board Import Controller (API)', () => {
 				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(id);
 
 				expect(response.status).toEqual(401);
+			});
+		});
+
+		describe('when the user started the job', () => {
+			const setup = async () => {
+				const { loggedInClient, teacherUser } = await setupLoggedInClient();
+				const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id) });
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { loggedInClient, entity };
+			};
+
+			it('should return status 200 with the id and the status of the job', async () => {
+				const { loggedInClient, entity } = await setup();
+
+				const response = await loggedInClient.get(entity.id);
+
+				expect(response.status).toEqual(200);
+				expect(response.body).toEqual({ id: entity.id, status: entity.status });
+			});
+		});
+
+		describe('when another user started the job', () => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const entity = boardImportJobEntityFactory.build();
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { loggedInClient, entity };
+			};
+
+			it('should return status 404', async () => {
+				const { loggedInClient, entity } = await setup();
+
+				const response = await loggedInClient.get(entity.id);
+
+				expect(response.status).toEqual(404);
 			});
 		});
 
