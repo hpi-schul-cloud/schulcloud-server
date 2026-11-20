@@ -1,3 +1,5 @@
+import { CoreModule } from '@core/core.module';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { User } from '@modules/user';
 import { type INestApplication } from '@nestjs/common';
@@ -6,7 +8,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
-import { BoardImportApiAppModule } from '../../board-import-api.app.module';
+import { BoardImportApiModule } from '../../board-import-api.module';
 import { BoardImportPingResponse } from '../dto';
 
 const baseRouteName = 'board-import';
@@ -18,7 +20,15 @@ describe('Board Import Controller (API)', () => {
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
 			imports: [
-				BoardImportApiAppModule,
+				CoreModule,
+				AuthGuardModule.register([
+					{
+						option: AuthGuardOptions.JWT,
+						configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+						configConstructor: JwtAuthGuardConfig,
+					},
+				]),
+				BoardImportApiModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [User] }),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
