@@ -1,13 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
+import { BoardImportJobProducer } from '../amqp';
 import { type BoardImportJob, BoardImportJobService } from '../domain';
 
 @Injectable()
 export class BoardImportUc {
-	constructor(private readonly boardImportJobService: BoardImportJobService) {}
+	constructor(
+		private readonly boardImportJobService: BoardImportJobService,
+		private readonly boardImportJobProducer: BoardImportJobProducer
+	) {}
 
 	public async startImport(userId: EntityId, link: string): Promise<BoardImportJob> {
 		const job = await this.boardImportJobService.create(userId, link);
+
+		await this.boardImportJobProducer.publishJob({ jobId: job.id });
 
 		return job;
 	}

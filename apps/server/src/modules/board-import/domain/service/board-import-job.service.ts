@@ -25,9 +25,6 @@ export class BoardImportJobService {
 			expiresAt,
 		});
 
-		// No worker can take the job, so it must not stay in the status "waiting".
-		job.status = BoardImportJobStatus.FAILED;
-
 		const savedJob = await this.boardImportJobRepo.save(job);
 
 		return savedJob;

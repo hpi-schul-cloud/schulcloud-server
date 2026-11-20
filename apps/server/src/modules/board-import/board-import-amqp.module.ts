@@ -1,7 +1,7 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Module } from '@nestjs/common';
-import { BoardImportEvents } from './amqp';
+import { BoardImportEvents, BoardImportJobProducer } from './amqp';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from './board-import-exchange.config';
 
 // Every app that publishes or consumes import jobs declares the queue,
@@ -20,6 +20,7 @@ const rabbitMQModule = RabbitMQWrapperModule.register({
 		ConfigurationModule.register(BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig),
 		rabbitMQModule,
 	],
-	exports: [rabbitMQModule],
+	providers: [BoardImportJobProducer],
+	exports: [rabbitMQModule, BoardImportJobProducer],
 })
 export class BoardImportAmqpModule {}
