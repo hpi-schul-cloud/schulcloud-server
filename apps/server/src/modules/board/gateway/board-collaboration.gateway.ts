@@ -87,10 +87,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 	) {
 		this.logger.setContext(BoardCollaborationGateway.name);
 		websocketOptions.cors.origin = (requestOrigin, callback): void => {
-			// Browsers omit the Origin header for simple same-origin GET requests (e.g. the initial
-			// polling handshake), so a missing header is treated as same-origin and allowed. A real
-			// cross-site request always sends a (then mismatching) Origin header and gets rejected.
-			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Origin
+			// Allow missing header, as socket.io uses HTTP polling which doesn't send Origin headers on same-origin GET requests.
 			if (requestOrigin === undefined || requestOrigin === this.boardConfig.hostUrl) {
 				callback(null, true);
 			} else {
