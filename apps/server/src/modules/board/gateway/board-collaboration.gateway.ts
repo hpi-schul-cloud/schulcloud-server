@@ -62,6 +62,7 @@ const websocketOptions: { path: string; cors: GatewayCorsOptions } = {
 	path: '',
 	cors: {
 		// Rejects everything until the constructor installs the real origin check
+		// istanbul ignore next
 		origin: (_requestOrigin, callback): void => callback(new Error('Origin check not initialized'), false),
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 		preflightContinue: false,
