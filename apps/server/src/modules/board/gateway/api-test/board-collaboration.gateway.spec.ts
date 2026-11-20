@@ -123,7 +123,7 @@ describe(BoardCollaborationGateway.name, () => {
 			}
 		});
 
-		it('should accept a connection attempt without an Origin header (same-origin simple request)', async () => {
+		it('should accept a connection without an Origin header, as browsers omit it on same-origin GET request', async () => {
 			const { teacherAuthJwt } = await setup();
 
 			const sameOriginClient = await getSocketApiClient(app, teacherAuthJwt, null);
