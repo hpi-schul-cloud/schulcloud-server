@@ -70,19 +70,23 @@ describe(RabbitMQWrapperModule.name, () => {
 
 		describe('when queues are given', () => {
 			let module: TestingModule;
-			const queue: RabbitMQQueueOptions = {
+			const queueOptions: RabbitMQQueueOptions = {
 				name: 'rabbitmq-module-test-queue',
 				routingKey: 'rabbitmq-module-test-key',
 			};
 
 			beforeAll(async () => {
 				module = await Test.createTestingModule({
-					imports: [RabbitMQWrapperModule.register({ ...options, queues: [queue] })],
+					imports: [RabbitMQWrapperModule.register({ ...options, queues: [queueOptions] })],
 				}).compile();
 				await module.init();
 			});
 
 			afterAll(async () => {
+				const amqpConnection = module.get(AmqpConnection);
+				const exchangeConfig = module.get<TestExchangeConfig>(TEST_EXCHANGE_CONFIG_TOKEN);
+				await amqpConnection.channel.deleteQueue(queueOptions.name);
+				await amqpConnection.channel.deleteExchange(exchangeConfig.exchangeName);
 				await module.close();
 			});
 
@@ -90,21 +94,25 @@ describe(RabbitMQWrapperModule.name, () => {
 				const amqpConnection = module.get(AmqpConnection);
 				const exchangeConfig = module.get<TestExchangeConfig>(TEST_EXCHANGE_CONFIG_TOKEN);
 
-				return { amqpConnection, exchangeConfig };
+				return { amqpConnection, exchangeConfig, queue: queueOptions };
 			};
 
-			it('should bind the queues to the exchange of the module', () => {
-				const { amqpConnection, exchangeConfig } = setup();
-
-				expect(amqpConnection.configuration.queues).toEqual([{ ...queue, exchange: exchangeConfig.exchangeName }]);
-			});
-
 			it('should declare the queues', async () => {
-				const { amqpConnection } = setup();
+				const { amqpConnection, queue } = setup();
 
 				const result = await amqpConnection.channel.checkQueue(queue.name);
 
 				expect(result.queue).toEqual(queue.name);
+			});
+
+			it('should bind the queues to the exchange of the module', async () => {
+				const { amqpConnection, exchangeConfig, queue } = setup();
+				await amqpConnection.channel.purgeQueue(queue.name);
+
+				await amqpConnection.publish(exchangeConfig.exchangeName, queue.routingKey, { test: true });
+
+				const message = await amqpConnection.channel.get(queue.name, { noAck: true });
+				expect(message && JSON.parse(message.content.toString())).toEqual({ test: true });
 			});
 		});
 	});

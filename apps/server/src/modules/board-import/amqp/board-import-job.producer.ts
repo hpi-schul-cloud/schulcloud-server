@@ -12,6 +12,8 @@ export class BoardImportJobProducer {
 	) {}
 
 	public async publishJob(message: BoardImportJobMessage): Promise<void> {
-		await this.amqpConnection.publish(this.config.exchangeName, BoardImportEvents.IMPORT_JOB, message);
+		await this.amqpConnection.publish(this.config.exchangeName, BoardImportEvents.IMPORT_JOB, message, {
+			persistent: true,
+		});
 	}
 }
