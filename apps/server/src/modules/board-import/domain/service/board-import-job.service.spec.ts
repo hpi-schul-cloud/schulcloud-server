@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { BoardImportJobProducer } from '../../amqp';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { boardImportJobFactory } from '../../testing';
 import { type BoardImportJob } from '../do';
@@ -11,6 +12,7 @@ describe(BoardImportJobService.name, () => {
 	let module: TestingModule;
 	let service: BoardImportJobService;
 	let repo: DeepMocked<BoardImportJobRepo>;
+	let producer: DeepMocked<BoardImportJobProducer>;
 	let config: BoardImportConfig;
 
 	beforeAll(async () => {
@@ -25,11 +27,16 @@ describe(BoardImportJobService.name, () => {
 					provide: BOARD_IMPORT_CONFIG_TOKEN,
 					useValue: new BoardImportConfig(),
 				},
+				{
+					provide: BoardImportJobProducer,
+					useValue: createMock<BoardImportJobProducer>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(BoardImportJobService);
 		repo = module.get(BOARD_IMPORT_JOB_REPO);
+		producer = module.get(BoardImportJobProducer);
 		config = module.get(BOARD_IMPORT_CONFIG_TOKEN);
 	});
 
@@ -65,6 +72,14 @@ describe(BoardImportJobService.name, () => {
 				expect(repo.save).toHaveBeenCalledWith(job);
 				expect(job.getProps()).toEqual({ id: expect.any(String), userId, link, status, expiresAt });
 			});
+
+			it('should publish the id of the job', async () => {
+				const { userId, link } = setup();
+
+				const job = await service.create(userId, link);
+
+				expect(producer.publishJob).toHaveBeenCalledWith({ jobId: job.id });
+			});
 		});
 
 		describe('when save rejects', () => {
@@ -81,6 +96,14 @@ describe(BoardImportJobService.name, () => {
 				const { userId, link, error } = setup();
 
 				await expect(service.create(userId, link)).rejects.toThrow(error);
+			});
+
+			it('should not publish a message', async () => {
+				const { userId, link, error } = setup();
+
+				await expect(service.create(userId, link)).rejects.toThrow(error);
+
+				expect(producer.publishJob).not.toHaveBeenCalled();
 			});
 		});
 	});
