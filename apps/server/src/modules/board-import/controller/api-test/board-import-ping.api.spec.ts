@@ -9,6 +9,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { BoardImportApiModule } from '../../board-import-api.module';
+import { ENTITIES } from '../../board-import.entity.imports';
 import { BoardImportPingResponse } from '../dto';
 
 const baseRouteName = 'board-import';
@@ -29,7 +30,7 @@ describe('Board Import Controller (API)', () => {
 					},
 				]),
 				BoardImportApiModule,
-				MongoMemoryDatabaseModule.forRoot({ entities: [User] }),
+				MongoMemoryDatabaseModule.forRoot({ entities: [User, ...ENTITIES] }),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
 		}).compile();
