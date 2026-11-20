@@ -31,10 +31,10 @@ describe('S3ClientActionLoggable', () => {
 
 				expect(result.message).toBe(message);
 				expect(typeof result.data).toBe('object');
-				if (typeof result.data === 'object' && result.data !== null) {
+				if (typeof result.data === 'object' && result.data !== null && !Array.isArray(result.data)) {
 					expect(result.data.action).toBe(payload.action);
 					expect(result.data.bucket).toBe(payload.bucket);
-					expect(result.data.objectPath).toBe(JSON.stringify(payload.objectPath));
+					expect(result.data.objectPath).toEqual(payload.objectPath);
 				} else {
 					throw new Error('result.data is not an object');
 				}

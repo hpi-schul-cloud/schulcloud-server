@@ -1,5 +1,13 @@
 import { type Loggable, type LoggableMessage, type LogMessage } from '@shared/common/loggable';
+import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { PassThrough } from 'node:stream';
+import util from 'node:util';
+import { AxiosErrorLoggable } from '@infra/error';
+import { ObjectId } from 'bson';
 import { LoggingUtils } from './logging.utils';
+
+// Renders everything that ends up in the log entry, so tests can check that a value is (not) logged anywhere.
+const render = (value: unknown): string => util.inspect(value, { depth: null, breakLength: Infinity });
 
 class SampleLoggable implements Loggable {
 	constructor(private readonly message: LoggableMessage) {}
@@ -27,11 +35,11 @@ describe(LoggingUtils.name, () => {
 
 			expect(result.context).toBe('ctx');
 
-			expect(result.message).toContain("message: 'request failed'");
-			expect(result.message).toContain("accept: 'application/json'");
-			expect(result.message).toContain("'user-agent': 'Mozilla/5.0'");
+			expect(render(result)).toContain("message: 'request failed'");
+			expect(render(result)).toContain("accept: 'application/json'");
+			expect(render(result)).toContain("'user-agent': 'Mozilla/5.0'");
 
-			expect(result.message).not.toContain('[REDACTED]');
+			expect(render(result)).not.toContain('[REDACTED]');
 		});
 
 		it('should redact sensitive header and token values while keeping header names', () => {
@@ -58,18 +66,18 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain('Authorization');
-			expect(result.message).toContain('Cookie');
-			expect(result.message).toContain('X-Api-Key');
-			expect(result.message).toContain('Accept');
+			expect(render(result)).toContain('Authorization');
+			expect(render(result)).toContain('Cookie');
+			expect(render(result)).toContain('X-Api-Key');
+			expect(render(result)).toContain('Accept');
 
-			expect(result.message).not.toContain(token);
-			expect(result.message).not.toContain(cookie);
-			expect(result.message).not.toContain(apiKey);
+			expect(render(result)).not.toContain(token);
+			expect(render(result)).not.toContain(cookie);
+			expect(render(result)).not.toContain(apiKey);
 
-			expect(result.message).toContain(redactedToken);
-			expect(result.message).toContain(redactedCookie);
-			expect(result.message).toContain(redactedApiKey);
+			expect(render(result)).toContain(redactedToken);
+			expect(render(result)).toContain(redactedCookie);
+			expect(render(result)).toContain(redactedApiKey);
 		});
 
 		it('should keep already redacted bearer token unchanged', () => {
@@ -83,8 +91,8 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain(token);
-			expect(result.message).not.toContain('...');
+			expect(render(result)).toContain(token);
+			expect(render(result)).not.toContain('...');
 		});
 
 		it('should redact blank and short sensitive values', () => {
@@ -98,8 +106,8 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("Cookie: '[REDACTED]'");
-			expect(result.message).toContain("Secret: '[REDACTED]'");
+			expect(render(result)).toContain("Cookie: '[REDACTED]'");
+			expect(render(result)).toContain("Secret: '[REDACTED]'");
 		});
 
 		it('should replace circular arrays with circular marker', () => {
@@ -115,7 +123,7 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("items: [ '[Circular]' ]");
+			expect(render(result)).toContain("items: [ '[Circular]' ]");
 		});
 
 		it('should replace circular objects with circular marker', () => {
@@ -131,7 +139,7 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("self: '[Circular]'");
+			expect(render(result)).toContain("self: '[Circular]'");
 		});
 
 		it('should redact non-string values for sensitive keys', () => {
@@ -144,10 +152,10 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain("AuthToken: '[REDACTED]'");
+			expect(render(result)).toContain("AuthToken: '[REDACTED]'");
 		});
 
-		it('should keep Error instances unchanged in output', () => {
+		it('should keep the message of Error instances in output', () => {
 			const loggable = new SampleLoggable({
 				message: 'request failed',
 				data: {
@@ -157,7 +165,7 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain('Error: boom');
+			expect(render(result)).toContain('Error: boom');
 		});
 
 		it('should keep non-sensitive primitive values unchanged', () => {
@@ -171,8 +179,533 @@ describe(LoggingUtils.name, () => {
 
 			const result = LoggingUtils.createMessageWithContext(loggable);
 
-			expect(result.message).toContain('attempt: 2');
-			expect(result.message).toContain('retry: false');
+			expect(render(result)).toContain('attempt: 2');
+			expect(render(result)).toContain('retry: false');
+		});
+
+		describe('when building log fields', () => {
+			it('should return message and data as separate fields', () => {
+				const loggable = new SampleLoggable({ message: 'user created', data: { userId: '123' } });
+
+				const result = LoggingUtils.createMessageWithContext(loggable, 'UserService');
+
+				expect(result).toEqual({ message: 'user created', context: 'UserService', data: { userId: '123' } });
+			});
+
+			it('should take the message of an error log message from the error', () => {
+				const loggable = new SampleLoggable({ error: new Error('boom'), type: 'Technical Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						message: 'boom',
+						type: 'Technical Error',
+						error: expect.objectContaining({ name: 'Error', message: 'boom', stack: expect.any(String) }),
+					})
+				);
+			});
+
+			it('should take the message of a validation error log message from the type', () => {
+				const loggable = new SampleLoggable({ validationErrors: ['wrong value'], type: 'API Validation Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result).toEqual(
+					expect.objectContaining({ message: 'API Validation Error', validationErrors: ['wrong value'] })
+				);
+			});
+
+			it('should turn a message that is not a string into text', () => {
+				const loggable = new SampleLoggable({ message: { text: 'hello' } } as unknown as LogMessage);
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.message).toBe("{ text: 'hello' }");
+			});
+
+			it('should keep message and stack of an error when serialized as JSON', () => {
+				const loggable = new SampleLoggable({ error: new Error('boom'), type: 'Technical Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				const { error } = JSON.parse(JSON.stringify(result)) as { error: { message: string; stack: string } };
+				expect(error.message).toBe('boom');
+				expect(error.stack).toContain('logging.utils.spec.ts');
+			});
+
+			it('should redact bearer tokens in the error message', () => {
+				const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.payload.signature';
+				const loggable = new SampleLoggable({ error: new Error(`request with Bearer ${token} failed`), type: '' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).not.toContain(token);
+			});
+		});
+
+		describe('when an error is logged', () => {
+			it('should redact sensitive own properties of the error', () => {
+				const error = Object.assign(new Error('boom'), { accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload', attempt: 2 });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload');
+				expect(render(result)).toContain('attempt: 2');
+				expect(render(result)).toContain('Error: boom');
+			});
+
+			it('should redact sensitive properties of the error cause', () => {
+				const cause = Object.assign(new Error('inner'), { clientSecret: 'super-secret-client-secret-value' });
+				const error = new Error('outer', { cause });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).not.toContain('super-secret-client-secret-value');
+				expect(render(result)).toContain('Error: outer');
+				expect(render(result)).toContain('Error: inner');
+			});
+
+			it('should keep the stack trace of the error', () => {
+				const error = new Error('boom');
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain('logging.utils.spec.ts');
+			});
+
+			it('should keep the class name of the error', () => {
+				class CustomError extends Error {}
+				const loggable = new SampleLoggable({ error: new CustomError('boom'), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.error).toEqual(expect.objectContaining({ name: 'CustomError', message: 'boom' }));
+			});
+
+			it('should not modify the original error', () => {
+				const error = Object.assign(new Error('boom'), { accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload' });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				LoggingUtils.createMessageWithContext(loggable);
+
+				expect(error.accessToken).toBe('eyJhbGciOiJIUzI1NiJ9.payload');
+			});
+
+			it('should keep an enumerable error cause', () => {
+				class WrappingError extends Error {
+					constructor(message: string, cause: Error) {
+						super(message);
+						this.cause = cause;
+					}
+				}
+				const error = new WrappingError('outer', new Error('inner'));
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.error).toEqual(
+					expect.objectContaining({ cause: expect.objectContaining({ name: 'Error', message: 'inner' }) })
+				);
+			});
+
+			it('should not call a toJSON function copied onto the error', () => {
+				const error = Object.assign(new Error('request failed'), {
+					toJSON: () => {
+						return { password: 'restored-secret-value' };
+					},
+				});
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(JSON.stringify(result)).not.toContain('restored-secret-value');
+			});
+
+			it('should replace a circular error cause with circular marker', () => {
+				const error = new Error('boom');
+				error.cause = error;
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain('[Circular]');
+			});
+		});
+
+		describe('when an axios error is logged', () => {
+			const clientSecret = 'super-secret-client-secret-value';
+			const basicCredentials = Buffer.from(`my-client:${clientSecret}`).toString('base64');
+
+			const buildAxiosError = (url = 'https://idp.example.org/token?client_secret=abc123secret&scope=openid') => {
+				const config = {
+					method: 'post',
+					url,
+					headers: new AxiosHeaders({
+						Authorization: `Basic ${basicCredentials}`,
+						'Content-Type': 'application/x-www-form-urlencoded',
+					}),
+					auth: { username: 'my-client', password: clientSecret },
+					data: `grant_type=client_credentials&client_secret=${clientSecret}`,
+				} as InternalAxiosRequestConfig;
+				const response = {
+					status: 401,
+					statusText: 'Unauthorized',
+					headers: {},
+					config,
+					data: { error: 'invalid_client' },
+				};
+
+				return new AxiosError('Request failed with status code 401', 'ERR_BAD_REQUEST', config, {}, response);
+			};
+
+			const expectNoSecrets = (message: string) => {
+				expect(message).not.toContain(clientSecret);
+				expect(message).not.toContain(basicCredentials);
+				expect(message).not.toContain('abc123secret');
+				expect(message).not.toContain('grant_type');
+			};
+
+			it('should not log credentials of a raw axios error', () => {
+				const loggable = new SampleLoggable({ error: buildAxiosError(), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(render(result));
+			});
+
+			it('should keep method, url, status and code of a raw axios error', () => {
+				const loggable = new SampleLoggable({ error: buildAxiosError(), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain('AxiosError: Request failed with status code 401');
+				expect(render(result)).toContain("code: 'ERR_BAD_REQUEST'");
+				expect(render(result)).toContain('status: 401');
+				expect(render(result)).toContain("method: 'POST'");
+				expect(render(result)).toContain("url: 'https://idp.example.org/token?client_secret=[REDACTED]&scope=openid'");
+			});
+
+			it('should keep the response body of an axios error', () => {
+				const loggable = new SampleLoggable({ error: buildAxiosError(), type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.error).toEqual(
+					expect.objectContaining({ statusText: 'Unauthorized', responseData: { error: 'invalid_client' } })
+				);
+			});
+
+			it('should redact sensitive values in the response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				(axiosError.response as { data: unknown }).data = {
+					error: 'invalid_grant',
+					access_token: 'eyJhbGciOiJIUzI1NiJ9.payload',
+				};
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).not.toContain('eyJhbGciOiJIUzI1NiJ9.payload');
+				expect(render(result)).toContain("error: 'invalid_grant'");
+			});
+
+			it('should truncate a long text response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				(axiosError.response as { data: unknown }).data = `<html>${'x'.repeat(5000)}</html>`;
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				const { responseData } = result.error as { responseData: string };
+				expect(responseData).toHaveLength(1000 + '... [truncated 4013 characters]'.length);
+				expect(responseData).toContain('[truncated 4013 characters]');
+			});
+
+			it('should remove credentials from the axios request url', () => {
+				const axiosError = buildAxiosError('https://my-client:url-password@idp.example.org/token');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).not.toContain('url-password');
+				expect(render(result)).toContain("url: 'https://idp.example.org/token'");
+			});
+
+			it('should redact the signature and access key of a presigned S3 url (signature version 4)', () => {
+				const axiosError = buildAxiosError(
+					'https://bucket.s3.example.org/file.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLEKEY%2F20261119%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Expires=300&X-Amz-Signature=0123456789abcdef'
+				);
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const output = render(LoggingUtils.createMessageWithContext(loggable));
+
+				expect(output).not.toContain('AKIAEXAMPLEKEY');
+				expect(output).not.toContain('0123456789abcdef');
+				expect(output).toContain('X-Amz-Expires=300');
+			});
+
+			it('should redact the signature and access key of a presigned S3 url (signature version 2)', () => {
+				const axiosError = buildAxiosError(
+					'https://bucket.s3.example.org/file.pdf?AWSAccessKeyId=AKIAEXAMPLEKEY&Expires=1763550000&Signature=c2lnbmF0dXJl%3D'
+				);
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const output = render(LoggingUtils.createMessageWithContext(loggable));
+
+				expect(output).not.toContain('AKIAEXAMPLEKEY');
+				expect(output).not.toContain('c2lnbmF0dXJl');
+				expect(output).toContain('Expires=1763550000');
+			});
+
+			it('should not walk through a stream response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				const stream = Object.assign(new PassThrough(), {
+					req: {
+						path: '/file.pdf?X-Amz-Signature=0123456789abcdef',
+						headers: `Authorization: Basic ${basicCredentials}`,
+					},
+				});
+				Object.assign(axiosError.response ?? {}, { data: stream });
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(render(result));
+				expect(render(result)).not.toContain('0123456789abcdef');
+				expect(result.error).toEqual(expect.objectContaining({ responseData: '[Stream]' }));
+				stream.destroy();
+			});
+
+			it('should log only the size of a binary response body of an axios error', () => {
+				const axiosError = buildAxiosError();
+				Object.assign(axiosError.response ?? {}, { data: Buffer.from('binary file content') });
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(result.error).toEqual(expect.objectContaining({ responseData: '[Binary 19 bytes]' }));
+			});
+
+			describe('when the response body was received as binary (responseType arraybuffer)', () => {
+				const buildBinaryAxiosError = (body: ArrayBuffer | Buffer, contentType?: string) => {
+					const axiosError = buildAxiosError();
+					Object.assign(axiosError.response ?? {}, {
+						data: body,
+						headers: contentType ? { 'Content-Type': contentType } : {},
+					});
+
+					return axiosError;
+				};
+
+				it('should decode a text body that the content type marks as text', () => {
+					const axiosError = buildBinaryAxiosError(
+						Buffer.from('<Error><Code>SignatureDoesNotMatch</Code></Error>'),
+						'application/xml'
+					);
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(
+						expect.objectContaining({ responseData: '<Error><Code>SignatureDoesNotMatch</Code></Error>' })
+					);
+				});
+
+				it('should decode a text body given as ArrayBuffer', () => {
+					const bytes = new TextEncoder().encode('{"error":"invalid_client"}');
+					const axiosError = buildBinaryAxiosError(bytes.buffer, 'application/json; charset=utf-8');
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(expect.objectContaining({ responseData: '{"error":"invalid_client"}' }));
+				});
+
+				it('should log only the size of a body that is not text', () => {
+					const axiosError = buildBinaryAxiosError(Buffer.from('%PDF-1.7 binary'), 'application/pdf');
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(expect.objectContaining({ responseData: '[Binary 15 bytes]' }));
+				});
+
+				it('should log only the size of a text body that is not valid UTF-8', () => {
+					const axiosError = buildBinaryAxiosError(Buffer.from([0xff, 0xfe, 0x41]), 'text/plain');
+					const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(result.error).toEqual(expect.objectContaining({ responseData: '[Binary 3 bytes]' }));
+				});
+
+				it('should decode the body of an AxiosErrorLoggable nested in another error', () => {
+					const axiosError = buildBinaryAxiosError(Buffer.from('quota exceeded'), 'text/plain');
+					const error = Object.assign(new Error('import failed'), {
+						error: new AxiosErrorLoggable(axiosError, 'IMPORT_ERROR'),
+					});
+					const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+					const result = LoggingUtils.createMessageWithContext(loggable);
+
+					expect(render(result)).toContain('quota exceeded');
+					expectNoSecrets(render(result));
+				});
+			});
+
+			it('should resolve a relative axios url against its base url', () => {
+				const axiosError = buildAxiosError('/token?access_token=abc123secret');
+				if (axiosError.config) {
+					axiosError.config.baseURL = 'https://idp.example.org/api';
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: 'https://idp.example.org/api/token?access_token=[REDACTED]'");
+			});
+
+			it('should join base url and relative url with exactly one slash', () => {
+				const axiosError = buildAxiosError('/token');
+				if (axiosError.config) {
+					axiosError.config.baseURL = 'https://idp.example.org/api///';
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: 'https://idp.example.org/api/token'");
+			});
+
+			it('should keep a relative axios url without base url relative', () => {
+				const axiosError = buildAxiosError('/token?access_token=abc123secret');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: '/token?access_token=[REDACTED]'");
+			});
+
+			it('should keep an absolute axios url on a host similar to the placeholder', () => {
+				const axiosError = buildAxiosError('https://relative.invalid.example.org/token');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: 'https://relative.invalid.example.org/token'");
+			});
+
+			it('should redact an axios url that cannot be parsed', () => {
+				const axiosError = buildAxiosError('/token');
+				if (axiosError.config) {
+					axiosError.config.baseURL = 'not a url';
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain("url: '[REDACTED]'");
+			});
+
+			it('should leave out the url of an axios error without url', () => {
+				const axiosError = buildAxiosError();
+				if (axiosError.config) {
+					axiosError.config.url = undefined;
+				}
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expect(render(result)).toContain('url: undefined');
+			});
+
+			it('should not log credentials of an axios error used as cause', () => {
+				const error = new Error('token request failed', { cause: buildAxiosError() });
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(render(result));
+				expect(render(result)).toContain('Error: token request failed');
+				expect(render(result)).toContain('AxiosError: Request failed with status code 401');
+			});
+
+			it('should not log credentials of an AxiosErrorLoggable nested in another error', () => {
+				const error = Object.assign(new Error('deletion failed'), {
+					error: new AxiosErrorLoggable(buildAxiosError(), 'DELETION_ERROR'),
+				});
+				const loggable = new SampleLoggable({ error, type: 'Unhandled or Unknown Error' });
+
+				const result = LoggingUtils.createMessageWithContext(loggable);
+
+				expectNoSecrets(JSON.stringify(result));
+				expectNoSecrets(render(result));
+				expect(JSON.stringify(result)).toContain('invalid_client');
+			});
+
+			it('should not modify the original axios error', () => {
+				const axiosError = buildAxiosError();
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				LoggingUtils.createMessageWithContext(loggable);
+
+				expect(axiosError.config?.data).toContain(clientSecret);
+			});
+		});
+	});
+
+	describe('when a field name points to a password or credential', () => {
+		it('should mask password and credential fields', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				password: 'correct-horse-battery-staple',
+				searchUserPassword: 'ldap-bind-password-123',
+				clientCredentials: { id: 'client', key: 'k' },
+			});
+
+			const logged = JSON.stringify(result);
+			expect(logged).not.toContain('correct-horse-battery-staple');
+			expect(logged).not.toContain('ldap-bind-password-123');
+			expect(result).toMatchObject({ clientCredentials: '[REDACTED]' });
+		});
+
+		it('should keep flags that only mention a password', () => {
+			const result = LoggingUtils.redactSensitiveValue({ forcePasswordChange: true });
+
+			expect(result).toEqual({ forcePasswordChange: true });
+		});
+	});
+
+	describe('when values have no useful own properties', () => {
+		it('should log an ObjectId as its hex string', () => {
+			const id = new ObjectId();
+
+			const result = LoggingUtils.redactSensitiveValue({ schoolId: id });
+
+			expect(result).toEqual({ schoolId: id.toHexString() });
+		});
+
+		it('should log a web stream as stream marker', () => {
+			const result = LoggingUtils.redactSensitiveValue({ body: new ReadableStream() });
+
+			expect(result).toEqual({ body: '[Stream]' });
+		});
+
+		it('should log only the size of a blob', () => {
+			const result = LoggingUtils.redactSensitiveValue({ body: new Blob(['abc']) });
+
+			expect(result).toEqual({ body: '[Blob 3 bytes]' });
+		});
+
+		it('should keep a field named __proto__ as a normal field', () => {
+			const parsed = JSON.parse('{"__proto__":{"reason":"denied"}}') as Record<string, unknown>;
+
+			const result = LoggingUtils.redactSensitiveValue(parsed);
+
+			expect(JSON.stringify(result)).toBe('{"__proto__":{"reason":"denied"}}');
 		});
 	});
 

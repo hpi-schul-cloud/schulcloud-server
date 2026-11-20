@@ -22,9 +22,11 @@ async function bootstrap(): Promise<void> {
 
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(BoardCollaborationModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(BoardCollaborationModule, nestExpressAdapter, { bufferLogs: true });
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
 	nestApp.useLogger(legacyLogger);
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestApp.flushLogs();
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
 	const ioAdapter = new MongoIoAdapter(nestApp);

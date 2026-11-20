@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { IsEnum, IsOptional, IsString, ValidateIf } from 'class-validator';
 import { ValkeyConfig, ValkeyMode } from './valkey.config';
 
@@ -28,6 +28,7 @@ export class ValkeyClientSessionConfig implements ValkeyConfig {
 	public sentinelName?: string;
 
 	@ConfigProperty('SESSION_VALKEY__SENTINEL_PASSWORD')
+	@Secret()
 	@IsOptional()
 	@IsString()
 	@ValidateIf((o: ValkeyClientSessionConfig) => o.mode === ValkeyMode.CLUSTER)
