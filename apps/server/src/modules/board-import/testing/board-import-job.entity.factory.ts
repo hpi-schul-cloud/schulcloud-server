@@ -11,6 +11,7 @@ export const boardImportJobEntityFactory = BaseFactory.define<BoardImportJobEnti
 			status: BoardImportJobStatus.WAITING,
 			userId: new ObjectId(),
 			link: `https://example.com/board-${sequence}`,
+			expiresAt: new Date(Date.now() + 60 * 60 * 1000),
 		};
 
 		return props;
