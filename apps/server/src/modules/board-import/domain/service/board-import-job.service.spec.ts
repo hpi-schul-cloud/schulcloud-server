@@ -38,19 +38,20 @@ describe(BoardImportJobService.name, () => {
 		describe('when save resolves', () => {
 			const setup = () => {
 				const { userId, link } = boardImportJobFactory.build();
+				const status = BoardImportJobStatus.WAITING;
 
 				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
 
-				return { userId, link };
+				return { userId, link, status };
 			};
 
 			it('should save a waiting job', async () => {
-				const { userId, link } = setup();
+				const { userId, link, status } = setup();
 
 				const job = await service.create(userId, link);
 
 				expect(repo.save).toHaveBeenCalledWith(job);
-				expect(job.getProps()).toMatchObject({ userId, link, status: BoardImportJobStatus.WAITING });
+				expect(job.getProps()).toMatchObject({ userId, link, status });
 			});
 		});
 

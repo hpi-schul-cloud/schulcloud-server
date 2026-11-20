@@ -1,7 +1,7 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { BoardImportJobStatus } from '../../domain';
 
 export interface BoardImportJobEntityProps {
