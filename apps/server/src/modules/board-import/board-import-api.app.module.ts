@@ -32,6 +32,6 @@ const imports = [
 export class BoardImportApiAppModule {}
 
 @Module({
-	imports: [...imports, MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
+	imports: [...imports, MongoMemoryDatabaseModule.forRoot({ entities: [User, ...ENTITIES] })],
 })
 export class BoardImportApiTestModule {}
