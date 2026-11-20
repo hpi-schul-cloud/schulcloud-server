@@ -73,12 +73,12 @@ describe(BoardImportJobService.name, () => {
 				expect(job.getProps()).toEqual({ id: expect.any(String), userId, link, status, expiresAt });
 			});
 
-			it('should publish the id of the job', async () => {
+			it('should publish the id of the job with its expiry date', async () => {
 				const { userId, link } = setup();
 
 				const job = await service.create(userId, link);
 
-				expect(producer.publishJob).toHaveBeenCalledWith({ jobId: job.id });
+				expect(producer.publishJob).toHaveBeenCalledWith({ jobId: job.id }, job.expiresAt);
 			});
 		});
 
