@@ -11,6 +11,7 @@ export {
 	InternalRabbitMQExchangeConfig,
 	RabbitMQExchangeType,
 	RabbitMQModuleOptions,
+	RabbitMQQueueOptions,
 } from './rabbitmq-module.options';
 export { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from './rabbitmq.config';
 export { RabbitMQWrapperModule } from './rabbitmq.module';
