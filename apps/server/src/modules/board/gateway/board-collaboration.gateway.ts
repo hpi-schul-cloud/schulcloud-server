@@ -3,7 +3,7 @@ import { DomainErrorHandler } from '@infra/error';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { Inject, UsePipes } from '@nestjs/common';
-import { type CorsOptions, CustomOrigin } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { type CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -55,13 +55,11 @@ import {
 } from './dto';
 import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
 
-type GatewayCorsOptions = CorsOptions & { origin: CustomOrigin };
-
-const websocketOptions: { path: string; cors: GatewayCorsOptions } = {
+// Using a variable here to access the exchange name in the decorator
+const websocketOptions: { path: string; cors: CorsOptions } = {
 	path: '',
 	cors: {
-		// Rejects everything until the constructor installs the real origin check
-		origin: (_requestOrigin, callback): void => callback(new Error('Origin check not initialized'), false), // NOSONAR
+		origin: '',
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 		preflightContinue: false,
 		optionsSuccessStatus: 204,
