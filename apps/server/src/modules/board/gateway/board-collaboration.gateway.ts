@@ -1,5 +1,5 @@
 import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
-import { Logger } from '@infra/logger';
+import { DomainErrorHandler } from '@infra/error';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { Inject, UsePipes } from '@nestjs/common';
@@ -82,17 +82,16 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
-		private readonly logger: Logger,
+		private readonly domainErrorHandler: DomainErrorHandler,
 		@Inject(BOARD_CONFIG_TOKEN) private readonly boardConfig: BoardConfig
 	) {
-		this.logger.setContext(BoardCollaborationGateway.name);
 		websocketOptions.cors.origin = (requestOrigin, callback): void => {
 			// Allow missing header, as socket.io uses HTTP polling which doesn't send Origin headers on same-origin GET requests.
 			if (requestOrigin === undefined || requestOrigin === this.boardConfig.hostUrl) {
 				callback(null, true);
 			} else {
 				const exception = new WebsocketOriginRejectedLoggableException(requestOrigin, this.boardConfig.hostUrl);
-				this.logger.warning(exception);
+				this.domainErrorHandler.exec(exception);
 				callback(exception, false);
 			}
 		};
