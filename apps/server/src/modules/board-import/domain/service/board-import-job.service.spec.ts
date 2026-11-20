@@ -106,6 +106,26 @@ describe(BoardImportJobService.name, () => {
 				expect(producer.publishJob).not.toHaveBeenCalled();
 			});
 		});
+
+		describe('when publishJob rejects', () => {
+			const setup = () => {
+				const { userId, link } = boardImportJobFactory.build();
+				const error = new Error('publish failed');
+
+				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
+				producer.publishJob.mockRejectedValueOnce(error);
+
+				return { userId, link, error };
+			};
+
+			it('should pass the error after the job was saved', async () => {
+				const { userId, link, error } = setup();
+
+				await expect(service.create(userId, link)).rejects.toThrow(error);
+
+				expect(repo.save).toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('findById', () => {
