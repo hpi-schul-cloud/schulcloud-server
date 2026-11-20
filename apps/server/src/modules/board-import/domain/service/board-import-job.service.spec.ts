@@ -1,128 +1,57 @@
-import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { boardImportJobFactory } from '../../testing';
-import { type BoardImportJob } from '../do';
-import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobStatus } from '../type';
 import { BoardImportJobService } from './board-import-job.service';
 
 describe(BoardImportJobService.name, () => {
 	let module: TestingModule;
 	let service: BoardImportJobService;
-	let repo: DeepMocked<BoardImportJobRepo>;
-	let config: BoardImportConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				BoardImportJobService,
-				{
-					provide: BOARD_IMPORT_JOB_REPO,
-					useValue: createMock<BoardImportJobRepo>(),
-				},
-				{
-					provide: BOARD_IMPORT_CONFIG_TOKEN,
-					useValue: new BoardImportConfig(),
-				},
-			],
+			providers: [BoardImportJobService],
 		}).compile();
 
 		service = module.get(BoardImportJobService);
-		repo = module.get(BOARD_IMPORT_JOB_REPO);
-		config = module.get(BOARD_IMPORT_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	afterEach(() => {
-		jest.resetAllMocks();
-		jest.useRealTimers();
-	});
-
 	describe('create', () => {
-		describe('when save resolves', () => {
+		describe('when a user and a link are given', () => {
 			const setup = () => {
-				const now = new Date('2026-01-01T00:00:00.000Z');
-				jest.useFakeTimers({ now });
-
 				const { userId, link } = boardImportJobFactory.build();
-				const status = BoardImportJobStatus.WAITING;
-				const expiresAt = new Date(now.getTime() + config.jobRetentionInDays * 24 * 60 * 60 * 1000);
+				const status = BoardImportJobStatus.FAILED;
 
-				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
-
-				return { userId, link, status, expiresAt };
+				return { userId, link, status };
 			};
 
-			it('should save a waiting job that expires after the retention time', async () => {
-				const { userId, link, status, expiresAt } = setup();
+			it('should return a failed job of the user', async () => {
+				const { userId, link, status } = setup();
 
 				const job = await service.create(userId, link);
 
-				expect(repo.save).toHaveBeenCalledWith(job);
-				expect(job.getProps()).toMatchObject({ userId, link, status, expiresAt });
-			});
-		});
-
-		describe('when save rejects', () => {
-			const setup = () => {
-				const { userId, link } = boardImportJobFactory.build();
-				const error = new Error('save failed');
-
-				repo.save.mockRejectedValueOnce(error);
-
-				return { userId, link, error };
-			};
-
-			it('should pass the error', async () => {
-				const { userId, link, error } = setup();
-
-				await expect(service.create(userId, link)).rejects.toThrow(error);
+				expect(job.getProps()).toEqual({ id: expect.any(String), userId, link, status });
 			});
 		});
 	});
 
 	describe('findById', () => {
-		describe('when findById resolves', () => {
+		describe('when a job id is given', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build();
+				const { id } = boardImportJobFactory.build();
 
-				repo.findById.mockResolvedValueOnce(job);
-
-				return { job };
+				return { id };
 			};
 
-			it('should return the job', async () => {
-				const { job } = setup();
+			it('should return null', async () => {
+				const { id } = setup();
 
-				const result = await service.findById(job.id);
+				const result = await service.findById(id);
 
-				expect(repo.findById).toHaveBeenCalledWith(job.id);
-				expect(result).toBe(job);
-			});
-		});
-	});
-
-	describe('save', () => {
-		describe('when save resolves', () => {
-			const setup = () => {
-				const job = boardImportJobFactory.build();
-
-				repo.save.mockResolvedValueOnce(job);
-
-				return { job };
-			};
-
-			it('should return the saved job', async () => {
-				const { job } = setup();
-
-				const result = await service.save(job);
-
-				expect(repo.save).toHaveBeenCalledWith(job);
-				expect(result).toBe(job);
+				expect(result).toBeNull();
 			});
 		});
 	});

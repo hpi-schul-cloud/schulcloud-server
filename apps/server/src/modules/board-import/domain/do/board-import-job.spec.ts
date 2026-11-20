@@ -20,7 +20,6 @@ describe(BoardImportJob.name, () => {
 					status: job.status,
 					userId: job.userId,
 					link: job.link,
-					expiresAt: job.expiresAt,
 				};
 
 				expect(result).toEqual(props);

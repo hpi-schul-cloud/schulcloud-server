@@ -8,8 +8,6 @@ export interface BoardImportJobProps extends AuthorizableObject {
 	userId: EntityId;
 
 	link: string;
-
-	expiresAt: Date;
 }
 
 export class BoardImportJob extends DomainObject<BoardImportJobProps> {
@@ -27,9 +25,5 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 	get link(): string {
 		return this.props.link;
-	}
-
-	get expiresAt(): Date {
-		return this.props.expiresAt;
 	}
 }
