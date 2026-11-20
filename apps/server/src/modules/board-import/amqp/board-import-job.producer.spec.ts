@@ -50,12 +50,19 @@ describe(BoardImportJobProducer.name, () => {
 				return { message };
 			};
 
-			it('should publish the message to the import job queue', async () => {
+			it('should publish the message persistently to the import job queue', async () => {
 				const { message } = setup();
 
 				await producer.publishJob(message);
 
-				expect(amqpConnection.publish).toHaveBeenCalledWith(config.exchangeName, BoardImportEvents.IMPORT_JOB, message);
+				expect(amqpConnection.publish).toHaveBeenCalledWith(
+					config.exchangeName,
+					BoardImportEvents.IMPORT_JOB,
+					message,
+					{
+						persistent: true,
+					}
+				);
 			});
 		});
 	});
