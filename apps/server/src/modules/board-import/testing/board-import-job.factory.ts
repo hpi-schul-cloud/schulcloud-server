@@ -10,6 +10,7 @@ export const boardImportJobFactory = DomainObjectFactory.define<BoardImportJob, 
 			status: BoardImportJobStatus.WAITING,
 			userId: new ObjectId().toHexString(),
 			link: `https://example.com/board-${sequence}`,
+			expiresAt: new Date(Date.now() + 60 * 60 * 1000),
 		};
 
 		return props;
