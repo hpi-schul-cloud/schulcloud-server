@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 
+import { BoardImportApiInternalAppModule } from '@modules/board-import/board-import-api-internal.app.module';
 import { BoardImportApiAppModule } from '@modules/board-import/board-import-api.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -20,9 +21,15 @@ async function bootstrap(): Promise<void> {
 
 	await nestApp.init();
 
+	const internalServerExpress = express();
+	const internalServerExpressAdapter = new ExpressAdapter(internalServerExpress);
+	const internalServerApp = await NestFactory.create(BoardImportApiInternalAppModule, internalServerExpressAdapter);
+	await internalServerApp.init();
+
 	const port = 3352;
 	const rootExpress = express();
 	rootExpress.use('/api/v3', nestExpress);
+	rootExpress.use('/internal', internalServerExpress);
 	rootExpress.listen(port);
 
 	console.log('##############################');
