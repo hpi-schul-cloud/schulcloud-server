@@ -24,7 +24,6 @@ const { FileModel, FileUploadIntentModel, SecurityCheckStatusTypes } = require('
 const { schoolModel } = require('../school/model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
-const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
@@ -944,46 +943,6 @@ const filePermissionService = {
 							return true;
 						})
 				);
-			},
-			teams() {
-				const { role: userRole } = owner.userIds.find((u) => userId.equals(u.userId));
-
-				return Promise.all(rolePromises)
-					.then(sortRoles)
-					.then((sortedRoles) => {
-						const userPos = sortedRoles.findIndex((roles) => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
-
-						return sortedRoles
-							.reduce((flat, roles, index) => {
-								if (index <= userPos) {
-									return [
-										...flat,
-										...roles.map(({ name, _id }) => ({
-											name,
-											_id,
-											sibling: index === userPos,
-										})),
-									];
-								}
-
-								return flat;
-							}, [])
-							.map(({ _id, name, sibling }) => {
-								const { read, write, refId } = rolePermissions.find(({ refId: id }) => id.equals(_id));
-								const reWrite = isFileCreator ? write : undefined;
-
-								const permissions = {
-									read: sibling ? undefined : read,
-									write: sibling ? reWrite : write,
-								};
-
-								return {
-									refId,
-									name,
-									...sanitizeObj(permissions),
-								};
-							});
-					});
 			},
 		};
 
