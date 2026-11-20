@@ -16,7 +16,7 @@ export class BoardImportUc {
 		const job = await this.boardImportJobService.findById(jobId);
 
 		// A job of another user gives the same answer as a missing job, so that job ids cannot be probed.
-		if (!job || job.userId !== userId) {
+		if (job?.userId !== userId) {
 			throw new NotFoundException();
 		}
 
