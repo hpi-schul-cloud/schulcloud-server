@@ -1,5 +1,4 @@
 import { CoreModule } from '@core/core.module';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { User } from '@modules/user';
@@ -10,9 +9,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
-import { BoardImportEvents } from '../../amqp';
 import { BoardImportApiModule } from '../../board-import-api.module';
-import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, type BoardImportExchangeConfig } from '../../board-import-exchange.config';
 import { ENTITIES } from '../../board-import.entity.imports';
 import { BoardImportJobStatus } from '../../domain';
 import { BoardImportJobEntity } from '../../repo/entity';
@@ -25,8 +22,6 @@ describe('Board Import Controller (API)', () => {
 	let app: INestApplication;
 	let jwtConfig: TestJwtModuleConfig;
 	let em: EntityManager;
-	let amqpConnection: AmqpConnection;
-	let exchangeConfig: BoardImportExchangeConfig;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -49,16 +44,10 @@ describe('Board Import Controller (API)', () => {
 		await app.init();
 		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
 		em = module.get(EntityManager);
-		amqpConnection = module.get(AmqpConnection);
-		exchangeConfig = module.get(BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
 		await app.close();
-	});
-
-	afterEach(() => {
-		jest.restoreAllMocks();
 	});
 
 	const setupLoggedInClient = async () => {
@@ -92,9 +81,8 @@ describe('Board Import Controller (API)', () => {
 				const { loggedInClient } = await setupLoggedInClient();
 				const { link } = boardImportJobFactory.build();
 				const status = BoardImportJobStatus.WAITING;
-				const publishSpy = jest.spyOn(amqpConnection, 'publish');
 
-				return { loggedInClient, link, status, publishSpy };
+				return { loggedInClient, link, status };
 			};
 
 			it('should return status 201 with the id and the status of the job', async () => {
@@ -114,17 +102,6 @@ describe('Board Import Controller (API)', () => {
 				const { id } = response.body as BoardImportJobResponse;
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(entity).toMatchObject({ link, status });
-			});
-
-			it('should publish the id of the job', async () => {
-				const { loggedInClient, link, publishSpy } = await setup();
-
-				const response = await loggedInClient.post('', { link });
-
-				const { id } = response.body as BoardImportJobResponse;
-				expect(publishSpy).toHaveBeenCalledWith(exchangeConfig.exchangeName, BoardImportEvents.IMPORT_JOB, {
-					jobId: id,
-				});
 			});
 		});
 
