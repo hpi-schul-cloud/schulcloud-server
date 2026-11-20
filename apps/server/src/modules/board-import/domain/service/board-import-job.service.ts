@@ -30,7 +30,7 @@ export class BoardImportJobService {
 
 		const savedJob = await this.boardImportJobRepo.save(job);
 
-		await this.boardImportJobProducer.publishJob({ jobId: savedJob.id });
+		await this.boardImportJobProducer.publishJob({ jobId: savedJob.id }, savedJob.expiresAt);
 
 		return savedJob;
 	}
