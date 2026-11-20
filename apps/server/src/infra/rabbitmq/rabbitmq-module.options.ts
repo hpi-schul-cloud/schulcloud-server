@@ -15,10 +15,16 @@ export interface InternalRabbitMQConfig {
 	uri: string;
 }
 
+export interface RabbitMQQueueOptions {
+	name: string;
+	routingKey: string;
+}
+
 export interface RabbitMQModuleOptions {
 	exchangeConfigInjectionToken: string;
 	exchangeConfigConstructor: new () => InternalRabbitMQExchangeConfig;
 	configInjectionToken: string;
 	configConstructor: new () => InternalRabbitMQConfig;
 	connectionName?: string;
+	queues?: RabbitMQQueueOptions[];
 }
