@@ -70,46 +70,6 @@ module.exports = {
 			teamSubmissions: false,
 		},
 	],
-	teams: [
-		{
-			_id: new ObjectId('5cf9303bec9d6ac639fefd42'),
-			schoolId: '0000e186816abba584714c55',
-			schoolIds: ['0000e186816abba584714c55'],
-			name: 'Testteam',
-			invitedUserIds: [],
-			times: [],
-			filePermission: [
-				{
-					write: false,
-					read: false,
-					create: false,
-					delete: false,
-					refId: '6bb5c190fb457b1c3c0c7e0f',
-					refPermModel: 'role',
-				},
-				{
-					write: false,
-					read: false,
-					create: false,
-					delete: false,
-					refId: '6bb5c391fb457b1c3c0c7e10',
-					refPermModel: 'role',
-				},
-			],
-			userIds: [
-				{
-					userId: '0000d224816abba584714c8e',
-					role: '6bb5c62bfb457b1c3c0c7e14',
-					schoolId: '0000e186816abba584714c55',
-				},
-				{
-					userId: '0000d224816abba584714c8c',
-					role: '6bb5c190fb457b1c3c0c7e0f',
-					schoolId: '0000e186816abba584714c55',
-				},
-			],
-		},
-	],
 	storageProvider: [
 		{
 			_id: new ObjectId('6037ac756b73f213eede43b4'),

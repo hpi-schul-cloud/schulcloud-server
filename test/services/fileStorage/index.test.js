@@ -8,7 +8,6 @@ const appPromise = require('../../../src/app');
 const { FileModel, FileUploadIntentModel } = require('../../../src/services/fileStorage/model');
 const { schoolModel } = require('../../../src/services/school/model');
 const { userModel } = require('../../../src/services/user/model');
-const { teamsModel } = require('../../../src/services/teams/model');
 const { courseModel } = require('../../../src/services/user-group/model');
 const fixtures = require('./fixtures');
 
@@ -73,7 +72,6 @@ describe('fileStorage services', () => {
 		signedUrlService.Stategy = AWSStrategy;
 
 		const promises = [
-			teamsModel.create(fixtures.teams),
 			schoolModel.create(fixtures.schools),
 			FileModel.create(fixtures.files),
 			userModel.create(fixtures.users),
@@ -90,7 +88,6 @@ describe('fileStorage services', () => {
 	after(async () => {
 		const promises = [
 			...fixtures.users.map((user) => FileUploadIntentModel.deleteMany({ creator: user._id }).exec()),
-			...fixtures.teams.map((_) => teamsModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.schools.map((_) => schoolModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.users.map((_) => userModel.findByIdAndDelete(_._id).exec()),
