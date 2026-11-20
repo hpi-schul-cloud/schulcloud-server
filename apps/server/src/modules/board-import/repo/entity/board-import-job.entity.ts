@@ -1,4 +1,4 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { type EntityId } from '@shared/domain/types';
@@ -12,6 +12,8 @@ export interface BoardImportJobEntityProps {
 	userId: ObjectId;
 
 	link: string;
+
+	expiresAt: Date;
 }
 
 @Entity({ tableName: 'board-import-jobs' })
@@ -25,6 +27,10 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 	@Property()
 	link: string;
 
+	@Index({ options: { expireAfterSeconds: 0 } })
+	@Property()
+	expiresAt: Date;
+
 	constructor(props: BoardImportJobEntityProps) {
 		super();
 		if (props.id) {
@@ -33,5 +39,6 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 		this.status = props.status;
 		this.userId = props.userId;
 		this.link = props.link;
+		this.expiresAt = props.expiresAt;
 	}
 }

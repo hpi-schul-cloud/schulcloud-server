@@ -10,6 +10,7 @@ export class BoardImportJobMapper {
 			status: entity.status,
 			userId: entity.userId.toHexString(),
 			link: entity.link,
+			expiresAt: entity.expiresAt,
 		});
 
 		return domainObject;
@@ -20,6 +21,7 @@ export class BoardImportJobMapper {
 			status: domainObject.status,
 			userId: new ObjectId(domainObject.userId),
 			link: domainObject.link,
+			expiresAt: domainObject.expiresAt,
 		};
 
 		return props;
