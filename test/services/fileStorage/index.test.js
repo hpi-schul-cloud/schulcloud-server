@@ -8,8 +8,6 @@ const appPromise = require('../../../src/app');
 const { FileModel, FileUploadIntentModel } = require('../../../src/services/fileStorage/model');
 const { schoolModel } = require('../../../src/services/school/model');
 const { userModel } = require('../../../src/services/user/model');
-const RoleModel = require('../../../src/services/role/model');
-const { teamsModel } = require('../../../src/services/teams/model');
 const { courseModel } = require('../../../src/services/user-group/model');
 const fixtures = require('./fixtures');
 
@@ -74,7 +72,6 @@ describe('fileStorage services', () => {
 		signedUrlService.Stategy = AWSStrategy;
 
 		const promises = [
-			teamsModel.create(fixtures.teams),
 			schoolModel.create(fixtures.schools),
 			FileModel.create(fixtures.files),
 			userModel.create(fixtures.users),
@@ -91,11 +88,9 @@ describe('fileStorage services', () => {
 	after(async () => {
 		const promises = [
 			...fixtures.users.map((user) => FileUploadIntentModel.deleteMany({ creator: user._id }).exec()),
-			...fixtures.teams.map((_) => teamsModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.schools.map((_) => schoolModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.users.map((_) => userModel.findByIdAndDelete(_._id).exec()),
-			...fixtures.roles.map((_) => RoleModel.findByIdAndDelete(_._id).exec()),
 			...fixtures.courses.map((_) => courseModel.findByIdAndDelete(_._id).exec()),
 		];
 
@@ -440,57 +435,52 @@ describe('fileStorage services', () => {
 			await expectUploadToBeRejected(upload);
 		});
 
-		it('should get a file list', (done) => {
+		it('should get a file list', async () => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			fileStorageService
-				.find({
-					query: {
-						owner: '5cf9303bec9d6ac639fefd42',
-						parent: '5ca613c4c7f5120b8c5bef33',
-					},
-					...context,
-				})
-				.then((res) => {
-					expect(res).to.have.lengthOf(2);
-					return done();
-				})
-				.catch(() => done());
+			const res = await fileStorageService.find({
+				query: {
+					owner: '0000dcfbfb5c7a3f00bf21ac',
+					parent: '5ca613c4c7f5120b8c5bef38',
+				},
+				...context,
+			});
+
+			expect(res).to.have.lengthOf(2);
 		});
 
-		it('should reject a file list on folder with no permission', (done) => {
+		it('should reject a file list on folder with no permission', async () => {
 			const context = setContext('0000d224816abba584714c8d');
 
-			fileStorageService
-				.find({
+			try {
+				await fileStorageService.find({
 					query: {
-						parent: '5ca613c4c7f5120b8c5bef33',
-						owner: '5cf9303bec9d6ac639fefd42',
+						owner: '0000dcfbfb5c7a3f00bf21ac',
+						parent: '5ca613c4c7f5120b8c5bef38',
 					},
 					...context,
-				})
-				.catch((res) => {
-					expect(res.code).to.be.equal(403);
-					return done();
 				});
+			} catch (err) {
+				expect(err.code).to.be.equal(403);
+				return;
+			}
+
+			throw new Error('Expected file list request to be rejected.');
 		});
 
-		it('should get a by access rights filtered file list', (done) => {
+		it('should get a by access rights filtered file list', async () => {
 			const context = setContext('0000d224816abba584714c8c');
 
-			fileStorageService
-				.find({
-					query: {
-						owner: '5cf9303bec9d6ac639fefd42',
-						parent: '5ca613c4c7f5120b8c5bef33',
-					},
-					...context,
-				})
-				.then((res) => {
-					expect(res).to.have.lengthOf(1);
-					return done();
-				})
-				.catch(() => done());
+			const res = await fileStorageService.find({
+				query: {
+					owner: '0000dcfbfb5c7a3f00bf21ac',
+					parent: '5ca613c4c7f5120b8c5bef38',
+				},
+				...context,
+			});
+
+			expect(res).to.have.lengthOf(1);
+			expect(res[0]._id.toString()).to.equal('5ca613c4c7f5120b8c5bef39');
 		});
 
 		it('should delete a file', (done) => {
@@ -518,19 +508,20 @@ describe('fileStorage services', () => {
 				});
 		});
 
-		it('should reject deleting a file with no permissions', (done) => {
+		it('should reject deleting a file with no permissions', async () => {
 			const context = setContext('0000d224816abba584714c8c');
 
-			fileStorageService
-				.remove('5ca613c4c7f5120b8c5bef35', {
+			try {
+				await fileStorageService.remove('5ca613c4c7f5120b8c5bef35', {
 					query: {},
 					...context,
-				})
-				.catch(({ code }) => {
-					expect(code).to.be.equal(403);
-					return done();
-				})
-				.finally(() => done());
+				});
+			} catch (err) {
+				expect(err.code).to.be.equal(403);
+				return;
+			}
+
+			throw new Error('Expected file deletion to be rejected.');
 		});
 	});
 

@@ -52,7 +52,6 @@ export const userPermissions = [
 	Permission.SUBMISSIONS_EDIT,
 	Permission.SUBMISSIONS_VIEW,
 	Permission.SYSTEM_VIEW,
-	Permission.TEAM_VIEW,
 	Permission.TOOL_VIEW,
 	Permission.TOPIC_VIEW,
 ];
@@ -62,8 +61,6 @@ export const studentPermissions = [
 	Permission.JOIN_MEETING,
 	Permission.SCHOOL_LIST_ROOM_MEMBERS,
 	Permission.TASK_DASHBOARD_VIEW_V3,
-	Permission.TEAM_CREATE,
-	Permission.TEAM_EDIT,
 	Permission.TOOL_CREATE_ETHERPAD,
 ];
 
@@ -104,9 +101,6 @@ export const teacherPermissions = [
 	Permission.SUBMISSIONS_SCHOOL_VIEW,
 	Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
 	Permission.TEACHER_LIST,
-	Permission.TEAM_CREATE,
-	Permission.TEAM_EDIT,
-	Permission.TEAM_INVITE_EXTERNAL,
 	Permission.TOOL_CREATE,
 	Permission.TOOL_EDIT,
 	Permission.TOOL_NEW_VIEW,
@@ -149,7 +143,6 @@ export const adminPermissions = [
 	Permission.SCHOOL_NEWS_EDIT,
 	Permission.SCHOOL_PERMISSION_CHANGE,
 	Permission.SCHOOL_PERMISSION_VIEW,
-	Permission.SCHOOL_STUDENT_TEAM_MANAGE,
 	Permission.SCHOOL_SYSTEM_EDIT,
 	Permission.SCHOOL_SYSTEM_VIEW,
 	Permission.SCHOOL_TOOL_ADMIN,
@@ -168,9 +161,6 @@ export const adminPermissions = [
 	Permission.TEACHER_LIST,
 	Permission.TEACHER_LIST,
 	Permission.TEACHER_SKIP_REGISTRATION,
-	Permission.TEAM_CREATE,
-	Permission.TEAM_EDIT,
-	Permission.TEAM_INVITE_EXTERNAL,
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
 ];
 

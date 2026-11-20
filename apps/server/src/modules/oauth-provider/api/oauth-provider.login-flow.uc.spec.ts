@@ -5,10 +5,9 @@ import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { userDoFactory, userFactory } from '@modules/user/testing';
-import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { userDoFactory } from '@modules/user/testing';
+import { ForbiddenException, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { OauthProviderLoginFlowService, OauthProviderService, type ProviderRedirectResponse } from '../domain';
 import { providerLoginResponseFactory } from '../testing';
@@ -21,7 +20,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
 	let pseudonymService: DeepMocked<PseudonymService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
 	let userService: DeepMocked<UserService>;
 
 	const pseudonym = pseudonymFactory.build({
@@ -64,7 +62,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 		oauthProviderService = module.get(OauthProviderService);
 		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
 		pseudonymService = module.get(PseudonymService);
-		authorizationService = module.get(AuthorizationService);
 		userService = module.get(UserService);
 
 		await setupEntities([User]);
@@ -72,6 +69,10 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('getLoginRequest', () => {
@@ -138,7 +139,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
+				oauthProviderLoginFlowService.isRetiredNextcloudTool.mockReturnValue(false);
 				userService.findById.mockResolvedValue(user);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
@@ -192,7 +193,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			});
 		});
 
-		describe('when the tool is Nextcloud', () => {
+		describe('when the tool is the retired Nextcloud tool', () => {
 			const setup = () => {
 				const query = { accept: true };
 
@@ -217,28 +218,41 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				const tool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
 
-				const user = userFactory.buildWithId();
-
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(true);
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
-				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
+				oauthProviderLoginFlowService.isRetiredNextcloudTool.mockReturnValue(true);
 
 				return {
 					query,
 					loginRequestBodyMock,
-					user,
+					tool,
 				};
 			};
 
-			it('should check for NEXTCLOUD_USER permission', async () => {
-				const { query, loginRequestBodyMock, user } = setup();
+			it('should throw a ForbiddenException', async () => {
+				const { query, loginRequestBodyMock, tool } = setup();
 
-				await uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
+				const func = () => uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.NEXTCLOUD_USER]);
+				await expect(func).rejects.toThrow(
+					new ForbiddenException(`Tool ${tool.name} has been retired and can not be used for OAuth2 login`)
+				);
+			});
+
+			it('should not accept the login request', async () => {
+				const { query, loginRequestBodyMock } = setup();
+
+				await expect(uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query)).rejects.toThrow();
+
+				expect(oauthProviderService.acceptLoginRequest).not.toHaveBeenCalled();
+			});
+
+			it('should not create a pseudonym', async () => {
+				const { query, loginRequestBodyMock } = setup();
+
+				await expect(uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query)).rejects.toThrow();
+
+				expect(pseudonymService.findOrCreatePseudonym).not.toHaveBeenCalled();
 			});
 		});
 
@@ -312,7 +326,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
+				oauthProviderLoginFlowService.isRetiredNextcloudTool.mockReturnValue(false);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 
 				return {

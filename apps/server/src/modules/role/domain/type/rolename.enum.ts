@@ -21,11 +21,6 @@ export enum RoleName {
 	STUDENT = 'student',
 	SUPERHERO = 'superhero',
 	TEACHER = 'teacher',
-	TEAMADMINISTRATOR = 'teamadministrator',
-	TEAMEXPERT = 'teamexpert',
-	TEAMLEADER = 'teamleader',
-	TEAMMEMBER = 'teammember',
-	TEAMOWNER = 'teamowner',
 	USER = 'user',
 }
 

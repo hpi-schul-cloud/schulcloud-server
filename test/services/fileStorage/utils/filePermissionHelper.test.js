@@ -3,7 +3,6 @@ const { default: chaiAsPromised } = require('chai-as-promised');
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
 const { userModel } = require('../../../../src/services/user/model');
-const RoleModel = require('../../../../src/services/role/model');
 // const { submissionModel } = require('../../../../src/services/homework/model');
 const { courseModel } = require('../../../../src/services/user-group/model');
 
@@ -40,7 +39,6 @@ describe('filePermissionHelper', () => {
 			const promises = [
 				...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
 				...fixtures.users.map((_) => userModel.findByIdAndDelete(_._id).exec()),
-				...fixtures.roles.map((_) => RoleModel.findByIdAndDelete(_._id).exec()),
 				...fixtures.courses.map((_) => courseModel.findByIdAndDelete(_._id).exec()),
 			];
 

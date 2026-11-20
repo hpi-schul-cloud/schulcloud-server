@@ -13,7 +13,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { NewsRepo } from '../repo';
-import { teamNewsFactory } from '../testing';
+import { courseNewsFactory } from '../testing';
 import { DeleteUserNewsDataStep } from './delete-user-news-data.step';
 
 describe(DeleteUserNewsDataStep.name, () => {
@@ -70,13 +70,13 @@ describe(DeleteUserNewsDataStep.name, () => {
 				const user2 = userFactory.build();
 				const anotherUserId = new ObjectId().toHexString();
 
-				const news1 = teamNewsFactory.buildWithId({
+				const news1 = courseNewsFactory.buildWithId({
 					creator: user1,
 				});
-				const news2 = teamNewsFactory.buildWithId({
+				const news2 = courseNewsFactory.buildWithId({
 					updater: user2,
 				});
-				const news3 = teamNewsFactory.buildWithId({
+				const news3 = courseNewsFactory.buildWithId({
 					creator: user1,
 					updater: user2,
 				});

@@ -38,7 +38,7 @@ describe(OauthProviderLoginFlowService.name, () => {
 	describe('findToolByClientId', () => {
 		describe('when it finds a tool', () => {
 			const setup = () => {
-				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'TestTool' });
 
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(tool);
 
@@ -71,8 +71,8 @@ describe(OauthProviderLoginFlowService.name, () => {
 		});
 	});
 
-	describe('isNextcloudTool', () => {
-		describe('when it is Nextcloud', () => {
+	describe('isRetiredNextcloudTool', () => {
+		describe('when the tool is the retired Nextcloud tool', () => {
 			const setup = () => {
 				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
@@ -84,15 +84,15 @@ describe(OauthProviderLoginFlowService.name, () => {
 			it('should return true', () => {
 				const { tool } = setup();
 
-				const result: boolean = service.isNextcloudTool(tool);
+				const result: boolean = service.isRetiredNextcloudTool(tool);
 
 				expect(result).toEqual(true);
 			});
 		});
 
-		describe('when it is not Nextcloud', () => {
+		describe('when the tool is any other tool', () => {
 			const setup = () => {
-				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'TestTool' });
 
 				return {
 					tool,
@@ -102,7 +102,7 @@ describe(OauthProviderLoginFlowService.name, () => {
 			it('should return false', () => {
 				const { tool } = setup();
 
-				const result: boolean = service.isNextcloudTool(tool);
+				const result: boolean = service.isRetiredNextcloudTool(tool);
 
 				expect(result).toEqual(false);
 			});

@@ -7,20 +7,16 @@ import {
 	courseUnpublishedNewsFactory,
 	schoolNewsFactory,
 	schoolUnpublishedNewsFactory,
-	teamNewsFactory,
-	teamUnpublishedNewsFactory,
 } from '@modules/news/testing';
-import { TeamEntity } from '@modules/team/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { NewsTargetModel } from '../domain';
-import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
+import { CourseNews, News, SchoolNews } from './news.entity';
 import { NewsRepo } from './news.repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { teamFactory } from '@modules/team/testing/team.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('NewsRepo', () => {
@@ -32,7 +28,7 @@ describe('NewsRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [News, TeamEntity, CourseEntity, CourseGroupEntity, CourseNews, SchoolNews, TeamNews],
+					entities: [News, CourseEntity, CourseGroupEntity, CourseNews, SchoolNews],
 				}),
 			],
 			providers: [NewsRepo],
@@ -81,21 +77,6 @@ describe('NewsRepo', () => {
 			expect(result.target.id).toEqual(news.target.id);
 		});
 
-		it('should persist team news', async () => {
-			const news = teamNewsFactory.build();
-
-			await em.persist(news).flush();
-			em.clear();
-
-			const result = await em.findOneOrFail(News, {
-				targetModel: NewsTargetModel.Team,
-				target: news.target.id,
-			});
-			expect(result).toBeDefined();
-			expect(result.targetModel).toEqual(news.targetModel);
-			expect(result.target.id).toEqual(news.target.id);
-		});
-
 		it('should persist school news', async () => {
 			const news = schoolNewsFactory.build();
 			await em.persist(news).flush();
@@ -117,21 +98,6 @@ describe('NewsRepo', () => {
 
 			const result = await em.findOneOrFail(News, {
 				targetModel: NewsTargetModel.Course,
-				target: news.target.id,
-			});
-			expect(result).toBeDefined();
-			expect(result.targetModel).toEqual(news.targetModel);
-			expect(result.target.id).toEqual(news.target.id);
-		});
-
-		it('should persist unpublished team news', async () => {
-			const news = teamUnpublishedNewsFactory.build();
-
-			await em.persist(news).flush();
-			em.clear();
-
-			const result = await em.findOneOrFail(News, {
-				targetModel: NewsTargetModel.Team,
 				target: news.target.id,
 			});
 			expect(result).toBeDefined();
@@ -306,22 +272,16 @@ describe('NewsRepo', () => {
 		it('should populate target on all target types', async () => {
 			const school = schoolEntityFactory.build();
 			const schoolNews = schoolNewsFactory.build({ target: school });
-			const team = teamFactory.build();
-			const teamNews = teamNewsFactory.build({ target: team });
 
-			await em.persist([school, team, schoolNews, teamNews]).flush();
+			await em.persist([school, schoolNews]).flush();
 			em.clear();
 
-			const teamTarget = {
-				targetModel: NewsTargetModel.Team,
-				targetIds: [teamNews.target.id],
-			};
 			const schoolTarget = {
 				targetModel: NewsTargetModel.School,
 				targetIds: [schoolNews.target.id],
 			};
 
-			const [result] = await repo.findAllPublished([teamTarget, schoolTarget]);
+			const [result] = await repo.findAllPublished([schoolTarget]);
 
 			expect(result.every((news) => news.target != null)).toBe(true);
 		});
@@ -329,7 +289,7 @@ describe('NewsRepo', () => {
 
 	describe('findOneById', () => {
 		it('should find a news entity by id', async () => {
-			const news = teamNewsFactory.build();
+			const news = schoolNewsFactory.build();
 			await em.persist(news).flush();
 			em.clear();
 
@@ -348,13 +308,13 @@ describe('NewsRepo', () => {
 		const setup = async () => {
 			const user1 = userFactory.buildWithId();
 			const user2 = userFactory.buildWithId();
-			const news1 = teamNewsFactory.build({
+			const news1 = schoolNewsFactory.build({
 				creator: user1,
 			});
-			const news2 = teamNewsFactory.build({
+			const news2 = schoolNewsFactory.build({
 				updater: user2,
 			});
-			const news3 = teamNewsFactory.build({
+			const news3 = schoolNewsFactory.build({
 				updater: user1,
 			});
 
@@ -395,14 +355,14 @@ describe('NewsRepo', () => {
 				const user1 = userFactory.buildWithId();
 				const user2 = userFactory.build();
 
-				const news1 = teamNewsFactory.build({
+				const news1 = schoolNewsFactory.build({
 					creator: user1,
 				});
-				const news2 = teamNewsFactory.build({
+				const news2 = schoolNewsFactory.build({
 					creator: user2,
 					updater: user1,
 				});
-				const news3 = teamNewsFactory.build({
+				const news3 = schoolNewsFactory.build({
 					creator: user1,
 					updater: user2,
 				});
@@ -448,13 +408,13 @@ describe('NewsRepo', () => {
 			const setup = async () => {
 				const user1 = userFactory.build();
 				const user2 = userFactory.build();
-				const news1 = teamNewsFactory.build({
+				const news1 = schoolNewsFactory.build({
 					creator: user1,
 				});
-				const news2 = teamNewsFactory.build({
+				const news2 = schoolNewsFactory.build({
 					updater: user2,
 				});
-				const news3 = teamNewsFactory.build({
+				const news3 = schoolNewsFactory.build({
 					creator: user1,
 					updater: user2,
 				});

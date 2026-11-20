@@ -2,8 +2,12 @@ import { AuthorizationService } from '@modules/authorization';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { ExternalTool, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
+import {
+	ForbiddenException,
+	Injectable,
+	InternalServerErrorException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '../domain';
 import { OauthProviderLoginFlowService } from '../domain/service/oauth-provider.login-flow.service';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
@@ -56,9 +60,8 @@ export class OauthProviderLoginFlowUc {
 			throw new InternalServerErrorException('Tool has no id');
 		}
 
-		if (this.oauthProviderLoginFlowService.isNextcloudTool(tool)) {
-			const user = await this.authorizationService.getUserWithPermissions(currentUserId);
-			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
+		if (this.oauthProviderLoginFlowService.isRetiredNextcloudTool(tool)) {
+			throw new ForbiddenException(`Tool ${tool.name} has been retired and can not be used for OAuth2 login`);
 		}
 
 		const user = await this.userService.findById(currentUserId);

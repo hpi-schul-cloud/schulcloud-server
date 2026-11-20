@@ -80,7 +80,7 @@ describe('Video Conference Repo', () => {
 		it('should throw an Error if the scope mismatches the idtype', async () => {
 			await setup();
 
-			const func = () => repo.findByScopeAndScopeId(new ObjectId().toHexString(), VideoConferenceScope.EVENT);
+			const func = () => repo.findByScopeAndScopeId(new ObjectId().toHexString(), VideoConferenceScope.ROOM);
 
 			await expect(func()).rejects.toThrow(NotFoundError);
 		});
