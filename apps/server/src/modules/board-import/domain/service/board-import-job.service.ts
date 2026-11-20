@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { BoardImportJob } from '../do';
-import { BOARD_IMPORT_JOB_REPO, BoardImportJobRepo } from '../interface';
+import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobStatus } from '../type';
 
 @Injectable()
