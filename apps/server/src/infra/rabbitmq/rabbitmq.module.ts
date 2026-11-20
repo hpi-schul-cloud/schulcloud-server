@@ -23,7 +23,7 @@ export class RabbitMQWrapperModule {
 									type: exchange.exchangeType,
 								},
 							],
-							queues: options.queues?.map((queue) => {
+							queues: (options.queues ?? []).map((queue) => {
 								return { ...queue, exchange: exchange.exchangeName };
 							}),
 							uri: config.uri,
