@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: board-import-api-deployment
+  namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
+  labels:
+    app: board-import-api
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: board-import-api
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  replicas: {{ BOARD_IMPORT_API_REPLICAS }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: board-import-api
+  template:
+    metadata:
+      labels:
+        app: board-import-api
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: board-import-api
+        app.kubernetes.io/component: server
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    spec:
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        runAsNonRoot: true
+      os:
+        name: linux
+      containers:
+      - name: board-import-api
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3352
+          name: api
+          protocol: TCP
+        env:
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size={{ ((BOARD_IMPORT_API_MEMORY_LIMITS | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
+        envFrom:
+        - configMapRef:
+            name: board-import-api-configmap
+        - secretRef:
+            name: board-import-secret
+        - secretRef:
+            name: session-valkey-password
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/board-import-api.app']
+        readinessProbe:
+          httpGet:
+            path: /internal/health
+            port: 3352
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /internal/health
+            port: 3352
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          httpGet:
+            path: /internal/health
+            port: 3352
+          timeoutSeconds: 4
+          failureThreshold: 36
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: {{ BOARD_IMPORT_API_CPU_LIMITS }}
+            memory: {{ BOARD_IMPORT_API_MEMORY_LIMITS }}
+          requests:
+            cpu: {{ BOARD_IMPORT_API_CPU_REQUESTS }}
+            memory: {{ BOARD_IMPORT_API_MEMORY_REQUESTS }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 9
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/part-of
+                  operator: In
+                  values:
+                  - schulcloud-verbund
+              topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+{% if ANIT_AFFINITY_NODEPOOL_ENABLE is defined and ANIT_AFFINITY_NODEPOOL_ENABLE|bool %}
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - board-import-api
+              topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
+{% endif %}
+          - weight: 20
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - board-import-api
+              topologyKey: "topology.kubernetes.io/zone"
+{% endif %}

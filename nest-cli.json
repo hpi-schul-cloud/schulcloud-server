@@ -152,6 +152,24 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"board-import-api": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/board-import-api.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"board-import-worker": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/board-import-worker.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"board-collaboration": {
 			"type": "application",
 			"root": "apps/server",
