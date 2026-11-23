@@ -4,7 +4,6 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 import { BoardImportJobEntity } from '../entity';
-import { BoardImportJobMapper } from '../mapper';
 import { BoardImportJobMikroOrmRepo } from './board-import-job.repo';
 
 describe(BoardImportJobMikroOrmRepo.name, () => {
@@ -45,8 +44,13 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				em.clear();
 
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id: job.id });
-				const storedJob = BoardImportJobMapper.mapEntityToDO(entity);
-				expect(storedJob.getProps()).toEqual(job.getProps());
+				expect(entity).toMatchObject({
+					id: job.id,
+					status: job.status,
+					userId: new ObjectId(job.userId),
+					link: job.link,
+					expiresAt: job.expiresAt,
+				});
 			});
 		});
 	});
@@ -58,17 +62,23 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				await em.persist(entity).flush();
 				em.clear();
 
-				const expectedJob = BoardImportJobMapper.mapEntityToDO(entity);
+				const expectedProps = {
+					id: entity.id,
+					status: entity.status,
+					userId: entity.userId.toHexString(),
+					link: entity.link,
+					expiresAt: entity.expiresAt,
+				};
 
-				return { expectedJob };
+				return { expectedProps };
 			};
 
 			it('should return the job', async () => {
-				const { expectedJob } = await setup();
+				const { expectedProps } = await setup();
 
-				const job = await repo.findById(expectedJob.id);
+				const job = await repo.findById(expectedProps.id);
 
-				expect(job?.getProps()).toEqual(expectedJob.getProps());
+				expect(job?.getProps()).toEqual(expectedProps);
 			});
 		});
 

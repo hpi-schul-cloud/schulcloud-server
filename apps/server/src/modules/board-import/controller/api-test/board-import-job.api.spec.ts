@@ -78,11 +78,11 @@ describe('Board Import Controller (API)', () => {
 
 		describe('when the link is a valid https link', () => {
 			const setup = async () => {
-				const { loggedInClient } = await setupLoggedInClient();
+				const { loggedInClient, teacherUser } = await setupLoggedInClient();
 				const { link } = boardImportJobFactory.build();
 				const status = BoardImportJobStatus.FAILED;
 
-				return { loggedInClient, link, status };
+				return { loggedInClient, teacherUser, link, status };
 			};
 
 			it('should return status 201 with the id and the status of the job', async () => {
@@ -95,13 +95,18 @@ describe('Board Import Controller (API)', () => {
 			});
 
 			it('should store the job', async () => {
-				const { loggedInClient, link, status } = await setup();
+				const { loggedInClient, teacherUser, link, status } = await setup();
 
 				const response = await loggedInClient.post('', { link });
 
 				const { id } = response.body as BoardImportJobResponse;
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
-				expect(entity).toMatchObject({ link, status });
+				expect(entity).toMatchObject({
+					link,
+					status,
+					userId: new ObjectId(teacherUser.id),
+					expiresAt: expect.any(Date),
+				});
 			});
 		});
 
