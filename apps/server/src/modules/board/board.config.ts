@@ -37,6 +37,11 @@ export class BoardPublicApiConfig {
 	@IsBoolean()
 	public featureColumnBoardFileFolderEnabled = true;
 
+	@ConfigProperty('FEATURE_COLUMN_BOARD_TABLE_OF_CONTENTS_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardTableOfContentsEnabled = false;
+
 	@ConfigProperty('FEATURE_COLUMN_BOARD_H5P_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
