@@ -21,8 +21,7 @@ export class BoardImportJobService {
 		const expiresAt = new Date(Date.now() + this.config.jobRetentionInDays * MILLISECONDS_PER_DAY);
 		const job = new BoardImportJob({
 			id: new ObjectId().toHexString(),
-			// No worker can take the job, so it must not start in the status "waiting".
-			status: BoardImportJobStatus.FAILED,
+			status: BoardImportJobStatus.WAITING,
 			userId,
 			link,
 			expiresAt,
