@@ -422,7 +422,6 @@ describe('SchoolMikroOrmRepo', () => {
 					language: LanguageType.EN,
 					timezone: 'new timezone',
 					permissions: {},
-					enableStudentTeamCreation: true,
 					federalState: newFederalState,
 					features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
 					currentYear: newSchoolYear,

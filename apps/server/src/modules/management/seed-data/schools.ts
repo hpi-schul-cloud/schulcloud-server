@@ -39,7 +39,6 @@ type SeedSchoolProperties = Omit<SchoolProperties, 'systems' | 'federalState' | 
 	language?: string;
 	logo_dataUrl?: string;
 	logo_name?: string;
-	enableStudentTeamCreation?: boolean;
 };
 
 const seedSchools: SeedSchoolProperties[] = [
@@ -108,7 +107,6 @@ const seedSchools: SeedSchoolProperties[] = [
 			SchoolFeature.VIDEOCONFERENCE,
 			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
-		enableStudentTeamCreation: false,
 	},
 	{
 		id: '5f2987e020834114b8efd6f9',
@@ -260,7 +258,6 @@ const seedSchools: SeedSchoolProperties[] = [
 			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
 		externalId: '0000d186816abba584714c92',
-		enableStudentTeamCreation: false,
 	},
 ];
 
@@ -309,7 +306,6 @@ export function generateSchools(entities: {
 		schoolEntity['language'] = partial.language;
 		schoolEntity['logo_dataUrl'] = partial.logo_dataUrl;
 		schoolEntity['logo_name'] = partial.logo_name;
-		schoolEntity['enableStudentTeamCreation'] = partial.enableStudentTeamCreation;
 
 		return schoolEntity;
 	});

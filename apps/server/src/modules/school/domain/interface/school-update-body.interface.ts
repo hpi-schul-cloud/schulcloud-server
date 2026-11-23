@@ -9,5 +9,4 @@ export interface SchoolUpdateBody {
 	features?: SchoolProps['features'];
 	permissions?: SchoolProps['permissions'];
 	countyId?: string;
-	enableStudentTeamCreation?: SchoolProps['enableStudentTeamCreation'];
 }

@@ -530,21 +530,6 @@ exports.denyIfNotCurrentSchoolOrEmpty =
 		return this.denyIfNotCurrentSchool(errorMessage)(context);
 	};
 
-exports.denyIfStudentTeamCreationNotAllowed =
-	({ errorMessage = 'The current user is not allowed to list other users!' }) =>
-	async (context) => {
-		const currentUser = await getUser(context);
-		if (!testIfRoleNameExist(currentUser, 'student')) {
-			return context;
-		}
-		const currentUserSchoolId = currentUser.schoolId;
-		const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
-		if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
-			throw new Forbidden(errorMessage);
-		}
-		return context;
-	};
-
 function validatedAttachments(attachments) {
 	const MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE = Configuration.get(
 		'MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE'

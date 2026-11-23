@@ -1,65 +1,12 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LanguageType } from '@shared/domain/interface';
 import { federalStateDoFactory, schoolFactory } from '../../testing';
-import { InstanceFeature, SchoolPurpose } from '../type';
+import { SchoolPurpose } from '../type';
 
 describe('School', () => {
 	beforeAll(() => {
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date('2022-02-22'));
-	});
-
-	describe('addInstanceFeature', () => {
-		describe('when instanceFeatures is already initialized', () => {
-			const setup = () => {
-				const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
-				const school = schoolFactory.build({ instanceFeatures: new Set() });
-
-				return { school, feature };
-			};
-
-			it('should add the given feature to the set', () => {
-				const { school, feature } = setup();
-
-				school.addInstanceFeature(feature);
-
-				expect(school.getProps().instanceFeatures).toContain(feature);
-			});
-		});
-
-		describe('when instanceFeatures is not initialized', () => {
-			const setup = () => {
-				const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
-				const school = schoolFactory.build({ instanceFeatures: undefined });
-
-				return { school, feature };
-			};
-
-			it('should initialize it and add the given feature to the set', () => {
-				const { school, feature } = setup();
-
-				school.addInstanceFeature(feature);
-
-				expect(school.getProps().instanceFeatures).toContain(feature);
-			});
-		});
-	});
-
-	describe('removeInstanceFeature', () => {
-		const setup = () => {
-			const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
-			const school = schoolFactory.build({ instanceFeatures: new Set([feature]) });
-
-			return { school, feature };
-		};
-
-		it('should remove the given feature from the features set', () => {
-			const { school, feature } = setup();
-
-			school.removeInstanceFeature(feature);
-
-			expect(school.getProps().instanceFeatures).not.toContain(feature);
-		});
 	});
 
 	describe('update county', () => {

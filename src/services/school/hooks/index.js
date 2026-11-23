@@ -31,56 +31,6 @@ const cacheYearsIfNotSet = async () => {
  */
 const getResultDataFromContext = (context) => (context.result ? context.result.data || context.result : []);
 
-const isTeamCreationByStudentsEnabled = (currentSchool) => {
-	const { enableStudentTeamCreation } = currentSchool;
-	const STUDENT_TEAM_CREATION_SETTING = Configuration.get('STUDENT_TEAM_CREATION');
-	let isTeamCreationEnabled = false;
-	switch (STUDENT_TEAM_CREATION_SETTING) {
-		case 'enabled':
-			// if enabled student team creation feature should be enabled
-			isTeamCreationEnabled = true;
-			break;
-		case 'disabled':
-			// if disabled student team creation feature should be disabled
-			isTeamCreationEnabled = false;
-			return false;
-		case 'opt-in':
-			// if opt-in student team creation should be enabled by admin
-			// if undefined/null then false
-			isTeamCreationEnabled = enableStudentTeamCreation === true;
-			break;
-		case 'opt-out':
-			// if opt-out student team creation should be disabled by admin
-			// if undefined/null then true
-			isTeamCreationEnabled = enableStudentTeamCreation !== false;
-			break;
-		default:
-			break;
-	}
-	return isTeamCreationEnabled;
-};
-
-const setStudentsCanCreateTeams = async (context) => {
-	try {
-		switch (context.method) {
-			case 'find':
-				// if the result was paginated it contains context.result.data, otherwise context.result
-				getResultDataFromContext(context).forEach((school) => {
-					school.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(school);
-				});
-				break;
-			case 'get':
-				context.result.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(context.result);
-				break;
-			default:
-				throw new Error('method not supported');
-		}
-	} catch (error) {
-		logger.error(error);
-	}
-	return context;
-};
-
 const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
 		return undefined;
@@ -151,7 +101,6 @@ const updatesChat = (key, data) => {
 	const chatFeatures = [SCHOOL_FEATURES.VIDEOCONFERENCE];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
-const updatesTeamCreation = (key, data) => updatesArray(key) && !isTeamCreationByStudentsEnabled(data[key]);
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -166,7 +115,6 @@ const hasEditPermissions = async (context) => {
 		for (const key of Object.keys(context.data)) {
 			if (
 				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data)) ||
-				(user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data)) ||
 				(user.permissions.includes('SCHOOL_LOGO_MANAGE') && (key === 'logo_dataUrl' || key === 'logo_name'))
 			) {
 				patch[key] = context.data[key];
@@ -398,8 +346,8 @@ exports.after = {
 		),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
-	find: [decorateYears, setStudentsCanCreateTeams],
-	get: [decorateYears, setStudentsCanCreateTeams],
+	find: [decorateYears],
+	get: [decorateYears],
 	create: [createDefaultStorageOptions],
 	update: [],
 	patch: [],

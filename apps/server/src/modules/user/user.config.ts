@@ -7,13 +7,6 @@ import { IsBoolean, IsEnum } from 'class-validator';
 export const USER_PUBLIC_API_CONFIG_TOKEN = 'USER_PUBLIC_API_CONFIG_TOKEN';
 export const USER_CONFIG_TOKEN = 'USER_CONFIG_TOKEN';
 
-export enum TeacherVisibilityForExternalTeamInvitation {
-	ENABLED = 'enabled',
-	DISABLED = 'disabled',
-	OPT_OUT = 'opt-out',
-	OPT_IN = 'opt-in',
-}
-
 @Configuration()
 export class UserPublicApiConfig {
 	@ConfigProperty('I18N__AVAILABLE_LANGUAGES')
@@ -38,8 +31,4 @@ export class UserPublicApiConfig {
 }
 
 @Configuration()
-export class UserConfig extends UserPublicApiConfig {
-	@ConfigProperty('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')
-	@IsEnum(TeacherVisibilityForExternalTeamInvitation)
-	public teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.DISABLED;
-}
+export class UserConfig extends UserPublicApiConfig {}

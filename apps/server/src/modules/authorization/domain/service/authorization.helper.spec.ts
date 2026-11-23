@@ -283,7 +283,6 @@ describe('AuthorizationHelper', () => {
 			const testConfig = {
 				teacherStudentVisibilityIsConfigurable: true,
 				teacherStudentVisibilityIsEnabledByDefault: false,
-				teacherVisibilityForExternalTeamInvitation: 'enabled',
 			};
 
 			const module: TestingModule = await Test.createTestingModule({
@@ -300,7 +299,6 @@ describe('AuthorizationHelper', () => {
 
 			expect(helperWithConfig.getConfig('teacherStudentVisibilityIsConfigurable')).toBe(true);
 			expect(helperWithConfig.getConfig('teacherStudentVisibilityIsEnabledByDefault')).toBe(false);
-			expect(helperWithConfig.getConfig('teacherVisibilityForExternalTeamInvitation')).toBe('enabled');
 		});
 	});
 });

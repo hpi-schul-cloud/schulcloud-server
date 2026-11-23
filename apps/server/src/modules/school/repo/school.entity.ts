@@ -37,7 +37,6 @@ export interface SchoolProperties {
 	federalState: FederalStateEntity;
 	county?: CountyEmbeddable;
 	purpose?: SchoolPurpose;
-	enableStudentTeamCreation?: boolean;
 	logo_dataUrl?: string;
 	logo_name?: string;
 	fileStorageType?: FileStorageType;
@@ -115,9 +114,6 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	purpose?: SchoolPurpose;
 
 	@Property({ nullable: true })
-	enableStudentTeamCreation?: boolean;
-
-	@Property({ nullable: true })
 	logo_dataUrl?: string;
 
 	@Property({ nullable: true })
@@ -156,7 +152,6 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 		this.federalState = props.federalState;
 		this.county = props.county;
 		this.purpose = props.purpose;
-		this.enableStudentTeamCreation = props.enableStudentTeamCreation;
 		this.logo_dataUrl = props.logo_dataUrl;
 		this.logo_name = props.logo_name;
 		this.fileStorageType = props.fileStorageType;

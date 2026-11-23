@@ -1,13 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean, IsEnum } from 'class-validator';
-
-export enum TeacherVisibilityForExternalTeamInvitation {
-	ENABLED = 'enabled',
-	DISABLED = 'disabled',
-	OPT_OUT = 'opt-out',
-	OPT_IN = 'opt-in',
-}
+import { IsBoolean } from 'class-validator';
 
 export const AUTHORIZATION_CONFIG_TOKEN = 'AUTHORIZATION_CONFIG_TOKEN';
 
@@ -22,8 +15,4 @@ export class AuthorizationConfig {
 	@IsBoolean()
 	@StringToBoolean()
 	public teacherStudentVisibilityIsEnabledByDefault = true;
-
-	@ConfigProperty('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')
-	@IsEnum(TeacherVisibilityForExternalTeamInvitation)
-	public teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.DISABLED;
 }

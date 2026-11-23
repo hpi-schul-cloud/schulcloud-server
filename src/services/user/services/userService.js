@@ -12,7 +12,6 @@ const {
 	restrictToCurrentSchool,
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
-	denyIfStudentTeamCreationNotAllowed,
 	computeProperty,
 	addCollation,
 	blockDisposableEmail,
@@ -151,16 +150,7 @@ const userHooks = {
 	},
 	after: {
 		all: [],
-		find: [
-			decorateAvatar,
-			decorateUsers,
-			iff(isProvider('external'), [
-				filterResult,
-				denyIfStudentTeamCreationNotAllowed({
-					errorMessage: 'The current user is not allowed to list other users!',
-				}),
-			]),
-		],
+		find: [decorateAvatar, decorateUsers, iff(isProvider('external'), [filterResult])],
 		get: [
 			decorateAvatar,
 			decorateUser,
