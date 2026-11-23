@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 import { Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
@@ -110,19 +109,16 @@ export class ExternalToolLogoService {
 			const logoBase64: string = buffer.toString('base64');
 			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
-			const err = error as unknown;
 			if (
-				err instanceof ExternalToolLogoWrongFileTypeLoggableException ||
-				err instanceof ExternalToolLogoSanitizationLoggableException
+				error instanceof ExternalToolLogoWrongFileTypeLoggableException ||
+				error instanceof ExternalToolLogoSanitizationLoggableException
 			) {
-				throw err;
+				throw error;
+			} else if (error instanceof HttpException) {
+				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
+			} else {
+				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
 			}
-
-			if (err instanceof HttpException) {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, err.getStatus());
-			}
-
-			throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
 		}
 	}
 

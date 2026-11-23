@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 import { customParameterFactory } from '@modules/tool/external-tool/testing';
 import { type CustomParameter } from '../custom-parameter.do';
 import { ToolParameterValueRegexLoggableException } from './tool-parameter-value-regex.loggable-exception';

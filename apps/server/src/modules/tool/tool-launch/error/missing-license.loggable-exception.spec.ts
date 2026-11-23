@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MissingMediaLicenseLoggableException } from '@modules/tool/tool-launch/error';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
