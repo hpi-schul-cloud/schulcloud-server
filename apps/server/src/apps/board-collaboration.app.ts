@@ -11,6 +11,7 @@ import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, type 
 import { MongoIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import { BOARD_CONFIG_TOKEN, type BoardConfig } from '@modules/board/board.config';
+import { InternalServerModule } from '@modules/internal-server/internal-server.app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { type SwaggerDocumentOptions } from '@nestjs/swagger';
 import express from 'express';
@@ -45,6 +46,13 @@ async function bootstrap(): Promise<void> {
 	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
 
 	await createMetricsServer(nestApp, 'Board Collaboration Server App');
+
+	const internalServerExpress = express();
+	const internalServerExpressAdapter = new ExpressAdapter(internalServerExpress);
+	const internalServerApp = await NestFactory.create(InternalServerModule, internalServerExpressAdapter);
+	await internalServerApp.init();
+
+	nestExpress.use('/internal', internalServerExpress);
 
 	await nestApp.init();
 
