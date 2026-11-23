@@ -1,7 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { lookupScope, rejectQueryingOtherUsers } = require('./hooks');
-const registerInternalService = require('../../../utils/register-internal-service');
 
 /**
  * Base class for scope services (nested under a top-level service)
@@ -53,15 +52,11 @@ class ScopeService {
 	 * @returns {ScopePermissionService} the service instance
 	 * @memberof ScopeService
 	 */
-	static initialize(app, path, handler, options = {}) {
+	static initialize(app, path, handler) {
 		if (!handler) {
 			throw new Error(`ScopePermisionService initialized at '${path}' without handler.`);
 		}
-		if (options.internal) {
-			registerInternalService(app, path, new this(handler));
-		} else {
-			app.use(path, new this(handler));
-		}
+		app.use(path, new this(handler));
 		const scopePermissionService = app.service(path);
 		scopePermissionService.hooks(this.hooks());
 		return scopePermissionService;

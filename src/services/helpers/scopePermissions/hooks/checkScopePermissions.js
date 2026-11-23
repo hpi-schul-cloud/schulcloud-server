@@ -40,10 +40,10 @@ const getPermissionService = (app, scopeName) => {
  * @param {ObjectId|String} userId A userId as ObjectId or String
  * @param {Object} scope A scope in the format {id, name}
  * @example
- * await getScopePermissions(app, new ObjectId(), {name: 'teams', id: new ObjectId()}) ==> []
- * await getScopePermissions(app, aRealUserId, {name: 'teams', id: aTeamId}) ==> [
- * 	'FILE_CREATE',
- * 	'TEAM_EDIT',
+ * await getScopePermissions(app, new ObjectId(), {name: 'courses', id: new ObjectId()}) ==> []
+ * await getScopePermissions(app, aRealUserId, {name: 'courses', id: aCourseId}) ==> [
+ * 	'COURSE_VIEW',
+ * 	'COURSE_EDIT',
  * ]
  */
 const getScopePermissions = async (app, userId, scope) => {
