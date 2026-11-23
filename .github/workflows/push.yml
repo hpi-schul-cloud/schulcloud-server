@@ -116,11 +116,9 @@ jobs:
       DEV_VAULT_BRB: ${{ secrets.DEV_VAULT_BRB }}
       DEV_VAULT_NBC: ${{ secrets.DEV_VAULT_NBC }}
       DEV_VAULT_THR: ${{ secrets.DEV_VAULT_THR }}
-      DEV_VAULT_DBC: ${{ secrets.DEV_VAULT_DBC }}
       DEV_KUBE_CONFIG_BRB: ${{ secrets.DEV_KUBE_CONFIG_BRB }}
       DEV_KUBE_CONFIG_NBC: ${{ secrets.DEV_KUBE_CONFIG_NBC }}
       DEV_KUBE_CONFIG_THR: ${{ secrets.DEV_KUBE_CONFIG_THR }}
-      DEV_KUBE_CONFIG_DBC: ${{ secrets.DEV_KUBE_CONFIG_DBC }}
 
   deploy-successful:
     needs:
