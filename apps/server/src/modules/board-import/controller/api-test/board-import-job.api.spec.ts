@@ -1,3 +1,4 @@
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { CoreModule } from '@core/core.module';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
@@ -9,6 +10,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
+import { BoardImportEvents } from '../../amqp';
 import { BoardImportApiModule } from '../../board-import-api.module';
 import { ENTITIES } from '../../board-import.entity.imports';
 import { BoardImportJobStatus } from '../../domain';
@@ -22,6 +24,7 @@ describe('Board Import Controller (API)', () => {
 	let app: INestApplication;
 	let jwtConfig: TestJwtModuleConfig;
 	let em: EntityManager;
+	let amqpConnection: AmqpConnection;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -44,6 +47,12 @@ describe('Board Import Controller (API)', () => {
 		await app.init();
 		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
 		em = module.get(EntityManager);
+		amqpConnection = module.get(AmqpConnection);
+		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
+	});
+
+	afterEach(async () => {
+		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
 	});
 
 	afterAll(async () => {
@@ -80,7 +89,7 @@ describe('Board Import Controller (API)', () => {
 			const setup = async () => {
 				const { loggedInClient, teacherUser } = await setupLoggedInClient();
 				const { link } = boardImportJobFactory.build();
-				const status = BoardImportJobStatus.FAILED;
+				const status = BoardImportJobStatus.WAITING;
 
 				return { loggedInClient, teacherUser, link, status };
 			};
@@ -107,6 +116,16 @@ describe('Board Import Controller (API)', () => {
 					userId: new ObjectId(teacherUser.id),
 					expiresAt: expect.any(Date),
 				});
+			});
+
+			it('should send the id of the job to the import job queue', async () => {
+				const { loggedInClient, link } = await setup();
+
+				const response = await loggedInClient.post('', { link });
+
+				const { id } = response.body as BoardImportJobResponse;
+				const message = await amqpConnection.channel.get(BoardImportEvents.IMPORT_JOB, { noAck: true });
+				expect(message && JSON.parse(message.content.toString())).toEqual({ jobId: id });
 			});
 		});
 

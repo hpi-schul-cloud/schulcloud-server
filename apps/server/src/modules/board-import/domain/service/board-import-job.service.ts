@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
+import { BoardImportJobProducer } from '../../amqp';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { BoardImportJob } from '../do';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
@@ -12,21 +13,31 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 export class BoardImportJobService {
 	constructor(
 		@Inject(BOARD_IMPORT_JOB_REPO) private readonly boardImportJobRepo: BoardImportJobRepo,
-		@Inject(BOARD_IMPORT_CONFIG_TOKEN) private readonly config: BoardImportConfig
+		@Inject(BOARD_IMPORT_CONFIG_TOKEN) private readonly config: BoardImportConfig,
+		private readonly boardImportJobProducer: BoardImportJobProducer
 	) {}
 
 	public async create(userId: EntityId, link: string): Promise<BoardImportJob> {
 		const expiresAt = new Date(Date.now() + this.config.jobRetentionInDays * MILLISECONDS_PER_DAY);
 		const job = new BoardImportJob({
 			id: new ObjectId().toHexString(),
-			// No worker can take the job, so it must not start in the status "waiting".
-			status: BoardImportJobStatus.FAILED,
+			status: BoardImportJobStatus.WAITING,
 			userId,
 			link,
 			expiresAt,
 		});
 
 		const savedJob = await this.boardImportJobRepo.save(job);
+
+		try {
+			await this.boardImportJobProducer.publishJob({ jobId: savedJob.id }, savedJob.expiresAt);
+		} catch (error) {
+			// The broker can still enqueue a message after a publish error, so the job must not run.
+			savedJob.status = BoardImportJobStatus.FAILED;
+			await this.boardImportJobRepo.save(savedJob);
+
+			throw error;
+		}
 
 		return savedJob;
 	}
