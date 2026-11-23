@@ -9,13 +9,11 @@ export class BoardImportJobService {
 	public create(userId: EntityId, link: string): Promise<BoardImportJob> {
 		const job = new BoardImportJob({
 			id: new ObjectId().toHexString(),
-			status: BoardImportJobStatus.WAITING,
+			// No worker can take the job, so it must not start in the status "waiting".
+			status: BoardImportJobStatus.FAILED,
 			userId,
 			link,
 		});
-
-		// No worker can take the job, so it must not stay in the status "waiting".
-		job.status = BoardImportJobStatus.FAILED;
 
 		return Promise.resolve(job);
 	}

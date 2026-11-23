@@ -15,10 +15,6 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 		return this.props.status;
 	}
 
-	set status(value: BoardImportJobStatus) {
-		this.props.status = value;
-	}
-
 	get userId(): EntityId {
 		return this.props.userId;
 	}

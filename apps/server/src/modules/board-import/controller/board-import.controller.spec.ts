@@ -33,6 +33,34 @@ describe(BoardImportController.name, () => {
 		jest.resetAllMocks();
 	});
 
+	describe('startImport', () => {
+		describe('when the use case returns a job', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+				const job = boardImportJobFactory.build({ userId: currentUser.userId });
+				boardImportUc.startImport.mockResolvedValueOnce(job);
+
+				return { currentUser, job };
+			};
+
+			it('should start the import for the current user', async () => {
+				const { currentUser, job } = setup();
+
+				await controller.startImport({ link: job.link }, currentUser);
+
+				expect(boardImportUc.startImport).toHaveBeenCalledWith(currentUser.userId, job.link);
+			});
+
+			it('should return the id and the status of the job', async () => {
+				const { currentUser, job } = setup();
+
+				const response = await controller.startImport({ link: job.link }, currentUser);
+
+				expect(response).toEqual({ id: job.id, status: job.status });
+			});
+		});
+	});
+
 	describe('getJob', () => {
 		describe('when the use case returns a job', () => {
 			const setup = () => {
