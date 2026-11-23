@@ -1,4 +1,5 @@
 import { boardImportJobFactory } from '../../testing';
+import { BoardImportJobStatus } from '../type';
 import { BoardImportJob } from './board-import-job';
 
 describe(BoardImportJob.name, () => {
@@ -23,6 +24,25 @@ describe(BoardImportJob.name, () => {
 				};
 
 				expect(result).toEqual(props);
+			});
+		});
+	});
+
+	describe('status', () => {
+		describe('when the status is set', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build({ status: BoardImportJobStatus.WAITING });
+				const status = BoardImportJobStatus.FAILED;
+
+				return { job, status };
+			};
+
+			it('should change the status', () => {
+				const { job, status } = setup();
+
+				job.status = status;
+
+				expect(job.status).toEqual(status);
 			});
 		});
 	});

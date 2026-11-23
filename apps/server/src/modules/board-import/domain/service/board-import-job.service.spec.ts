@@ -111,19 +111,27 @@ describe(BoardImportJobService.name, () => {
 			const setup = () => {
 				const { userId, link } = boardImportJobFactory.build();
 				const error = new Error('publish failed');
+				const failedStatus = BoardImportJobStatus.FAILED;
 
-				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
+				repo.save.mockImplementation((job: BoardImportJob) => Promise.resolve(job));
 				producer.publishJob.mockRejectedValueOnce(error);
 
-				return { userId, link, error };
+				return { userId, link, error, failedStatus };
 			};
 
-			it('should pass the error after the job was saved', async () => {
+			it('should pass the error', async () => {
 				const { userId, link, error } = setup();
 
 				await expect(service.create(userId, link)).rejects.toThrow(error);
+			});
 
-				expect(repo.save).toHaveBeenCalled();
+			it('should save the job with the status failed', async () => {
+				const { userId, link, error, failedStatus } = setup();
+
+				await expect(service.create(userId, link)).rejects.toThrow(error);
+
+				expect(repo.save).toHaveBeenCalledTimes(2);
+				expect(repo.save).toHaveBeenLastCalledWith(expect.objectContaining({ status: failedStatus }));
 			});
 		});
 	});

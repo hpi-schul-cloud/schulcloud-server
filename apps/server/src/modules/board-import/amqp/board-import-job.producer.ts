@@ -5,8 +5,8 @@ import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '.
 import { type BoardImportJobMessage } from './board-import-job.message';
 import { BoardImportEvents } from './board-import.exchange';
 
-// Must stay below the request timeout: a message that is not sent when the request fails must be dropped,
-// otherwise a client that retries creates the import twice.
+// Must stay below the request timeout, so that the job is marked as failed before the request ends.
+// A message that timed out can still reach the broker.
 export const BOARD_IMPORT_JOB_PUBLISH_TIMEOUT_IN_MS = 5000;
 
 @Injectable()
