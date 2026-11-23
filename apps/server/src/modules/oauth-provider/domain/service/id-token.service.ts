@@ -24,6 +24,7 @@ export class IdTokenService {
 			name: scopes.includes(OauthScope.PROFILE) ? name : undefined,
 			userId: scopes.includes(OauthScope.PROFILE) ? user.id : undefined,
 			schoolId: user.schoolId,
+			// Teams were removed. The empty claim keeps the id token contract for clients still requesting the "groups" scope.
 			groups: scopes.includes(OauthScope.GROUPS) ? [] : undefined,
 		};
 	}
