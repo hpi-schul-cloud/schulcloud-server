@@ -11,7 +11,7 @@ import {
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
+import { Account, AccountSave, passwordPattern, UpdateAccount, UpdateMyAccount } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 
 type UserPreferences = {
@@ -177,6 +177,10 @@ export class AccountService {
 	public async replaceMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
 		if (password !== confirmPassword) {
 			throw new ForbiddenOperationError('Password and confirm password do not match.');
+		}
+
+		if (!passwordPattern.test(password)) {
+			throw new ValidationError('New password does not fit the password pattern', { userId });
 		}
 
 		let user: User;
