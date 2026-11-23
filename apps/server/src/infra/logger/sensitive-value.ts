@@ -10,6 +10,8 @@ export const isSensitiveName = (name: string): boolean => {
 		lower.includes('auth') ||
 		lower.includes('token') ||
 		lower.includes('secret') ||
+		// Only API keys: "key" alone would also hit accessKeyId, versionKey or public keys
+		/api[-_]?key/.test(lower) ||
 		// endsWith, so flags such as forcePasswordChange stay readable
 		lower.endsWith('password') ||
 		lower.endsWith('passwd') ||

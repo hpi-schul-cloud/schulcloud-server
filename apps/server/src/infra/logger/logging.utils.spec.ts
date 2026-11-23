@@ -679,6 +679,30 @@ describe(LoggingUtils.name, () => {
 		});
 	});
 
+	describe('when a field name points to an API key', () => {
+		it('should mask API key fields in any spelling', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				apiKey: 'api-key-value-camel-case',
+				api_key: 'api-key-value-snake-case',
+				'X-API-KEY': 'api-key-value-header',
+				providerApiKey: 'api-key-value-prefixed',
+			});
+
+			const logged = JSON.stringify(result);
+			expect(logged).not.toContain('api-key-value');
+		});
+
+		it('should keep other fields that end in key', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				accessKeyId: 'AKIAEXAMPLE',
+				versionKey: 3,
+				key: 'lti-consumer',
+			});
+
+			expect(result).toEqual({ accessKeyId: 'AKIAEXAMPLE', versionKey: 3, key: 'lti-consumer' });
+		});
+	});
+
 	describe('when values have no useful own properties', () => {
 		it('should log an ObjectId as its hex string', () => {
 			const id = new ObjectId();
