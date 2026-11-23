@@ -70,7 +70,7 @@ import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VIDEO_CONFERENCE_PUBLIC_API_CONFIG, VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
-import { Module } from '@nestjs/common';
+import { type MiddlewareConsumer, Module, type NestModule } from '@nestjs/common';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
@@ -78,6 +78,7 @@ import { ReleasesApiModule } from '../releases';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
+import { configureCookieCredentialCsrf } from './middleware/cookie-credential-csrf.middleware';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
@@ -180,7 +181,11 @@ const controllers = [ServerController, ServerConfigController];
 	providers,
 	controllers,
 })
-export class ServerModule {}
+export class ServerModule implements NestModule {
+	public configure(consumer: MiddlewareConsumer): void {
+		configureCookieCredentialCsrf(consumer);
+	}
+}
 
 /**
  * Server module used for testing.
@@ -199,4 +204,8 @@ export class ServerModule {}
 	providers,
 	controllers,
 })
-export class ServerTestModule {}
+export class ServerTestModule implements NestModule {
+	public configure(consumer: MiddlewareConsumer): void {
+		configureCookieCredentialCsrf(consumer);
+	}
+}

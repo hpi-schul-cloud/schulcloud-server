@@ -19,6 +19,7 @@ import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collab
 import { GroupService } from '@modules/group';
 import { InternalServerModule } from '@modules/internal-server/internal-server.app.module';
 import { FeathersRosterService } from '@modules/roster';
+import { cookieCredentialCsrfMiddleware } from '@modules/server';
 import { ServerModule } from '@modules/server/server.app.module';
 import { TeamService } from '@modules/team';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
@@ -73,6 +74,7 @@ async function bootstrap(): Promise<void> {
 	// customize nest app settings
 	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
+	nestApp.use(cookieCredentialCsrfMiddleware);
 
 	await createMetricsServer(nestApp, 'Schulcloud Server App');
 
