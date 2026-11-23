@@ -4,6 +4,8 @@ import { decode } from 'html-entities';
 import sanitize, { type IOptions } from 'sanitize-html';
 import { InputFormat } from '../../domain/types';
 
+const imageResizeStyleRegex = /^\d+(?:\.\d+)?(?:px|em|%)$/;
+
 const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	PlainText: {
 		allowedTags: [],
@@ -117,6 +119,31 @@ const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	},
 };
 
+inputFormatsSanitizeConfig.RichTextCk5Task = {
+	...inputFormatsSanitizeConfig.RichTextCk5,
+	allowedTags: [
+		...(Array.isArray(inputFormatsSanitizeConfig.RichTextCk5.allowedTags)
+			? inputFormatsSanitizeConfig.RichTextCk5.allowedTags
+			: []),
+		'img',
+		'audio',
+		'video',
+	],
+	allowedAttributes: {
+		...inputFormatsSanitizeConfig.RichTextCk5.allowedAttributes,
+		img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+		audio: ['src', 'controls', 'controlslist'],
+		video: ['src', 'controls', 'controlslist'],
+		figure: ['class', 'style'],
+	},
+	allowedStyles: {
+		figure: {
+			width: [imageResizeStyleRegex],
+			height: [imageResizeStyleRegex],
+		},
+	},
+};
+
 const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IOptions => {
 	switch (inputFormat) {
 		case InputFormat.RICH_TEXT_CK5_SIMPLE:
@@ -125,6 +152,8 @@ const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IOptions => {
 			return inputFormatsSanitizeConfig.RichTextCk4;
 		case InputFormat.RICH_TEXT_CK5:
 			return inputFormatsSanitizeConfig.RichTextCk5;
+		case InputFormat.RICH_TEXT_CK5_TASK:
+			return inputFormatsSanitizeConfig.RichTextCk5Task;
 		case InputFormat.RICH_TEXT_CK5_NEWS:
 			return inputFormatsSanitizeConfig.RichTextCk5News;
 		case InputFormat.PLAIN_TEXT:

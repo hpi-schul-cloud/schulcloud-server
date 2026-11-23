@@ -28,8 +28,12 @@ export class TaskMapper {
 		}
 		dto.availableDate = task.availableDate;
 		dto.dueDate = task.dueDate;
+		if (task.publicSubmissions) dto.publicSubmissions = true;
+		if (task.teamSubmissions) dto.teamSubmissions = true;
+		if (task.maxTeamMembers !== undefined) dto.maxTeamMembers = task.maxTeamMembers;
 
 		dto.displayColor = taskDesc.color;
+		if (task.lesson) dto.lessonId = task.lesson.id;
 		if (taskDesc.lessonName) {
 			dto.lessonName = taskDesc.lessonName;
 		}
@@ -43,12 +47,16 @@ export class TaskMapper {
 			name: params.name,
 			courseId: params.courseId,
 			lessonId: params.lessonId,
+			private: params.private,
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
+			publicSubmissions: params.publicSubmissions,
+			teamSubmissions: params.teamSubmissions,
+			maxTeamMembers: params.maxTeamMembers,
 		};
 		if (params.description) {
-			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
+			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5_TASK;
 		}
 		return dto;
 	}
@@ -58,12 +66,16 @@ export class TaskMapper {
 			name: params.name || 'Draft',
 			courseId: params.courseId,
 			lessonId: params.lessonId,
+			private: params.private,
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
+			publicSubmissions: params.publicSubmissions,
+			teamSubmissions: params.teamSubmissions,
+			maxTeamMembers: params.maxTeamMembers,
 		};
 		if (params.description) {
-			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
+			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5_TASK;
 		}
 		return dto;
 	}

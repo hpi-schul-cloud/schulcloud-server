@@ -43,6 +43,7 @@ export interface TaskProperties extends ITask {
 	submissions?: Submission[];
 	publicSubmissions?: boolean;
 	teamSubmissions?: boolean;
+	maxTeamMembers?: number;
 }
 
 @Entity({ tableName: 'homeworks' })
@@ -75,6 +76,9 @@ export class Task extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	teamSubmissions?: boolean;
+
+	@Property({ nullable: true })
+	maxTeamMembers?: number;
 
 	@Index()
 	@ManyToOne(() => User, { fieldName: 'teacherId', nullable: true })
@@ -116,6 +120,7 @@ export class Task extends BaseEntityWithTimestamps {
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;
 		this.teamSubmissions = props.teamSubmissions || false;
+		this.maxTeamMembers = props.maxTeamMembers;
 	}
 
 	private getSubmissionItems(): Submission[] {
