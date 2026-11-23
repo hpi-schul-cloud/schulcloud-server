@@ -53,7 +53,7 @@ spec:
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: {{ BOARD_IMPORT_API_PORT }}
+        - containerPort: 3352
           name: api
           protocol: TCP
         env:
@@ -70,21 +70,21 @@ spec:
         readinessProbe:
           httpGet:
             path: /internal/health
-            port: {{ BOARD_IMPORT_API_PORT }}
+            port: 3352
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 5
         livenessProbe:
           httpGet:
             path: /internal/health
-            port: {{ BOARD_IMPORT_API_PORT }}
+            port: 3352
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
           httpGet:
             path: /internal/health
-            port: {{ BOARD_IMPORT_API_PORT }}
+            port: 3352
           timeoutSeconds: 4
           failureThreshold: 36
           periodSeconds: 5

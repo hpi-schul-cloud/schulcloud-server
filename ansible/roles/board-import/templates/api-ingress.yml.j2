@@ -5,11 +5,6 @@ metadata:
   namespace: {{ NAMESPACE }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABLED|default("false") }}"
-    # A request header with a large JWT does not fit into the default buffers. Nginx then answers with 502.
-    nginx.ingress.kubernetes.io/client-header-buffer-size: 100k
-    nginx.ingress.kubernetes.io/http2-max-header-size: 96k
-    nginx.ingress.kubernetes.io/large-client-header-buffers: 4 100k
-    nginx.ingress.kubernetes.io/proxy-buffer-size: 96k
 {% if CLUSTER_ISSUER is defined %}
     cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
 {% endif %}
@@ -33,4 +28,4 @@ spec:
           service:
             name: board-import-api-svc
             port:
-              number: {{ BOARD_IMPORT_API_PORT }}
+              number: 3352
