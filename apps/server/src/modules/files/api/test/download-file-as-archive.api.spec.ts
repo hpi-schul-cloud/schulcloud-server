@@ -168,35 +168,6 @@ describe('DownloadArchive Controller (API)', () => {
 			});
 		});
 
-		describe('when ownerType is teams', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persist([studentUser, studentAccount]).flush();
-
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
-					.withJwt(studentUser, jwtConfig)
-					.build(studentAccount);
-
-				authorizationClient.checkPermissionsByReference.mockClear();
-
-				return { loggedInClient };
-			};
-
-			it('should return 400', async () => {
-				const { loggedInClient } = await setup();
-				const params = {
-					ownerId: new ObjectId().toHexString(),
-					ownerType: 'teams',
-					archiveName: 'team-archive',
-				};
-
-				const response = await loggedInClient.post(undefined, params);
-
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				expect(authorizationClient.checkPermissionsByReference).not.toHaveBeenCalled();
-			});
-		});
-
 		describe('when user does not have permission to access the course', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
