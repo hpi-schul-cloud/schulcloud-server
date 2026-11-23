@@ -29,6 +29,15 @@
   tags:
     - 1password
 
+- name: Add board import API egress network policy
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: api-egress-networkpolicy.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - networkPolicy
+
 - name: Board import API deployment
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
@@ -62,15 +71,6 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: default-allow-networkpolicy.yml.j2
-    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
-  tags:
-    - networkPolicy
-
-- name: Add board import API egress network policy
-  kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
-    namespace: "{{ NAMESPACE }}"
-    template: api-egress-networkpolicy.yml.j2
     state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
   tags:
     - networkPolicy

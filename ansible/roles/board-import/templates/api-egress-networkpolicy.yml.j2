@@ -10,6 +10,7 @@ spec:
   policyTypes:
     - Egress
   egress:
+    # DNS to all addresses: the cluster DNS setup is not known on all clusters.
     - ports:
         - port: 53
           protocol: UDP
@@ -33,12 +34,4 @@ spec:
         - port: 6379
           protocol: TCP
         - port: 26379
-          protocol: TCP
-
-    - to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/component: rabbitmq
-      ports:
-        - port: 5672
           protocol: TCP
