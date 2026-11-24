@@ -677,6 +677,38 @@ describe(LoggingUtils.name, () => {
 
 			expect(result).toEqual({ forcePasswordChange: true });
 		});
+
+		it('should mask password and credential fields with the name part anywhere in the name', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				passwordHash: 'hash-value-123456',
+				credentialsId: 'credentials-id-123456',
+			});
+
+			expect(result).toEqual({
+				passwordHash: 'hash...56 [REDACTED]',
+				credentialsId: 'cred...56 [REDACTED]',
+			});
+		});
+	});
+
+	describe('when a field name points to a PIN', () => {
+		it('should mask PIN fields but keep fields that only contain the letters', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				pin: 1234,
+				userPin: '5678',
+				isPinned: false,
+				pinnedAt: '2026-11-24',
+				hasPin: true,
+			});
+
+			expect(result).toEqual({
+				pin: '[REDACTED]',
+				userPin: '[REDACTED]',
+				isPinned: false,
+				pinnedAt: '2026-11-24',
+				hasPin: true,
+			});
+		});
 	});
 
 	describe('when a field name points to an API key', () => {

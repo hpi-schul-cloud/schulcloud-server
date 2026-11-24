@@ -149,7 +149,8 @@ export class LoggingUtils {
 	}
 
 	private static redactEntryValue(key: string, value: unknown, visited: WeakSet<object>): unknown {
-		if (!isSensitiveName(key)) {
+		// A boolean is never a secret, so flags such as forcePasswordChange or hasPin stay readable.
+		if (!isSensitiveName(key) || typeof value === 'boolean') {
 			return this.redactSensitiveObject(value, visited);
 		}
 
