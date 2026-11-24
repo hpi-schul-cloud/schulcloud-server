@@ -14,7 +14,7 @@ Only a small part of the users have boards to import, and few imports run at the
 
 The import runs asynchronously. The import API stores an import job, publishes a message to RabbitMQ and answers immediately. A worker consumes the message and does the import.
 
-- The import uses only standard AMQP functions of the RabbitMQ that the SchulCloud already has. There are no delayed queues and no dead-letter queues.
+- The import uses only what the existing RabbitMQ of the SchulCloud offers, without plugins, delayed queues or dead-letter queues.
 - The exchange is `board-import` (direct). The queue and the routing key are `board-import-job`.
 - The message contains only the ID of the import job. All other data is in the job (see [0005](0005-import-job-in-mongodb.md)).
 - Messages are persistent. Each app that publishes or consumes import jobs declares the queue.
