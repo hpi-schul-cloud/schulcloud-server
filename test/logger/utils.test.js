@@ -80,6 +80,14 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(line.accessToken).to.equal('abcd...yz [REDACTED]');
 	});
 
+	it('should fully mask a config secret under a sensitive field name', () => {
+		const line = toJsonLine({ message: 'login', password: SECRET, headers: { authorization: `Bearer ${SECRET}` } });
+
+		expect(line.password).to.equal('[REDACTED]');
+		expect(line.headers.authorization).to.equal('Bearer [REDACTED]');
+		expect(JSON.stringify(line)).not.to.include(SECRET.slice(0, 4));
+	});
+
 	it('should redact Bearer tokens in the message', () => {
 		const line = toJsonLine({ message: 'header Bearer abcdefghijklmnopqrstuvwxyz' });
 

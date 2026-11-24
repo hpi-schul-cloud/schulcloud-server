@@ -14,6 +14,11 @@ const defineValue = (target, key, value) => {
 	Object.defineProperty(target, key, { value, enumerable: true, writable: true, configurable: true });
 };
 
+const secretMasker = maskSecretsInFields();
+// Config secrets are masked before sensitive field names are redacted. Otherwise a secret under a name like "password"
+// would be shortened by LoggingUtils to its first and last characters, which then no longer match the secret.
+const maskSecretsInText = (text) => secretMasker.transform({ text }).text;
+
 // Keeps the error class, name, message and stack (LoggingUtils logs errors by them), only its fields are converted.
 const copyError = (error, ancestors) => {
 	const copy = Object.create(Object.getPrototypeOf(error));
@@ -66,6 +71,10 @@ const copyValue = (value, ancestors) => {
 // Every occurrence of an object gets its own copy: LoggingUtils logs an object it has seen before as "[Circular]",
 // so only real cycles (an object inside itself) are replaced by "[Circular]" here.
 function toJsonValues(value, ancestors = new Set()) {
+	if (typeof value === 'string') {
+		return maskSecretsInText(value);
+	}
+
 	if (typeof value !== 'object' || value === null || summarizeOpaqueLogValue(value) !== undefined) {
 		return value;
 	}
