@@ -7,7 +7,6 @@ import {
 	HttpCode,
 	HttpStatus,
 	InternalServerErrorException,
-	NotImplementedException,
 	Post,
 	Query,
 	Req,
@@ -37,7 +36,6 @@ export class LegacyFileArchiveController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@ApiResponse({ status: 501, type: NotImplementedException })
 	@ApiHeader({ name: 'Range', required: false })
 	@Post()
 	@HttpCode(HttpStatus.OK)
@@ -57,7 +55,6 @@ export class LegacyFileArchiveController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@ApiResponse({ status: 501, type: NotImplementedException })
 	@Get('file-list')
 	public async listDownloadableFiles(@Query() params: ArchiveFileParams): Promise<FileProps[]> {
 		const files = await this.downloadArchiveUC.listDownloadableFiles(params);
