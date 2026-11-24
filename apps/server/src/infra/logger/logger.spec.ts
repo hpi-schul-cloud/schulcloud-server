@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Injectable, Module } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -44,13 +45,144 @@ describe('Logger', () => {
 		await module.close();
 	});
 
+	describe('context', () => {
+		@Injectable()
+		class UserService {
+			constructor(public readonly logger: Logger) {}
+		}
+
+		@Module({
+			providers: [UserService, Logger, { provide: WINSTON_MODULE_PROVIDER, useFactory: () => winstonLogger }],
+		})
+		class UserModule {}
+
+		const setup = async () => {
+			const testModule = await Test.createTestingModule({ imports: [UserModule] }).compile();
+			const userService = testModule.get(UserService);
+
+			return { testModule, userService };
+		};
+
+		it('should use the name of the class the logger is injected into', async () => {
+			const { testModule, userService } = await setup();
+
+			userService.logger.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: 'UserService' }));
+			await testModule.close();
+		});
+
+		it('should add the module providing that class', async () => {
+			const { testModule, userService } = await setup();
+
+			userService.logger.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ module: 'UserModule' }));
+			await testModule.close();
+		});
+
+		it('should let setContext override the class name', async () => {
+			const { testModule, userService } = await setup();
+
+			userService.logger.setContext('CustomContext');
+			userService.logger.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: 'CustomContext' }));
+			await testModule.close();
+		});
+
+		it('should have an empty context when injected into a factory', async () => {
+			const testModule = await Test.createTestingModule({
+				providers: [
+					Logger,
+					{ provide: WINSTON_MODULE_PROVIDER, useValue: winstonLogger },
+					{ provide: 'CLIENT', useFactory: (logger: Logger) => logger, inject: [Logger] },
+				],
+			}).compile();
+			const logger = testModule.get<Logger>('CLIENT');
+
+			logger.info('Client created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: '' }));
+			await testModule.close();
+		});
+
+		it('should have an empty context when resolved without a class', async () => {
+			const logger = await module.resolve(Logger);
+
+			logger.info('App started');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.not.objectContaining({ module: expect.anything() }));
+			expect(winstonLogger.info).toHaveBeenCalledWith(expect.objectContaining({ context: '' }));
+		});
+	});
+
+	describe('when logging a message with data', () => {
+		it.each([
+			['error', 'error'],
+			['warning', 'warning'],
+			['notice', 'notice'],
+			['info', 'info'],
+			['debug', 'debug'],
+		] as const)('should log message and data with %s', (method, winstonMethod) => {
+			service.setContext('UserService');
+
+			service[method]('User created', { userId: '123' });
+
+			expect(winstonLogger[winstonMethod]).toHaveBeenCalledWith({
+				message: 'User created',
+				context: 'UserService',
+				data: { userId: '123' },
+			});
+		});
+
+		it('should log a message without data', () => {
+			service.setContext('UserService');
+
+			service.info('User created');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith({ message: 'User created', context: 'UserService' });
+		});
+
+		it('should redact sensitive data', () => {
+			service.info('Token refreshed', { accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload' });
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ data: { accessToken: 'eyJh...ad [REDACTED]' } })
+			);
+		});
+
+		it('should log errors in data with message and stack', () => {
+			service.info('Retrying request', { error: new Error('timeout') });
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(
+				expect.objectContaining({
+					data: { error: expect.objectContaining({ name: 'Error', message: 'timeout', stack: expect.any(String) }) },
+				})
+			);
+		});
+	});
+
+	describe('error', () => {
+		it('should call error method of WinstonLogger with a loggable', () => {
+			service.setContext('test context');
+
+			service.error(new SampleLoggable());
+
+			expect(winstonLogger.error).toHaveBeenCalledWith(
+				expect.objectContaining({ message: 'test message', data: 'test data', context: 'test context' })
+			);
+		});
+	});
+
 	describe('info', () => {
 		it('should call info method of WinstonLogger with appropriate message', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 
@@ -66,7 +198,8 @@ describe('Logger', () => {
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 
@@ -82,7 +215,8 @@ describe('Logger', () => {
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 
@@ -106,7 +240,8 @@ describe('Logger', () => {
 			service.setContext('test context');
 
 			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
+				message: 'test message',
+				data: 'test data',
 				context: 'test context',
 			});
 

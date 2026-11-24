@@ -30,7 +30,7 @@ describe(BiloMediaQueryBadResponseLoggable.name, () => {
 
 			expect(result).toEqual<LogMessage>({
 				message: `${expectedLoggableReports.length} bad response(s) from bilo media query is/are found`,
-				data: { reports: JSON.stringify(expectedLoggableReports) },
+				data: { reports: expectedLoggableReports },
 			});
 		});
 	});
