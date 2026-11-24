@@ -4,6 +4,8 @@
 
 Accepted (2026-11-17)
 
+The rule for publish errors is superseded by [0008](0008-retry-import-jobs-through-redelivery.md) (2026-11-24).
+
 ## Context
 
 An import reads a board from an external tool and copies its files. Some boards have more than 2 GB of files, so an import can take much longer than an HTTP request. An import must also continue after a pod restart.

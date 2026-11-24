@@ -58,19 +58,20 @@ describe(BoardImportJobService.name, () => {
 				const { userId, link } = boardImportJobFactory.build();
 				const status = BoardImportJobStatus.WAITING;
 				const expiresAt = new Date(now.getTime() + config.jobRetentionInDays * 24 * 60 * 60 * 1000);
+				const attempts = 0;
 
 				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
 
-				return { userId, link, status, expiresAt };
+				return { userId, link, status, expiresAt, attempts };
 			};
 
 			it('should save a waiting job that expires after the retention time', async () => {
-				const { userId, link, status, expiresAt } = setup();
+				const { userId, link, status, expiresAt, attempts } = setup();
 
 				const job = await service.create(userId, link);
 
 				expect(repo.save).toHaveBeenCalledWith(job);
-				expect(job.getProps()).toEqual({ id: expect.any(String), userId, link, status, expiresAt });
+				expect(job.getProps()).toEqual({ id: expect.any(String), userId, link, status, expiresAt, attempts });
 			});
 
 			it('should publish the id of the job with its expiry date', async () => {
@@ -107,31 +108,67 @@ describe(BoardImportJobService.name, () => {
 			});
 		});
 
-		describe('when publishJob rejects', () => {
+		describe('when publishJob rejects and the job is still waiting', () => {
 			const setup = () => {
 				const { userId, link } = boardImportJobFactory.build();
 				const error = new Error('publish failed');
-				const failedStatus = BoardImportJobStatus.FAILED;
 
-				repo.save.mockImplementation((job: BoardImportJob) => Promise.resolve(job));
+				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
 				producer.publishJob.mockRejectedValueOnce(error);
+				repo.failIfWaiting.mockResolvedValueOnce(true);
 
-				return { userId, link, error, failedStatus };
+				return { userId, link, error };
+			};
+
+			it('should set the job to failed and pass the error', async () => {
+				const { userId, link, error } = setup();
+
+				await expect(service.create(userId, link)).rejects.toThrow(error);
+
+				expect(repo.failIfWaiting).toHaveBeenCalledWith(expect.any(String));
+				expect(repo.findById).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when publishJob rejects but a worker took the job', () => {
+			const setup = () => {
+				const { userId, link } = boardImportJobFactory.build();
+				const startedJob = boardImportJobFactory.build({ status: BoardImportJobStatus.RUNNING, attempts: 1 });
+
+				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
+				producer.publishJob.mockRejectedValueOnce(new Error('publish failed'));
+				repo.failIfWaiting.mockResolvedValueOnce(false);
+				repo.findById.mockResolvedValueOnce(startedJob);
+
+				return { userId, link, startedJob };
+			};
+
+			it('should return the started job', async () => {
+				const { userId, link, startedJob } = setup();
+
+				const result = await service.create(userId, link);
+
+				expect(result).toBe(startedJob);
+			});
+		});
+
+		describe('when publishJob rejects and the job is not found again', () => {
+			const setup = () => {
+				const { userId, link } = boardImportJobFactory.build();
+				const error = new Error('publish failed');
+
+				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
+				producer.publishJob.mockRejectedValueOnce(error);
+				repo.failIfWaiting.mockResolvedValueOnce(false);
+				repo.findById.mockResolvedValueOnce(null);
+
+				return { userId, link, error };
 			};
 
 			it('should pass the error', async () => {
 				const { userId, link, error } = setup();
 
 				await expect(service.create(userId, link)).rejects.toThrow(error);
-			});
-
-			it('should save the job with the status failed', async () => {
-				const { userId, link, error, failedStatus } = setup();
-
-				await expect(service.create(userId, link)).rejects.toThrow(error);
-
-				expect(repo.save).toHaveBeenCalledTimes(2);
-				expect(repo.save).toHaveBeenLastCalledWith(expect.objectContaining({ status: failedStatus }));
 			});
 		});
 	});
