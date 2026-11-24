@@ -11,12 +11,17 @@ const SECRET = 'my+secret/value="1"';
 const toJsonLine = (info) => JSON.parse(getProductionFormat().transform({ level: 'info', ...info })[MESSAGE]);
 
 describe('[logger] masking in the feathers logger', () => {
+	let savedSecrets;
+
 	beforeEach(() => {
+		// Other tests in the same mocha process may have registered secrets, they are restored afterwards.
+		savedSecrets = [...SecretRegistry.getSecrets()];
 		SecretRegistry.register(SECRET);
 	});
 
 	afterEach(() => {
 		SecretRegistry.clear();
+		savedSecrets.forEach((secret) => SecretRegistry.register(secret));
 	});
 
 	it('should use the SecretRegistry the compiled Nest code fills', () => {
