@@ -1,5 +1,6 @@
 import { SecretRegistry } from '@infra/configuration';
 import { ObjectId } from 'bson';
+import { NotFoundException } from '@nestjs/common';
 import { createLogFormat } from './log-format';
 
 // winston stores the final output under this symbol (MESSAGE from triple-beam)
@@ -284,5 +285,33 @@ describe('createLogFormat with secrets', () => {
 		const output = render({ message: 'user created' });
 
 		expect(JSON.parse(output)).toEqual(expect.objectContaining({ message: 'user created' }));
+	});
+});
+
+describe('createLogFormat with secrets in urls', () => {
+	it('should redact a secret url path in message and stack of a Nest 404', () => {
+		// The exact error Nest's RoutesResolver throws for an unknown route: `Cannot ${method} ${url}`.
+		const error = new NotFoundException('Cannot POST /api/v3/sharetoken/secretShareToken');
+
+		const output = render({ message: error.message, error, data: { endpoint: '/sharetoken/secretShareToken' } });
+
+		expect(output).not.toContain('secretShareToken');
+		expect(output).toContain('Cannot POST /api/v3/sharetoken/***');
+		expect(JSON.parse(output)).toEqual(expect.objectContaining({ data: { endpoint: '/sharetoken/***' } }));
+	});
+
+	it('should redact query params with a secret or sensitive name and keep the others', () => {
+		const output = render({ message: 'GET /api/v3/rooms?shareToken=x1&accessToken=y1&pin=1234&page=2 200' });
+
+		expect(JSON.parse(output)).toEqual(
+			expect.objectContaining({ message: 'GET /api/v3/rooms?shareToken=***&accessToken=***&pin=***&page=2 200' })
+		);
+	});
+
+	it('should keep the line valid JSON when the url is followed by an escape', () => {
+		const output = render({ message: 'first line\n/sharetoken/secretShareToken\n"quoted /link/secretLink"' });
+
+		const { message } = JSON.parse(output) as { message: string };
+		expect(message).toBe('first line\n/sharetoken/***\n"quoted /link/***"');
 	});
 });
