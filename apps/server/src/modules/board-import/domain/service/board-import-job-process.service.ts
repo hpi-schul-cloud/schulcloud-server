@@ -121,10 +121,7 @@ export class BoardImportJobProcessService {
 		const abortController = new AbortController();
 		let timer: NodeJS.Timeout | undefined;
 		const timeLimit = new Promise<boolean>((resolve) => {
-			timer = setTimeout(() => {
-				abortController.abort();
-				resolve(false);
-			}, timeLimitInMs);
+			timer = setTimeout(() => resolve(false), timeLimitInMs);
 		});
 
 		try {
@@ -134,7 +131,7 @@ export class BoardImportJobProcessService {
 			return isInTime;
 		} finally {
 			clearTimeout(timer);
-			// Stops the steps that still run when another step failed.
+			// Stops the steps that still run after a timeout or after another step failed.
 			abortController.abort();
 		}
 	}
