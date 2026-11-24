@@ -1,46 +1,71 @@
 import { type Loggable } from '@shared/common/loggable';
+import { type AxiosError, isAxiosError } from 'axios';
 import util from 'node:util';
+import { getAxiosErrorFields } from './axios-error-fields';
+import { summarizeOpaqueLogValue } from './opaque-log-value';
+import { isSensitiveName, maskSecret } from './sensitive-value';
 import { type LogMessageWithContext } from './types';
 
 export class LoggingUtils {
+	/**
+	 * Turns a loggable into separate log fields (message, data, error, ...) instead of one string,
+	 * so that structured log formats like JSON can filter by them. Sensitive values are redacted.
+	 */
 	public static createMessageWithContext(loggable: Loggable, context?: string): LogMessageWithContext {
-		const message = loggable.getLogMessage();
-		const stringifiedMessage = this.stringifyMessage(message);
-		const messageWithContext = { message: stringifiedMessage, context };
+		const redactedMessage = this.redactSensitiveValue(loggable.getLogMessage());
+		const { message, ...fields } = this.isRecord(redactedMessage) ? redactedMessage : { message: redactedMessage };
 
-		return messageWithContext;
+		return { message: this.toMessageText(message, fields), context, ...fields };
 	}
 
 	public static redactSensitiveValue(value: unknown): unknown {
 		return this.redactSensitiveObject(value);
 	}
 
-	private static stringifyMessage(message: unknown): string {
-		const redactedMessage = this.redactSensitiveValue(message);
-		const inspectedMessage = util.inspect(redactedMessage);
-
-		return inspectedMessage.replaceAll('\n', '').replaceAll(String.raw`\n`, '');
+	/**
+	 * The redacted fields of an axios error that may be logged (method, URL, status, code, response body).
+	 * For code that keeps an axios error for logging later, instead of the error with its request config.
+	 */
+	public static getSafeAxiosErrorFields(error: AxiosError): Record<string, unknown> {
+		// A fresh plain object, so the result is always a record (never "[Circular]" or a summary).
+		return this.redactSensitiveObject(getAxiosErrorFields(error)) as Record<string, unknown>;
 	}
 
-	private static isSensitiveFieldName(name: string): boolean {
-		const lower = name.toLowerCase();
+	// Error and validation log messages have no message of their own, so it is taken from the error or the type.
+	private static toMessageText(message: unknown, fields: Record<string, unknown>): string {
+		if (typeof message === 'string') {
+			return message;
+		}
 
-		return (
-			lower.includes('cookie') ||
-			lower.startsWith('x-api') ||
-			lower.includes('auth') ||
-			lower.includes('token') ||
-			lower.includes('secret')
-		);
+		if (message !== undefined) {
+			return util.inspect(message, { breakLength: Infinity });
+		}
+
+		const { error, type } = fields;
+		if (this.isRecord(error) && typeof error.message === 'string') {
+			return error.message;
+		}
+
+		return typeof type === 'string' ? type : '';
+	}
+
+	private static isRecord(value: unknown): value is Record<string, unknown> {
+		return typeof value === 'object' && value !== null && !Array.isArray(value);
 	}
 
 	private static redactSensitiveObject(value: unknown, visited = new WeakSet<object>()): unknown {
-		if (value instanceof Error) {
-			return value;
+		// Copies of axios errors (e.g. inside AxiosErrorLoggable) are plain objects, but carry the same request config.
+		if (value instanceof Error || (isAxiosError(value) && typeof value.message === 'string')) {
+			return this.redactError(value, visited);
 		}
 
 		if (typeof value === 'string') {
 			return this.redactBearerToken(value);
+		}
+
+		const summary = typeof value === 'object' && value !== null ? summarizeOpaqueLogValue(value) : undefined;
+		if (summary !== undefined) {
+			return summary;
 		}
 
 		if (Array.isArray(value)) {
@@ -52,6 +77,40 @@ export class LoggingUtils {
 		}
 
 		return value;
+	}
+
+	private static redactError(error: Error | AxiosError, visited: WeakSet<object>): unknown {
+		if (visited.has(error)) {
+			return '[Circular]';
+		}
+
+		visited.add(error);
+
+		// A plain object instead of the Error itself: message and stack are not enumerable, so JSON output would drop them.
+		const redactedError: Record<string, unknown> = {
+			name: this.getErrorName(error),
+			message: typeof error.message === 'string' ? this.redactBearerToken(error.message) : error.message,
+			stack: typeof error.stack === 'string' ? this.redactBearerToken(error.stack) : error.stack,
+		};
+
+		const ownProperties = isAxiosError(error) ? getAxiosErrorFields(error) : error;
+		for (const [key, val] of this.getLoggableEntries(ownProperties)) {
+			// The cause is handled below, an enumerable cause (this.cause = cause) would otherwise be logged twice.
+			if (key !== 'cause') {
+				redactedError[key] = this.redactEntryValue(key, val, visited);
+			}
+		}
+
+		if (error.cause !== undefined) {
+			redactedError.cause = this.redactSensitiveObject(error.cause, visited);
+		}
+
+		return redactedError;
+	}
+
+	// Subclasses that don't set their own name are still called "Error", the class name is more useful.
+	private static getErrorName(error: Error): string {
+		return error.name === 'Error' ? error.constructor.name : error.name;
 	}
 
 	private static redactSensitiveArray(value: unknown[], visited: WeakSet<object>): unknown {
@@ -71,15 +130,26 @@ export class LoggingUtils {
 		visited.add(value);
 		const result: Record<string, unknown> = {};
 
-		for (const [key, val] of Object.entries(value)) {
-			result[key] = this.redactEntryValue(key, val, visited);
+		for (const [key, val] of this.getLoggableEntries(value)) {
+			// defineProperty instead of result[key]: a key "__proto__" (e.g. from parsed JSON) would set the prototype.
+			Object.defineProperty(result, key, {
+				value: this.redactEntryValue(key, val, visited),
+				enumerable: true,
+				writable: true,
+				configurable: true,
+			});
 		}
 
 		return result;
 	}
 
+	// Functions are left out: JSON.stringify would call a copied toJSON and could restore what was redacted.
+	private static getLoggableEntries(value: object): [string, unknown][] {
+		return Object.entries(value).filter(([, val]) => typeof val !== 'function');
+	}
+
 	private static redactEntryValue(key: string, value: unknown, visited: WeakSet<object>): unknown {
-		if (!this.isSensitiveFieldName(key)) {
+		if (!isSensitiveName(key)) {
 			return this.redactSensitiveObject(value, visited);
 		}
 
@@ -87,7 +157,7 @@ export class LoggingUtils {
 			return '[REDACTED]';
 		}
 
-		return this.maskSecret(value);
+		return maskSecret(value);
 	}
 
 	private static redactBearerToken(value: string): string {
@@ -97,30 +167,8 @@ export class LoggingUtils {
 
 		return value.replace(
 			/\b(Bearer)\s+([A-Z0-9._~+/=-]+)/gi,
-			(match, scheme: string, token: string) => `${scheme} ${this.maskSecret(token)}`
+			(match, scheme: string, token: string) => `${scheme} ${maskSecret(token)}`
 		);
-	}
-
-	private static maskSecret(secret: string): string {
-		const trimmedSecret = secret.trim();
-		if (!trimmedSecret) {
-			return '[REDACTED]';
-		}
-
-		const [scheme, credential, ...rest] = trimmedSecret.split(/\s+/);
-		if (credential && rest.length === 0) {
-			return `${scheme} ${this.maskCredential(credential)}`;
-		}
-
-		return this.maskCredential(trimmedSecret);
-	}
-
-	private static maskCredential(value: string): string {
-		if (value.length <= 8) {
-			return '[REDACTED]';
-		}
-
-		return `${value.slice(0, 4)}...${value.slice(-2)} [REDACTED]`;
 	}
 
 	public static isInstanceOfLoggable(object: unknown): object is Loggable {

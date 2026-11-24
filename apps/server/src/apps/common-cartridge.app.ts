@@ -20,11 +20,13 @@ async function bootstrap(): Promise<void> {
 
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(CommonCartridgeApiModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(CommonCartridgeApiModule, nestExpressAdapter, { bufferLogs: true });
 	enableOpenApiDocs(nestApp, 'docs');
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestApp.flushLogs();
 
 	await createMetricsServer(nestApp, 'Common Cartridge Server App');
 

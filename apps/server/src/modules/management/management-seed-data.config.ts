@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { IsOptional, IsString } from 'class-validator';
 
 export const MANAGEMENT_SEED_DATA_CONFIG_TOKEN = 'MANAGEMENT_SEED_DATA_CONFIG_TOKEN';
@@ -19,6 +19,7 @@ export class ManagementSeedDataConfig {
 	public schulconnexClientId?: string;
 
 	@ConfigProperty('SCHULCONNEX_CLIENT_SECRET')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public schulconnexClientSecret?: string;
@@ -29,6 +30,7 @@ export class ManagementSeedDataConfig {
 	public mediaSourceVidisUsername?: string;
 
 	@ConfigProperty('MEDIA_SOURCE_VIDIS_PASSWORD')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public mediaSourceVidisPassword?: string;
@@ -39,6 +41,7 @@ export class ManagementSeedDataConfig {
 	public mediaSourceBiloClientId?: string;
 
 	@ConfigProperty('MEDIA_SOURCE_BILO_CLIENT_SECRET')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public mediaSourceBiloClientSecret?: string;
@@ -49,21 +52,25 @@ export class ManagementSeedDataConfig {
 	public ctlSeedBiloLtiKey?: string;
 
 	@ConfigProperty('CTL_SEED_BILO_LTI_SECRET')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public ctlSeedBiloLtiSecret?: string;
 
 	@ConfigProperty('CTL_SEED_SECRET_ONLINE_DIA_MATHE')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public ctlSeedSecretOnlineDiaMathe?: string;
 
 	@ConfigProperty('CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public ctlSeedSecretOnlineDiaDeutsch?: string;
 
 	@ConfigProperty('CTL_SEED_SECRET_MERLIN')
+	@Secret()
 	@IsString()
 	@IsOptional()
 	public ctlSeedSecretMerlin?: string;

@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { IsOptional, IsString } from 'class-validator';
 
 export const SCHOOL_CONFIG_TOKEN = 'SCHOOL_CONFIG_TOKEN';
@@ -14,5 +14,6 @@ export class SchoolConfig {
 	@IsOptional()
 	@IsString()
 	@ConfigProperty('S3_KEY')
+	@Secret()
 	public S3_KEY?: string;
 }
