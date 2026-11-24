@@ -8,6 +8,7 @@ const { summarizeOpaqueLogValue } = require('../../dist/apps/server/infra/logger
 const { maskSecretsInFields } = require('../../dist/apps/server/infra/logger/secret-masking');
 
 const { format, transports } = winston;
+const LEVEL = Symbol.for('level');
 
 const defineValue = (target, key, value) => {
 	// defineProperty instead of target[key]: a key "__proto__" (e.g. from parsed JSON) would set the prototype.
@@ -104,8 +105,33 @@ const redactSensitiveFields = format((info) => {
 	return result;
 });
 
+const maskingSteps = format.combine(redactSensitiveFields(), maskSecretsInFields());
+
+// Only what is known to be safe: the level and the masked message text, never the unmasked fields.
+const createMaskingFailedEntry = (info) => {
+	const entry = { level: undefined, message: '[message not logged, masking failed]', maskingFailed: true };
+	try {
+		entry.level = info.level;
+		entry[LEVEL] = info[LEVEL];
+		if (typeof info.message === 'string') {
+			entry.message = LoggingUtils.redactSensitiveValue(maskSecretsInText(info.message));
+		}
+	} catch {
+		// The placeholder message stays.
+	}
+
+	return entry;
+};
+
 // Must come right before the format that serializes the entry (json, prettyPrint, printf), as on the Nest side.
-const maskSensitiveData = () => format.combine(redactSensitiveFields(), maskSecretsInFields());
+// A log call must not throw because of the masking (e.g. a getter that throws or a very deeply nested value).
+const maskSensitiveData = format((info) => {
+	try {
+		return maskingSteps.transform(info);
+	} catch {
+		return createMaskingFailedEntry(info);
+	}
+});
 
 // TODO: is not nessasay in future please remove after logging is cleanup
 const addType = format.printf((log) => {

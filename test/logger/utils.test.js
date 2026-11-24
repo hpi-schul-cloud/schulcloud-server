@@ -199,6 +199,35 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(output).not.to.include(SECRET);
 	});
 
+	it('should log a safe entry instead of throwing when a getter throws', () => {
+		const entry = { level: 'info', message: `getter ${SECRET}`, password: 'plainpassword123' };
+		Object.defineProperty(entry, 'broken', {
+			enumerable: true,
+			get: () => {
+				throw new Error('getter failed');
+			},
+		});
+
+		const line = JSON.parse(getProductionFormat().transform(entry)[MESSAGE]);
+
+		expect(line).to.include({ level: 'info', message: 'getter ***', maskingFailed: true });
+		expect(line).not.to.have.property('password');
+	});
+
+	it('should log a safe entry instead of throwing for very deep nesting', () => {
+		const deep = {};
+		let current = deep;
+		for (let i = 0; i < 20000; i += 1) {
+			current.next = { value: SECRET };
+			current = current.next;
+		}
+
+		const line = JSON.parse(getProductionFormat().transform({ level: 'info', message: 'deep', deep })[MESSAGE]);
+
+		expect(line).to.include({ level: 'info', message: 'deep', maskingFailed: true });
+		expect(line).not.to.have.property('deep');
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE
