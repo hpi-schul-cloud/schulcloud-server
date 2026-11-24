@@ -1,6 +1,6 @@
 import { type ConfigService } from '@nestjs/config';
 import { plainToClassFromExist } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { type ValidationError, validateSync } from 'class-validator';
 import { type WithConfigurationDecorator } from './configuration.decorator';
 import { SecretRegistry } from './secret-registry';
 import { getSecretPropertyKeys } from './secret.decorator';
@@ -17,7 +17,7 @@ export class ConfigurationFactory {
 	public loadAndValidateConfigs<T extends object>(Constructor: new () => T): T {
 		const configInstance = this.initializeAndLoadConfig<T>(Constructor);
 
-		const validatedConfig = this.validate(configInstance);
+		const validatedConfig = this.validate(configInstance, Constructor.name);
 		this.registerSecrets(validatedConfig);
 
 		return validatedConfig;
@@ -51,15 +51,21 @@ export class ConfigurationFactory {
 		return configInstance;
 	}
 
-	private validate<T extends object>(validatedConfig: T): T {
+	private validate<T extends object>(validatedConfig: T, configName: string): T {
 		const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
 		if (errors.length > 0) {
-			// toString() only names the failed constraints, the messages explain what is expected
-			const messages = errors
-				.flatMap((error) => Object.values(error.constraints ?? {}))
-				.map((message) => ` - ${message}`);
-			throw new Error([errors.toString(), ...messages].join('\n'));
+			const formatError = (error: ValidationError, parentPath = ''): string[] => {
+				const propertyPath = parentPath ? `${parentPath}.${error.property}` : error.property;
+				const ownErrors = Object.entries(error.constraints ?? {}).map(
+					([constraint, message]) => `  - ${propertyPath} [${constraint}]: ${message}`
+				);
+				const childErrors = error.children?.flatMap((child) => formatError(child, propertyPath)) ?? [];
+
+				return [...ownErrors, ...childErrors];
+			};
+			const messages = errors.flatMap((error) => formatError(error));
+			throw new Error(`Invalid configuration ${configName}:\n${messages.join('\n')}`);
 		}
 
 		return validatedConfig;
