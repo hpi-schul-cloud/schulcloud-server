@@ -160,3 +160,20 @@ describe('isCredentialName', () => {
 		}
 	);
 });
+
+describe('sensitive name checks on long crafted names', () => {
+	// Field names come from request bodies; the word split must stay linear.
+	it.each([
+		['an upper-case run followed by a lower-case letter', `${'A'.repeat(100000)}a`],
+		['alternating upper- and lower-case letters', 'Aa'.repeat(50000)],
+		['a repeated PIN', 'PIN'.repeat(33334)],
+		['a repeated plural PINs', 'PINs'.repeat(25000)],
+	])('should check %s within 50 ms', (_description, name) => {
+		const start = performance.now();
+
+		isSensitiveName(name);
+		isCredentialName(name);
+
+		expect(performance.now() - start).toBeLessThan(50);
+	});
+});
