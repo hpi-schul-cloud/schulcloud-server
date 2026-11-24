@@ -145,6 +145,11 @@ describe(ConfigurationFactory.name, () => {
 				setup();
 				expect(() => configFactory.loadAndValidateConfigs(TestConfig)).toThrow(/isString/);
 			});
+
+			it('should name what is expected in the error', () => {
+				setup();
+				expect(() => configFactory.loadAndValidateConfigs(TestConfig)).toThrow(/must be a string/);
+			});
 		});
 
 		describe('when The class is not decorated with @Configuration()', () => {

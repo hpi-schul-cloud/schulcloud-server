@@ -23,7 +23,7 @@ export class BiloMediaQueryBadResponseLoggableException extends InternalServerEr
 			stack: this.stack,
 			data: {
 				message: `${this.badResponseReports.length} bad response(s) from bilo media query is/are found`,
-				reports: JSON.stringify(loggableReports),
+				reports: loggableReports,
 			},
 		};
 	}
