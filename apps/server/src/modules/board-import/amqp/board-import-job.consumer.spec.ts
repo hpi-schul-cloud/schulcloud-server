@@ -3,6 +3,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { type Channel, type ConsumeMessage } from 'amqplib';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '../board-import-exchange.config';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../board-import.config';
 import { BoardImportJobProcessService } from '../domain';
@@ -74,6 +75,7 @@ describe(BoardImportJobConsumer.name, () => {
 					exchange: exchangeConfig.exchangeName,
 					routingKey: BoardImportEvents.IMPORT_JOB,
 					queue: BoardImportEvents.IMPORT_JOB,
+					errorHandler: expect.any(Function),
 				};
 
 				return { expectedOptions };
@@ -109,6 +111,54 @@ describe(BoardImportJobConsumer.name, () => {
 				await handler(message);
 
 				expect(processService.process).toHaveBeenCalledWith(id);
+			});
+		});
+
+		describe('when the library reports an error for a message', () => {
+			const setup = async () => {
+				const channel = createMock<Channel>();
+				const rawMessage = createMock<ConsumeMessage>();
+				const error = new SyntaxError('Unexpected token');
+
+				await consumer.onModuleInit();
+				const [, { errorHandler }] = amqpConnection.createSubscriber.mock.calls[0];
+
+				return { channel, rawMessage, error, errorHandler };
+			};
+
+			it('should acknowledge the message, so that it does not go back to the queue', async () => {
+				const { channel, rawMessage, error, errorHandler } = await setup();
+
+				await errorHandler?.(channel, rawMessage, error);
+
+				expect(channel.ack).toHaveBeenCalledWith(rawMessage);
+				expect(channel.nack).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the library reports an error and the channel is closed', () => {
+			const setup = async () => {
+				const channel = createMock<Channel>();
+				const rawMessage = createMock<ConsumeMessage>();
+				const error = new Error('Channel closed');
+				const logEntry = ['Board import job message not acknowledged because the channel is closed'] as const;
+
+				channel.ack.mockImplementationOnce(() => {
+					throw error;
+				});
+				await consumer.onModuleInit();
+				const [, { errorHandler }] = amqpConnection.createSubscriber.mock.calls[0];
+
+				return { channel, rawMessage, error, errorHandler, logEntry };
+			};
+
+			it('should not throw and log a warning', async () => {
+				const { channel, rawMessage, error, errorHandler, logEntry } = await setup();
+
+				const handleError = (): unknown => errorHandler?.(channel, rawMessage, error);
+
+				expect(handleError).not.toThrow();
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
 		});
 	});

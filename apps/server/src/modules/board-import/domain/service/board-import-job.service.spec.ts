@@ -58,19 +58,20 @@ describe(BoardImportJobService.name, () => {
 				const { userId, link } = boardImportJobFactory.build();
 				const status = BoardImportJobStatus.WAITING;
 				const expiresAt = new Date(now.getTime() + config.jobRetentionInDays * 24 * 60 * 60 * 1000);
+				const attempts = 0;
 
 				repo.save.mockImplementationOnce((job: BoardImportJob) => Promise.resolve(job));
 
-				return { userId, link, status, expiresAt };
+				return { userId, link, status, expiresAt, attempts };
 			};
 
 			it('should save a waiting job that expires after the retention time', async () => {
-				const { userId, link, status, expiresAt } = setup();
+				const { userId, link, status, expiresAt, attempts } = setup();
 
 				const job = await service.create(userId, link);
 
 				expect(repo.save).toHaveBeenCalledWith(job);
-				expect(job.getProps()).toEqual({ id: expect.any(String), userId, link, status, expiresAt, attempts: 0 });
+				expect(job.getProps()).toEqual({ id: expect.any(String), userId, link, status, expiresAt, attempts });
 			});
 
 			it('should publish the id of the job with its expiry date', async () => {

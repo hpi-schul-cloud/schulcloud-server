@@ -66,7 +66,7 @@ export class BoardImportJobMikroOrmRepo
 		const updatedCount = await this.em.nativeUpdate(
 			BoardImportJobEntity,
 			{ id, status: BoardImportJobStatus.WAITING },
-			{ status: BoardImportJobStatus.FAILED }
+			{ status: BoardImportJobStatus.FAILED, updatedAt: new Date() }
 		);
 		const isFailed = updatedCount > 0;
 

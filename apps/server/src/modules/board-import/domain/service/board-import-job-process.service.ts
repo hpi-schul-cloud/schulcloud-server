@@ -16,9 +16,7 @@ export class BoardImportJobProcessService {
 		@Inject(BOARD_IMPORT_CONFIG_TOKEN) private readonly config: BoardImportConfig,
 		private readonly boardImportRunnerService: BoardImportRunnerService,
 		private readonly logger: Logger
-	) {
-		this.logger.setContext(BoardImportJobProcessService.name);
-	}
+	) {}
 
 	// Resolves when the job has an end status or needs no work. Rejects when the job must be delivered again.
 	public async process(jobId: EntityId): Promise<void> {

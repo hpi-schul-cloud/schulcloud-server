@@ -2,6 +2,7 @@ import { AmqpConnection, Nack } from '@golevelup/nestjs-rabbitmq';
 import { Logger } from '@infra/logger';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
+import { type Channel, type ConsumeMessage } from 'amqplib';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '../board-import-exchange.config';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../board-import.config';
 import { BoardImportJobProcessService } from '../domain';
@@ -19,9 +20,7 @@ export class BoardImportJobConsumer implements OnModuleInit {
 		private readonly boardImportJobProcessService: BoardImportJobProcessService,
 		private readonly orm: MikroORM,
 		private readonly logger: Logger
-	) {
-		this.logger.setContext(BoardImportJobConsumer.name);
-	}
+	) {}
 
 	public async onModuleInit(): Promise<void> {
 		// The broker gets the acknowledgement when the handler resolves without a Nack.
@@ -31,6 +30,7 @@ export class BoardImportJobConsumer implements OnModuleInit {
 				exchange: this.exchangeConfig.exchangeName,
 				routingKey: BoardImportEvents.IMPORT_JOB,
 				queue: BoardImportEvents.IMPORT_JOB,
+				errorHandler: (channel, message) => this.dropMessageAfterLibraryError(channel, message),
 			},
 			BoardImportJobConsumer.name
 		);
@@ -56,6 +56,16 @@ export class BoardImportJobConsumer implements OnModuleInit {
 			const requeue = new Nack(true);
 
 			return requeue;
+		}
+	}
+
+	// The handler does not throw, so the library calls this only for a message that is not JSON or for an acknowledgement
+	// on a channel that closed during the import. A requeue would loop without end, and an error thrown here stops the worker.
+	private dropMessageAfterLibraryError(channel: Channel, message: ConsumeMessage): void {
+		try {
+			channel.ack(message);
+		} catch {
+			this.logger.warning('Board import job message not acknowledged because the channel is closed');
 		}
 	}
 

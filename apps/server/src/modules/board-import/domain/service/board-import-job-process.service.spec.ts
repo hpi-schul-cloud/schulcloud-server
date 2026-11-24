@@ -98,12 +98,13 @@ describe(BoardImportJobProcessService.name, () => {
 			});
 
 			it('should log the start and the end with the job id', async () => {
-				const { job } = setup();
+				const { job, startedJob } = setup();
 
 				await service.process(job.id);
 
-				expect(logger.info).toHaveBeenNthCalledWith(1, 'Board import job started', { jobId: job.id, attempts: 1 });
-				expect(logger.info).toHaveBeenNthCalledWith(2, 'Board import job finished', { jobId: job.id, attempts: 1 });
+				const logData = { jobId: job.id, attempts: startedJob.attempts };
+				expect(logger.info).toHaveBeenNthCalledWith(1, 'Board import job started', logData);
+				expect(logger.info).toHaveBeenNthCalledWith(2, 'Board import job finished', logData);
 			});
 		});
 

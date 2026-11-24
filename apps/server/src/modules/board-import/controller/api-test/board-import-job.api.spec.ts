@@ -360,28 +360,30 @@ describe('Board Import Worker (queue)', () => {
 			const { id, publishJob } = await setupQueuedJob();
 			let finishImport = (): void => {};
 
+			const attempts = 1;
+
 			runner.run.mockReturnValueOnce(
 				new Promise<void>((resolve) => {
 					finishImport = resolve;
 				})
 			);
 
-			return { id, publishJob, finishImport: () => finishImport() };
+			return { id, publishJob, finishImport: () => finishImport(), attempts };
 		};
 
 		it('should set the job to running while the import runs and to finished after it', async () => {
-			const { id, publishJob, finishImport } = await setup();
+			const { id, publishJob, finishImport, attempts } = await setup();
 
 			await publishJob();
 
 			const runningJob = await waitForStatus(id, BoardImportJobStatus.RUNNING);
-			expect(runningJob.attempts).toEqual(1);
+			expect(runningJob.attempts).toEqual(attempts);
 			expect(runningJob.startedAt).toEqual(expect.any(Date));
 
 			finishImport();
 
 			const finishedJob = await waitForStatus(id, BoardImportJobStatus.FINISHED);
-			expect(finishedJob.attempts).toEqual(1);
+			expect(finishedJob.attempts).toEqual(attempts);
 		});
 	});
 
@@ -390,7 +392,9 @@ describe('Board Import Worker (queue)', () => {
 			const { id, publishJob } = await setupQueuedJob();
 			const maxAttempts = config.jobMaxAttempts;
 
-			runner.run.mockRejectedValue(new Error('import failed'));
+			for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+				runner.run.mockRejectedValueOnce(new Error('import failed'));
+			}
 
 			return { id, publishJob, maxAttempts };
 		};
@@ -410,19 +414,21 @@ describe('Board Import Worker (queue)', () => {
 		const setup = async () => {
 			const { id, publishJob } = await setupQueuedJob();
 
+			const attempts = 2;
+
 			runner.run.mockRejectedValueOnce(new Error('import failed'));
 			runner.run.mockResolvedValueOnce();
 
-			return { id, publishJob };
+			return { id, publishJob, attempts };
 		};
 
 		it('should finish the job on the second attempt', async () => {
-			const { id, publishJob } = await setup();
+			const { id, publishJob, attempts } = await setup();
 
 			await publishJob();
 
 			const finishedJob = await waitForStatus(id, BoardImportJobStatus.FINISHED);
-			expect(finishedJob.attempts).toEqual(2);
+			expect(finishedJob.attempts).toEqual(attempts);
 		});
 	});
 });

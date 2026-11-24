@@ -11,7 +11,7 @@ A job that the broker delivers again must not run without end. The import uses n
 ## Decision
 
 - The job stores `attempts` and `startedAt`. Each time the worker starts the work, it sets the status `running` and increments `attempts` in one database operation. The operation applies only to a job without an end status. `startedAt` is the time of the first start, so the wait time in the queue does not count.
-- The import API sets a job to `failed` after a publish error only if the job is still `waiting`. If a worker already took the job, the message did arrive, and the API returns the job as started.
+- The import API sets a job to `failed` after a publish error only if the job is still `waiting`. If a worker already took the job, the message did arrive, and the API returns the job as started. This replaces the rule for publish errors in [0002](0002-asynchronous-import-through-rabbitmq.md).
 - Before each start, the worker checks two limits: `BOARD_IMPORT_JOB_MAX_ATTEMPTS` (default 3) and `BOARD_IMPORT_JOB_MAX_DURATION_IN_MINUTES` (default 25). If a limit is reached, the job gets the status `failed`.
 - During the work, a timer enforces the maximum duration. When the time is over, the worker aborts the import through an `AbortSignal` and sets the job to `failed`.
 - An error during the work and a stopped worker use the same path: the broker delivers the message again. When the error occurs in the last permitted attempt, the worker sets the job to `failed` at once.

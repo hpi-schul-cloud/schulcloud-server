@@ -11,10 +11,12 @@ import {
 } from './domain';
 import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 
-const configModule = ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig);
-
 @Module({
-	imports: [configModule, BoardImportAmqpModule, LoggerModule],
+	imports: [
+		ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig),
+		BoardImportAmqpModule,
+		LoggerModule,
+	],
 	providers: [
 		{
 			provide: BOARD_IMPORT_JOB_REPO,
@@ -24,6 +26,6 @@ const configModule = ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, Boa
 		BoardImportJobProcessService,
 		BoardImportRunnerService,
 	],
-	exports: [configModule, BoardImportJobService, BoardImportJobProcessService],
+	exports: [BoardImportJobService, BoardImportJobProcessService],
 })
 export class BoardImportModule {}

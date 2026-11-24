@@ -95,16 +95,36 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					.getCollection(BoardImportJobEntity)
 					.updateOne({ _id: new ObjectId(entity.id) }, { $unset: { attempts: '' } });
 				em.clear();
+				const attempts = 0;
 
-				return { id: entity.id };
+				return { id: entity.id, attempts };
 			};
 
 			it('should return a job with zero attempts', async () => {
-				const { id } = await setup();
+				const { id, attempts } = await setup();
 
 				const job = await repo.findById(id);
 
-				expect(job?.attempts).toEqual(0);
+				expect(job?.attempts).toEqual(attempts);
+			});
+		});
+
+		describe('when the job is loaded and then changed in the database', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build();
+				await em.persist(entity).flush();
+				const status = BoardImportJobStatus.RUNNING;
+				await em.getCollection(BoardImportJobEntity).updateOne({ _id: new ObjectId(entity.id) }, { $set: { status } });
+
+				return { id: entity.id, status };
+			};
+
+			it('should return the stored status', async () => {
+				const { id, status } = await setup();
+
+				const job = await repo.findById(id);
+
+				expect(job?.status).toEqual(status);
 			});
 		});
 
@@ -133,26 +153,27 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				em.clear();
 				const now = new Date('2026-01-01T00:00:00.000Z');
 				const status = BoardImportJobStatus.RUNNING;
+				const attempts = 1;
 
-				return { id: entity.id, now, status };
+				return { id: entity.id, now, status, attempts };
 			};
 
 			it('should return the running job with one attempt and the start time', async () => {
-				const { id, now, status } = await setup();
+				const { id, now, status, attempts } = await setup();
 
 				const job = await repo.startAttempt(id, now);
 
-				expect(job?.getProps()).toMatchObject({ id, status, attempts: 1, startedAt: now });
+				expect(job?.getProps()).toMatchObject({ id, status, attempts, startedAt: now });
 			});
 
 			it('should store the change', async () => {
-				const { id, now, status } = await setup();
+				const { id, now, status, attempts } = await setup();
 
 				await repo.startAttempt(id, now);
 				em.clear();
 
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
-				expect(entity).toMatchObject({ status, attempts: 1, startedAt: now });
+				expect(entity).toMatchObject({ status, attempts, startedAt: now });
 			});
 		});
 
@@ -190,16 +211,17 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					.getCollection(BoardImportJobEntity)
 					.updateOne({ _id: new ObjectId(entity.id) }, { $unset: { attempts: '' } });
 				em.clear();
+				const attempts = 1;
 
-				return { id: entity.id };
+				return { id: entity.id, attempts };
 			};
 
 			it('should return a job with one attempt', async () => {
-				const { id } = await setup();
+				const { id, attempts } = await setup();
 
 				const job = await repo.startAttempt(id, new Date());
 
-				expect(job?.attempts).toEqual(1);
+				expect(job?.attempts).toEqual(attempts);
 			});
 		});
 
@@ -211,17 +233,17 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					await em.persist(entity).flush();
 					em.clear();
 
-					return { id: entity.id };
+					return { id: entity.id, attempts: entity.attempts };
 				};
 
 				it('should return null and not change the job', async () => {
-					const { id } = await setup();
+					const { id, attempts } = await setup();
 
 					const job = await repo.startAttempt(id, new Date());
 
 					const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 					expect(job).toBeNull();
-					expect(entity).toMatchObject({ status, attempts: 0 });
+					expect(entity).toMatchObject({ status, attempts });
 				});
 			}
 		);
@@ -231,11 +253,13 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 		describe('when the job is waiting', () => {
 			const setup = async () => {
 				const entity = boardImportJobEntityFactory.build();
+				const updatedAt = new Date('2026-01-01T00:00:00.000Z');
+				entity.updatedAt = updatedAt;
 				await em.persist(entity).flush();
 				em.clear();
 				const status = BoardImportJobStatus.FAILED;
 
-				return { id: entity.id, status };
+				return { id: entity.id, status, updatedAt };
 			};
 
 			it('should set the job to failed and return true', async () => {
@@ -246,6 +270,15 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(result).toEqual(true);
 				expect(entity.status).toEqual(status);
+			});
+
+			it('should update the change date', async () => {
+				const { id, updatedAt } = await setup();
+
+				await repo.failIfWaiting(id);
+
+				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+				expect(entity.updatedAt.getTime()).toBeGreaterThan(updatedAt.getTime());
 			});
 		});
 
@@ -267,27 +300,6 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(result).toEqual(false);
 				expect(entity.status).toEqual(status);
-			});
-		});
-	});
-
-	describe('findById after a change from another app', () => {
-		describe('when the job is loaded and then changed in the database', () => {
-			const setup = async () => {
-				const entity = boardImportJobEntityFactory.build();
-				await em.persist(entity).flush();
-				const status = BoardImportJobStatus.RUNNING;
-				await em.getCollection(BoardImportJobEntity).updateOne({ _id: new ObjectId(entity.id) }, { $set: { status } });
-
-				return { id: entity.id, status };
-			};
-
-			it('should return the stored status', async () => {
-				const { id, status } = await setup();
-
-				const job = await repo.findById(id);
-
-				expect(job?.status).toEqual(status);
 			});
 		});
 	});
