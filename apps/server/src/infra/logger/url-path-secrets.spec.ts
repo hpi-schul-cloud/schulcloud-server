@@ -89,12 +89,20 @@ describe('url-path-secrets', () => {
 	});
 
 	describe('redactSecretQueryParams', () => {
-		it('should redact query params that carry a path secret', () => {
-			const query = { roomInvitationLinkIds: ['a', 'b'], other: 'c' };
+		it('should redact query params with a sensitive name', () => {
+			const query = { shareToken: 'x', accessToken: 'y', page: '2' };
 
 			const result = redactSecretQueryParams(query);
 
-			expect(result).toEqual({ roomInvitationLinkIds: '***', other: 'c' });
+			expect(result).toEqual({ shareToken: '***', accessToken: '***', page: '2' });
+		});
+
+		it('should redact query params that carry a path secret', () => {
+			const query = { roomInvitationLinkIds: ['a', 'b'], pin: '1234', other: 'c' };
+
+			const result = redactSecretQueryParams(query);
+
+			expect(result).toEqual({ roomInvitationLinkIds: '***', pin: '***', other: 'c' });
 			expect(query.roomInvitationLinkIds).toEqual(['a', 'b']);
 		});
 	});

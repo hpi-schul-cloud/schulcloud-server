@@ -91,14 +91,14 @@ const isSecretQueryParam = (name: string): boolean => SECRET_QUERY_PARAM_NAMES.h
 
 const SECRET_PARAM_NAMES = new Set(SECRET_PATH_ROUTES.flatMap((route) => route.params));
 
-const redactKeys = <T>(record: T, names: Set<string>): T => {
+const redactKeys = <T>(record: T, isSecretKey: (key: string) => boolean): T => {
 	if (typeof record !== 'object' || record === null) {
 		return record;
 	}
 
 	const redacted = { ...record } as Record<string, unknown>;
 	for (const key of Object.keys(redacted)) {
-		if (names.has(key)) {
+		if (isSecretKey(key)) {
 			redacted[key] = REDACTED;
 		}
 	}
@@ -127,7 +127,7 @@ export const redactSecretsInText = <T>(text: T): T => {
 };
 
 /** Returns a copy of the route params where params that hold a secret path segment are redacted. */
-export const redactSecretPathParams = <T>(params: T): T => redactKeys(params, SECRET_PARAM_NAMES);
+export const redactSecretPathParams = <T>(params: T): T => redactKeys(params, (key) => SECRET_PARAM_NAMES.has(key));
 
-/** Returns a copy of the parsed query where params that carry a secret are redacted (only SECRET_QUERY_PARAMS). */
-export const redactSecretQueryParams = <T>(query: T): T => redactKeys(query, SECRET_QUERY_PARAM_NAMES);
+/** Returns a copy of the parsed query where params that carry a secret are redacted, like in redactSecretsInText. */
+export const redactSecretQueryParams = <T>(query: T): T => redactKeys(query, isSecretQueryParam);
