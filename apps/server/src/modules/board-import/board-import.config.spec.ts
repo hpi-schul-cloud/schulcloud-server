@@ -26,6 +26,7 @@ describe(BoardImportConfig.name, () => {
 
 				const errors = validateSync(config);
 
+				expect(errors).toHaveLength(1);
 				expect(errors[0].constraints).toHaveProperty('max');
 			});
 		});
