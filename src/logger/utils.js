@@ -22,16 +22,45 @@ const secretMasker = maskSecretsInFields();
 // would be shortened by LoggingUtils to its first and last characters, which then no longer match the secret.
 const maskSecretsInText = (text) => secretMasker.transform({ text }).text;
 
-// Keeps the error class, name, message and stack (LoggingUtils logs errors by them), only its fields are converted.
+// Read from the original error, never through the copy: getters like those of DOMException or #private fields
+// throw on any other object. A value that cannot be read is left out.
+const readProperty = (object, key) => {
+	try {
+		return { value: object[key] };
+	} catch {
+		return undefined;
+	}
+};
+
+// Inherited fields LoggingUtils logs an error by. Getters on the prototype (DOMException) would throw on the copy,
+// so they become own data properties of the copy.
+const ERROR_FIELDS = ['name', 'message', 'stack', 'code'];
+
+// Keeps the error class, so instanceof and LoggingUtils.redactError still treat the copy as an error.
+// Strings like message and stack are masked too: LoggingUtils shortens "Bearer <secret>" before the final pass.
 const copyError = (error, ancestors) => {
 	const copy = Object.create(Object.getPrototypeOf(error));
 	for (const key of Reflect.ownKeys(error)) {
 		const { enumerable } = Object.getOwnPropertyDescriptor(error, key);
-		// Read through the error: stack can be an accessor that only works on the original error.
-		// Strings like message and stack are masked too: LoggingUtils shortens "Bearer <secret>" before the final pass.
-		const raw = error[key];
-		const value = enumerable || key === 'cause' || typeof raw === 'string' ? toJsonValues(raw, ancestors) : raw;
-		Object.defineProperty(copy, key, { value, enumerable, writable: true, configurable: true });
+		const read = readProperty(error, key);
+		if (read) {
+			const { value: raw } = read;
+			const value = enumerable || key === 'cause' || typeof raw === 'string' ? toJsonValues(raw, ancestors) : raw;
+			Object.defineProperty(copy, key, { value, enumerable, writable: true, configurable: true });
+		}
+	}
+
+	for (const key of ERROR_FIELDS) {
+		const read = Object.hasOwn(copy, key) ? undefined : readProperty(error, key);
+		if (read && read.value !== undefined) {
+			// code is logged like an own field, name, message and stack are read by LoggingUtils directly.
+			Object.defineProperty(copy, key, {
+				value: toJsonValues(read.value, ancestors),
+				enumerable: key === 'code',
+				writable: true,
+				configurable: true,
+			});
+		}
 	}
 
 	return copy;

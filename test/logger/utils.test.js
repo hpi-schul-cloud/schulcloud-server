@@ -278,6 +278,50 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(JSON.parse(output).obj).to.eql({ password: '[REDACTED]' });
 	});
 
+	describe('errors whose fields are getters on the prototype', () => {
+		const createAbortError = () => {
+			const controller = new AbortController();
+			controller.abort();
+
+			return controller.signal.reason;
+		};
+
+		it('should log a DOMException with name, message and stack', () => {
+			const line = toJsonLine({ level: 'error', message: 'fetch failed', error: createAbortError() });
+
+			expect(line).not.to.have.property('maskingFailed');
+			expect(line.error).to.include({ name: 'AbortError', message: 'This operation was aborted' });
+			expect(line.error.stack).to.include('AbortError');
+		});
+
+		it('should log a DOMException as the cause of an error', () => {
+			const line = toJsonLine({
+				level: 'error',
+				message: 'm',
+				error: new Error('outer', { cause: createAbortError() }),
+			});
+
+			expect(line).not.to.have.property('maskingFailed');
+			expect(line.error.message).to.equal('outer');
+			expect(line.error.cause).to.include({ name: 'AbortError', message: 'This operation was aborted' });
+		});
+
+		it('should log an error whose message getter reads a private field', () => {
+			class PrivateMessageError extends Error {
+				#text = `private ${SECRET}`;
+
+				get message() {
+					return this.#text;
+				}
+			}
+
+			const line = toJsonLine({ level: 'error', message: 'm', error: new PrivateMessageError() });
+
+			expect(line).not.to.have.property('maskingFailed');
+			expect(line.error).to.include({ name: 'PrivateMessageError', message: 'private ***' });
+		});
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE
