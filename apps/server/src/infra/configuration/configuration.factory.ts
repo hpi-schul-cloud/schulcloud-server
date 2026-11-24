@@ -1,6 +1,6 @@
 import { type ConfigService } from '@nestjs/config';
 import { plainToClassFromExist } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { type ValidationError, validateSync } from 'class-validator';
 import { type WithConfigurationDecorator } from './configuration.decorator';
 import { SecretRegistry } from './secret-registry';
 import { getSecretPropertyKeys } from './secret.decorator';
@@ -55,16 +55,16 @@ export class ConfigurationFactory {
 		const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
 		if (errors.length > 0) {
-			const messages = errors.flatMap((error) => {
-				const propertyPath = error.property;
-				const constraints = Object.values(error.constraints ?? {});
-				const ownErrors = constraints.map((message) => `  - ${propertyPath}: ${message}`);
-				const childErrors = error.children?.flatMap((child) =>
-					Object.values(child.constraints ?? {}).map((message) => `  - ${propertyPath}.${child.property}: ${message}`)
+			const formatError = (error: ValidationError, parentPath = ''): string[] => {
+				const propertyPath = parentPath ? `${parentPath}.${error.property}` : error.property;
+				const ownErrors = Object.entries(error.constraints ?? {}).map(
+					([constraint, message]) => `  - ${propertyPath} [${constraint}]: ${message}`
 				);
+				const childErrors = error.children?.flatMap((child) => formatError(child, propertyPath)) ?? [];
 
-				return [...ownErrors, ...(childErrors ?? [])];
-			});
+				return [...ownErrors, ...childErrors];
+			};
+			const messages = errors.flatMap((error) => formatError(error));
 			throw new Error(`Invalid configuration ${configName}:\n${messages.join('\n')}`);
 		}
 

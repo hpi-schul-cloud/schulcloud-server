@@ -162,7 +162,7 @@ describe(ConfigurationFactory.name, () => {
 				jest.spyOn(configService, 'get').mockReturnValue(undefined);
 
 				expect(() => configFactory.loadAndValidateConfigs(UrlConfig)).toThrow(
-					'Invalid configuration UrlConfig:\n  - uri: uri must be a URL address'
+					'Invalid configuration UrlConfig:\n  - uri [isUrl]: uri must be a URL address'
 				);
 			});
 		});
