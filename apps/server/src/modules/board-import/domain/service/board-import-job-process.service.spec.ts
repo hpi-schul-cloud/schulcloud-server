@@ -63,49 +63,39 @@ describe(BoardImportJobProcessService.name, () => {
 				jest.useFakeTimers({ now });
 
 				const job = boardImportJobFactory.build();
-				const savedStatuses: BoardImportJobStatus[] = [];
-				let statusAtRun: BoardImportJobStatus | undefined;
+				const startedJob = boardImportJobFactory.build({
+					id: job.id,
+					status: BoardImportJobStatus.RUNNING,
+					attempts: 1,
+					startedAt: now,
+				});
 
 				repo.findById.mockResolvedValueOnce(job);
-				repo.save.mockImplementation((savedJob) => {
-					savedStatuses.push(savedJob.status);
+				repo.startAttempt.mockResolvedValueOnce(startedJob);
+				runner.run.mockResolvedValueOnce();
 
-					return Promise.resolve(savedJob);
-				});
-				runner.run.mockImplementationOnce(() => {
-					statusAtRun = savedStatuses.at(-1);
-
-					return Promise.resolve();
-				});
-
-				const getStatusAtRun = (): BoardImportJobStatus | undefined => statusAtRun;
-
-				return { job, now, savedStatuses, getStatusAtRun };
+				return { job, startedJob, now };
 			};
 
-			it('should save the status running before the import runs', async () => {
-				const { job, getStatusAtRun } = setup();
+			it('should start the attempt before the import runs', async () => {
+				const { job, startedJob, now } = setup();
 
 				await service.process(job.id);
 
-				expect(getStatusAtRun()).toEqual(BoardImportJobStatus.RUNNING);
+				expect(repo.startAttempt).toHaveBeenCalledWith(job.id, now);
+				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal));
+				expect(repo.startAttempt.mock.invocationCallOrder[0]).toBeLessThan(runner.run.mock.invocationCallOrder[0]);
 			});
 
-			it('should count the attempt and set the start time', async () => {
-				const { job, now } = setup();
+			it('should save the status finished after the import', async () => {
+				const { job, startedJob } = setup();
 
 				await service.process(job.id);
 
-				expect(job.attempts).toEqual(1);
-				expect(job.startedAt).toEqual(now);
-			});
-
-			it('should save the status finished as the last step', async () => {
-				const { job, savedStatuses } = setup();
-
-				await service.process(job.id);
-
-				expect(savedStatuses).toEqual([BoardImportJobStatus.RUNNING, BoardImportJobStatus.FINISHED]);
+				expect(repo.save).toHaveBeenCalledTimes(1);
+				expect(repo.save).toHaveBeenCalledWith(startedJob);
+				expect(startedJob.status).toEqual(BoardImportJobStatus.FINISHED);
+				expect(runner.run.mock.invocationCallOrder[0]).toBeLessThan(repo.save.mock.invocationCallOrder[0]);
 			});
 
 			it('should log the start and the end with the job id', async () => {
@@ -127,27 +117,54 @@ describe(BoardImportJobProcessService.name, () => {
 		describe('when the job is delivered again and has attempts left', () => {
 			const setup = () => {
 				const attempts = config.jobMaxAttempts - 1;
-				const job = boardImportJobFactory.build({
+				const startedAt = new Date();
+				const job = boardImportJobFactory.build({ status: BoardImportJobStatus.RUNNING, attempts, startedAt });
+				const startedJob = boardImportJobFactory.build({
+					id: job.id,
 					status: BoardImportJobStatus.RUNNING,
-					attempts,
-					startedAt: new Date(),
+					attempts: attempts + 1,
+					startedAt,
 				});
 				const status = BoardImportJobStatus.FINISHED;
 
 				repo.findById.mockResolvedValueOnce(job);
+				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockResolvedValueOnce();
 
-				return { job, attempts, status };
+				return { job, startedJob, status };
 			};
 
-			it('should process the job again and count the attempt', async () => {
-				const { job, attempts, status } = setup();
+			it('should process the job again', async () => {
+				const { job, startedJob, status } = setup();
 
 				await service.process(job.id);
 
-				expect(runner.run).toHaveBeenCalledWith(job, expect.any(AbortSignal));
-				expect(job.attempts).toEqual(attempts + 1);
-				expect(job.status).toEqual(status);
+				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal));
+				expect(startedJob.status).toEqual(status);
+			});
+		});
+
+		describe('when the job gets an end status between the read and the start', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				const loggable = new BoardImportJobLoggable(job.id, BoardImportJobEvent.SKIPPED, {
+					reason: BoardImportJobEventReason.JOB_CLOSED,
+				});
+
+				repo.findById.mockResolvedValueOnce(job);
+				repo.startAttempt.mockResolvedValueOnce(null);
+
+				return { job, loggable };
+			};
+
+			it('should resolve and do no work', async () => {
+				const { job, loggable } = setup();
+
+				await service.process(job.id);
+
+				expect(runner.run).not.toHaveBeenCalled();
+				expect(repo.save).not.toHaveBeenCalled();
+				expect(logger.warning).toHaveBeenCalledWith(loggable);
 			});
 		});
 
@@ -215,11 +232,18 @@ describe(BoardImportJobProcessService.name, () => {
 				jest.useFakeTimers();
 
 				const job = boardImportJobFactory.build();
+				const startedJob = boardImportJobFactory.build({
+					id: job.id,
+					status: BoardImportJobStatus.RUNNING,
+					attempts: 1,
+					startedAt: new Date(),
+				});
 				const status = BoardImportJobStatus.FAILED;
 				const maxDurationInMs = config.jobMaxDurationInMinutes * 60 * 1000;
 				let signal: AbortSignal | undefined;
 
 				repo.findById.mockResolvedValueOnce(job);
+				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockImplementationOnce((_job, abortSignal) => {
 					signal = abortSignal;
 
@@ -228,29 +252,34 @@ describe(BoardImportJobProcessService.name, () => {
 
 				const getSignal = (): AbortSignal | undefined => signal;
 
-				return { job, status, maxDurationInMs, getSignal };
+				return { job, startedJob, status, maxDurationInMs, getSignal };
 			};
 
 			it('should abort the import and save the status failed', async () => {
-				const { job, status, maxDurationInMs, getSignal } = setup();
+				const { job, startedJob, status, maxDurationInMs, getSignal } = setup();
 
 				const result = service.process(job.id);
 				await jest.advanceTimersByTimeAsync(maxDurationInMs);
 				await result;
 
 				expect(getSignal()?.aborted).toEqual(true);
-				expect(job.status).toEqual(status);
-				expect(repo.save).toHaveBeenLastCalledWith(expect.objectContaining({ status }));
+				expect(startedJob.status).toEqual(status);
+				expect(repo.save).toHaveBeenLastCalledWith(startedJob);
 			});
 		});
 
 		describe('when the import rejects on the last attempt', () => {
 			const setup = () => {
-				const attempts = config.jobMaxAttempts - 1;
 				const job = boardImportJobFactory.build({
 					status: BoardImportJobStatus.RUNNING,
-					attempts,
+					attempts: config.jobMaxAttempts - 1,
 					startedAt: new Date(),
+				});
+				const startedJob = boardImportJobFactory.build({
+					id: job.id,
+					status: BoardImportJobStatus.RUNNING,
+					attempts: config.jobMaxAttempts,
+					startedAt: job.startedAt,
 				});
 				const status = BoardImportJobStatus.FAILED;
 				const loggable = new BoardImportJobLoggable(job.id, BoardImportJobEvent.FAILED, {
@@ -259,17 +288,19 @@ describe(BoardImportJobProcessService.name, () => {
 				});
 
 				repo.findById.mockResolvedValueOnce(job);
+				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockRejectedValueOnce(new Error('import failed'));
 
-				return { job, status, loggable };
+				return { job, startedJob, status, loggable };
 			};
 
 			it('should resolve and save the status failed', async () => {
-				const { job, status, loggable } = setup();
+				const { job, startedJob, status, loggable } = setup();
 
 				await service.process(job.id);
 
-				expect(repo.save).toHaveBeenLastCalledWith(expect.objectContaining({ status }));
+				expect(startedJob.status).toEqual(status);
+				expect(repo.save).toHaveBeenLastCalledWith(startedJob);
 				expect(logger.warning).toHaveBeenCalledWith(loggable);
 			});
 		});
@@ -277,22 +308,29 @@ describe(BoardImportJobProcessService.name, () => {
 		describe('when the import rejects and the job has attempts left', () => {
 			const setup = () => {
 				const job = boardImportJobFactory.build();
+				const startedJob = boardImportJobFactory.build({
+					id: job.id,
+					status: BoardImportJobStatus.RUNNING,
+					attempts: 1,
+					startedAt: new Date(),
+				});
 				const error = new Error('import failed');
 				const status = BoardImportJobStatus.RUNNING;
 
 				repo.findById.mockResolvedValueOnce(job);
+				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockRejectedValueOnce(error);
 
-				return { job, error, status };
+				return { job, startedJob, error, status };
 			};
 
 			it('should pass the error and keep the status running', async () => {
-				const { job, error, status } = setup();
+				const { job, startedJob, error, status } = setup();
 
 				await expect(service.process(job.id)).rejects.toThrow(error);
 
-				expect(job.status).toEqual(status);
-				expect(repo.save).toHaveBeenCalledTimes(1);
+				expect(startedJob.status).toEqual(status);
+				expect(repo.save).not.toHaveBeenCalled();
 			});
 		});
 

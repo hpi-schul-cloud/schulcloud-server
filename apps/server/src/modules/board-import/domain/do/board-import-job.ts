@@ -48,12 +48,6 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 		return isClosed;
 	}
 
-	public startAttempt(now: Date): void {
-		this.props.status = BoardImportJobStatus.RUNNING;
-		this.props.attempts += 1;
-		this.props.startedAt ??= now;
-	}
-
 	public finish(): void {
 		this.props.status = BoardImportJobStatus.FINISHED;
 	}

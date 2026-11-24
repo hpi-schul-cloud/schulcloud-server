@@ -53,48 +53,6 @@ describe(BoardImportJob.name, () => {
 		});
 	});
 
-	describe('startAttempt', () => {
-		describe('when the job has no attempt', () => {
-			const setup = () => {
-				const job = boardImportJobFactory.build();
-				const now = new Date();
-				const status = BoardImportJobStatus.RUNNING;
-
-				return { job, now, status };
-			};
-
-			it('should set the status running, count the attempt and set the start time', () => {
-				const { job, now, status } = setup();
-
-				job.startAttempt(now);
-
-				expect(job.status).toEqual(status);
-				expect(job.attempts).toEqual(1);
-				expect(job.startedAt).toEqual(now);
-			});
-		});
-
-		describe('when the job has an earlier attempt', () => {
-			const setup = () => {
-				const startedAt = new Date('2026-01-01T00:00:00.000Z');
-				const attempts = 1;
-				const job = boardImportJobFactory.build({ status: BoardImportJobStatus.RUNNING, attempts, startedAt });
-				const now = new Date('2026-01-01T00:05:00.000Z');
-
-				return { job, now, startedAt, attempts };
-			};
-
-			it('should count the attempt and keep the start time', () => {
-				const { job, now, startedAt, attempts } = setup();
-
-				job.startAttempt(now);
-
-				expect(job.attempts).toEqual(attempts + 1);
-				expect(job.startedAt).toEqual(startedAt);
-			});
-		});
-	});
-
 	describe('finish', () => {
 		describe('when the job is running', () => {
 			const setup = () => {

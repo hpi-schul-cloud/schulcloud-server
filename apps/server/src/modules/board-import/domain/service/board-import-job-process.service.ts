@@ -35,9 +35,7 @@ export class BoardImportJobProcessService {
 		}
 
 		if (job.isClosed()) {
-			this.logger.warning(
-				new BoardImportJobLoggable(jobId, BoardImportJobEvent.SKIPPED, { reason: BoardImportJobEventReason.JOB_CLOSED })
-			);
+			this.logSkippedClosedJob(jobId);
 
 			return;
 		}
@@ -57,10 +55,21 @@ export class BoardImportJobProcessService {
 			return;
 		}
 
-		job.startAttempt(now);
-		await this.boardImportJobRepo.save(job);
-		this.logger.info(new BoardImportJobLoggable(job.id, BoardImportJobEvent.STARTED, { attempts: job.attempts }));
+		const startedJob = await this.boardImportJobRepo.startAttempt(jobId, now);
 
+		// The import API can set the job to failed between the read and the start.
+		if (!startedJob) {
+			this.logSkippedClosedJob(jobId);
+
+			return;
+		}
+
+		this.logger.info(new BoardImportJobLoggable(jobId, BoardImportJobEvent.STARTED, { attempts: startedJob.attempts }));
+
+		await this.runAndClose(startedJob, remainingTimeInMs);
+	}
+
+	private async runAndClose(job: BoardImportJob, remainingTimeInMs: number): Promise<void> {
 		let isInTime: boolean;
 		try {
 			isInTime = await this.runWithTimeLimit(job, remainingTimeInMs);
@@ -82,6 +91,12 @@ export class BoardImportJobProcessService {
 		job.finish();
 		await this.boardImportJobRepo.save(job);
 		this.logger.info(new BoardImportJobLoggable(job.id, BoardImportJobEvent.FINISHED, { attempts: job.attempts }));
+	}
+
+	private logSkippedClosedJob(jobId: EntityId): void {
+		this.logger.warning(
+			new BoardImportJobLoggable(jobId, BoardImportJobEvent.SKIPPED, { reason: BoardImportJobEventReason.JOB_CLOSED })
+		);
 	}
 
 	private hasAttemptsLeft(job: BoardImportJob): boolean {
