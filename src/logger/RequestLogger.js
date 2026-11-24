@@ -1,10 +1,15 @@
 const winston = require('winston');
 
+const { maskSensitiveData } = require('./utils');
+
 const { format, transports, createLogger } = winston;
 
-const formater = format.printf((info) => {
-	return `Request ${info.message}`;
-});
+const formater = format.combine(
+	maskSensitiveData(),
+	format.printf((info) => {
+		return `Request ${info.message}`;
+	})
+);
 
 const logger = createLogger({
 	levels: winston.config.syslog.levels,
