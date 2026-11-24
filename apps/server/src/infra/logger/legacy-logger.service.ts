@@ -4,6 +4,7 @@ import util from 'util';
 import { Logger as WinstonLogger } from 'winston';
 import { RequestLoggingBody } from './interfaces';
 import { ILegacyLogger } from './interfaces/legacy-logger.interface';
+import { LoggingUtils } from './logging.utils';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**
@@ -40,11 +41,7 @@ export class LegacyLogger implements ILegacyLogger {
 	}
 
 	public error(message: unknown, trace?: unknown, context?: string): void {
-		const result = {
-			message,
-			trace,
-		};
-		this.logger.error(this.createMessage(result, context));
+		this.logger.error({ ...this.createMessage(message, context), trace: LoggingUtils.redactSensitiveValue(trace) });
 	}
 
 	public setContext(name: string): void {
@@ -55,9 +52,13 @@ export class LegacyLogger implements ILegacyLogger {
 		return { message: this.stringifiedMessage(message), context: context || this.context };
 	}
 
+	// Strings are logged as they are (util.inspect would wrap them in quotes), anything else as one line of text.
 	private stringifiedMessage(message: unknown): string {
-		const stringifiedMessage = util.inspect(message).replace(/\n/g, '').replace(/\\n/g, '');
+		const redactedMessage = LoggingUtils.redactSensitiveValue(message);
+		if (typeof redactedMessage === 'string') {
+			return redactedMessage;
+		}
 
-		return stringifiedMessage;
+		return util.inspect(redactedMessage, { breakLength: Infinity });
 	}
 }

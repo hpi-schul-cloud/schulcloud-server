@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { S3Config } from '@infra/s3-client';
 import { IsString, IsUrl } from 'class-validator';
 
@@ -23,6 +23,7 @@ export class FwuS3ClientConfig implements S3Config {
 	public accessKeyId!: string;
 
 	@ConfigProperty('FWU_CONTENT__S3_SECRET_KEY')
+	@Secret()
 	@IsString()
 	public secretAccessKey!: string;
 }

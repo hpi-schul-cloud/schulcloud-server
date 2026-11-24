@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { IsString } from 'class-validator';
 
 export const FILES_CONSOLE_CONFIG_TOKEN = 'FILES_CONSOLE_CONFIG_TOKEN';
@@ -10,6 +10,7 @@ export class FilesConsoleConfig {
 	public cronjobUsername!: string;
 
 	@ConfigProperty('DELETE_S3_FILES_CRONJOB_TOKEN')
+	@Secret()
 	@IsString()
 	public cronjobToken!: string;
 }

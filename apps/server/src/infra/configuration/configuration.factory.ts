@@ -2,6 +2,8 @@ import { type ConfigService } from '@nestjs/config';
 import { plainToClassFromExist } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { type WithConfigurationDecorator } from './configuration.decorator';
+import { SecretRegistry } from './secret-registry';
+import { getSecretPropertyKeys } from './secret.decorator';
 
 /**
  * Factory to load and validate configuration classes decorated with @Configuration()
@@ -16,8 +18,15 @@ export class ConfigurationFactory {
 		const configInstance = this.initializeAndLoadConfig<T>(Constructor);
 
 		const validatedConfig = this.validate(configInstance);
+		this.registerSecrets(validatedConfig);
 
 		return validatedConfig;
+	}
+
+	private registerSecrets(config: object): void {
+		for (const key of getSecretPropertyKeys(config)) {
+			SecretRegistry.register((config as Record<string | symbol, unknown>)[key]);
+		}
 	}
 
 	private initializeAndLoadConfig<T>(Constructor: new () => T): T {
@@ -46,7 +55,11 @@ export class ConfigurationFactory {
 		const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
 		if (errors.length > 0) {
-			throw new Error(errors.toString());
+			// toString() only names the failed constraints, the messages explain what is expected
+			const messages = errors
+				.flatMap((error) => Object.values(error.constraints ?? {}))
+				.map((message) => ` - ${message}`);
+			throw new Error([errors.toString(), ...messages].join('\n'));
 		}
 
 		return validatedConfig;

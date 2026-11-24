@@ -1,7 +1,6 @@
 import { type Logger } from '@infra/logger';
 import { type StorageClient } from '../types';
 import EventEmitter from 'node:events';
-import { InMemoryLoggable } from '../loggable';
 
 type StoreEntry = { value: string; expiresAt?: number };
 
@@ -26,7 +25,7 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 			this.store[key] = { value };
 		}
 
-		this.logger.info(new InMemoryLoggable(`SET - Key: ${key} - Value: ${value}`));
+		this.logger.info('InMemoryClient: SET', { key, value });
 
 		return Promise.resolve();
 	}
@@ -34,7 +33,7 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 	public get(key: string): Promise<string | null> {
 		const entry = this.store[key];
 
-		this.logger.info(new InMemoryLoggable(`GET - Key: ${key} - Value: ${entry?.value}`));
+		this.logger.info('InMemoryClient: GET', { key, value: entry?.value });
 
 		if (entry === undefined) {
 			return Promise.resolve(null);
@@ -54,14 +53,14 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 			delete this.store[key];
 			length = 1;
 		}
-		this.logger.info(new InMemoryLoggable(`DELETE - Key: ${key}`));
+		this.logger.info('InMemoryClient: DELETE', { key });
 
 		return Promise.resolve(length);
 	}
 
 	public keys(pattern: string): Promise<string[]> {
 		const regex = new RegExp(pattern.replace(/\*/g, '.*'));
-		this.logger.info(new InMemoryLoggable(`Pattern: ${pattern}`));
+		this.logger.info('InMemoryClient: KEYS', { pattern });
 		const now = Date.now();
 		const keys = Object.entries(this.store)
 			.filter(([, entry]) => entry.expiresAt === undefined || entry.expiresAt >= now)
@@ -75,23 +74,23 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 		const entry = this.store[key];
 
 		if (entry === undefined) {
-			this.logger.info(new InMemoryLoggable(`TTL - Key: ${key} - TTL: -2`));
+			this.logger.info('InMemoryClient: TTL', { key, ttl: -2 });
 			return Promise.resolve(-2);
 		}
 
 		if (entry.expiresAt !== undefined && entry.expiresAt < Date.now()) {
 			delete this.store[key];
-			this.logger.info(new InMemoryLoggable(`TTL - Key: ${key} - TTL: -2 (expired)`));
+			this.logger.info('InMemoryClient: TTL', { key, ttl: -2, expired: true });
 			return Promise.resolve(-2);
 		}
 
 		if (entry.expiresAt === undefined) {
-			this.logger.info(new InMemoryLoggable(`TTL - Key: ${key} - TTL: -1`));
+			this.logger.info('InMemoryClient: TTL', { key, ttl: -1 });
 			return Promise.resolve(-1);
 		}
 
 		const remaining = Math.ceil((entry.expiresAt - Date.now()) / 1000);
-		this.logger.info(new InMemoryLoggable(`TTL - Key: ${key} - TTL: ${remaining}`));
+		this.logger.info('InMemoryClient: TTL', { key, ttl: remaining });
 
 		return Promise.resolve(remaining);
 	}
