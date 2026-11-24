@@ -24,6 +24,8 @@ The import runs asynchronously. The import API stores an import job, publishes a
 ## Consequences
 
 - A job that is published before the first worker starts is not lost. A job also stays in the queue after a broker restart.
-- The broker can still enqueue a message after a publish error. The consumer must skip each job that does not have the status `waiting`.
+- The broker can still enqueue a message after a publish error. The consumer must skip each job that has the status `finished` or `failed`.
+- After a pod restart, the broker delivers the message again and the job has the status `running`. The consumer must process such a job again.
+- The consumer must acknowledge a message only after the import ends. RabbitMQ closes the channel of a consumer that holds a message longer than its acknowledgement timeout (30 minutes by default) and delivers the message again. An import must end before this timeout, or the timeout must be raised.
 - The client does not get the result in the answer of the start request. It reads the status of the job from the import API.
 - The import API needs a connection to RabbitMQ to start.
