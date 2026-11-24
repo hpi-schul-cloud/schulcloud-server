@@ -152,4 +152,29 @@ describe('url-path-secrets', () => {
 			expect(redactSecretsInText(text)).toBe(text);
 		});
 	});
+
+	describe('redactSecretsInText with adversarial input', () => {
+		const length = 200_000;
+		const fill = (unit: string): string => unit.repeat(Math.ceil(length / unit.length)).slice(0, length);
+
+		it.each([
+			['+a runs', `/${fill('+a')}`],
+			['slash runs', fill('/')],
+			['a runs', fill('a')],
+			['repeated ://', fill('://')],
+			['repeated ?a=', fill('?a=')],
+			['scheme with a long host', `a://${fill('b')}`],
+			['repeated scheme and host', fill('a://b')],
+			['encoded brackets', fill('?a%5B')],
+			['json escapes and slashes', fill('\\n/')],
+			['mount prefix with slash runs', `/api/v3${fill('/')}`],
+			['repeated prefix', fill('/sharetoken/')],
+		])('should handle 200 KB of %s in linear time', (_name, text) => {
+			const start = performance.now();
+
+			redactSecretsInText(text);
+
+			expect(performance.now() - start).toBeLessThan(50);
+		});
+	});
 });

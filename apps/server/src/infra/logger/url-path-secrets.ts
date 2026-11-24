@@ -55,11 +55,12 @@ const STOP = String.raw`\s"'\x60\\<>()\[\]{},;|^`;
 // The same route is reached under several mount paths: Nest under /api/v3, Feathers under /, /api, /api/v1 and
 // /legacy/v1 (see server.app.ts and legacyForward.js). Express also routes /api/v3//sharetoken/x, so slashes may repeat.
 // A request target can also be in absolute form (GET http://host/path, RFC 9112), Express routes it by its path.
-const MOUNT_PREFIX = String.raw`(?:[a-z][a-z0-9+.-]*://[^/?#${STOP}]*)?(?:/+api(?:/+v\d+)?)?(?:/+legacy/+v1)?`;
+// Scheme and host have an upper length, so a long run of scheme characters costs linear, not quadratic time.
+const MOUNT_PREFIX = String.raw`(?:[a-z][a-z0-9+.-]{0,20}://[^/?#${STOP}]{0,255})?(?:/+api(?:/+v\d+)?)?(?:/+legacy/+v1)?`;
 
-// A URL starts where the text before it cannot be part of a path (so /other/sharetoken/x is not matched),
+// A URL starts where the text before it cannot be part of a path or a scheme (so /other/sharetoken/x is not matched),
 // or right after a JSON escape like \n.
-const URL_START = String.raw`(?:(?<=\\[nrt])|(?<![\w.~%/-]))`;
+const URL_START = String.raw`(?:(?<=\\[nrt])|(?<![\w.~%/+-]))`;
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
@@ -80,7 +81,7 @@ const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPathPattern);
 // name=value in a query string. The name may have the array forms of the qs parser: name[]=, name[0]=, name%5B0%5D=.
 // Values end at the next & or # or a stop character.
 const QUERY_PARAM_PATTERN = new RegExp(
-	String.raw`([?&]([\w.-]+)(?:\[[^\]&#=${STOP}]*\]|%5B(?:(?!%5D)[^&#=${STOP}])*%5D)*=)[^&#${STOP}]*`,
+	String.raw`([?&]([\w.-]{1,128})(?:\[[^\]?&#=${STOP}]{0,32}\]|%5B(?:(?!%5D)[^?&#=${STOP}]){0,32}%5D)*=)[^&#${STOP}]*`,
 	'gi'
 );
 
