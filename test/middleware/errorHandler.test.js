@@ -1,15 +1,20 @@
 const { expect } = require('chai');
+const util = require('util');
+
+const logger = require('../../src/logger');
 
 const errorHandler = require('../../src/middleware/errorHandler');
 
 const { isSecretDataKey } = errorHandler;
 
-const getFilterSecretsMiddleware = () => {
+const getMiddleware = (name) => {
 	const middlewares = [];
 	errorHandler({ use: (middleware) => middlewares.push(middleware) });
 
-	return middlewares.find((middleware) => middleware.name === 'filterSecrets');
+	return middlewares.find((middleware) => middleware.name === name);
 };
+
+const getFilterSecretsMiddleware = () => getMiddleware('filterSecrets');
 
 describe('errorHandler', () => {
 	describe('isSecretDataKey', () => {
@@ -115,6 +120,38 @@ describe('errorHandler', () => {
 				importHash: '<secret>',
 				schoolId: 'school',
 			});
+		});
+
+		it('should mask an axios config that is shared by error.config and error.response.config on both paths', () => {
+			const config = {
+				url: 'https://idp.example.org/token',
+				auth: { username: 'client', password: 'real-password' },
+				headers: { Authorization: 'Basic real-basic-credentials' },
+			};
+			const error = new Error('Request failed');
+			error.isAxiosError = true;
+			error.config = config;
+			error.response = { status: 500, config, data: { message: 'failed' } };
+			const req = { originalUrl: '/token', method: 'POST', headers: {}, body: {} };
+			const logged = [];
+			const originalError = logger.error;
+			logger.error = (...args) => logged.push(args);
+
+			try {
+				getFilterSecretsMiddleware()(error, req, {}, () => {});
+				getMiddleware('formatAndLogErrors')(error, req, {}, () => {});
+			} finally {
+				logger.error = originalError;
+			}
+
+			expect(error.config.auth).to.equal('<secret>');
+			expect(error.config.headers).to.equal('<secret>');
+			expect(error.response.config.auth).to.equal('<secret>');
+			expect(error.response.config.headers).to.equal('<secret>');
+			expect(logged).to.have.lengthOf(1);
+			const output = util.inspect(logged, { depth: 20 });
+			expect(output).to.not.contain('real-password');
+			expect(output).to.not.contain('real-basic-credentials');
 		});
 	});
 });
