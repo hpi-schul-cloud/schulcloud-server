@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
+import { Logger, LoggingUtils } from '@infra/logger';
 import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -256,6 +256,39 @@ describe('GlobalErrorFilter', () => {
 						query: { ids: ['a', 'b'] },
 					},
 				},
+			});
+		});
+
+		describe('when the url path contains a secret', () => {
+			const setupSecretRequest = (url: string, params: Record<string, string>) => {
+				const error = new Error('test');
+				const request = { method: 'GET', url, params, query: { accessToken: 'queryToken' } };
+				const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
+
+				return { error, context };
+			};
+
+			it.each([
+				['/sharetoken/secretShareToken', { token: 'secretShareToken' }, '/sharetoken/***', { token: '***' }],
+				[
+					'/registrations/by-secret/secretRegistration',
+					{ registrationSecret: 'secretRegistration' },
+					'/registrations/by-secret/***',
+					{ registrationSecret: '***' },
+				],
+			])('should log %s without the secret', (url, params, expectedUrl, expectedParams) => {
+				const { error, context } = setupSecretRequest(url, params);
+
+				domainErrorHandler.execHttpContext(error, context);
+
+				const loggable = logger.error.mock.calls[0][0];
+				expect(loggable.getLogMessage()).toMatchObject({
+					data: { request: { endpoint: expectedUrl, params: expectedParams } },
+				});
+				// What the logger writes: neither the path secret nor the query secret.
+				const logEntry = JSON.stringify(LoggingUtils.createMessageWithContext(loggable));
+				expect(logEntry).not.toContain(Object.values(params)[0]);
+				expect(logEntry).not.toContain('queryToken');
 			});
 		});
 	});

@@ -70,6 +70,22 @@ describe('RequestLoggerMiddleware', () => {
 		expect(loggerSpy).toHaveBeenCalledWith('GET /test 200 1000ms 100');
 	});
 
+	it('should not log a secret from the url path', () => {
+		mockRequest.originalUrl = '/api/v3/sharetoken/secretShareToken?parentId=1';
+		jest.spyOn(mockResponse, 'get').mockImplementation().mockReturnValue('100');
+		// @ts-expect-error testing private property
+		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: () => void) => {
+			callback();
+		});
+		loggerConfig.requestLogEnabled = true;
+
+		const middleware = createRequestLoggerMiddleware(loggerConfig);
+		middleware(mockRequest as Request, mockResponse as Response, nextFunction);
+
+		expect(loggerSpy).toHaveBeenCalledWith(expect.stringContaining('GET /api/v3/sharetoken/***?parentId=1 200'));
+		expect(loggerSpy).not.toHaveBeenCalledWith(expect.stringContaining('secretShareToken'));
+	});
+
 	it('should handle errors during logging', () => {
 		// @ts-expect-error testing private property
 		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: () => void) => {
