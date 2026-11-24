@@ -98,5 +98,66 @@ describe('errorHandler', () => {
 				name: 'test',
 			});
 		});
+
+		it('should not change nested objects of the error, but log copies with the secrets replaced', () => {
+			const filterSecrets = getFilterSecretsMiddleware();
+			const providerConfig = { clientId: 'client', clientSecret: 'real-client-secret' };
+			const system = { alias: 'idp', providerConfig, scopes: [{ token: 'real-token' }] };
+			const error = new Error('test');
+			error.data = { system };
+			const req = { originalUrl: '/systems', headers: {}, body: {} };
+
+			filterSecrets(error, req, {}, () => {});
+
+			expect(error.data.system.providerConfig).to.deep.equal({ clientId: 'client', clientSecret: '<secret>' });
+			expect(error.data.system.scopes).to.deep.equal([{ token: '<secret>' }]);
+			expect(Array.isArray(error.data.system.scopes)).to.equal(true);
+			expect(providerConfig.clientSecret).to.equal('real-client-secret');
+			expect(system.scopes[0].token).to.equal('real-token');
+			expect(system.providerConfig).to.equal(providerConfig);
+		});
+
+		it('should keep objects without secrets as they are', () => {
+			const filterSecrets = getFilterSecretsMiddleware();
+			const context = { schoolId: 'school' };
+			const error = new Error('test');
+			error.data = { context };
+
+			filterSecrets(error, { originalUrl: '/', headers: {}, body: {} }, {}, () => {});
+
+			expect(error.data.context).to.equal(context);
+		});
+
+		it('should replace secrets in circular objects without changing them', () => {
+			const filterSecrets = getFilterSecretsMiddleware();
+			const config = { clientSecret: 'real-client-secret' };
+			config.self = config;
+			const error = new Error('test');
+			error.data = { config };
+
+			filterSecrets(error, { originalUrl: '/', headers: {}, body: {} }, {}, () => {});
+
+			expect(error.data.config.clientSecret).to.equal('<secret>');
+			expect(error.data.config.self).to.equal(error.data.config);
+			expect(config.clientSecret).to.equal('real-client-secret');
+			expect(config.self).to.equal(config);
+		});
+
+		it('should keep the prototype of a wrapped error and not change its nested objects', () => {
+			const filterSecrets = getFilterSecretsMiddleware();
+			class WrappedError extends Error {}
+			const requestOptions = { auth: { password: 'real-password' }, uri: 'https://example.org' };
+			const wrapped = new WrappedError('inner');
+			wrapped.requestOptions = requestOptions;
+			const error = new Error('outer');
+			error.error = wrapped;
+
+			filterSecrets(error, { originalUrl: '/', headers: {}, body: {} }, {}, () => {});
+
+			expect(error.error).to.equal(wrapped);
+			expect(error.error).to.be.instanceOf(WrappedError);
+			expect(error.error.requestOptions).to.deep.equal({ auth: '<secret>', uri: 'https://example.org' });
+			expect(requestOptions.auth.password).to.equal('real-password');
+		});
 	});
 });

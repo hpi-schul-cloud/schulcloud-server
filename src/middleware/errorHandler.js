@@ -135,25 +135,70 @@ const filterSecretValue = (key, value) => {
 	return value;
 };
 
-const filterDeep = (newData, level = 0) => {
-	if (level > MAX_LEVEL_FILTER) {
-		return '<max level exceeded>';
+const shallowCopy = (value) =>
+	Array.isArray(value) ? [...value] : Object.assign(Object.create(Object.getPrototypeOf(value)), value);
+
+/**
+ * Returns the value with secrets replaced. Objects that contain a secret are copied, never changed:
+ * nested objects can be shared with other code (e.g. a cached system config), writing into them would corrupt it.
+ * Objects without secrets are returned as they are. Values nested deeper than MAX_LEVEL_FILTER are not filtered (as before).
+ */
+const filterValue = (value, level, state) => {
+	if (typeof value !== 'object' || value === null || level > MAX_LEVEL_FILTER) {
+		return value;
+	}
+	if (state.done.has(value)) {
+		return state.done.get(value);
+	}
+	// A cycle back to an object that is still being filtered points to its copy, which is filled below.
+	if (state.inProgress.has(value)) {
+		const pending = state.inProgress.get(value);
+		pending.copy = pending.copy || shallowCopy(value);
+		return pending.copy;
 	}
 
-	if (typeof newData === 'object' && newData !== null) {
-		Object.entries(newData).forEach(([key, value]) => {
-			const newValue = filterSecretValue(key, value);
-			if (typeof newValue === 'string') {
-				newData[key] = newValue;
-			} else {
-				filterDeep(value, level + 1);
-			}
+	const pending = {};
+	state.inProgress.set(value, pending);
+	const changes = [];
+	Object.entries(value).forEach(([key, item]) => {
+		const maskedItem = filterSecretValue(key, item);
+		const newItem = typeof maskedItem === 'string' ? maskedItem : filterValue(item, level + 1, state);
+		if (newItem !== item) {
+			changes.push([key, newItem]);
+		}
+	});
+	state.inProgress.delete(value);
+
+	let result = value;
+	if (changes.length > 0 || pending.copy) {
+		result = pending.copy || shallowCopy(value);
+		changes.forEach(([key, newItem]) => {
+			result[key] = newItem;
 		});
 	}
-	return newData;
+	state.done.set(value, result);
+
+	return result;
 };
 
-const filter = (data) => filterDeep({ ...data });
+const createFilterState = () => ({ done: new WeakMap(), inProgress: new WeakMap() });
+
+/**
+ * Replaces secrets in the own fields of an object that belongs to the error (e.g. error.error),
+ * so that its prototype chain stays intact. Nested objects are copied, not changed.
+ */
+const filterOwnFields = (data) => {
+	const state = createFilterState();
+	Object.entries(data).forEach(([key, value]) => {
+		const maskedValue = filterSecretValue(key, value);
+		const newValue = typeof maskedValue === 'string' ? maskedValue : filterValue(value, 1, state);
+		if (newValue !== value) {
+			data[key] = newValue;
+		}
+	});
+};
+
+const filter = (data) => filterValue({ ...data }, 0, createFilterState());
 
 const secretQueryKeys = (() => ['accessToken', 'access_token'].map((k) => k.toLocaleLowerCase()))();
 const filterQuery = (url) => {
@@ -205,9 +250,9 @@ const filterSecrets = (error, req, res, next) => {
 		filterErrorObject(error);
 		// Filter nested error objects (e.g., StatusCodeError wraps error in error.error)
 		if (error.error && typeof error.error === 'object') {
-			// Use filterDeep directly to preserve Error prototype chain
+			// Filter the own fields directly to preserve Error prototype chain
 			// (e.g., SilentError instances need instanceof checks later)
-			filterDeep(error.error);
+			filterOwnFields(error.error);
 			filterErrorObject(error.error);
 		}
 	}
