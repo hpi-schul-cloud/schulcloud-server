@@ -14,7 +14,9 @@ describe('url-path-secrets', () => {
 			['/passwordRecovery/tok', '/passwordRecovery/***'],
 			['/api/v1/passwordRecovery/tok', '/api/v1/passwordRecovery/***'],
 			['/legacy/v1/passwordRecovery/tok', '/legacy/v1/passwordRecovery/***'],
-			['/users/linkImport/hash/with/slashes?x=1', '/users/linkImport/***?x=1'],
+			['/users/linkImport/hash?x=1', '/users/linkImport/***?x=1'],
+			['http://localhost:3030/api/v3/sharetoken/abc123', 'http://localhost:3030/api/v3/sharetoken/***'],
+			['https://host.example/passwordRecovery/tok?x=1', 'https://host.example/passwordRecovery/***?x=1'],
 			['/link/shortId', '/link/***'],
 		])('should redact the secret in %s', (url, expected) => {
 			expect(redactSecretsInUrlPath(url)).toBe(expected);
@@ -33,6 +35,7 @@ describe('url-path-secrets', () => {
 			'/link',
 			'/users/linkImport',
 			'/other/sharetoken/abc',
+			'http://host/other/sharetoken/abc',
 		])('should not change %s', (url) => {
 			expect(redactSecretsInUrlPath(url)).toBe(url);
 		});

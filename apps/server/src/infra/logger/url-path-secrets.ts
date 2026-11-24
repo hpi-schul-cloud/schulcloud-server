@@ -10,8 +10,6 @@ interface SecretPathRoute {
 	params: string[];
 	/** Segments after the prefix that are other routes, not a secret (e.g. /passwordRecovery/reset). */
 	notSecret?: string[];
-	/** The secret may contain "/", so everything up to the query string is redacted. */
-	spansSlashes?: boolean;
 }
 
 /**
@@ -30,23 +28,23 @@ const SECRET_PATH_ROUTES: SecretPathRoute[] = [
 	// Feathers: GET /passwordRecovery/:token. The token is the one sent by mail to reset a password.
 	{ prefix: 'passwordRecovery', params: [], notSecret: ['reset', 'api'] },
 	// Feathers: GET /users/linkImport/:importHash. The import hash lets the holder register as that user.
-	{ prefix: 'users/linkImport', params: [], spansSlashes: true },
+	{ prefix: 'users/linkImport', params: [] },
 	// Feathers: GET /link/:id redirects to its target, e.g. a registration link with an import hash.
 	{ prefix: 'link', params: [], notSecret: ['api'] },
 ];
 
 // The same route is reached under several mount paths: Nest under /api/v3 (request.url inside Nest has no prefix),
 // Feathers under /, /api, /api/v1 and /legacy/v1 (see server.app.ts and legacyForward.js).
-const MOUNT_PREFIX = String.raw`(?:/api(?:/v\d+)?)?(?:/legacy/v1)?`;
+// A request target can also be in absolute form (GET http://host/path, RFC 9112), Express routes it by its path.
+const MOUNT_PREFIX = String.raw`(?:[a-z][a-z0-9+.-]*://[^/?#]*)?(?:/api(?:/v\d+)?)?(?:/legacy/v1)?`;
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 const toPattern = (route: SecretPathRoute): RegExp => {
 	const notSecret = route.notSecret?.length ? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/?#]|$))` : '';
-	const secret = route.spansSlashes ? '[^?#]+' : '[^/?#]+';
 
 	// Express routes are case-insensitive, so /ShareToken/abc reaches the same handler.
-	return new RegExp(`^(${MOUNT_PREFIX}/${escapeRegExp(route.prefix)}/)${notSecret}${secret}`, 'i');
+	return new RegExp(`^(${MOUNT_PREFIX}/${escapeRegExp(route.prefix)}/)${notSecret}[^/?#]+`, 'i');
 };
 
 const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPattern);
