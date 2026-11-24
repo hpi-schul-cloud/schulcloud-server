@@ -34,6 +34,24 @@ spec:
         - port: 5672
           protocol: TCP
 
+    # Server API with the board endpoints
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: api
+      ports:
+        - port: 3030
+          protocol: TCP
+
+    # File storage API
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: file-storage
+      ports:
+        - port: 4444
+          protocol: TCP
+
     # Source tools: HTTPS to public addresses only. A network policy does not know host names,
     # so the code checks the host of each link.
     - to:
