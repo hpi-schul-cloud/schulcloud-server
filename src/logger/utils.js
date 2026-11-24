@@ -108,7 +108,9 @@ const addType = format.printf((log) => {
 	return log;
 });
 
-const getTestFormat = () => format.combine(maskSensitiveData(), format.prettyPrint({ depth: 1, colorize: true }));
+// errors() before the masking: it copies the enumerable fields, an error's message and stack are not enumerable.
+const getTestFormat = () =>
+	format.combine(format.errors({ stack: true }), maskSensitiveData(), format.prettyPrint({ depth: 1, colorize: true }));
 
 const getProductionFormat = () =>
 	format.combine(format.errors({ stack: true }), format.timestamp(), addType, maskSensitiveData(), format.json());

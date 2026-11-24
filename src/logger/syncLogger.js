@@ -16,7 +16,8 @@ const getDevelopFormat = () =>
 const getProductionFormat = () =>
 	format.combine(format.errors({ stack: true }), format.timestamp(), maskSensitiveData(), format.json());
 
-const getTestFormat = () => format.combine(maskSensitiveData(), format.prettyPrint({ depth: 1, colorize: true }));
+const getTestFormat = () =>
+	format.combine(format.errors({ stack: true }), maskSensitiveData(), format.prettyPrint({ depth: 1, colorize: true }));
 
 let selectedFormat;
 switch (Configuration.get('NODE_ENV')) {

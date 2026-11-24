@@ -4,7 +4,7 @@ const MESSAGE = Symbol.for('message');
 
 const { SecretRegistry } = require('../../dist/apps/server/infra/configuration/secret-registry');
 const { SecretRegistry: registryFromFacade } = require('../../dist/apps/server/infra/configuration');
-const { getProductionFormat, getDevelopFormat, maskSensitiveData } = require('../../src/logger/utils');
+const { getProductionFormat, getDevelopFormat, getTestFormat, maskSensitiveData } = require('../../src/logger/utils');
 
 const SECRET = 'my+secret/value="1"';
 
@@ -177,6 +177,18 @@ describe('[logger] masking in the feathers logger', () => {
 
 		expect(line.parent).to.eql({ name: 'parent', self: '[Circular]' });
 		expect(line.doc).to.eql({ id: 1, original: '[Circular]' });
+	});
+
+	it('should keep message and stack of an error logged on its own in the test format', () => {
+		// logger.error(error) passes the error itself as the log entry.
+		const error = new Error(`boom ${SECRET}`);
+		error.level = 'error';
+
+		const output = getTestFormat().transform(error)[MESSAGE];
+
+		expect(output).to.include('boom ***');
+		expect(output).to.include('at ');
+		expect(output).not.to.include(SECRET);
 	});
 
 	it('should mask in the develop format as well', () => {
