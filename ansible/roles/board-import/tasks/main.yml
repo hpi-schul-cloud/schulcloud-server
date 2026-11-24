@@ -80,10 +80,9 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: worker-scaled-object.yml.j2
-    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool and SCALED_BOARD_IMPORT_WORKER_ENABLED | default(false) | bool else 'absent' }}"
   when:
     - KEDA_ENABLED is defined and KEDA_ENABLED|bool
-    - SCALED_BOARD_IMPORT_WORKER_ENABLED is defined and SCALED_BOARD_IMPORT_WORKER_ENABLED|bool
   tags:
     - keda
 

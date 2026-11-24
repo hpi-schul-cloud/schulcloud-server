@@ -19,6 +19,7 @@ spec:
   maxReplicaCount: {{ BOARD_IMPORT_WORKER_MAX_REPLICA_COUNT }}
   # The trigger does not count a job that a worker processes. The delay must be longer than
   # BOARD_IMPORT_JOB_MAX_DURATION_IN_MINUTES, or a scale-down stops a running import.
+  # The HPA rejects a stabilization window above 3600 seconds.
   cooldownPeriod: {{ BOARD_IMPORT_WORKER_SCALE_DOWN_DELAY_IN_SECONDS }}
   advanced:
     horizontalPodAutoscalerConfig:
