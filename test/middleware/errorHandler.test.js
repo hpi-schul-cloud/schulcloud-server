@@ -99,6 +99,24 @@ describe('errorHandler', () => {
 			});
 		});
 
+		it('should replace the password recovery token and the registration hash in the request body', () => {
+			const filterSecrets = getFilterSecretsMiddleware();
+			const req = {
+				originalUrl: '/passwordRecovery/reset',
+				headers: {},
+				body: { resetId: 'recovery-token', password: 'weak', importHash: 'import-hash', schoolId: 'school' },
+			};
+
+			filterSecrets(new Error('test'), req, {}, () => {});
+
+			expect(req.body).to.deep.equal({
+				resetId: '<secret>',
+				password: '<secret>',
+				importHash: '<secret>',
+				schoolId: 'school',
+			});
+		});
+
 		it('should not change nested objects of the error, but log copies with the secrets replaced', () => {
 			const filterSecrets = getFilterSecretsMiddleware();
 			const providerConfig = { clientId: 'client', clientSecret: 'real-client-secret' };

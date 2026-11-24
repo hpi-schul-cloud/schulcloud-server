@@ -127,6 +127,19 @@ describe('isSensitiveName', () => {
 });
 
 describe('isCredentialName', () => {
+	it.each(['resetId', 'resetid', 'RESET_ID', 'reset_id', 'reset-id', 'importHash', 'import_hash', 'IMPORTHASH'])(
+		'should match the one-time token name %s',
+		(name) => {
+			expect(isCredentialName(name)).toBe(true);
+			expect(isSensitiveName(name)).toBe(true);
+		}
+	);
+
+	it.each(['reset', 'resetAt', 'hash', 'contentHash', 'importId', 'resetIdentifier'])('should not match %s', (name) => {
+		expect(isCredentialName(name)).toBe(false);
+		expect(isSensitiveName(name)).toBe(false);
+	});
+
 	it.each([
 		'password',
 		'searchUserPassword',

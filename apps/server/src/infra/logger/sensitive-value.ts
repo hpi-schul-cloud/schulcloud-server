@@ -4,6 +4,11 @@ const CREDENTIAL_NAME_PARTS = ['password', 'passwort', 'passwd', 'credential'];
 // Matched anywhere in the lower-cased name: x-auth-token, clientSecret, set-cookie.
 const OTHER_SENSITIVE_NAME_PARTS = ['cookie', 'auth', 'token', 'secret'];
 
+// One-time tokens under neutral names, compared without case, _ and -:
+// resetId is the password recovery token (POST /passwordRecovery/reset),
+// importHash lets anyone with it finish the registration of an imported user.
+const ONE_TIME_TOKEN_NAMES = new Set(['resetid', 'importhash']);
+
 // Words of a name split at camelCase, digits, _ and - ("userPINCode" -> user, PIN, Code; "userPINs" -> user, PINs).
 // Linear: each alternative fails after at most two backtracking steps.
 const getWords = (name: string): string[] => {
@@ -13,7 +18,7 @@ const getWords = (name: string): string[] => {
 };
 
 /**
- * Names of passwords, credentials and PINs. Their values are redacted completely,
+ * Names of passwords, credentials, PINs and one-time tokens. Their values are redacted completely,
  * because even a few characters of a password or PIN help to guess it.
  */
 export const isCredentialName = (name: string): boolean => {
@@ -21,6 +26,7 @@ export const isCredentialName = (name: string): boolean => {
 
 	return (
 		CREDENTIAL_NAME_PARTS.some((part) => lower.includes(part)) ||
+		ONE_TIME_TOKEN_NAMES.has(lower.replace(/[-_]/g, '')) ||
 		// Only as a word of its own (pin, userPins, PIN_CODE, x-pin), not inside pinned, spinner or shipping
 		getWords(name).some((word) => word === 'pin' || word === 'pins')
 	);

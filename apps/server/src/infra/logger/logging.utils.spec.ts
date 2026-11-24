@@ -717,6 +717,15 @@ describe(LoggingUtils.name, () => {
 			});
 		});
 
+		it('should redact one-time tokens under neutral names completely', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				resetId: 'recovery-token-123456789',
+				importHash: 'import-hash-123456789',
+			});
+
+			expect(result).toEqual({ resetId: '[REDACTED]', importHash: '[REDACTED]' });
+		});
+
 		it('should keep the first and last characters of tokens, secrets, keys and cookies', () => {
 			const result = LoggingUtils.redactSensitiveValue({
 				accessToken: 'access-token-123456',
