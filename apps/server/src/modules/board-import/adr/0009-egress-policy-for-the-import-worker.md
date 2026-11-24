@@ -22,7 +22,7 @@ Port 80 is not permitted. The worker has no access to the session Valkey, becaus
 
 ## Consequences
 
-- The worker cannot reach a service in the cluster or in the private network through a link, and it cannot reach the metadata service of the cloud provider.
+- Through a link, the worker cannot reach the private network or the metadata service of the cloud provider. In the cluster, it can reach only the server API and the file storage API. A link that points to one of these two is not stopped by the policy, so the check of the host in the code must reject it.
 - The policy does not limit the worker to the hosts of the source tools, because a network policy does not know host names. The code must check the host of each link.
 - A source that offers only HTTP cannot be imported.
 - The worker calls the server API and the file storage through their services in the cluster, not through the public address. The public address goes through the ingress controller, which the policy does not permit.
