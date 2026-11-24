@@ -1,10 +1,12 @@
-# 0002 - Import job retries use redelivery and a counter in the job
+# 0008 - Retry import jobs through redelivery
 
-Status: accepted
+## Status
+
+Accepted (2026-11-24)
 
 ## Context
 
-A job that the broker delivers again must not run without end. The SchulCloud has no queues with a delay and no dead-letter queues, and the board import does not add them.
+A job that the broker delivers again must not run without end. The import uses no delayed queues and no dead-letter queues (see [0002](0002-asynchronous-import-through-rabbitmq.md)).
 
 ## Decision
 

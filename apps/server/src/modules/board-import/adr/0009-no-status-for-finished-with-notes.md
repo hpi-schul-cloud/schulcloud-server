@@ -1,6 +1,8 @@
-# 0003 - No separate status for a finished import with notes
+# 0009 - No status for a finished import with notes
 
-Status: accepted
+## Status
+
+Accepted (2026-11-24)
 
 ## Context
 
@@ -8,7 +10,7 @@ An import can finish although it could not convert some contents. The user must 
 
 ## Decision
 
-- The job has four statuses: `waiting`, `running`, `finished` and `failed`.
+- The job keeps its four statuses: `waiting`, `running`, `finished` and `failed` (see [0005](0005-import-job-in-mongodb.md)).
 - There is no status "finished with notes". The notes of an import will be a field of the job. A finished job with notes is a finished import with notes.
 
 ## Consequences
