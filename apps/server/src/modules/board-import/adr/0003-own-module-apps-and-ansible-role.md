@@ -10,7 +10,7 @@ The board import is a temporary function: the licenses of the source tools end i
 
 ## Decision
 
-- All code of the import is in the module `board-import`.
+- Almost all code of the import is in the module `board-import`.
 - The module has two bootable apps: the import API (`board-import-api`, port 3352) and the import worker (`board-import-worker`, port 4456). The API serves `/api/v3/board-import`. The worker serves only `/internal/health`.
 - There is no separate image. The apps are part of the server image, as all other apps.
 - The Ansible role `board-import` in this repository deploys the import. Each app gets its own deployment.
