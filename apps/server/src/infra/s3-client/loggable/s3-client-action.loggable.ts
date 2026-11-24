@@ -18,7 +18,7 @@ export class S3ClientActionLoggable implements Loggable {
 			data: {
 				action: this.payload.action,
 				bucket: this.payload.bucket,
-				objectPath: JSON.stringify(this.payload.objectPath),
+				objectPath: this.payload.objectPath,
 			},
 		};
 	}

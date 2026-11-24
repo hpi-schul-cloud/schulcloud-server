@@ -1,5 +1,5 @@
 import { InternalCollaborativeStorageAdapterConfig } from '@infra/collaborative-storage';
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsString, IsUrl, ValidateIf } from 'class-validator';
 
@@ -23,6 +23,7 @@ export class CollaborativeStorageConfig implements InternalCollaborativeStorageA
 	public nextcloudAdminUsername!: string;
 
 	@ConfigProperty('NEXTCLOUD_ADMIN_PASSWORD')
+	@Secret()
 	@IsString()
 	@ValidateIf((config: CollaborativeStorageConfig) => config.featureNextcloudTeamFilesEnabled)
 	public nextcloudAdminPassword!: string;

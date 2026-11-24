@@ -17,8 +17,6 @@ describe(FailedUpdateLastSyncedAtLoggableException.name, () => {
 			const message = 'Failed to update lastSyncedAt field for users provisioned by system';
 			const systemId = new ObjectId().toHexString();
 
-			jest.mocked(isAxiosError).mockReturnValue(isAxios);
-
 			const axiosError: Error = {
 				message: 'fail',
 				response: {
@@ -29,6 +27,8 @@ describe(FailedUpdateLastSyncedAtLoggableException.name, () => {
 				},
 				stack: 'Error stack trace',
 			} as unknown as Error;
+			// Only the given error counts as an axios error, like the real isAxiosError (logging inspects nested values too).
+			jest.mocked(isAxiosError).mockImplementation((value) => isAxios && value === axiosError);
 
 			const exception = isAxios
 				? new FailedUpdateLastSyncedAtLoggableException(systemId, axiosError)

@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
@@ -52,6 +52,7 @@ export class SchulconnexClientConfig implements InternalSchulconnexClientConfig 
 	public clientId?: string;
 
 	@ConfigProperty('SCHULCONNEX_CLIENT__CLIENT_SECRET')
+	@Secret()
 	@IsOptional()
 	@IsString()
 	public clientSecret?: string;

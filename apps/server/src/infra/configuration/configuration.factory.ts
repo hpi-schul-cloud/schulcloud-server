@@ -1,7 +1,9 @@
 import { type ConfigService } from '@nestjs/config';
 import { plainToClassFromExist } from 'class-transformer';
-import { validateSync } from 'class-validator';
+import { type ValidationError, validateSync } from 'class-validator';
 import { type WithConfigurationDecorator } from './configuration.decorator';
+import { SecretRegistry } from './secret-registry';
+import { getSecretPropertyKeys } from './secret.decorator';
 
 /**
  * Factory to load and validate configuration classes decorated with @Configuration()
@@ -15,9 +17,16 @@ export class ConfigurationFactory {
 	public loadAndValidateConfigs<T extends object>(Constructor: new () => T): T {
 		const configInstance = this.initializeAndLoadConfig<T>(Constructor);
 
-		const validatedConfig = this.validate(configInstance);
+		const validatedConfig = this.validate(configInstance, Constructor.name);
+		this.registerSecrets(validatedConfig);
 
 		return validatedConfig;
+	}
+
+	private registerSecrets(config: object): void {
+		for (const key of getSecretPropertyKeys(config)) {
+			SecretRegistry.register((config as Record<string | symbol, unknown>)[key]);
+		}
 	}
 
 	private initializeAndLoadConfig<T>(Constructor: new () => T): T {
@@ -42,11 +51,21 @@ export class ConfigurationFactory {
 		return configInstance;
 	}
 
-	private validate<T extends object>(validatedConfig: T): T {
+	private validate<T extends object>(validatedConfig: T, configName: string): T {
 		const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
 		if (errors.length > 0) {
-			throw new Error(errors.toString());
+			const formatError = (error: ValidationError, parentPath = ''): string[] => {
+				const propertyPath = parentPath ? `${parentPath}.${error.property}` : error.property;
+				const ownErrors = Object.entries(error.constraints ?? {}).map(
+					([constraint, message]) => `  - ${propertyPath} [${constraint}]: ${message}`
+				);
+				const childErrors = error.children?.flatMap((child) => formatError(child, propertyPath)) ?? [];
+
+				return [...ownErrors, ...childErrors];
+			};
+			const messages = errors.flatMap((error) => formatError(error));
+			throw new Error(`Invalid configuration ${configName}:\n${messages.join('\n')}`);
 		}
 
 		return validatedConfig;
