@@ -6,6 +6,7 @@ const winston = require('winston');
 const { LoggingUtils } = require('../../dist/apps/server/infra/logger/logging.utils');
 const { summarizeOpaqueLogValue } = require('../../dist/apps/server/infra/logger/opaque-log-value');
 const { maskSecretsInFields } = require('../../dist/apps/server/infra/logger/secret-masking');
+const { redactSecretsInText } = require('../../dist/apps/server/infra/logger/url-path-secrets');
 
 const { format, transports } = winston;
 const LEVEL = Symbol.for('level');
@@ -162,6 +163,20 @@ const maskSensitiveData = format((info) => {
 	}
 });
 
+// URLs with secrets (e.g. /passwordRecovery/<token>, ?shareToken=) can be anywhere in an entry, so the finished line is
+// checked once, after the serializer, as on the Nest side. Only characters of the secret are replaced, JSON stays valid.
+const redactUrlSecretsInLine = format((info) => {
+	try {
+		if (typeof info[MESSAGE] === 'string') {
+			info[MESSAGE] = redactSecretsInText(info[MESSAGE]);
+		}
+	} catch {
+		// A log call must not throw, the line is already masked by maskSensitiveData.
+	}
+
+	return info;
+});
+
 // TODO: is not nessasay in future please remove after logging is cleanup
 const addType = format.printf((log) => {
 	if (log.stack || log.level === 'error') {
@@ -174,10 +189,22 @@ const addType = format.printf((log) => {
 
 // errors() before the masking: it copies the enumerable fields, an error's message and stack are not enumerable.
 const getTestFormat = () =>
-	format.combine(format.errors({ stack: true }), maskSensitiveData(), format.prettyPrint({ depth: 1, colorize: true }));
+	format.combine(
+		format.errors({ stack: true }),
+		maskSensitiveData(),
+		format.prettyPrint({ depth: 1, colorize: true }),
+		redactUrlSecretsInLine()
+	);
 
 const getProductionFormat = () =>
-	format.combine(format.errors({ stack: true }), format.timestamp(), addType, maskSensitiveData(), format.json());
+	format.combine(
+		format.errors({ stack: true }),
+		format.timestamp(),
+		addType,
+		maskSensitiveData(),
+		format.json(),
+		redactUrlSecretsInLine()
+	);
 
 const getDevelopFormat = () =>
 	format.combine(
@@ -185,7 +212,8 @@ const getDevelopFormat = () =>
 		format.timestamp(),
 		addType,
 		maskSensitiveData(),
-		format.prettyPrint({ depth: 3, colorize: true })
+		format.prettyPrint({ depth: 3, colorize: true }),
+		redactUrlSecretsInLine()
 	);
 
 const getConsoleTransport = (level) =>
@@ -209,4 +237,5 @@ module.exports = {
 	getProductionFormat,
 	createLogger,
 	maskSensitiveData,
+	redactUrlSecretsInLine,
 };

@@ -6,6 +6,8 @@ const MESSAGE = Symbol.for('message');
 const { SecretRegistry } = require('../../dist/apps/server/infra/configuration/secret-registry');
 const { SecretRegistry: registryFromFacade } = require('../../dist/apps/server/infra/configuration');
 const { getProductionFormat, getDevelopFormat, getTestFormat, maskSensitiveData } = require('../../src/logger/utils');
+const { syncLogger } = require('../../src/logger/syncLogger');
+const requestLog = require('../../src/logger/RequestLogger');
 
 const SECRET = 'my+secret/value="1"';
 
@@ -290,5 +292,81 @@ describe('[logger] masking in the feathers logger', () => {
 		const info = maskSensitiveData().transform({ level: 'info', message: 'x', [Symbol.for('level')]: 'info' });
 
 		expect(info[Symbol.for('level')]).to.equal('info');
+	});
+
+	describe('URL secrets in the finished line', () => {
+		const TOKEN = 'resettoken123abc';
+		const SHARE_TOKEN = 'sharetokenvalue42';
+
+		// Collects what the console transports write, winston writes asynchronously.
+		const captureOutput = async (log) => {
+			const lines = [];
+			const originalWrite = process.stdout.write;
+			process.stdout.write = (chunk, ...args) => {
+				lines.push(String(chunk));
+				return typeof args[args.length - 1] === 'function' ? args[args.length - 1]() || true : true;
+			};
+			try {
+				log();
+				await new Promise((resolve) => {
+					setTimeout(resolve, 20);
+				});
+			} finally {
+				process.stdout.write = originalWrite;
+			}
+
+			return lines.join('');
+		};
+
+		it('should redact secret paths and query params in the message, metadata and a nested stack', () => {
+			const error = new Error(`Cannot GET /passwordRecovery/${TOKEN}`);
+
+			const output = getProductionFormat().transform({
+				level: 'info',
+				message: `GET /api/v1/passwordRecovery/${TOKEN} and /courses?shareToken=${SHARE_TOKEN}&page=2`,
+				url: `https://host/passwordRecovery/${TOKEN}`,
+				error,
+			})[MESSAGE];
+
+			const line = JSON.parse(output);
+			expect(output).not.to.include(TOKEN);
+			expect(output).not.to.include(SHARE_TOKEN);
+			expect(line.message).to.equal('GET /api/v1/passwordRecovery/*** and /courses?shareToken=***&page=2');
+			expect(line.url).to.equal('https://host/passwordRecovery/***');
+			expect(line.error.stack).to.include('Cannot GET /passwordRecovery/***');
+		});
+
+		it('should redact URL secrets in the develop and test formats', () => {
+			const info = { level: 'info', message: `GET /passwordRecovery/${TOKEN}?shareToken=${SHARE_TOKEN}&page=2` };
+
+			const develop = getDevelopFormat().transform({ ...info })[MESSAGE];
+			const test = getTestFormat().transform({ ...info })[MESSAGE];
+
+			for (const output of [develop, test]) {
+				expect(output).not.to.include(TOKEN);
+				expect(output).not.to.include(SHARE_TOKEN);
+				expect(output).to.include('page=2');
+			}
+		});
+
+		it('should leave lines without URL secrets unchanged', () => {
+			const info = { level: 'info', message: 'GET /passwordRecovery/reset?page=2&sort=name', timestamp: 't' };
+
+			const line = JSON.parse(getProductionFormat().transform(info)[MESSAGE]);
+
+			expect(line.message).to.equal('GET /passwordRecovery/reset?page=2&sort=name');
+		});
+
+		it('should redact URL secrets in the request logger and the sync logger output', async () => {
+			const output = await captureOutput(() => {
+				requestLog(`GET /passwordRecovery/${TOKEN}?shareToken=${SHARE_TOKEN}&page=2`);
+				syncLogger.error(`sync failed for /passwordRecovery/${TOKEN}`);
+			});
+
+			expect(output).to.include('Request GET /passwordRecovery/***?shareToken=***&page=2');
+			expect(output).to.include('sync failed for /passwordRecovery/***');
+			expect(output).not.to.include(TOKEN);
+			expect(output).not.to.include(SHARE_TOKEN);
+		});
 	});
 });

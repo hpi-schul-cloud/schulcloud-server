@@ -1,6 +1,6 @@
 const winston = require('winston');
 
-const { maskSensitiveData } = require('./utils');
+const { maskSensitiveData, redactUrlSecretsInLine } = require('./utils');
 
 const { format, transports, createLogger } = winston;
 
@@ -9,7 +9,8 @@ const formater = format.combine(
 	maskSensitiveData(),
 	format.printf((info) => {
 		return `Request ${info.message}`;
-	})
+	}),
+	redactUrlSecretsInLine()
 );
 
 const logger = createLogger({
