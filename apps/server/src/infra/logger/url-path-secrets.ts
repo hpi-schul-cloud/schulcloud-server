@@ -37,10 +37,15 @@ const SECRET_PATH_ROUTES: SecretPathRoute[] = [
 ];
 
 /**
- * Query params that carry the same secrets as a path above, e.g. DELETE /room-invitation-links?roomInvitationLinkIds=...
- * Query params that are secret by their name (accessToken, ...) are handled by the logger's field-name list.
+ * Query params that carry a credential. Query params that are secret by their name (accessToken, ...) are handled by
+ * the logger's field-name list.
  */
-const SECRET_QUERY_PARAMS = ['roomInvitationLinkIds'];
+const SECRET_QUERY_PARAMS = [
+	// Nest: DELETE /room-invitation-links?roomInvitationLinkIds=... The same ids as in the path above.
+	'roomInvitationLinkIds',
+	// Feathers: GET /registrationPins?pin=... The registration pin confirms a registration (see registrationPins hooks).
+	'pin',
+];
 
 // The same route is reached under several mount paths: Nest under /api/v3 (request.url inside Nest has no prefix),
 // Feathers under /, /api, /api/v1 and /legacy/v1 (see server.app.ts and legacyForward.js).

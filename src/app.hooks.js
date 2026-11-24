@@ -7,7 +7,7 @@ const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { extractJwtData } = require('./utils/extractJwtData');
-const { redactSecretsInUrl } = require('../dist/apps/server/infra/logger/url-path-secrets');
+const { redactSecretQueryParams, redactSecretsInUrl } = require('../dist/apps/server/infra/logger/url-path-secrets');
 
 const REDACTED = '***';
 
@@ -122,7 +122,7 @@ const leadTimeDetection = (context) => {
 			const info = {
 				path,
 				method,
-				query,
+				query: redactSecretQueryParams(query),
 				timeDelta,
 				originalUrl: redactSecretsInUrl(originalUrl),
 			};

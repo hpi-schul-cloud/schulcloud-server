@@ -49,6 +49,17 @@ describe('leadTimeDetection', () => {
 		expect(info.id).to.equal('***');
 	});
 
+	it('should not log the registration pin from the query', () => {
+		const context = createContext('registrationPins', undefined, '/registrationPins?email=a&pin=1234');
+		context.params.query = { email: 'a', pin: '1234' };
+
+		leadTimeDetection(context);
+
+		const info = getLoggedInfo();
+		expect(info.query).to.deep.equal({ email: 'a', pin: '***' });
+		expect(info.originalUrl).to.equal('/registrationPins?email=a&pin=***');
+	});
+
 	it('should log other urls and ids unchanged', () => {
 		leadTimeDetection(createContext('courses', '123', '/courses/123'));
 
