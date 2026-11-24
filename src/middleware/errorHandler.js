@@ -15,6 +15,7 @@ const { API_VALIDATION_ERROR_TYPE } = require('../errors/commonErrorTypes');
 
 const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
 const logger = require('../logger');
+const { redactSecretsInUrlPath } = require('../../dist/apps/server/infra/logger/url-path-secrets');
 
 const MAX_LEVEL_FILTER = 12;
 
@@ -209,7 +210,7 @@ const filterErrorObject = (errorObj) => {
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
 		// req.url = filterQuery(req.url);
-		req.originalUrl = filterQuery(req.originalUrl);
+		req.originalUrl = redactSecretsInUrlPath(filterQuery(req.originalUrl));
 		req.headers = filter(req.headers);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
