@@ -1,0 +1,36 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: board-import-worker-scaledobject
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: board-import-worker
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: board-import-worker
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  scaleTargetRef:
+    name: board-import-worker-deployment
+  minReplicaCount: 0
+  maxReplicaCount: {{ BOARD_IMPORT_WORKER_MAX_REPLICA_COUNT }}
+  # The trigger does not count a job that a worker processes. The delay must be longer than
+  # BOARD_IMPORT_JOB_MAX_DURATION_IN_MINUTES, or a scale-down stops a running import.
+  cooldownPeriod: {{ BOARD_IMPORT_WORKER_SCALE_DOWN_DELAY_IN_SECONDS }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: {{ BOARD_IMPORT_WORKER_SCALE_DOWN_DELAY_IN_SECONDS }}
+  triggers:
+  - type: rabbitmq
+    metadata:
+      protocol: amqp
+      queueName: board-import-job
+      mode: QueueLength
+      value: "1"
+    authenticationRef:
+      name: rabbitmq-trigger-auth

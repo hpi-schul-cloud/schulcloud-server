@@ -19,7 +19,10 @@ metadata:
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
+{# KEDA sets the replicas when it scales the worker. #}
+{% if not (KEDA_ENABLED is defined and KEDA_ENABLED|bool and SCALED_BOARD_IMPORT_WORKER_ENABLED is defined and SCALED_BOARD_IMPORT_WORKER_ENABLED|bool) %}
   replicas: {{ BOARD_IMPORT_WORKER_REPLICAS }}
+{% endif %}
   strategy:
     type: RollingUpdate
     rollingUpdate:
