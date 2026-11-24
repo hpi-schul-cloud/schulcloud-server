@@ -26,7 +26,9 @@ const copyError = (error, ancestors) => {
 	for (const key of Reflect.ownKeys(error)) {
 		const { enumerable } = Object.getOwnPropertyDescriptor(error, key);
 		// Read through the error: stack can be an accessor that only works on the original error.
-		const value = enumerable || key === 'cause' ? toJsonValues(error[key], ancestors) : error[key];
+		// Strings like message and stack are masked too: LoggingUtils shortens "Bearer <secret>" before the final pass.
+		const raw = error[key];
+		const value = enumerable || key === 'cause' || typeof raw === 'string' ? toJsonValues(raw, ancestors) : raw;
 		Object.defineProperty(copy, key, { value, enumerable, writable: true, configurable: true });
 	}
 
@@ -48,8 +50,9 @@ const copyValue = (value, ancestors) => {
 	}
 
 	const converted = typeof value.toJSON === 'function' ? callToJson(value) : undefined;
-	if (converted) {
-		return converted.json === value ? value : toJsonValues(converted.json, ancestors);
+	// A toJSON that returns the value itself is ignored, the value is then copied property by property.
+	if (converted && converted.json !== value) {
+		return toJsonValues(converted.json, ancestors);
 	}
 
 	if (Array.isArray(value)) {

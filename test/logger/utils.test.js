@@ -228,6 +228,26 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(line).not.to.have.property('deep');
 	});
 
+	it('should not leave any part of a secret in an error message or a self-returning toJSON', () => {
+		const obj = {
+			password: SECRET,
+			toJSON() {
+				return this;
+			},
+		};
+
+		const output = getProductionFormat().transform({
+			level: 'error',
+			message: 'nested',
+			error: new Error(`Bearer ${SECRET}`),
+			obj,
+		})[MESSAGE];
+
+		expect(output).not.to.include(SECRET.slice(0, 4));
+		expect(output).not.to.include(JSON.stringify(SECRET.slice(-2)).slice(1, -1));
+		expect(JSON.parse(output).obj).to.eql({ password: '[REDACTED]' });
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE
