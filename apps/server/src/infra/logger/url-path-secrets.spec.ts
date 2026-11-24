@@ -15,6 +15,7 @@ describe('url-path-secrets', () => {
 			['/api/v1/passwordRecovery/tok', '/api/v1/passwordRecovery/***'],
 			['/legacy/v1/passwordRecovery/tok', '/legacy/v1/passwordRecovery/***'],
 			['/users/linkImport/hash?x=1', '/users/linkImport/***?x=1'],
+			['/users/linkImport/$2a$08$ab/CDEF.gh?x=1', '/users/linkImport/***?x=1'],
 			['http://localhost:3030/api/v3/sharetoken/abc123', 'http://localhost:3030/api/v3/sharetoken/***'],
 			['https://host.example/passwordRecovery/tok?x=1', 'https://host.example/passwordRecovery/***?x=1'],
 			[

@@ -10,6 +10,8 @@ interface SecretPathRoute {
 	params: string[];
 	/** Segments after the prefix that are other routes, not a secret (e.g. /passwordRecovery/reset). */
 	notSecret?: string[];
+	/** The secret may contain "/", so everything up to the query string is redacted. */
+	spansSlashes?: boolean;
 }
 
 /**
@@ -28,7 +30,8 @@ const SECRET_PATH_ROUTES: SecretPathRoute[] = [
 	// Feathers: GET /passwordRecovery/:token. The token is the one sent by mail to reset a password.
 	{ prefix: 'passwordRecovery', params: [], notSecret: ['reset', 'api'] },
 	// Feathers: GET /users/linkImport/:importHash. The import hash lets the holder register as that user.
-	{ prefix: 'users/linkImport', params: [] },
+	// The hash can contain "/" (bcrypt output, see UserLinkImportService.get), so the rest of the path is redacted.
+	{ prefix: 'users/linkImport', params: [], spansSlashes: true },
 	// Feathers: GET /link/:id redirects to its target, e.g. a registration link with an import hash.
 	{ prefix: 'link', params: [], notSecret: ['api'] },
 ];
@@ -49,8 +52,10 @@ const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\
 const toPattern = (route: SecretPathRoute): RegExp => {
 	const notSecret = route.notSecret?.length ? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/?#]|$))` : '';
 
+	const secret = route.spansSlashes ? '[^?#]+' : '[^/?#]+';
+
 	// Express routes are case-insensitive, so /ShareToken/abc reaches the same handler.
-	return new RegExp(`^(${MOUNT_PREFIX}/${escapeRegExp(route.prefix)}/)${notSecret}[^/?#]+`, 'i');
+	return new RegExp(`^(${MOUNT_PREFIX}/${escapeRegExp(route.prefix)}/)${notSecret}${secret}`, 'i');
 };
 
 const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPattern);
