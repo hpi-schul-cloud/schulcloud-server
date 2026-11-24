@@ -5,7 +5,6 @@ import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '../board-import-exchange.config';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../board-import.config';
 import { BoardImportJobProcessService } from '../domain';
-import { BoardImportJobEvent, BoardImportJobLoggable, InvalidBoardImportJobMessageLoggable } from '../loggable';
 import { type BoardImportJobMessage } from './board-import-job.message';
 import { BoardImportEvents } from './board-import.exchange';
 
@@ -42,7 +41,7 @@ export class BoardImportJobConsumer implements OnModuleInit {
 
 		// A message without a job id can never succeed, so it must not go back to the queue.
 		if (typeof jobId !== 'string') {
-			this.logger.warning(new InvalidBoardImportJobMessageLoggable());
+			this.logger.warning('Board import job message without job id dropped');
 
 			return;
 		}
@@ -52,7 +51,7 @@ export class BoardImportJobConsumer implements OnModuleInit {
 		} catch {
 			// The error can contain contents or links of the source. It is not logged, and it is not thrown,
 			// because the RabbitMQ library logs each error that a handler throws.
-			this.logger.warning(new BoardImportJobLoggable(jobId, BoardImportJobEvent.RETRY));
+			this.logger.warning('Board import job goes back to the queue', { jobId });
 			await this.waitForRetryDelay();
 			const requeue = new Nack(true);
 

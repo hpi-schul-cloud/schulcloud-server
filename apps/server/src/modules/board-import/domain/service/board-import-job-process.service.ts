@@ -2,9 +2,9 @@ import { Logger } from '@infra/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
-import { BoardImportJobEvent, BoardImportJobEventReason, BoardImportJobLoggable } from '../../loggable';
 import { type BoardImportJob } from '../do';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
+import { BoardImportJobLogReason } from '../type';
 import { BoardImportRunnerService } from './board-import-runner.service';
 
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
@@ -25,11 +25,7 @@ export class BoardImportJobProcessService {
 		const job = await this.boardImportJobRepo.findById(jobId);
 
 		if (!job) {
-			this.logger.warning(
-				new BoardImportJobLoggable(jobId, BoardImportJobEvent.SKIPPED, {
-					reason: BoardImportJobEventReason.JOB_NOT_FOUND,
-				})
-			);
+			this.logger.warning('Board import job skipped', { jobId, reason: BoardImportJobLogReason.JOB_NOT_FOUND });
 
 			return;
 		}
@@ -41,7 +37,7 @@ export class BoardImportJobProcessService {
 		}
 
 		if (!this.hasAttemptsLeft(job)) {
-			await this.fail(job, BoardImportJobEventReason.MAX_ATTEMPTS);
+			await this.fail(job, BoardImportJobLogReason.MAX_ATTEMPTS);
 
 			return;
 		}
@@ -50,7 +46,7 @@ export class BoardImportJobProcessService {
 		const remainingTimeInMs = this.getRemainingTimeInMs(job, now);
 
 		if (remainingTimeInMs <= 0) {
-			await this.fail(job, BoardImportJobEventReason.MAX_DURATION);
+			await this.fail(job, BoardImportJobLogReason.MAX_DURATION);
 
 			return;
 		}
@@ -64,7 +60,7 @@ export class BoardImportJobProcessService {
 			return;
 		}
 
-		this.logger.info(new BoardImportJobLoggable(jobId, BoardImportJobEvent.STARTED, { attempts: startedJob.attempts }));
+		this.logger.info('Board import job started', { jobId, attempts: startedJob.attempts });
 
 		await this.runAndClose(startedJob, remainingTimeInMs);
 	}
@@ -77,26 +73,24 @@ export class BoardImportJobProcessService {
 			if (this.hasAttemptsLeft(job)) {
 				throw error;
 			}
-			await this.fail(job, BoardImportJobEventReason.MAX_ATTEMPTS);
+			await this.fail(job, BoardImportJobLogReason.MAX_ATTEMPTS);
 
 			return;
 		}
 
 		if (!isInTime) {
-			await this.fail(job, BoardImportJobEventReason.MAX_DURATION);
+			await this.fail(job, BoardImportJobLogReason.MAX_DURATION);
 
 			return;
 		}
 
 		job.finish();
 		await this.boardImportJobRepo.save(job);
-		this.logger.info(new BoardImportJobLoggable(job.id, BoardImportJobEvent.FINISHED, { attempts: job.attempts }));
+		this.logger.info('Board import job finished', { jobId: job.id, attempts: job.attempts });
 	}
 
 	private logSkippedClosedJob(jobId: EntityId): void {
-		this.logger.warning(
-			new BoardImportJobLoggable(jobId, BoardImportJobEvent.SKIPPED, { reason: BoardImportJobEventReason.JOB_CLOSED })
-		);
+		this.logger.warning('Board import job skipped', { jobId, reason: BoardImportJobLogReason.JOB_CLOSED });
 	}
 
 	private hasAttemptsLeft(job: BoardImportJob): boolean {
@@ -133,11 +127,9 @@ export class BoardImportJobProcessService {
 		}
 	}
 
-	private async fail(job: BoardImportJob, reason: BoardImportJobEventReason): Promise<void> {
+	private async fail(job: BoardImportJob, reason: BoardImportJobLogReason): Promise<void> {
 		job.fail();
 		await this.boardImportJobRepo.save(job);
-		this.logger.warning(
-			new BoardImportJobLoggable(job.id, BoardImportJobEvent.FAILED, { reason, attempts: job.attempts })
-		);
+		this.logger.warning('Board import job failed', { jobId: job.id, reason, attempts: job.attempts });
 	}
 }

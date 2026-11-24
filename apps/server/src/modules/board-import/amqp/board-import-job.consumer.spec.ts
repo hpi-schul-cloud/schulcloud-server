@@ -6,7 +6,6 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '../board-import-exchange.config';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../board-import.config';
 import { BoardImportJobProcessService } from '../domain';
-import { BoardImportJobEvent, BoardImportJobLoggable, InvalidBoardImportJobMessageLoggable } from '../loggable';
 import { BoardImportJobEntity } from '../repo/entity';
 import { boardImportJobFactory } from '../testing';
 import { BoardImportJobConsumer } from './board-import-job.consumer';
@@ -156,13 +155,13 @@ describe(BoardImportJobConsumer.name, () => {
 
 				const { id } = boardImportJobFactory.build();
 				const message: BoardImportJobMessage = { jobId: id };
-				const loggable = new BoardImportJobLoggable(id, BoardImportJobEvent.RETRY);
+				const logEntry = ['Board import job goes back to the queue', { jobId: id }] as const;
 				const delayInMs = config.jobRetryDelayInSeconds * 1000;
 				const requeue = new Nack(true);
 
 				processService.process.mockRejectedValueOnce(new Error('https://example.com/board'));
 
-				return { message, loggable, delayInMs, requeue };
+				return { message, logEntry, delayInMs, requeue };
 			};
 
 			it('should give the message back to the queue after the retry delay', async () => {
@@ -178,31 +177,31 @@ describe(BoardImportJobConsumer.name, () => {
 			});
 
 			it('should log the job id without the error', async () => {
-				const { message, loggable, delayInMs } = setup();
+				const { message, logEntry, delayInMs } = setup();
 
 				const result = consumer.handleMessage(message);
 				await jest.advanceTimersByTimeAsync(delayInMs);
 				await result;
 
 				expect(logger.warning).toHaveBeenCalledTimes(1);
-				expect(logger.warning).toHaveBeenCalledWith(loggable);
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
 		});
 
 		describe('when the message has no job id', () => {
 			const setup = () => {
-				const loggable = new InvalidBoardImportJobMessageLoggable();
+				const logEntry = ['Board import job message without job id dropped'] as const;
 
-				return { loggable };
+				return { logEntry };
 			};
 
 			it('should resolve and not process a job', async () => {
-				const { loggable } = setup();
+				const { logEntry } = setup();
 
 				await consumer.handleMessage(undefined);
 
 				expect(processService.process).not.toHaveBeenCalled();
-				expect(logger.warning).toHaveBeenCalledWith(loggable);
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
 		});
 	});
