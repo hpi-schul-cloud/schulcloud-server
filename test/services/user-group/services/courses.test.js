@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
@@ -398,6 +399,256 @@ describe('course service', () => {
 				expect(err.code).to.equal(403);
 				expect(err.message).to.equal(`User ${teacher._id} ist nicht Teil des Kurses`);
 			}
+		});
+	});
+
+	describe('teacher and substitution teacher validation', () => {
+		const invalidTeachersMessage =
+			'teacherIds and substitutionIds may only contain existing users with the teacher role.';
+		const invalidDataMessage = 'Invalid course data.';
+		const createdCourseIds = [];
+
+		after(async () => {
+			await courseModel.deleteMany({ _id: { $in: createdCourseIds } }).exec();
+		});
+
+		const setup = async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			return { schoolId, teacher, otherTeacher, student, admin, params };
+		};
+
+		const buildCourseData = (schoolId, data) => ({
+			name: 'testcourse',
+			schoolId: schoolId.toString(),
+			teacherIds: [],
+			substitutionIds: [],
+			classIds: [],
+			userIds: [],
+			...data,
+		});
+
+		const expectBadRequest = async (request, message) => {
+			try {
+				await request;
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal(message);
+			}
+		};
+
+		const expectNoCourseInSchool = async (schoolId) => {
+			expect(await courseModel.countDocuments({ schoolId }).exec()).to.equal(0);
+		};
+
+		const toIdStrings = (ids) => ids.map((id) => id.toString());
+
+		it('can not CREATE a course with a student as teacher', async () => {
+			const { schoolId, teacher, otherTeacher, student, params } = await setup();
+			const data = buildCourseData(schoolId, {
+				teacherIds: [teacher._id.toString(), otherTeacher._id.toString(), student._id.toString()],
+			});
+
+			await expectBadRequest(app.service('courses').create(data, params), invalidTeachersMessage);
+			await expectNoCourseInSchool(schoolId);
+		});
+
+		it('can not CREATE a course with a student as substitution teacher', async () => {
+			const { schoolId, teacher, student, params } = await setup();
+			const data = buildCourseData(schoolId, {
+				teacherIds: [teacher._id.toString()],
+				substitutionIds: [student._id.toString()],
+			});
+
+			await expectBadRequest(app.service('courses').create(data, params), invalidTeachersMessage);
+			await expectNoCourseInSchool(schoolId);
+		});
+
+		it('can not CREATE a course with a user without teacher role as teacher', async () => {
+			const { schoolId, teacher, admin, params } = await setup();
+			const data = buildCourseData(schoolId, { teacherIds: [teacher._id.toString(), admin._id.toString()] });
+
+			await expectBadRequest(app.service('courses').create(data, params), invalidTeachersMessage);
+			await expectNoCourseInSchool(schoolId);
+		});
+
+		it('can not CREATE a course with a non existing user as teacher', async () => {
+			const { schoolId, teacher, params } = await setup();
+			const data = buildCourseData(schoolId, {
+				teacherIds: [teacher._id.toString(), new ObjectId().toString()],
+			});
+
+			await expectBadRequest(app.service('courses').create(data, params), invalidTeachersMessage);
+			await expectNoCourseInSchool(schoolId);
+		});
+
+		it('can not CREATE a course with malformed teacher ids', async () => {
+			const { schoolId, teacher, student, params } = await setup();
+			const malformedIds = [
+				'not-an-id',
+				'',
+				'aaaaaaaaaaaa',
+				{ _id: student._id.toString() },
+				{ $in: [student._id.toString()] },
+				[student._id.toString()],
+			];
+
+			for (const malformedId of malformedIds) {
+				const data = buildCourseData(schoolId, { teacherIds: [teacher._id.toString(), malformedId] });
+				// eslint-disable-next-line no-await-in-loop
+				await expectBadRequest(app.service('courses').create(data, params), invalidTeachersMessage);
+			}
+			await expectNoCourseInSchool(schoolId);
+		});
+
+		it('can not CREATE a course with mongo operators or dotted keys', async () => {
+			const { schoolId, teacher, student, params } = await setup();
+			const injections = [
+				{ 'substitutionIds.0': student._id.toString() },
+				{ $set: { substitutionIds: [student._id.toString()] } },
+			];
+
+			for (const injection of injections) {
+				const data = { ...buildCourseData(schoolId, { teacherIds: [teacher._id.toString()] }), ...injection };
+				// eslint-disable-next-line no-await-in-loop
+				await expectBadRequest(app.service('courses').create(data, params), invalidDataMessage);
+			}
+			await expectNoCourseInSchool(schoolId);
+		});
+
+		it('can not CREATE courses with array data', async () => {
+			const { schoolId, teacher, params } = await setup();
+			const data = [buildCourseData(schoolId, { teacherIds: [teacher._id.toString()] })];
+
+			await expectBadRequest(app.service('courses').create(data, params), invalidDataMessage);
+			await expectNoCourseInSchool(schoolId);
+		});
+
+		it('CREATE a course with valid teachers and substitution teachers', async () => {
+			const { schoolId, teacher, otherTeacher, params } = await setup();
+			const teacherAndAdmin = await testObjects.createTestUser({ roles: ['teacher', 'administrator'], schoolId });
+			const data = buildCourseData(schoolId, {
+				teacherIds: [teacher._id.toString(), otherTeacher._id.toString()],
+				substitutionIds: [teacherAndAdmin._id.toString()],
+			});
+
+			const result = await app.service('courses').create(data, params);
+			createdCourseIds.push(result._id);
+
+			const dbResult = await courseModel.findById(result._id).lean().exec();
+			expect(toIdStrings(dbResult.teacherIds)).to.have.members([teacher._id.toString(), otherTeacher._id.toString()]);
+			expect(toIdStrings(dbResult.substitutionIds)).to.have.members([teacherAndAdmin._id.toString()]);
+		});
+
+		it('CREATE a course with a single teacher id', async () => {
+			const { schoolId, teacher, params } = await setup();
+			const data = buildCourseData(schoolId, { teacherIds: teacher._id.toString() });
+
+			const result = await app.service('courses').create(data, params);
+			createdCourseIds.push(result._id);
+
+			const dbResult = await courseModel.findById(result._id).lean().exec();
+			expect(toIdStrings(dbResult.teacherIds)).to.have.members([teacher._id.toString()]);
+		});
+
+		it('can not PATCH a student into teachers or substitution teachers', async () => {
+			const { schoolId, teacher, student, params } = await setup();
+			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const storedCourse = await courseModel.findById(course._id).lean().exec();
+			const payloads = [
+				{ teacherIds: [teacher._id.toString(), student._id.toString()] },
+				{ teacherIds: [teacher._id.toString()], substitutionIds: [student._id.toString()] },
+			];
+
+			for (const payload of payloads) {
+				// eslint-disable-next-line no-await-in-loop
+				await expectBadRequest(app.service('courses').patch(course._id, payload, params), invalidTeachersMessage);
+			}
+			expect(await courseModel.findById(course._id).lean().exec()).to.deep.equal(storedCourse);
+		});
+
+		it('can not PATCH a course with mongo operators or dotted keys', async () => {
+			const { schoolId, teacher, student, params } = await setup();
+			const course = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
+			const storedCourse = await courseModel.findById(course._id).lean().exec();
+			const studentId = student._id.toString();
+			const payloads = [
+				{ $push: { teacherIds: studentId } },
+				{ $addToSet: { substitutionIds: studentId } },
+				{ $set: { teacherIds: [studentId] } },
+				{ $rename: { userIds: 'teacherIds' } },
+				{ 'teacherIds.1': studentId },
+			];
+
+			for (const payload of payloads) {
+				// eslint-disable-next-line no-await-in-loop
+				await expectBadRequest(app.service('courses').patch(course._id, payload, params), invalidDataMessage);
+			}
+			expect(await courseModel.findById(course._id).lean().exec()).to.deep.equal(storedCourse);
+		});
+
+		it('PATCH a course with valid teachers and substitution teachers', async () => {
+			const { schoolId, teacher, otherTeacher, params } = await setup();
+			const substitutionTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+
+			await app.service('courses').patch(
+				course._id,
+				{
+					teacherIds: [teacher._id.toString(), otherTeacher._id.toString()],
+					substitutionIds: [substitutionTeacher._id.toString()],
+				},
+				params
+			);
+
+			const dbResult = await courseModel.findById(course._id).lean().exec();
+			expect(toIdStrings(dbResult.teacherIds)).to.have.members([teacher._id.toString(), otherTeacher._id.toString()]);
+			expect(toIdStrings(dbResult.substitutionIds)).to.have.members([substitutionTeacher._id.toString()]);
+		});
+
+		it('can not UPDATE a course with a student as teacher', async () => {
+			const { schoolId, teacher, student, params } = await setup();
+			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const storedCourse = await courseModel.findById(course._id).lean().exec();
+			const data = buildCourseData(schoolId, {
+				teacherIds: [teacher._id.toString(), student._id.toString()],
+			});
+
+			await expectBadRequest(app.service('courses').update(course._id, data, params), invalidTeachersMessage);
+			expect(await courseModel.findById(course._id).lean().exec()).to.deep.equal(storedCourse);
+		});
+
+		it('UPDATE a course with valid teachers', async () => {
+			const { schoolId, teacher, otherTeacher, params } = await setup();
+			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const data = buildCourseData(schoolId, {
+				name: 'changedName',
+				teacherIds: [teacher._id.toString(), otherTeacher._id.toString()],
+			});
+
+			await app.service('courses').update(course._id, data, params);
+
+			const dbResult = await courseModel.findById(course._id).lean().exec();
+			expect(dbResult.name).to.equal('changedName');
+			expect(toIdStrings(dbResult.teacherIds)).to.have.members([teacher._id.toString(), otherTeacher._id.toString()]);
+		});
+
+		it('does not validate internal calls', async () => {
+			const { schoolId, student } = await setup();
+
+			const course = await testObjects.createTestCourse({ schoolId, substitutionIds: [student._id] });
+
+			expect(toIdStrings(course.substitutionIds)).to.have.members([student._id.toString()]);
 		});
 	});
 

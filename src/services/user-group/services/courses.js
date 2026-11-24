@@ -35,10 +35,14 @@ const {
 	restrictChangesToArchivedCourse,
 	removeSubstitutionDuplicates,
 	restrictChangesToSyncedCourse,
-	getPermissionHook
+	getPermissionHook,
+	preventMongoOperatorsInData,
+	validateCourseTeachers,
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
+
+const validateExternalCourseData = iff(isProvider('external'), preventMongoOperatorsInData, validateCourseTeachers);
 
 class Courses {
 	constructor(options) {
@@ -116,6 +120,7 @@ const courseHooks = {
 		create: [
 			injectUserId,
 			hasPermission('COURSE_CREATE'),
+			validateExternalCourseData,
 			splitClassIdsInGroupsAndClasses,
 			removeSubstitutionDuplicates,
 			restrictToCurrentSchoolIfNotLocal,
@@ -126,6 +131,7 @@ const courseHooks = {
 			restrictToCurrentSchoolIfNotLocal,
 			restrictToUsersOwnCoursesIfNotLocal,
 			restrictChangesToArchivedCourse,
+			validateExternalCourseData,
 			iff(isProvider('external'), preventPopulate),
 		],
 		patch: [
@@ -133,6 +139,7 @@ const courseHooks = {
 			restrictToCurrentSchoolIfNotLocal,
 			restrictChangesToArchivedCourse,
 			permitGroupOperation,
+			validateExternalCourseData,
 			restrictChangesToSyncedCourse,
 			splitClassIdsInGroupsAndClasses,
 			removeSubstitutionDuplicates,
