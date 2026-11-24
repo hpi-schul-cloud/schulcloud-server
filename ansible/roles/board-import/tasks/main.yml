@@ -1,0 +1,76 @@
+- name: Board import API configmap
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: api-configmap.yml.j2
+    apply: yes
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - configmap
+
+- name: Board import secret by 1Password
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: onepassword.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+  tags:
+    - 1password
+
+- name: External Secret for board import
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: external-secret.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool and WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool else 'absent' }}"
+  when:
+    - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+  tags:
+    - 1password
+
+- name: Add board import API egress network policy
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: api-egress-networkpolicy.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - networkPolicy
+
+- name: Board import API deployment
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: api-deployment.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - deployment
+
+- name: Board import API service
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: api-svc.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - service
+
+- name: Board import API ingress
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: api-ingress.yml.j2
+    apply: yes
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - ingress
+
+- name: Add board-import default allow network policy
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: default-allow-networkpolicy.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - networkPolicy
