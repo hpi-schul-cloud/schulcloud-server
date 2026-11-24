@@ -1,5 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { CoreModule } from '@core/core.module';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { User } from '@modules/user';
@@ -12,8 +13,10 @@ import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { BoardImportEvents } from '../../amqp';
 import { BoardImportApiModule } from '../../board-import-api.module';
+import { BoardImportWorkerTestModule } from '../../board-import-worker.app.module';
+import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { ENTITIES } from '../../board-import.entity.imports';
-import { BoardImportJobStatus } from '../../domain';
+import { BoardImportJobStatus, BoardImportRunnerService } from '../../domain';
 import { BoardImportJobEntity } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
@@ -285,6 +288,141 @@ describe('Board Import Controller (API)', () => {
 
 				expect(response.status).toEqual(400);
 			});
+		});
+	});
+});
+
+// The worker test is in this file, because the two tests use the same queue and must not run at the same time.
+describe('Board Import Worker (queue)', () => {
+	let app: INestApplication;
+	let em: EntityManager;
+	let amqpConnection: AmqpConnection;
+	let runner: DeepMocked<BoardImportRunnerService>;
+	let config: BoardImportConfig;
+
+	beforeAll(async () => {
+		config = new BoardImportConfig();
+		config.jobRetryDelayInSeconds = 0;
+
+		const module = await Test.createTestingModule({
+			imports: [BoardImportWorkerTestModule],
+		})
+			.overrideProvider(BOARD_IMPORT_CONFIG_TOKEN)
+			.useValue(config)
+			.overrideProvider(BoardImportRunnerService)
+			.useValue(createMock<BoardImportRunnerService>())
+			.compile();
+
+		app = module.createNestApplication();
+		await app.init();
+		em = module.get(EntityManager);
+		amqpConnection = module.get(AmqpConnection);
+		runner = module.get(BoardImportRunnerService);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
+		await app.close();
+	});
+
+	const setupQueuedJob = async () => {
+		const entity = boardImportJobEntityFactory.build();
+		await em.persist(entity).flush();
+		em.clear();
+
+		const publishJob = async (): Promise<void> => {
+			await amqpConnection.publish('board-import', BoardImportEvents.IMPORT_JOB, { jobId: entity.id });
+		};
+
+		return { id: entity.id, publishJob };
+	};
+
+	const waitForStatus = async (id: string, status: BoardImportJobStatus): Promise<BoardImportJobEntity> => {
+		for (let i = 0; i < 100; i += 1) {
+			const entity = await em.fork().findOneOrFail(BoardImportJobEntity, { id });
+			if (entity.status === status) {
+				return entity;
+			}
+			await new Promise((resolve) => {
+				setTimeout(resolve, 50);
+			});
+		}
+
+		throw new Error(`The job did not get the status ${status}`);
+	};
+
+	describe('when a job is in the queue', () => {
+		const setup = async () => {
+			const { id, publishJob } = await setupQueuedJob();
+			let finishImport = (): void => {};
+
+			runner.run.mockReturnValueOnce(
+				new Promise<void>((resolve) => {
+					finishImport = resolve;
+				})
+			);
+
+			return { id, publishJob, finishImport: () => finishImport() };
+		};
+
+		it('should set the job to running while the import runs and to finished after it', async () => {
+			const { id, publishJob, finishImport } = await setup();
+
+			await publishJob();
+
+			const runningJob = await waitForStatus(id, BoardImportJobStatus.RUNNING);
+			expect(runningJob.attempts).toEqual(1);
+			expect(runningJob.startedAt).toEqual(expect.any(Date));
+
+			finishImport();
+
+			const finishedJob = await waitForStatus(id, BoardImportJobStatus.FINISHED);
+			expect(finishedJob.attempts).toEqual(1);
+		});
+	});
+
+	describe('when the import fails on each delivery', () => {
+		const setup = async () => {
+			const { id, publishJob } = await setupQueuedJob();
+			const maxAttempts = config.jobMaxAttempts;
+
+			runner.run.mockRejectedValue(new Error('import failed'));
+
+			return { id, publishJob, maxAttempts };
+		};
+
+		it('should process the job again until the maximum number of attempts and then set it to failed', async () => {
+			const { id, publishJob, maxAttempts } = await setup();
+
+			await publishJob();
+
+			const failedJob = await waitForStatus(id, BoardImportJobStatus.FAILED);
+			expect(failedJob.attempts).toEqual(maxAttempts);
+			expect(runner.run).toHaveBeenCalledTimes(maxAttempts);
+		});
+	});
+
+	describe('when the import fails on the first delivery only', () => {
+		const setup = async () => {
+			const { id, publishJob } = await setupQueuedJob();
+
+			runner.run.mockRejectedValueOnce(new Error('import failed'));
+			runner.run.mockResolvedValueOnce();
+
+			return { id, publishJob };
+		};
+
+		it('should finish the job on the second attempt', async () => {
+			const { id, publishJob } = await setup();
+
+			await publishJob();
+
+			const finishedJob = await waitForStatus(id, BoardImportJobStatus.FINISHED);
+			expect(finishedJob.attempts).toEqual(2);
 		});
 	});
 });

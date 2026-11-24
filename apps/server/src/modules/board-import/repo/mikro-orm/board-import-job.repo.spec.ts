@@ -32,7 +32,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 	describe('save', () => {
 		describe('when the job is new', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build();
+				const job = boardImportJobFactory.build({ attempts: 2, startedAt: new Date() });
 
 				return { job };
 			};
@@ -50,6 +50,8 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					userId: new ObjectId(job.userId),
 					link: job.link,
 					expiresAt: job.expiresAt,
+					attempts: job.attempts,
+					startedAt: job.startedAt,
 				});
 			});
 		});
@@ -58,7 +60,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 	describe('findById', () => {
 		describe('when the job exists', () => {
 			const setup = async () => {
-				const entity = boardImportJobEntityFactory.build();
+				const entity = boardImportJobEntityFactory.build({ attempts: 2, startedAt: new Date() });
 				await em.persist(entity).flush();
 				em.clear();
 
@@ -68,6 +70,8 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					userId: entity.userId.toHexString(),
 					link: entity.link,
 					expiresAt: entity.expiresAt,
+					attempts: entity.attempts,
+					startedAt: entity.startedAt,
 				};
 
 				return { expectedProps };
@@ -79,6 +83,27 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const job = await repo.findById(expectedProps.id);
 
 				expect(job?.getProps()).toEqual(expectedProps);
+			});
+		});
+
+		describe('when the stored job has no attempt counter', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build();
+				await em.persist(entity).flush();
+				await em
+					.getCollection(BoardImportJobEntity)
+					.updateOne({ _id: new ObjectId(entity.id) }, { $unset: { attempts: '' } });
+				em.clear();
+
+				return { id: entity.id };
+			};
+
+			it('should return a job with zero attempts', async () => {
+				const { id } = await setup();
+
+				const job = await repo.findById(id);
+
+				expect(job?.attempts).toEqual(0);
 			});
 		});
 
