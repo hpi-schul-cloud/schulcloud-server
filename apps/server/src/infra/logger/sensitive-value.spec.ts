@@ -163,17 +163,19 @@ describe('isCredentialName', () => {
 
 describe('sensitive name checks on long crafted names', () => {
 	// Field names come from request bodies; the word split must stay linear.
+	// The limit is generous because CI runs these tests with coverage instrumentation (several times slower).
+	// A quadratic split would take seconds on these 100k-character names.
 	it.each([
 		['an upper-case run followed by a lower-case letter', `${'A'.repeat(100000)}a`],
 		['alternating upper- and lower-case letters', 'Aa'.repeat(50000)],
 		['a repeated PIN', 'PIN'.repeat(33334)],
 		['a repeated plural PINs', 'PINs'.repeat(25000)],
-	])('should check %s within 50 ms', (_description, name) => {
+	])('should check %s within 1000 ms', (_description, name) => {
 		const start = performance.now();
 
 		isSensitiveName(name);
 		isCredentialName(name);
 
-		expect(performance.now() - start).toBeLessThan(50);
+		expect(performance.now() - start).toBeLessThan(1000);
 	});
 });
