@@ -96,8 +96,9 @@ const formatAndLogErrors = (error, req, res, next) => {
 	return next(error);
 };
 
-// Personal data and other values that the shared sensitive name rule does not cover; compared in lower case.
-// Passwords, tokens, authorization and the like are covered by isSensitiveName.
+// Personal data and other Feathers-only fields, deliberately not in the shared secret rule (isSensitiveName),
+// so that the Nest logger keeps logging them. Passwords, tokens, authorization and the like come from isSensitiveName.
+// Compared in lower case.
 const additionalSecretDataKeys = [
 	'headers',
 	'ticket',
@@ -115,7 +116,7 @@ const additionalSecretDataKeys = [
 const isSecretDataKey = (key) => isSensitiveName(key) || additionalSecretDataKeys.includes(key.toLocaleLowerCase());
 
 const filterSecretValue = (key, value) => {
-	// A boolean is never a secret, so flags such as forcePasswordChange stay readable.
+	// Booleans are not masked: they cannot hold a credential and flags such as forcePasswordChange must stay readable.
 	if (isSecretDataKey(key) && typeof value !== 'boolean') {
 		// E-Mail-Maskierung, falls value eine E-Mail-Adresse ist
 		if (typeof value === 'string' && /^[^@\s]{3,}[^@\s]*@[^@\s]+\.[^@\s]+$/.test(value)) {
