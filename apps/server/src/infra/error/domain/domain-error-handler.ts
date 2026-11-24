@@ -4,7 +4,6 @@ import {
 	LoggingUtils,
 	redactSecretPathParams,
 	redactSecretQueryParams,
-	redactSecretsInText,
 	redactSecretsInUrl,
 } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
@@ -46,55 +45,12 @@ export class DomainErrorHandler {
 		if (LoggingUtils.isInstanceOfLoggable(error)) {
 			loggable = error;
 		} else if (error instanceof Error) {
-			loggable = new ErrorLoggable(this.redactUrlSecretsInError(error), data);
+			loggable = new ErrorLoggable(error, data);
 		} else {
 			const unknownError = new Error(util.inspect(error));
 			loggable = new ErrorLoggable(unknownError, data);
 		}
 
 		return loggable;
-	}
-
-	/**
-	 * Nest's 404 for an unknown route has the raw URL in its message, stack and response ("Cannot GET /sharetoken/abc").
-	 * Returns a copy with URL secrets redacted in those texts. The thrown error itself is not changed.
-	 */
-	private redactUrlSecretsInError(error: Error): Error {
-		const copy = Object.create(Object.getPrototypeOf(error) as object) as Error;
-
-		for (const key of Object.getOwnPropertyNames(error)) {
-			const descriptor = Object.getOwnPropertyDescriptor(error, key);
-			if (descriptor) {
-				// stack is an accessor in V8 that only works on the original error, so its value is read and copied.
-				const value: unknown = error[key as keyof Error];
-				Object.defineProperty(copy, key, {
-					value: this.redactUrlSecretsInValue(value),
-					enumerable: descriptor.enumerable,
-					writable: true,
-					configurable: true,
-				});
-			}
-		}
-
-		return copy;
-	}
-
-	// Strings, arrays of strings and the plain response object of an HttpException ({ message, error, statusCode }).
-	private redactUrlSecretsInValue(value: unknown): unknown {
-		if (typeof value === 'string') {
-			return redactSecretsInText(value);
-		}
-
-		if (Array.isArray(value)) {
-			return value.map((item: unknown) => (typeof item === 'string' ? redactSecretsInText(item) : item));
-		}
-
-		if (typeof value === 'object' && value !== null && Object.getPrototypeOf(value) === Object.prototype) {
-			return Object.fromEntries(
-				Object.entries(value).map(([key, item]) => [key, typeof item === 'string' ? redactSecretsInText(item) : item])
-			);
-		}
-
-		return value;
 	}
 }
