@@ -20,6 +20,7 @@ describe(BoardImportJob.name, () => {
 					status: job.status,
 					userId: job.userId,
 					link: job.link,
+					target: job.target,
 					expiresAt: job.expiresAt,
 					attempts: job.attempts,
 					startedAt: job.startedAt,

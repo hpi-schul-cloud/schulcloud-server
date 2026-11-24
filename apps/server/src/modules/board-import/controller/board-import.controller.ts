@@ -29,7 +29,8 @@ export class BoardImportController {
 		@Body() bodyParams: CreateBoardImportJobBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardImportJobResponse> {
-		const job = await this.boardImportUc.startImport(currentUser.userId, bodyParams.link);
+		const target = { type: bodyParams.targetType, id: bodyParams.targetId };
+		const job = await this.boardImportUc.startImport(currentUser.userId, bodyParams.link, target);
 		const response = BoardImportJobResponseMapper.mapToResponse(job);
 
 		return response;

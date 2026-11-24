@@ -1,8 +1,17 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToNumber } from '@shared/controller/transformer';
-import { IsInt, IsNumber, IsPositive, Max, Min } from 'class-validator';
+import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
+import { IsBoolean, IsInt, IsNumber, IsPositive, Max, Min } from 'class-validator';
 
 export const BOARD_IMPORT_CONFIG_TOKEN = 'BOARD_IMPORT_CONFIG_TOKEN';
+export const BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN = 'BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN';
+
+@Configuration()
+export class BoardImportPublicApiConfig {
+	@ConfigProperty('FEATURE_BOARD_IMPORT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureBoardImportEnabled = false;
+}
 
 // A timer with a delay above 2^31 - 1 milliseconds fires at once.
 const MAX_TIMER_DELAY_IN_MINUTES = 35791;

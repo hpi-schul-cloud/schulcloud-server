@@ -1,6 +1,7 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { BoardImportPublicApiConfig } from '@modules/board-import';
 import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LearnroomPublicApiConfig } from '@modules/learnroom';
@@ -158,6 +159,9 @@ export class ConfigResponse {
 	FEATURE_CONSENT_NECESSARY: boolean;
 
 	@ApiProperty()
+	FEATURE_BOARD_IMPORT_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: boolean;
 
 	@ApiProperty()
@@ -295,7 +299,8 @@ export class ConfigResponse {
 			UserLoginMigrationPublicApiConfig &
 			FwuPublicApiConfig &
 			TeamPublicApiConfig &
-			NotificationPublicApiConfig
+			NotificationPublicApiConfig &
+			BoardImportPublicApiConfig
 	) {
 		this.FEATURE_NOTIFICATIONS_ENABLED = config.featureNotificationsEnabled;
 		this.ACCESSIBILITY_REPORT_EMAIL = config.accessibilityReportEmail;
@@ -331,6 +336,7 @@ export class ConfigResponse {
 		this.FEATURE_COPY_SERVICE_ENABLED = config.featureCopyServiceEnabled;
 		this.FEATURE_CONSENT_NECESSARY = config.featureConsentNecessary;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
+		this.FEATURE_BOARD_IMPORT_ENABLED = config.featureBoardImportEnabled;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.courseImportEnabled;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE = config.courseImportMaxFileSize;
 		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;

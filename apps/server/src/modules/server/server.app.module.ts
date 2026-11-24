@@ -17,6 +17,7 @@ import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
+import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '@modules/board-import';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionPublicApiModule } from '@modules/deletion/deletion-public-api.module';
@@ -96,6 +97,7 @@ const serverModules = [
 	ConfigurationModule.register(NOTIFICATION_PUBLIC_API_CONFIG_TOKEN, NotificationPublicApiConfig),
 	ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
 	ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
+	ConfigurationModule.register(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig),
 	ConfigurationModule.register(TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig),
 	ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
 	ConfigurationModule.register(LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig),

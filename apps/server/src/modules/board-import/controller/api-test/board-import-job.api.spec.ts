@@ -14,7 +14,12 @@ import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-mo
 import { BoardImportEvents } from '../../amqp';
 import { BoardImportApiModule } from '../../board-import-api.module';
 import { BoardImportWorkerTestModule } from '../../board-import-worker.app.module';
-import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
+import {
+	BOARD_IMPORT_CONFIG_TOKEN,
+	BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN,
+	BoardImportConfig,
+	type BoardImportPublicApiConfig,
+} from '../../board-import.config';
 import { ENTITIES } from '../../board-import.entity.imports';
 import { BoardImportJobStatus, BoardImportRunnerService } from '../../domain';
 import { BoardImportJobEntity } from '../../repo/entity';
@@ -28,6 +33,7 @@ describe('Board Import Controller (API)', () => {
 	let jwtConfig: TestJwtModuleConfig;
 	let em: EntityManager;
 	let amqpConnection: AmqpConnection;
+	let config: BoardImportPublicApiConfig;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -51,7 +57,12 @@ describe('Board Import Controller (API)', () => {
 		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
 		em = module.get(EntityManager);
 		amqpConnection = module.get(AmqpConnection);
+		config = module.get(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN);
 		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
+	});
+
+	beforeEach(() => {
+		config.featureBoardImportEnabled = true;
 	});
 
 	afterEach(async () => {
@@ -74,47 +85,79 @@ describe('Board Import Controller (API)', () => {
 	describe('[POST] board-import/jobs', () => {
 		describe('when the user is not authenticated', () => {
 			const setup = () => {
-				const { link } = boardImportJobFactory.build();
+				const { link, target } = boardImportJobFactory.build();
+				const body = { link, targetType: target.type, targetId: target.id };
 
-				return { link };
+				return { body };
 			};
 
 			it('should return status 401', async () => {
-				const { link } = setup();
+				const { body } = setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().post('', { link });
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post('', body);
 
 				expect(response.status).toEqual(401);
+			});
+		});
+
+		describe('when the feature is disabled', () => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const { link, target } = boardImportJobFactory.build();
+				const body = { link, targetType: target.type, targetId: target.id };
+				config.featureBoardImportEnabled = false;
+
+				return { loggedInClient, link, body };
+			};
+
+			it('should return status 403', async () => {
+				const { loggedInClient, body } = await setup();
+
+				const response = await loggedInClient.post('', body);
+
+				expect(response.status).toEqual(403);
+			});
+
+			it('should not store a job', async () => {
+				const { loggedInClient, link, body } = await setup();
+
+				await loggedInClient.post('', body);
+
+				const count = await em.count(BoardImportJobEntity, { link });
+				expect(count).toEqual(0);
 			});
 		});
 
 		describe('when the link is a valid https link', () => {
 			const setup = async () => {
 				const { loggedInClient, teacherUser } = await setupLoggedInClient();
-				const { link } = boardImportJobFactory.build();
+				const { link, target } = boardImportJobFactory.build();
+				const body = { link, targetType: target.type, targetId: target.id };
 				const status = BoardImportJobStatus.WAITING;
 
-				return { loggedInClient, teacherUser, link, status };
+				return { loggedInClient, teacherUser, link, target, body, status };
 			};
 
 			it('should return status 201 with the id and the status of the job', async () => {
-				const { loggedInClient, link, status } = await setup();
+				const { loggedInClient, body, status } = await setup();
 
-				const response = await loggedInClient.post('', { link });
+				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(201);
 				expect(response.body).toEqual({ id: expect.any(String), status });
 			});
 
 			it('should store the job', async () => {
-				const { loggedInClient, teacherUser, link, status } = await setup();
+				const { loggedInClient, teacherUser, link, target, body, status } = await setup();
 
-				const response = await loggedInClient.post('', { link });
+				const response = await loggedInClient.post('', body);
 
 				const { id } = response.body as BoardImportJobResponse;
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(entity).toMatchObject({
 					link,
+					targetType: target.type,
+					targetId: new ObjectId(target.id),
 					status,
 					userId: new ObjectId(teacherUser.id),
 					expiresAt: expect.any(Date),
@@ -122,9 +165,9 @@ describe('Board Import Controller (API)', () => {
 			});
 
 			it('should send the id of the job to the import job queue', async () => {
-				const { loggedInClient, link } = await setup();
+				const { loggedInClient, body } = await setup();
 
-				const response = await loggedInClient.post('', { link });
+				const response = await loggedInClient.post('', body);
 
 				const { id } = response.body as BoardImportJobResponse;
 				const message = await amqpConnection.channel.get(BoardImportEvents.IMPORT_JOB, { noAck: true });
@@ -135,15 +178,16 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link has no https scheme', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link } = boardImportJobFactory.build({ link: 'http://example.com/board' });
+				const { link, target } = boardImportJobFactory.build({ link: 'http://example.com/board' });
+				const body = { link, targetType: target.type, targetId: target.id };
 
-				return { loggedInClient, link };
+				return { loggedInClient, body };
 			};
 
 			it('should return status 400', async () => {
-				const { loggedInClient, link } = await setup();
+				const { loggedInClient, body } = await setup();
 
-				const response = await loggedInClient.post('', { link });
+				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(400);
 			});
@@ -152,15 +196,16 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link has no scheme', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link } = boardImportJobFactory.build({ link: 'example.com/board' });
+				const { link, target } = boardImportJobFactory.build({ link: 'example.com/board' });
+				const body = { link, targetType: target.type, targetId: target.id };
 
-				return { loggedInClient, link };
+				return { loggedInClient, body };
 			};
 
 			it('should return status 400', async () => {
-				const { loggedInClient, link } = await setup();
+				const { loggedInClient, body } = await setup();
 
-				const response = await loggedInClient.post('', { link });
+				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(400);
 			});
@@ -169,15 +214,16 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link contains credentials', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link } = boardImportJobFactory.build({ link: 'https://user:password@example.com/board' });
+				const { link, target } = boardImportJobFactory.build({ link: 'https://user:password@example.com/board' });
+				const body = { link, targetType: target.type, targetId: target.id };
 
-				return { loggedInClient, link };
+				return { loggedInClient, body };
 			};
 
 			it('should return status 400', async () => {
-				const { loggedInClient, link } = await setup();
+				const { loggedInClient, body } = await setup();
 
-				const response = await loggedInClient.post('', { link });
+				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(400);
 			});
@@ -186,14 +232,52 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link is missing', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
+				const { target } = boardImportJobFactory.build();
+				const body = { targetType: target.type, targetId: target.id };
 
-				return { loggedInClient };
+				return { loggedInClient, body };
 			};
 
 			it('should return status 400', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient, body } = await setup();
 
-				const response = await loggedInClient.post('', {});
+				const response = await loggedInClient.post('', body);
+
+				expect(response.status).toEqual(400);
+			});
+		});
+
+		describe('when the target type is not valid', () => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const { link, target } = boardImportJobFactory.build();
+				const body = { link, targetType: 'user', targetId: target.id };
+
+				return { loggedInClient, body };
+			};
+
+			it('should return status 400', async () => {
+				const { loggedInClient, body } = await setup();
+
+				const response = await loggedInClient.post('', body);
+
+				expect(response.status).toEqual(400);
+			});
+		});
+
+		describe('when the target id is not a valid id', () => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const { link, target } = boardImportJobFactory.build();
+				const body = { link, targetType: target.type, targetId: 'invalid-id' };
+
+				return { loggedInClient, body };
+			};
+
+			it('should return status 400', async () => {
+				const { loggedInClient, body } = await setup();
+
+				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(400);
 			});
