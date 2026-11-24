@@ -435,6 +435,17 @@ describe(LoggingUtils.name, () => {
 				expect(render(result)).toContain("url: 'https://idp.example.org/token'");
 			});
 
+			it('should redact camelCase PIN query parameters of the axios request url', () => {
+				const axiosError = buildAxiosError('https://api.example.org/verify?userPin=4711&pinCode=0815&page=2');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const output = render(LoggingUtils.createMessageWithContext(loggable));
+
+				expect(output).not.toContain('4711');
+				expect(output).not.toContain('0815');
+				expect(output).toContain('page=2');
+			});
+
 			it('should redact the signature and access key of a presigned S3 url (signature version 4)', () => {
 				const axiosError = buildAxiosError(
 					'https://bucket.s3.example.org/file.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLEKEY%2F20261119%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Expires=300&X-Amz-Signature=0123456789abcdef'
