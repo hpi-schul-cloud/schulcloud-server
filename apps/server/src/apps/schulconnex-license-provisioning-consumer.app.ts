@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 
+import { LegacyLogger } from '@infra/logger';
 import { SchulconnexLicenseProvisioningAMQPModule } from '@modules/provisioning/schulconnex-license-provisioning-amqp.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -12,7 +13,12 @@ async function bootstrap(): Promise<void> {
 	const internalServerExpress = express();
 	const internalServerExpressAdapter = new ExpressAdapter(internalServerExpress);
 
-	const nestApp = await NestFactory.create(SchulconnexLicenseProvisioningAMQPModule, internalServerExpressAdapter);
+	const nestApp = await NestFactory.create(SchulconnexLicenseProvisioningAMQPModule, internalServerExpressAdapter, {
+		bufferLogs: true,
+	});
+	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	// Nest only flushes buffered startup logs in app.listen(), which is not used here.
+	nestApp.flushLogs();
 	await nestApp.init();
 
 	const port = 4452;

@@ -57,6 +57,43 @@ describe('LegacyLogger', () => {
 		});
 	});
 
+	describe('WHEN building the message', () => {
+		it('should log string messages without quotes', () => {
+			service.log('Mapped {/api, GET} route', 'RouterExplorer');
+
+			expect(winstonLogger.info).toHaveBeenCalledWith({
+				message: 'Mapped {/api, GET} route',
+				context: 'RouterExplorer',
+			});
+		});
+
+		it('should log other messages as one line of text', () => {
+			service.log({ user: 'name', roles: ['teacher'] });
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ message: "{ user: 'name', roles: [ 'teacher' ] }" })
+			);
+		});
+
+		it('should redact sensitive values', () => {
+			service.log({ accessToken: 'eyJhbGciOiJIUzI1NiJ9.payload' });
+
+			expect(winstonLogger.info).toHaveBeenCalledWith(
+				expect.objectContaining({ message: expect.not.stringContaining('eyJhbGciOiJIUzI1NiJ9.payload') as string })
+			);
+		});
+
+		it('should log the trace of an error as separate field', () => {
+			service.error('request failed', 'Error: request failed\n    at handler (file.ts:1:1)', 'ExceptionsHandler');
+
+			expect(winstonLogger.error).toHaveBeenCalledWith({
+				message: 'request failed',
+				context: 'ExceptionsHandler',
+				trace: 'Error: request failed\n    at handler (file.ts:1:1)',
+			});
+		});
+	});
+
 	describe('WHEN warn logging', () => {
 		it('should call winstonLogger.warning', () => {
 			const error = new Error('custom error');

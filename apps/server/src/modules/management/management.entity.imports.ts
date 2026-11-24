@@ -1,4 +1,5 @@
 import { AccountEntity } from '@modules/account/repo';
+import { BoardImportJobEntity } from '@modules/board-import/repo/entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
 import { CourseEntity } from '@modules/course/repo/course.entity';
@@ -113,6 +114,7 @@ export const ENTITIES = [
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
 	RuntimeConfigEntity,
+	BoardImportJobEntity,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];

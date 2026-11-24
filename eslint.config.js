@@ -358,6 +358,26 @@ const entityFiles = {
 	},
 };
 
+// New log messages use logger.info('message', data) instead of a Loggable class (SVSDEV-345).
+// Exceptions that implement Loggable extend an error class and are not affected.
+// Existing classes are listed in eslint.legacy-loggables.js; remove a file there when converting it.
+const noNewLoggableClasses = [
+	{
+		name: 'schulcloud/no-new-loggable-classes',
+		files: ['apps/server/src/**/*.ts'],
+		ignores: ['apps/server/src/**/*.spec.ts', ...require('./eslint.legacy-loggables')],
+		rules: {
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector: 'ClassDeclaration[superClass=null] > TSClassImplements[expression.name="Loggable"]',
+					message: "Do not add new Loggable classes, log with logger.info('message', data) instead.",
+				},
+			],
+		},
+	},
+];
+
 const dtoFiles = {
 	name: 'schulcloud/dtos',
 	files: [
@@ -412,6 +432,8 @@ module.exports = [
 	tsSpecs,
 	...layerRestrictions,
 	entityFiles,
+	// before dtoFiles, which sets its own no-restricted-syntax rule
+	...noNewLoggableClasses,
 	dtoFiles,
 	singleClassFiles,
 ];
