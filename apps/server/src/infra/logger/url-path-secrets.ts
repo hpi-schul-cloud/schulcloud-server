@@ -1,5 +1,6 @@
 // This file is also required by the legacy Feathers app from dist (src/middleware/errorHandler.js, src/app.js).
 // Keep it free of path aliases and Nest imports, so it works there without the Nest module system.
+import { isSensitiveName } from './sensitive-value';
 
 const REDACTED = '***';
 
@@ -37,8 +38,8 @@ const SECRET_PATH_ROUTES: SecretPathRoute[] = [
 ];
 
 /**
- * Query params that carry a credential. Query params that are secret by their name (accessToken, ...) are handled by
- * the logger's field-name list.
+ * Query params that carry a credential although their name does not say so.
+ * Query params with a sensitive name (accessToken, shareToken, ...; see isSensitiveName) are redacted as well.
  */
 const SECRET_QUERY_PARAMS = [
 	// Nest: DELETE /room-invitation-links?roomInvitationLinkIds=... The same ids as in the path above.
@@ -47,56 +48,47 @@ const SECRET_QUERY_PARAMS = [
 	'pin',
 ];
 
-// The same route is reached under several mount paths: Nest under /api/v3 (request.url inside Nest has no prefix),
-// Feathers under /, /api, /api/v1 and /legacy/v1 (see server.app.ts and legacyForward.js).
+// Characters that end a URL in free text: whitespace, quotes, the backslash of a JSON escape (\n, \") and
+// punctuation around a URL (brackets, comma, semicolon, pipe).
+const STOP = String.raw`\s"'\x60\\<>()\[\]{},;|^`;
+
+// The same route is reached under several mount paths: Nest under /api/v3, Feathers under /, /api, /api/v1 and
+// /legacy/v1 (see server.app.ts and legacyForward.js). Express also routes /api/v3//sharetoken/x, so slashes may repeat.
 // A request target can also be in absolute form (GET http://host/path, RFC 9112), Express routes it by its path.
-const MOUNT_PREFIX = String.raw`(?:[a-z][a-z0-9+.-]*://[^/?#]*)?(?:/api(?:/v\d+)?)?(?:/legacy/v1)?`;
+const MOUNT_PREFIX = String.raw`(?:[a-z][a-z0-9+.-]*://[^/?#${STOP}]*)?(?:/+api(?:/+v\d+)?)?(?:/+legacy/+v1)?`;
+
+// A URL starts where the text before it cannot be part of a path (so /other/sharetoken/x is not matched),
+// or right after a JSON escape like \n.
+const URL_START = String.raw`(?:(?<=\\[nrt])|(?<![\w.~%/-]))`;
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
-// In free text (e.g. Nest's "Cannot GET /sharetoken/abc") a URL starts after whitespace, a quote or "=", and ends there too.
-const TEXT_URL_START = String.raw`(?:^|[\s"'(=])`;
-const TEXT_STOP = String.raw`\s"'`;
-
-const toPattern = (route: SecretPathRoute, inText: boolean): RegExp => {
-	const stop = inText ? TEXT_STOP : '';
+const toPathPattern = (route: SecretPathRoute): RegExp => {
+	const prefix = route.prefix.split('/').map(escapeRegExp).join('/+');
+	const secretStop = `?#${STOP}:&=`;
 	const notSecret = route.notSecret?.length
-		? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/?#${stop}]|$))`
+		? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/${secretStop}]|$))`
 		: '';
-	const secret = route.spansSlashes ? `[^?#${stop}]+` : `[^/?#${stop}]+`;
-	const start = inText ? TEXT_URL_START : '^';
+	const secret = route.spansSlashes ? `[^${secretStop}]+` : `[^/${secretStop}]+`;
 
 	// Express routes are case-insensitive, so /ShareToken/abc reaches the same handler.
-	return new RegExp(
-		`(${start}${MOUNT_PREFIX}/${escapeRegExp(route.prefix)}/)${notSecret}${secret}`,
-		inText ? 'gi' : 'i'
-	);
+	return new RegExp(`(${URL_START}${MOUNT_PREFIX}/+${prefix}/+)${notSecret}${secret}`, 'gi');
 };
 
-const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map((route) => toPattern(route, false));
+const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPathPattern);
 
-const SECRET_PATH_PATTERNS_IN_TEXT = SECRET_PATH_ROUTES.map((route) => toPattern(route, true));
-
-// Also matches the array forms of the qs parser: name[]=, name[0]= and their encoded forms (name%5B0%5D=).
-// Values end at the next & or # (in free text also at whitespace or a quote).
-const toQueryPattern = (inText: boolean): RegExp =>
-	new RegExp(
-		String.raw`([?&](?:${SECRET_QUERY_PARAMS.map(escapeRegExp).join('|')})(?:\[[^\]&#=]*\]|%5B(?:(?!%5D)[^&#=])*%5D)?=)[^&#${inText ? TEXT_STOP : ''}]*`,
-		'gi'
-	);
-
-const SECRET_QUERY_PATTERN = toQueryPattern(false);
-
-const SECRET_QUERY_PATTERN_IN_TEXT = toQueryPattern(true);
-
-const redactWith = (text: string, pathPatterns: RegExp[], queryPattern: RegExp): string =>
-	pathPatterns
-		.reduce((redacted, pattern) => redacted.replace(pattern, `$1${REDACTED}`), text)
-		.replace(queryPattern, `$1${REDACTED}`);
-
-const SECRET_PARAM_NAMES = new Set(SECRET_PATH_ROUTES.flatMap((route) => route.params));
+// name=value in a query string. The name may have the array forms of the qs parser: name[]=, name[0]=, name%5B0%5D=.
+// Values end at the next & or # or a stop character.
+const QUERY_PARAM_PATTERN = new RegExp(
+	String.raw`([?&]([\w.-]+)(?:\[[^\]&#=${STOP}]*\]|%5B(?:(?!%5D)[^&#=${STOP}])*%5D)*=)[^&#${STOP}]*`,
+	'gi'
+);
 
 const SECRET_QUERY_PARAM_NAMES = new Set(SECRET_QUERY_PARAMS);
+
+const isSecretQueryParam = (name: string): boolean => SECRET_QUERY_PARAM_NAMES.has(name) || isSensitiveName(name);
+
+const SECRET_PARAM_NAMES = new Set(SECRET_PATH_ROUTES.flatMap((route) => route.params));
 
 const redactKeys = <T>(record: T, names: Set<string>): T => {
 	if (typeof record !== 'object' || record === null) {
@@ -114,30 +106,30 @@ const redactKeys = <T>(record: T, names: Set<string>): T => {
 };
 
 /**
- * Replaces secrets in the path and the query of a URL (e.g. /sharetoken/abc becomes /sharetoken/***).
- * Other URLs stay unchanged.
- */
-export const redactSecretsInUrl = <T>(url: T): T => {
-	if (typeof url !== 'string') {
-		return url;
-	}
-
-	return redactWith(url, SECRET_PATH_PATTERNS, SECRET_QUERY_PATTERN) as T;
-};
-
-/**
- * Replaces secrets of URLs inside a longer text, e.g. the message "Cannot GET /api/v3/sharetoken/abc" of a Nest 404.
+ * Replaces secrets of URLs anywhere in a text: a URL on its own, a message like "Cannot GET /sharetoken/abc",
+ * or a finished JSON log line. Secret path segments (SECRET_PATH_ROUTES) and the values of secret query params
+ * become ***. Only characters that are part of the secret are replaced, so a JSON line stays valid JSON.
  */
 export const redactSecretsInText = <T>(text: T): T => {
 	if (typeof text !== 'string') {
 		return text;
 	}
 
-	return redactWith(text, SECRET_PATH_PATTERNS_IN_TEXT, SECRET_QUERY_PATTERN_IN_TEXT) as T;
+	const redactedPaths = SECRET_PATH_PATTERNS.reduce(
+		(redacted, pattern) => redacted.replace(pattern, `$1${REDACTED}`),
+		text as string
+	);
+
+	return redactedPaths.replace(QUERY_PARAM_PATTERN, (match: string, keep: string, name: string) =>
+		isSecretQueryParam(name) ? `${keep}${REDACTED}` : match
+	) as T;
 };
+
+/** @deprecated Use redactSecretsInText, which also finds URLs inside longer texts. */
+export const redactSecretsInUrl = redactSecretsInText;
 
 /** Returns a copy of the route params where params that hold a secret path segment are redacted. */
 export const redactSecretPathParams = <T>(params: T): T => redactKeys(params, SECRET_PARAM_NAMES);
 
-/** Returns a copy of the parsed query where params that carry a path secret are redacted. */
+/** Returns a copy of the parsed query where params that carry a secret are redacted (only SECRET_QUERY_PARAMS). */
 export const redactSecretQueryParams = <T>(query: T): T => redactKeys(query, SECRET_QUERY_PARAM_NAMES);

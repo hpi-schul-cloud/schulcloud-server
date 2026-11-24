@@ -117,15 +117,44 @@ describe('url-path-secrets', () => {
 				'Cannot DELETE /api/v3/room-invitation-links?roomInvitationLinkIds=a&roomInvitationLinkIds[1]=b now',
 				'Cannot DELETE /api/v3/room-invitation-links?roomInvitationLinkIds=***&roomInvitationLinkIds[1]=*** now',
 			],
+			['/api/v3//sharetoken/abc', '/api/v3//sharetoken/***'],
+			['//registrations//by-secret/s3cr3t', '//registrations//by-secret/***'],
+			['url: /sharetoken/abc, next', 'url: /sharetoken/***, next'],
+			['(/sharetoken/abc)', '(/sharetoken/***)'],
+			['[/sharetoken/abc]', '[/sharetoken/***]'],
+			['`/sharetoken/abc`', '`/sharetoken/***`'],
+			['</sharetoken/abc>', '</sharetoken/***>'],
+			['url=/sharetoken/abc;', 'url=/sharetoken/***;'],
+			['/sharetoken/abc: not found', '/sharetoken/***: not found'],
+			[
+				'{"message":"Cannot GET /api/v3/sharetoken/abc","stack":"NotFoundException: Cannot GET /api/v3/sharetoken/abc\\n    at x"}',
+				'{"message":"Cannot GET /api/v3/sharetoken/***","stack":"NotFoundException: Cannot GET /api/v3/sharetoken/***\\n    at x"}',
+			],
+			['{"url":"\\"/link/abc\\""}', '{"url":"\\"/link/***\\""}'],
+			['first\\n/sharetoken/abc', 'first\\n/sharetoken/***'],
+			['/rooms?shareToken=x&accessToken=y&page=2', '/rooms?shareToken=***&accessToken=***&page=2'],
+			['GET /files?token=abc#top', 'GET /files?token=***#top'],
+			['"url":"/x?access_token=abc\\n"', '"url":"/x?access_token=***\\n"'],
 		])('should redact the secret in %s', (text, expected) => {
 			expect(redactSecretsInText(text)).toBe(expected);
 		});
 
-		it.each(['Cannot GET /api/v3/rooms/1', 'Cannot GET /other/sharetoken/abc', 'see sharetoken/abc'])(
-			'should not change %s',
-			(text) => {
-				expect(redactSecretsInText(text)).toBe(text);
-			}
-		);
+		it('should keep a JSON line valid', () => {
+			const line = JSON.stringify({ message: 'Cannot GET /sharetoken/a"b\\c', url: '/x?token=a"b' });
+
+			const parsed = JSON.parse(redactSecretsInText(line)) as Record<string, string>;
+
+			expect(parsed.message).not.toContain('a"b');
+		});
+
+		it.each([
+			'Cannot GET /api/v3/rooms/1',
+			'Cannot GET /other/sharetoken/abc',
+			'see sharetoken/abc',
+			'/rooms?page=2&limit=10',
+			'a & b=c',
+		])('should not change %s', (text) => {
+			expect(redactSecretsInText(text)).toBe(text);
+		});
 	});
 });
