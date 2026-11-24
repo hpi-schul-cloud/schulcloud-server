@@ -17,7 +17,7 @@ export class ConfigurationFactory {
 	public loadAndValidateConfigs<T extends object>(Constructor: new () => T): T {
 		const configInstance = this.initializeAndLoadConfig<T>(Constructor);
 
-		const validatedConfig = this.validate(configInstance);
+		const validatedConfig = this.validate(configInstance, Constructor.name);
 		this.registerSecrets(validatedConfig);
 
 		return validatedConfig;
@@ -51,15 +51,21 @@ export class ConfigurationFactory {
 		return configInstance;
 	}
 
-	private validate<T extends object>(validatedConfig: T): T {
+	private validate<T extends object>(validatedConfig: T, configName: string): T {
 		const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
 		if (errors.length > 0) {
-			// toString() only names the failed constraints, the messages explain what is expected
-			const messages = errors
-				.flatMap((error) => Object.values(error.constraints ?? {}))
-				.map((message) => ` - ${message}`);
-			throw new Error([errors.toString(), ...messages].join('\n'));
+			const messages = errors.flatMap((error) => {
+				const propertyPath = error.property;
+				const constraints = Object.values(error.constraints ?? {});
+				const ownErrors = constraints.map((message) => `  - ${propertyPath}: ${message}`);
+				const childErrors = error.children?.flatMap((child) =>
+					Object.values(child.constraints ?? {}).map((message) => `  - ${propertyPath}.${child.property}: ${message}`)
+				);
+
+				return [...ownErrors, ...(childErrors ?? [])];
+			});
+			throw new Error(`Invalid configuration ${configName}:\n${messages.join('\n')}`);
 		}
 
 		return validatedConfig;

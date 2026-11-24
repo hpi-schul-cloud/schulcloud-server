@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean, IsString } from 'class-validator';
+import { IsBoolean, IsString, IsUrl } from 'class-validator';
 import { ConfigProperty, Configuration } from './configuration.decorator';
 import { ConfigurationFactory } from './configuration.factory';
 
@@ -149,6 +149,21 @@ describe(ConfigurationFactory.name, () => {
 			it('should name what is expected in the error', () => {
 				setup();
 				expect(() => configFactory.loadAndValidateConfigs(TestConfig)).toThrow(/must be a string/);
+			});
+
+			it('should identify the config class and invalid property', () => {
+				@Configuration()
+				class UrlConfig {
+					@IsUrl()
+					@ConfigProperty('SERVICE_URI')
+					public uri = 'not a URL';
+				}
+
+				jest.spyOn(configService, 'get').mockReturnValue(undefined);
+
+				expect(() => configFactory.loadAndValidateConfigs(UrlConfig)).toThrow(
+					'Invalid configuration UrlConfig:\n  - uri: uri must be a URL address'
+				);
 			});
 		});
 
