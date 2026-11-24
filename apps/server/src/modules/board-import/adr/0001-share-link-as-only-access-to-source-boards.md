@@ -6,7 +6,7 @@ Accepted (2026-11-17)
 
 ## Context
 
-The board import copies boards from TaskCards, Edumaps and Padlet into the SchulCloud. These tools have no official interface for this. The import could connect to the account of the user in the source tool, or it could read what the source tool shows to a visitor of a shared board.
+The board import copies boards from TaskCards, Edumaps and Padlet into the SchulCloud. These tools have no official interface for this. The import can connect to the account of the user in the source tool. As an alternative, it can read what the source tool shows to a visitor of a shared board.
 
 ## Decision
 
