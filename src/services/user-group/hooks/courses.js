@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const moment = require('moment');
 
@@ -6,6 +7,8 @@ const { BadRequest, Forbidden } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
+const RoleModel = require('../../role/model');
+const { userModel: UserModel } = require('../../user/model');
 const { equal: equalIds, toString: toStringId } = require('../../../helper/compare').ObjectId;
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
@@ -262,6 +265,65 @@ const restrictChangesToArchivedCourse = async (context) => {
 	return context;
 };
 
+/**
+ * Rejects MongoDB update operators (e.g. $push, $set, $rename) and dotted paths in the request data,
+ * because they are passed through to MongoDB and would bypass the validation of the course attributes.
+ * @param context contains the feathers context of the request
+ */
+const preventMongoOperatorsInData = (context) => {
+	const { data } = context;
+	if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+		throw new BadRequest('Invalid course data.');
+	}
+
+	const hasOperatorOrPathKey = Object.keys(data).some((key) => key.startsWith('$') || key.includes('.'));
+	if (hasOperatorOrPathKey) {
+		throw new BadRequest('Invalid course data.');
+	}
+
+	return context;
+};
+
+/**
+ * Ensures that every user in teacherIds and substitutionIds exists and has the teacher role.
+ * Otherwise any known user (e.g. a student) could be given teacher access to the course.
+ * @param context contains the feathers context of the request
+ */
+const validateCourseTeachers = async (context) => {
+	const invalidTeachersMessage =
+		'teacherIds and substitutionIds may only contain existing users with the teacher role.';
+	const teacherIds = new Set();
+
+	['teacherIds', 'substitutionIds'].forEach((attribute) => {
+		const value = context.data[attribute];
+		if (value === undefined || value === null) {
+			return;
+		}
+
+		_.castArray(value).forEach((id) => {
+			if (!mongoose.isObjectIdOrHexString(id)) {
+				throw new BadRequest(invalidTeachersMessage);
+			}
+			teacherIds.add(new mongoose.Types.ObjectId(id).toHexString());
+		});
+	});
+
+	if (teacherIds.size === 0) {
+		return context;
+	}
+
+	const teacherRole = await RoleModel.findOne({ name: 'teacher' }).select('_id').lean().exec();
+	const validTeacherCount = teacherRole
+		? await UserModel.countDocuments({ _id: { $in: [...teacherIds] }, roles: teacherRole._id }).exec()
+		: 0;
+
+	if (validTeacherCount !== teacherIds.size) {
+		throw new BadRequest(invalidTeachersMessage);
+	}
+
+	return context;
+};
+
 module.exports = {
 	splitClassIdsInGroupsAndClasses,
 	addWholeClassToCourse,
@@ -273,4 +335,6 @@ module.exports = {
 	restrictChangesToArchivedCourse,
 	restrictChangesToSyncedCourse,
 	getPermissionHook,
+	preventMongoOperatorsInData,
+	validateCourseTeachers,
 };
