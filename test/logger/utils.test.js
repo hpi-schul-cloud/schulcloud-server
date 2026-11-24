@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { AxiosError } = require('axios');
 const { ObjectId } = require('bson');
 const MESSAGE = Symbol.for('message');
 
@@ -226,6 +227,33 @@ describe('[logger] masking in the feathers logger', () => {
 
 		expect(line).to.include({ level: 'info', message: 'deep', maskingFailed: true });
 		expect(line).not.to.have.property('deep');
+	});
+
+	it('should log only the summary of an axios error passed as the whole entry', () => {
+		const error = new AxiosError('Request failed', 'ERR_BAD_REQUEST', {
+			url: 'https://idm.example.com/token',
+			method: 'post',
+			headers: { Authorization: 'Basic dXNlcjpwYXNzd29yZDEyMw==' },
+			data: '{"client_secret":"topsecretvalue99"}',
+		});
+		error.level = 'error';
+
+		const output = getProductionFormat().transform(error)[MESSAGE];
+
+		expect(output).not.to.include('dXNlcjpwYXNzd29yZDEyMw==');
+		expect(output).not.to.include('topsecretvalue99');
+		expect(JSON.parse(output)).to.include({ level: 'error', message: 'Request failed', type: 'error' });
+	});
+
+	it('should not log the result of an own toJSON of the whole entry', () => {
+		const entry = { level: 'info', message: 'entry', password: 'plainpassword123' };
+		entry.toJSON = () => ({ password: 'plainpassword123', raw: SECRET });
+
+		const output = getProductionFormat().transform(entry)[MESSAGE];
+
+		expect(output).not.to.include('plainpassword123');
+		expect(output).not.to.include(SECRET);
+		expect(JSON.parse(output)).to.include({ level: 'info', message: 'entry' });
 	});
 
 	it('should not leave any part of a secret in an error message or a self-returning toJSON', () => {

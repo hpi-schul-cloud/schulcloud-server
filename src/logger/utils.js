@@ -9,6 +9,7 @@ const { maskSecretsInFields } = require('../../dist/apps/server/infra/logger/sec
 
 const { format, transports } = winston;
 const LEVEL = Symbol.for('level');
+const MESSAGE = Symbol.for('message');
 
 const defineValue = (target, key, value) => {
 	// defineProperty instead of target[key]: a key "__proto__" (e.g. from parsed JSON) would set the prototype.
@@ -95,12 +96,32 @@ function toJsonValues(value, ancestors = new Set()) {
 	}
 }
 
+// The entry fields winston and our formats set. The serializer sets the message symbol again, it is left out.
+const createBaseEntry = (info) => {
+	const entry = {};
+	for (const symbol of Object.getOwnPropertySymbols(info)) {
+		if (symbol !== MESSAGE) {
+			entry[symbol] = info[symbol];
+		}
+	}
+	for (const key of ['level', 'timestamp', 'type']) {
+		if (typeof info[key] === 'string') {
+			entry[key] = maskSecretsInText(info[key]);
+		}
+	}
+
+	return entry;
+};
+
 // Redacts values of sensitive field names (token, password, ...) and Bearer tokens, like LoggingUtils for Nest loggables.
 // Returns a new info object: winston passes the caller's object as info for logger.info(obj), it must stay unchanged.
 const redactSensitiveFields = format((info) => {
-	const redacted = LoggingUtils.redactSensitiveValue(toJsonValues(Object.fromEntries(Object.entries(info))));
-	// The spread keeps winston's symbol keys (level, message, splat) and keys LoggingUtils leaves out (functions).
-	const result = { ...info };
+	// Functions are left out, so an own toJSON of the entry is neither called here nor kept for the serializer.
+	const fields = Object.fromEntries(Object.entries(info).filter(([, value]) => typeof value !== 'function'));
+	const redacted = LoggingUtils.redactSensitiveValue(toJsonValues(fields));
+	// Only the redacted fields, never other original keys: for an axios error as the whole entry LoggingUtils returns
+	// a summary without its request config, and an own toJSON would be called by the serializer.
+	const result = createBaseEntry(info);
 	for (const [key, value] of Object.entries(redacted)) {
 		defineValue(result, key, value);
 	}
@@ -116,6 +137,11 @@ const createMaskingFailedEntry = (info) => {
 	try {
 		entry.level = info.level;
 		entry[LEVEL] = info[LEVEL];
+		for (const key of ['timestamp', 'type']) {
+			if (typeof info[key] === 'string') {
+				entry[key] = maskSecretsInText(info[key]);
+			}
+		}
 		if (typeof info.message === 'string') {
 			entry.message = LoggingUtils.redactSensitiveValue(maskSecretsInText(info.message));
 		}
