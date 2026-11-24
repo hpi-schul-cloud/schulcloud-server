@@ -1,9 +1,12 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
-import { type RoomArrangementProps } from '../domain';
-import { RoomArrangementEntity } from '../repo/entity/room-arrangement.entity';
+import { RoomArrangementEntity, type RoomArrangementEntityProps } from '../repo/entity/room-arrangement.entity';
 
-export const roomArrangementEntityFactory = EntityFactory.define<RoomArrangementEntity, RoomArrangementProps>(
+/**
+ * Builds documents in the legacy shape (only `items`) by default.
+ * Pass `schemaVersion`, `revision`, `ungroupedRoomIds`, `groups` and `confirmGroupDeletion` for the grouped shape.
+ */
+export const roomArrangementEntityFactory = EntityFactory.define<RoomArrangementEntity, RoomArrangementEntityProps>(
 	RoomArrangementEntity,
 	() => {
 		return {
