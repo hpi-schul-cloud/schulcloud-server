@@ -6,7 +6,8 @@ export class TokenRequestMapper {
 		clientId: string,
 		decryptedClientSecret: string,
 		code: string,
-		redirectUri: string
+		redirectUri: string,
+		codeVerifier?: string
 	): AuthenticationCodeGrantTokenRequest {
 		return new AuthenticationCodeGrantTokenRequest({
 			client_id: clientId,
@@ -14,6 +15,7 @@ export class TokenRequestMapper {
 			redirect_uri: redirectUri,
 			grant_type: OAuthGrantType.AUTHORIZATION_CODE_GRANT,
 			code,
+			code_verifier: codeVerifier,
 		});
 	}
 

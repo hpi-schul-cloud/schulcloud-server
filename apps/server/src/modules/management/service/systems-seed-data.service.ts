@@ -2,6 +2,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig, System, SystemService } from '@modules/system';
 import { Inject, Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SchulcloudTheme } from '@shared/domain/types';
 import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
@@ -17,9 +18,19 @@ export class SystemsSeedDataService {
 			scTheme,
 			schulconnexClientId: moinSchuleClientId,
 			schulconnexClientSecret: moinSchuleClientSecret,
+			brandenburgClientId,
+			brandenburgClientSecret,
+			brandenburgAuthEndpoint,
+			brandenburgTokenEndpoint,
+			brandenburgJwksEndpoint,
+			brandenburgIssuer,
+			brandenburgEndSessionEndpoint,
+			brandenburgProvisioningUrl,
 		} = this.config;
 
-		if (scTheme === 'n21' && moinSchuleClientId && moinSchuleClientSecret) {
+		let importedCount = 0;
+
+		if (scTheme === SchulcloudTheme.NIEDERSACHSEN && moinSchuleClientId && moinSchuleClientSecret) {
 			const encryptedMoinSchuleSecret: string = this.defaultEncryptionService.encrypt(moinSchuleClientSecret);
 
 			await this.systemService.save(
@@ -48,9 +59,50 @@ export class SystemsSeedDataService {
 				})
 			);
 
-			return 1;
+			importedCount += 1;
 		}
 
-		return 0;
+		if (
+			scTheme === SchulcloudTheme.BRANDENBURG &&
+			brandenburgClientId &&
+			brandenburgClientSecret &&
+			brandenburgAuthEndpoint &&
+			brandenburgTokenEndpoint &&
+			brandenburgJwksEndpoint &&
+			brandenburgIssuer &&
+			brandenburgEndSessionEndpoint &&
+			brandenburgProvisioningUrl
+		) {
+			const encryptedBrandenburgSecret: string = this.defaultEncryptionService.encrypt(brandenburgClientSecret);
+
+			await this.systemService.save(
+				new System({
+					id: '5cf5a54f067252f954f47bba',
+					alias: 'Brandenburg',
+					displayName: 'Brandenburg',
+					type: 'oauth',
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+					provisioningUrl: brandenburgProvisioningUrl,
+					oauthConfig: new OauthConfig({
+						clientId: brandenburgClientId,
+						clientSecret: encryptedBrandenburgSecret,
+						tokenEndpoint: brandenburgTokenEndpoint,
+						grantType: 'authorization_code',
+						scope: 'openid',
+						responseType: 'code',
+						redirectUri: '',
+						authEndpoint: brandenburgAuthEndpoint,
+						provider: 'Brandenburg',
+						jwksEndpoint: brandenburgJwksEndpoint,
+						issuer: brandenburgIssuer,
+						endSessionEndpoint: brandenburgEndSessionEndpoint,
+					}),
+				})
+			);
+
+			importedCount += 1;
+		}
+
+		return importedCount;
 	}
 }
