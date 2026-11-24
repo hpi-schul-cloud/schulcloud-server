@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { RoomArrangementService } from '@modules/room/domain';
 import { roomArrangementEntityFactory, roomEntityFactory } from '@modules/room/testing';
 import {
@@ -110,6 +110,47 @@ describe(DeleteUserRoomDataStep.name, () => {
 				]);
 
 				expect(result).toEqual(expectedResultWithDeletedRoomArrangement);
+			});
+		});
+
+		describe('when user has a room arrangement with groups', () => {
+			const setup = async () => {
+				const user = userFactory.buildWithId();
+				const rooms = roomEntityFactory.buildListWithId(2);
+				const roomArrangement = roomArrangementEntityFactory.build({
+					userId: user.id,
+					schemaVersion: 2,
+					revision: 4,
+					ungroupedRoomIds: [rooms[0].id],
+					groups: [{ id: new ObjectId().toHexString(), name: 'Informatik', collapsed: true, roomIds: [rooms[1].id] }],
+					confirmGroupDeletion: false,
+					items: rooms.map((room) => {
+						return { id: room.id };
+					}),
+				});
+
+				await em.persist([user, ...rooms, roomArrangement]).flush();
+				em.clear();
+
+				return { user, rooms, roomArrangement };
+			};
+
+			it('should delete the whole arrangement including its groups but keep the rooms', async () => {
+				const { user, rooms, roomArrangement } = await setup();
+
+				const result = await step.execute({ userId: user.id });
+
+				expect(result).toEqual(
+					StepReportBuilder.build(ModuleName.ROOM, [
+						StepOperationReportBuilder.build(StepOperationType.DELETE, 1, [roomArrangement.id]),
+					])
+				);
+				const storedArrangements = await em
+					.getCollection(RoomArrangementEntity.name)
+					.find({ user: new ObjectId(user.id) })
+					.toArray();
+				expect(storedArrangements).toEqual([]);
+				expect(await em.count(RoomEntity, { id: { $in: rooms.map((room) => room.id) } })).toBe(2);
 			});
 		});
 

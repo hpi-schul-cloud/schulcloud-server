@@ -20,6 +20,7 @@ describe('RoomInvitationLinkAuthorizable', () => {
 		const roomPublicApiConfig = {
 			featureRoomCopyEnabled: true,
 			featureRoomArchiveEnabled: false,
+			featureRoomGroupingEnabled: false,
 			featureRoomLinkInvitationExternalPersonsEnabled: false,
 			roomMemberAddExternalPersonRequirementsUrl: null,
 			featureRoomAddExternalPersonsEnabled: false,

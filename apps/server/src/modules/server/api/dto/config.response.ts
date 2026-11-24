@@ -245,6 +245,9 @@ export class ConfigResponse {
 	FEATURE_ROOM_ARCHIVE_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_ROOM_GROUPING_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_ROOM_SHARE: boolean;
 
 	@ApiProperty()
@@ -366,6 +369,7 @@ export class ConfigResponse {
 		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
 		this.FEATURE_ROOM_COPY_ENABLED = config.featureRoomCopyEnabled;
 		this.FEATURE_ROOM_ARCHIVE_ENABLED = config.featureRoomArchiveEnabled;
+		this.FEATURE_ROOM_GROUPING_ENABLED = config.featureRoomGroupingEnabled;
 		this.FEATURE_ROOM_SHARE = config.featureRoomShare;
 		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.featureRoomAddExternalPersonsEnabled;
 		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.featureRoomRegisterExternalPersonsEnabled;

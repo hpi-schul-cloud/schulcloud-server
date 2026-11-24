@@ -11,6 +11,7 @@ import { BoardModule } from '../board';
 import { RoomMembershipModule } from '../room-membership/room-membership.module';
 import { UserModule } from '../user';
 import { RoomController, RoomInvitationLinkController, RoomInvitationLinkUc, RoomUc } from './api';
+import { RoomArrangementController } from './api/room-arrangement.controller';
 import { RoomArrangementUc } from './api/room-arrangement.uc';
 import { RoomContentUc } from './api/room-content.uc';
 import { RoomCopyUc } from './api/room-copy.uc';
@@ -42,7 +43,7 @@ import { ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig } from './timeout.config';
 		ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
 		ConfigurationModule.register(ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig),
 	],
-	controllers: [RoomController, RoomInvitationLinkController],
+	controllers: [RoomController, RoomInvitationLinkController, RoomArrangementController],
 	providers: [
 		RoomUc,
 		RoomInvitationLinkUc,

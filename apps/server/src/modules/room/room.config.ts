@@ -22,6 +22,11 @@ export class RoomPublicApiConfig {
 	@StringToBoolean()
 	public featureRoomArchiveEnabled = false;
 
+	@ConfigProperty('FEATURE_ROOM_GROUPING_ENABLED')
+	@IsBoolean()
+	@StringToBoolean()
+	public featureRoomGroupingEnabled = false;
+
 	@ConfigProperty('FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED')
 	@IsBoolean()
 	@StringToBoolean()

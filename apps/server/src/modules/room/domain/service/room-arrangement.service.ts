@@ -1,43 +1,162 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { RoomArrangementRepo } from '../../repo';
-import { RoomArrangementItem } from '../type';
+import { RoomArrangement } from '../do/room-arrangement.do';
+import { RoomArrangementConflictError } from '../error/room-arrangement-conflict.error';
+import {
+	RoomArrangementConflictReason,
+	RoomArrangementRoomInfo,
+	RoomGroupUpdate,
+	RoomPositionCommand,
+} from '../type/room-arrangement';
+
+export const MAX_ROOM_ARRANGEMENT_WRITE_ATTEMPTS = 3;
+
+type RoomArrangementCommand = (arrangement: RoomArrangement) => boolean;
 
 @Injectable()
 export class RoomArrangementService {
 	constructor(private readonly roomArrangementRepo: RoomArrangementRepo) {}
 
-	public async sortRoomIdsByUserArrangement(userId: EntityId, roomIds: EntityId[]): Promise<EntityId[]> {
-		const arrangementExists = await this.roomArrangementRepo.hasArrangementForUserId(userId);
+	/**
+	 * Loads (and lazily creates) the arrangement and reconciles it with the authoritative list of rooms the user is
+	 * a member of. The arrangement is only written, and its revision only increased, when reconciliation changed it.
+	 */
+	public async getReconciledArrangement(
+		userId: EntityId,
+		accessibleRooms: RoomArrangementRoomInfo[]
+	): Promise<RoomArrangement> {
+		let arrangement = await this.roomArrangementRepo.findOrCreateByUserId(userId);
 
-		let userIdsByArrangement: EntityId[];
+		for (let attempt = 1; attempt <= MAX_ROOM_ARRANGEMENT_WRITE_ATTEMPTS; attempt += 1) {
+			const changed = arrangement.reconcile(accessibleRooms);
+			if (!changed) {
+				return arrangement;
+			}
 
-		if (arrangementExists) {
-			userIdsByArrangement = await this.sortAndUpdateArrangement(userId, roomIds);
-		} else {
-			await this.createArranagement(userId, roomIds);
-			userIdsByArrangement = roomIds;
+			const saved = await this.roomArrangementRepo.updateIfRevisionMatches(arrangement);
+			if (saved || attempt === MAX_ROOM_ARRANGEMENT_WRITE_ATTEMPTS) {
+				return arrangement;
+			}
+
+			arrangement = await this.roomArrangementRepo.findOrCreateByUserId(userId);
 		}
-		return userIdsByArrangement;
+
+		return arrangement;
 	}
 
-	public async moveRoom(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
-		const items = await this.roomArrangementRepo.findItemsByUserId(userId);
+	public async createGroup(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		name: string
+	): Promise<{ arrangement: RoomArrangement; createdGroupId: EntityId }> {
+		const createdGroupId = new ObjectId().toHexString();
 
-		if (toPosition < 0 || toPosition >= items.length) {
-			throw new BadRequestException(`Invalid position ${toPosition} for room arrangement of user '${userId}'`);
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) => {
+			item.createGroup(createdGroupId, name);
+
+			return true;
+		});
+
+		return { arrangement, createdGroupId };
+	}
+
+	public async updateGroup(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		groupId: EntityId,
+		update: RoomGroupUpdate
+	): Promise<RoomArrangement> {
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) =>
+			item.updateGroup(groupId, update)
+		);
+
+		return arrangement;
+	}
+
+	public async deleteGroup(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		groupId: EntityId,
+		disableFutureConfirmation: boolean
+	): Promise<RoomArrangement> {
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) => {
+			item.deleteGroup(groupId, disableFutureConfirmation);
+
+			return true;
+		});
+
+		return arrangement;
+	}
+
+	public async reorderGroups(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		groupIds: EntityId[]
+	): Promise<RoomArrangement> {
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) =>
+			item.reorderGroups(groupIds)
+		);
+
+		return arrangement;
+	}
+
+	public async moveRoom(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		command: RoomPositionCommand
+	): Promise<RoomArrangement> {
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) =>
+			item.moveRoom(command, accessibleRooms)
+		);
+
+		return arrangement;
+	}
+
+	public async setConfirmGroupDeletion(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		confirmGroupDeletion: boolean
+	): Promise<RoomArrangement> {
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) =>
+			item.setConfirmGroupDeletion(confirmGroupDeletion)
+		);
+
+		return arrangement;
+	}
+
+	/**
+	 * Legacy flat move without a client revision (PATCH /rooms). Last write wins: a concurrent write only causes a
+	 * retry with the newly stored state. Works only while the user has no named groups.
+	 */
+	public async moveRoomToVisibleUngroupedPosition(
+		userId: EntityId,
+		roomId: EntityId,
+		toPosition: number,
+		accessibleRooms: RoomArrangementRoomInfo[]
+	): Promise<void> {
+		for (let attempt = 1; attempt <= MAX_ROOM_ARRANGEMENT_WRITE_ATTEMPTS; attempt += 1) {
+			const arrangement = await this.roomArrangementRepo.findOrCreateByUserId(userId);
+
+			const changed = arrangement.moveUngroupedRoomToVisiblePosition(roomId, toPosition, accessibleRooms);
+			if (!changed) {
+				return;
+			}
+
+			const saved = await this.roomArrangementRepo.updateIfRevisionMatches(arrangement);
+			if (saved) {
+				return;
+			}
 		}
 
-		const roomIndex = items.findIndex((item) => item.id === roomId);
-
-		if (roomIndex === -1) {
-			throw new BadRequestException(`Room with ID ${roomId} not found in arrangement of user '${userId}'`);
-		}
-
-		const [roomItem] = items.splice(roomIndex, 1);
-		items.splice(toPosition, 0, roomItem);
-
-		await this.roomArrangementRepo.updateArrangement(userId, items);
+		throw new RoomArrangementConflictError(RoomArrangementConflictReason.REVISION);
 	}
 
 	public async deleteArrangements(userId: EntityId): Promise<EntityId[]> {
@@ -46,31 +165,30 @@ export class RoomArrangementService {
 		return deletedIds;
 	}
 
-	private async createArranagement(userId: EntityId, roomIds: EntityId[]): Promise<void> {
-		const items = roomIds.map((roomId): RoomArrangementItem => {
-			return { id: roomId };
-		});
+	private async updateArrangement(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		command: RoomArrangementCommand
+	): Promise<RoomArrangement> {
+		const arrangement = await this.roomArrangementRepo.findOrCreateByUserId(userId);
 
-		await this.roomArrangementRepo.createArrangement(userId, items);
-	}
+		if (arrangement.revision !== expectedRevision) {
+			throw new RoomArrangementConflictError(RoomArrangementConflictReason.REVISION);
+		}
 
-	private async sortAndUpdateArrangement(userId: EntityId, availableRoomIds: EntityId[]): Promise<EntityId[]> {
-		const roomIds = (await this.roomArrangementRepo.findItemsByUserId(userId)).map((item) => item.id);
-		const roomIdSet = new Set(roomIds);
+		const reconciled = arrangement.reconcile(accessibleRooms);
+		const changed = command(arrangement);
 
-		const knownRoomIds = availableRoomIds
-			.filter((roomId) => roomIdSet.has(roomId))
-			.sort((a, b) => roomIds.indexOf(a) - roomIds.indexOf(b));
-		const unknownRoomIds = availableRoomIds.filter((roomId) => !roomIdSet.has(roomId));
+		if (!reconciled && !changed) {
+			return arrangement;
+		}
 
-		const sortedRoomIds = [...knownRoomIds, ...unknownRoomIds];
+		const saved = await this.roomArrangementRepo.updateIfRevisionMatches(arrangement);
+		if (!saved) {
+			throw new RoomArrangementConflictError(RoomArrangementConflictReason.REVISION);
+		}
 
-		const items: RoomArrangementItem[] = sortedRoomIds.map((roomId) => {
-			return { id: roomId };
-		});
-
-		await this.roomArrangementRepo.updateArrangement(userId, items);
-
-		return sortedRoomIds;
+		return arrangement;
 	}
 }
