@@ -70,12 +70,27 @@ describe('isSensitiveName', () => {
 	});
 
 	describe('when a name contains pin as a word', () => {
-		it.each(['pin', 'PIN', 'Pin', 'pinCode', 'PINCode', 'userPin', 'userPIN', 'pin_code', 'PIN_CODE', 'x-pin', 'pin2'])(
-			'should match %s',
-			(name) => {
-				expect(isSensitiveName(name)).toBe(true);
-			}
-		);
+		it.each([
+			'pin',
+			'PIN',
+			'Pin',
+			'pinCode',
+			'PINCode',
+			'userPin',
+			'userPIN',
+			'pin_code',
+			'PIN_CODE',
+			'x-pin',
+			'pin2',
+			'pins',
+			'Pins',
+			'registrationPins',
+			'userPINs',
+			'USER_PINS',
+			'pins_list',
+		])('should match %s', (name) => {
+			expect(isSensitiveName(name)).toBe(true);
+		});
 	});
 
 	describe('when pin is only part of a longer word', () => {
@@ -92,7 +107,10 @@ describe('isSensitiveName', () => {
 			'pinboard',
 			'pincode',
 			'opinion',
+			'opinions',
 			'spin',
+			'spins',
+			'PINSET',
 		])('should not match %s', (name) => {
 			expect(isSensitiveName(name)).toBe(false);
 		});

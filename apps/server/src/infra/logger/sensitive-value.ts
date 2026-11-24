@@ -1,10 +1,10 @@
 // Matched anywhere in the lower-cased name: searchUserPassword, password_new, clientCredentials, x-auth-token.
 const SENSITIVE_NAME_PARTS = ['cookie', 'auth', 'token', 'secret', 'password', 'passwort', 'passwd', 'credential'];
 
-// Words of a name split at camelCase, digits, _ and - ("userPINCode" -> user, PIN, Code).
-// Linear: each alternative fails after at most one backtracking step.
+// Words of a name split at camelCase, digits, _ and - ("userPINCode" -> user, PIN, Code; "userPINs" -> user, PINs).
+// Linear: each alternative fails after at most two backtracking steps.
 const getWords = (name: string): string[] => {
-	const words: string[] = name.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+/g) ?? [];
+	const words: string[] = name.match(/[A-Z]+s?(?![a-z])|[A-Z]?[a-z]+/g) ?? [];
 
 	return words.map((word) => word.toLowerCase());
 };
@@ -21,8 +21,8 @@ export const isSensitiveName = (name: string): boolean => {
 		lower.startsWith('x-api') ||
 		// Only API keys: "key" alone would also hit accessKeyId, versionKey or public keys
 		/api[-_]?key/.test(lower) ||
-		// Only as a word of its own (pin, userPin, PIN_CODE, x-pin), not inside pinned, spinner or shipping
-		getWords(name).includes('pin')
+		// Only as a word of its own (pin, userPins, PIN_CODE, x-pin), not inside pinned, spinner or shipping
+		getWords(name).some((word) => word === 'pin' || word === 'pins')
 	);
 };
 
