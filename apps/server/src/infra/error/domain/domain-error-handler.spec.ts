@@ -291,13 +291,12 @@ describe('GlobalErrorFilter', () => {
 				domainErrorHandler.execHttpContext(error, context);
 
 				const loggable = logger.error.mock.calls[0][0];
-				expect(loggable.getLogMessage()).toMatchObject({
-					data: { request: { endpoint: expectedUrl, params: expectedParams } },
-				});
+				expect(loggable.getLogMessage()).toMatchObject({ data: { request: { params: expectedParams } } });
 				// What the logger writes: neither the path secret nor the query secret.
-				const logEntry = JSON.stringify(LoggingUtils.createMessageWithContext(loggable));
-				expect(logEntry).not.toContain(Object.values(params)[0]);
-				expect(logEntry).not.toContain('queryToken');
+				const line = renderLogLine(loggable);
+				expect(line).not.toContain(Object.values(params)[0]);
+				expect(line).not.toContain('queryToken');
+				expect(line).toContain(`"endpoint":"${expectedUrl}"`);
 			});
 		});
 
@@ -343,8 +342,8 @@ describe('GlobalErrorFilter', () => {
 
 				domainErrorHandler.execHttpContext(error, context);
 
-				const logEntry = JSON.stringify(LoggingUtils.createMessageWithContext(logger.error.mock.calls[0][0]));
-				expect(logEntry).not.toContain('secretLink');
+				const line = renderLogLine(logger.error.mock.calls[0][0]);
+				expect(line).not.toContain('secretLink');
 			});
 		});
 	});

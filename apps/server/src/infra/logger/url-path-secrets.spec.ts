@@ -1,12 +1,7 @@
-import {
-	redactSecretPathParams,
-	redactSecretQueryParams,
-	redactSecretsInText,
-	redactSecretsInUrl,
-} from './url-path-secrets';
+import { redactSecretPathParams, redactSecretQueryParams, redactSecretsInText } from './url-path-secrets';
 
 describe('url-path-secrets', () => {
-	describe('redactSecretsInUrl', () => {
+	describe('redactSecretsInText with a url', () => {
 		it.each([
 			['/sharetoken/abc123', '/sharetoken/***'],
 			['/sharetoken/abc123/import', '/sharetoken/***/import'],
@@ -43,7 +38,7 @@ describe('url-path-secrets', () => {
 			],
 			['/link/shortId', '/link/***'],
 		])('should redact the secret in %s', (url, expected) => {
-			expect(redactSecretsInUrl(url)).toBe(expected);
+			expect(redactSecretsInText(url)).toBe(expected);
 		});
 
 		it.each([
@@ -63,11 +58,11 @@ describe('url-path-secrets', () => {
 			'/other/sharetoken/abc',
 			'http://host/other/sharetoken/abc',
 		])('should not change %s', (url) => {
-			expect(redactSecretsInUrl(url)).toBe(url);
+			expect(redactSecretsInText(url)).toBe(url);
 		});
 
 		it('should return non-string values unchanged', () => {
-			expect(redactSecretsInUrl(undefined)).toBeUndefined();
+			expect(redactSecretsInText(undefined)).toBeUndefined();
 		});
 	});
 
@@ -104,7 +99,7 @@ describe('url-path-secrets', () => {
 		});
 	});
 
-	describe('redactSecretsInText', () => {
+	describe('redactSecretsInText with a longer text', () => {
 		it.each([
 			['Cannot POST /api/v3/sharetoken/abc123', 'Cannot POST /api/v3/sharetoken/***'],
 			['Cannot GET /api/v3/registrations/by-secret/s3cr3t/typo', 'Cannot GET /api/v3/registrations/by-secret/***/typo'],

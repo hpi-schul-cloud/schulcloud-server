@@ -56,6 +56,18 @@ describe('errorHandler', () => {
 		expect(getLoggedUrl()).to.equal('/courses/123?foo=bar');
 	});
 
+	it('should redact query params with a sensitive name and keep the others', async () => {
+		await request(app).get('/rooms?shareToken=secretShareToken&page=2');
+
+		expect(getLoggedUrl()).to.equal('/rooms?shareToken=***&page=2');
+	});
+
+	it('should redact secrets after doubled slashes', async () => {
+		await request(app).get('/api/v3//sharetoken/secretShareToken');
+
+		expect(getLoggedUrl()).to.equal('/api/v3//sharetoken/***');
+	});
+
 	it('should still remove a secret query', async () => {
 		await request(app).get('/sharetoken/secretShareToken?accessToken=secretQueryToken');
 

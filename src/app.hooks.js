@@ -7,14 +7,14 @@ const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { extractJwtData } = require('./utils/extractJwtData');
-const { redactSecretQueryParams, redactSecretsInUrl } = require('../dist/apps/server/infra/logger/url-path-secrets');
+const { redactSecretQueryParams, redactSecretsInText } = require('../dist/apps/server/infra/logger/url-path-secrets');
 
 const REDACTED = '***';
 
 // For services like passwordRecovery or link the id is the secret (see the route list in url-path-secrets.ts).
 const redactSecretId = (path, id) => {
 	const url = `/${path}/${id}`;
-	return redactSecretsInUrl(url) === url ? id : REDACTED;
+	return redactSecretsInText(url) === url ? id : REDACTED;
 };
 
 /**
@@ -124,7 +124,7 @@ const leadTimeDetection = (context) => {
 				method,
 				query: redactSecretQueryParams(query),
 				timeDelta,
-				originalUrl: redactSecretsInUrl(originalUrl),
+				originalUrl: redactSecretsInText(originalUrl),
 			};
 
 			if (id) {

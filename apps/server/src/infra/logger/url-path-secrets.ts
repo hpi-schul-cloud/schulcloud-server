@@ -125,9 +125,6 @@ export const redactSecretsInText = <T>(text: T): T => {
 	) as T;
 };
 
-/** @deprecated Use redactSecretsInText, which also finds URLs inside longer texts. */
-export const redactSecretsInUrl = redactSecretsInText;
-
 /** Returns a copy of the route params where params that hold a secret path segment are redacted. */
 export const redactSecretPathParams = <T>(params: T): T => redactKeys(params, SECRET_PARAM_NAMES);
 

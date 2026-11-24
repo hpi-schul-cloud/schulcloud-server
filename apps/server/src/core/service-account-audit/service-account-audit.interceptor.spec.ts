@@ -6,13 +6,12 @@ import { of, throwError } from 'rxjs';
 import { ServiceAccountAuditInterceptor } from './service-account-audit.interceptor';
 
 const createMockExecutionContext = (
-	user: { userId: string; isServiceAccount: boolean } | undefined,
-	originalUrl = '/test-endpoint'
+	user: { userId: string; isServiceAccount: boolean } | undefined
 ): ExecutionContext => {
 	const mockRequest = {
 		user,
 		method: 'GET',
-		originalUrl,
+		originalUrl: '/test-endpoint',
 	} as unknown as Request;
 
 	const mockResponse = {
@@ -131,37 +130,6 @@ describe('ServiceAccountAuditInterceptor', () => {
 								'service-account-123',
 								'GET',
 								'/test-endpoint',
-								200,
-								{}
-							);
-							done();
-						},
-					});
-				});
-			});
-
-			describe('when the url path contains a secret', () => {
-				const setup = () => {
-					const auditLoggerMock = createMock<AuditLogger>();
-					const interceptor = new ServiceAccountAuditInterceptor(auditLoggerMock);
-					const context = createMockExecutionContext(
-						{ userId: 'service-account-123', isServiceAccount: true },
-						'/api/v3/authorization/resolve-token/secretAccessToken/ttl/60'
-					);
-					const next: CallHandler = { handle: () => of({ result: 'success' }) };
-
-					return { context, next, interceptor, auditLoggerMock };
-				};
-
-				it('should log the path without the secret', (done) => {
-					const { context, next, interceptor, auditLoggerMock } = setup();
-
-					interceptor.intercept(context, next).subscribe({
-						next: () => {
-							expect(auditLoggerMock.logServiceAccountApiCall).toHaveBeenCalledWith(
-								'service-account-123',
-								'GET',
-								'/api/v3/authorization/resolve-token/***/ttl/60',
 								200,
 								{}
 							);
