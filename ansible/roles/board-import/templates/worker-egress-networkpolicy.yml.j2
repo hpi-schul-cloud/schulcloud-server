@@ -53,7 +53,7 @@ spec:
           protocol: TCP
 
     # Source tools: HTTPS to public addresses only. A network policy does not know host names,
-    # so the code checks the host of each link.
+    # so the code must check the host of each link.
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0
@@ -61,6 +61,8 @@ spec:
               - 10.0.0.0/8
               - 172.16.0.0/12
               - 192.168.0.0/16
+              # Shared address space. Some clusters use it for pod and node addresses.
+              - 100.64.0.0/10
               # Link-local addresses, for example the metadata service of the cloud provider
               - 169.254.0.0/16
       ports:
