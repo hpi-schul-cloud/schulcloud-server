@@ -49,8 +49,12 @@ const SECRET_QUERY_PARAMS = [
 ];
 
 // Characters that end a URL in free text: whitespace, quotes, the backslash of a JSON escape (\n, \") and
-// punctuation around a URL (brackets, comma, semicolon, pipe).
+// punctuation around a URL (brackets, comma, semicolon, pipe). Used where a URL starts and for the host.
 const STOP = String.raw`\s"'\x60\\<>()\[\]{},;|^`;
+
+// Characters that end a secret value. Express route params and query values take punctuation like , : ; = too,
+// so only whitespace, quotes and the backslash end them (these never belong to a real token, and keep JSON valid).
+const VALUE_STOP = String.raw`\s"'\\`;
 
 // The same route is reached under several mount paths: Nest under /api/v3, Feathers under /, /api, /api/v1 and
 // /legacy/v1 (see server.app.ts and legacyForward.js). Express also routes /api/v3//sharetoken/x, so slashes may repeat.
@@ -66,7 +70,7 @@ const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\
 
 const toPathPattern = (route: SecretPathRoute): RegExp => {
 	const prefix = route.prefix.split('/').map(escapeRegExp).join('/+');
-	const secretStop = `?#${STOP}:&=`;
+	const secretStop = `?#${VALUE_STOP}`;
 	const notSecret = route.notSecret?.length
 		? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/${secretStop}]|$))`
 		: '';
@@ -81,7 +85,7 @@ const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPathPattern);
 // name=value in a query string. The name may have the array forms of the qs parser: name[]=, name[0]=, name%5B0%5D=.
 // Values end at the next & or # or a stop character.
 const QUERY_PARAM_PATTERN = new RegExp(
-	String.raw`([?&]([\w.-]{1,128})(?:\[[^\]?&#=${STOP}]{0,32}\]|%5B(?:(?!%5D)[^?&#=${STOP}]){0,32}%5D)*=)[^&#${STOP}]*`,
+	String.raw`([?&]([\w.-]{1,128})(?:\[[^\]?&#=${STOP}]{0,32}\]|%5B(?:(?!%5D)[^?&#=${STOP}]){0,32}%5D)*=)[^&#${VALUE_STOP}]*`,
 	'gi'
 );
 

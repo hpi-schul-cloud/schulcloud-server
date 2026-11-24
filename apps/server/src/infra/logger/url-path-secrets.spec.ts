@@ -122,13 +122,19 @@ describe('url-path-secrets', () => {
 			],
 			['/api/v3//sharetoken/abc', '/api/v3//sharetoken/***'],
 			['//registrations//by-secret/s3cr3t', '//registrations//by-secret/***'],
-			['url: /sharetoken/abc, next', 'url: /sharetoken/***, next'],
-			['(/sharetoken/abc)', '(/sharetoken/***)'],
-			['[/sharetoken/abc]', '[/sharetoken/***]'],
-			['`/sharetoken/abc`', '`/sharetoken/***`'],
-			['</sharetoken/abc>', '</sharetoken/***>'],
-			['url=/sharetoken/abc;', 'url=/sharetoken/***;'],
-			['/sharetoken/abc: not found', '/sharetoken/***: not found'],
+			// A url starts after any character that cannot be part of a path.
+			['url: /sharetoken/abc next', 'url: /sharetoken/*** next'],
+			['(/sharetoken/abc next', '(/sharetoken/*** next'],
+			['[/sharetoken/abc next', '[/sharetoken/*** next'],
+			['`/sharetoken/abc next', '`/sharetoken/*** next'],
+			['</sharetoken/abc next', '</sharetoken/*** next'],
+			['url=/sharetoken/abc next', 'url=/sharetoken/*** next'],
+			// Express route params take everything up to the next "/", so punctuation is part of the secret.
+			['/sharetoken/ab,c:d;e)f=g&h next', '/sharetoken/*** next'],
+			[
+				'/room-invitation-links?roomInvitationLinkIds=a,b&page=2',
+				'/room-invitation-links?roomInvitationLinkIds=***&page=2',
+			],
 			[
 				'{"message":"Cannot GET /api/v3/sharetoken/abc","stack":"NotFoundException: Cannot GET /api/v3/sharetoken/abc\\n    at x"}',
 				'{"message":"Cannot GET /api/v3/sharetoken/***","stack":"NotFoundException: Cannot GET /api/v3/sharetoken/***\\n    at x"}',
