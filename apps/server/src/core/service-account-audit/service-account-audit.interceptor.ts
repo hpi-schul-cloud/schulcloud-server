@@ -1,4 +1,4 @@
-import { AuditLogger } from '@infra/logger';
+import { AuditLogger, redactSecretsInUrl } from '@infra/logger';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
@@ -33,7 +33,8 @@ export class ServiceAccountAuditInterceptor implements NestInterceptor {
 			return next.handle();
 		}
 
-		const { method, originalUrl } = request;
+		const { method } = request;
+		const originalUrl = redactSecretsInUrl(request.originalUrl);
 
 		return next.handle().pipe(
 			tap({
