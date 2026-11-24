@@ -568,37 +568,35 @@ describe(LoggingUtils.name, () => {
 				});
 			});
 
-			it('should resolve a relative axios url against its base url', () => {
-				const axiosError = buildAxiosError('/token?access_token=abc123secret');
-				if (axiosError.config) {
-					axiosError.config.baseURL = 'https://idp.example.org/api';
+			it.each([
+				{
+					description: 'resolve a relative axios url against its base url',
+					url: '/token?access_token=abc123secret',
+					baseURL: 'https://idp.example.org/api',
+					expected: "url: 'https://idp.example.org/api/token?access_token=[REDACTED]'",
+				},
+				{
+					description: 'join base url and relative url with exactly one slash',
+					url: '/token',
+					baseURL: 'https://idp.example.org/api///',
+					expected: "url: 'https://idp.example.org/api/token'",
+				},
+				{
+					description: 'keep a relative axios url without base url relative',
+					url: '/token?access_token=abc123secret',
+					baseURL: undefined,
+					expected: "url: '/token?access_token=[REDACTED]'",
+				},
+			])('should $description', ({ url, baseURL, expected }) => {
+				const axiosError = buildAxiosError(url);
+				if (axiosError.config && baseURL) {
+					axiosError.config.baseURL = baseURL;
 				}
 				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(render(result)).toContain("url: 'https://idp.example.org/api/token?access_token=[REDACTED]'");
-			});
-
-			it('should join base url and relative url with exactly one slash', () => {
-				const axiosError = buildAxiosError('/token');
-				if (axiosError.config) {
-					axiosError.config.baseURL = 'https://idp.example.org/api///';
-				}
-				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
-
-				const result = LoggingUtils.createMessageWithContext(loggable);
-
-				expect(render(result)).toContain("url: 'https://idp.example.org/api/token'");
-			});
-
-			it('should keep a relative axios url without base url relative', () => {
-				const axiosError = buildAxiosError('/token?access_token=abc123secret');
-				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
-
-				const result = LoggingUtils.createMessageWithContext(loggable);
-
-				expect(render(result)).toContain("url: '/token?access_token=[REDACTED]'");
+				expect(render(result)).toContain(expected);
 			});
 
 			it('should keep an absolute axios url on a host similar to the placeholder', () => {
