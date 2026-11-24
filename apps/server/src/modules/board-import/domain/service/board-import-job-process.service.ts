@@ -4,7 +4,7 @@ import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { type BoardImportJob } from '../do';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
-import { BoardImportJobLogReason } from '../type';
+import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportRunnerService } from './board-import-runner.service';
 
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
@@ -82,9 +82,21 @@ export class BoardImportJobProcessService {
 			return;
 		}
 
-		job.finish();
-		await this.boardImportJobRepo.save(job);
+		const isClosed = await this.boardImportJobRepo.closeAttempt(job.id, job.attempts, BoardImportJobStatus.FINISHED);
+		if (!isClosed) {
+			this.logSkippedOutdatedAttempt(job);
+
+			return;
+		}
 		this.logger.info('Board import job finished', { jobId: job.id, attempts: job.attempts });
+	}
+
+	private logSkippedOutdatedAttempt(job: BoardImportJob): void {
+		this.logger.warning('Board import job end status not stored', {
+			jobId: job.id,
+			reason: BoardImportJobLogReason.OUTDATED_ATTEMPT,
+			attempts: job.attempts,
+		});
 	}
 
 	private logSkippedClosedJob(jobId: EntityId): void {
@@ -114,20 +126,26 @@ export class BoardImportJobProcessService {
 				resolve(false);
 			}, timeLimitInMs);
 		});
-		const run = this.boardImportRunnerService.run(job, abortController.signal).then(() => true);
 
 		try {
+			const run = this.boardImportRunnerService.run(job, abortController.signal).then(() => true);
 			const isInTime = await Promise.race([run, timeLimit]);
 
 			return isInTime;
 		} finally {
 			clearTimeout(timer);
+			// Stops the steps that still run when another step failed.
+			abortController.abort();
 		}
 	}
 
 	private async fail(job: BoardImportJob, reason: BoardImportJobLogReason): Promise<void> {
-		job.fail();
-		await this.boardImportJobRepo.save(job);
+		const isClosed = await this.boardImportJobRepo.closeAttempt(job.id, job.attempts, BoardImportJobStatus.FAILED);
+		if (!isClosed) {
+			this.logSkippedOutdatedAttempt(job);
+
+			return;
+		}
 		this.logger.warning('Board import job failed', { jobId: job.id, reason, attempts: job.attempts });
 	}
 }

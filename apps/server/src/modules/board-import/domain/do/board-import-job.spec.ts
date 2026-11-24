@@ -52,42 +52,4 @@ describe(BoardImportJob.name, () => {
 			});
 		});
 	});
-
-	describe('finish', () => {
-		describe('when the job is running', () => {
-			const setup = () => {
-				const job = boardImportJobFactory.build({ status: BoardImportJobStatus.RUNNING });
-				const status = BoardImportJobStatus.FINISHED;
-
-				return { job, status };
-			};
-
-			it('should set the status finished', () => {
-				const { job, status } = setup();
-
-				job.finish();
-
-				expect(job.status).toEqual(status);
-			});
-		});
-	});
-
-	describe('fail', () => {
-		describe('when the job is running', () => {
-			const setup = () => {
-				const job = boardImportJobFactory.build({ status: BoardImportJobStatus.RUNNING });
-				const status = BoardImportJobStatus.FAILED;
-
-				return { job, status };
-			};
-
-			it('should set the status failed', () => {
-				const { job, status } = setup();
-
-				job.fail();
-
-				expect(job.status).toEqual(status);
-			});
-		});
-	});
 });

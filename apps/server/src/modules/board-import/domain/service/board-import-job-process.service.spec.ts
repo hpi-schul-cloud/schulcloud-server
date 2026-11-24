@@ -72,6 +72,7 @@ describe(BoardImportJobProcessService.name, () => {
 				repo.findById.mockResolvedValueOnce(job);
 				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockResolvedValueOnce();
+				repo.closeAttempt.mockResolvedValueOnce(true);
 
 				return { job, startedJob, now };
 			};
@@ -86,15 +87,27 @@ describe(BoardImportJobProcessService.name, () => {
 				expect(repo.startAttempt.mock.invocationCallOrder[0]).toBeLessThan(runner.run.mock.invocationCallOrder[0]);
 			});
 
-			it('should save the status finished after the import', async () => {
+			it('should store the status finished for the attempt after the import', async () => {
 				const { job, startedJob } = setup();
 
 				await service.process(job.id);
 
-				expect(repo.save).toHaveBeenCalledTimes(1);
-				expect(repo.save).toHaveBeenCalledWith(startedJob);
-				expect(startedJob.status).toEqual(BoardImportJobStatus.FINISHED);
-				expect(runner.run.mock.invocationCallOrder[0]).toBeLessThan(repo.save.mock.invocationCallOrder[0]);
+				expect(repo.closeAttempt).toHaveBeenCalledTimes(1);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(
+					startedJob.id,
+					startedJob.attempts,
+					BoardImportJobStatus.FINISHED
+				);
+				expect(runner.run.mock.invocationCallOrder[0]).toBeLessThan(repo.closeAttempt.mock.invocationCallOrder[0]);
+			});
+
+			it('should abort the signal after the import', async () => {
+				const { job } = setup();
+
+				await service.process(job.id);
+
+				const signal = runner.run.mock.calls[0][1];
+				expect(signal.aborted).toEqual(true);
 			});
 
 			it('should log the start and the end with the job id', async () => {
@@ -124,6 +137,7 @@ describe(BoardImportJobProcessService.name, () => {
 				repo.findById.mockResolvedValueOnce(job);
 				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockResolvedValueOnce();
+				repo.closeAttempt.mockResolvedValueOnce(true);
 
 				return { job, startedJob, status };
 			};
@@ -134,7 +148,7 @@ describe(BoardImportJobProcessService.name, () => {
 				await service.process(job.id);
 
 				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal));
-				expect(startedJob.status).toEqual(status);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
 			});
 		});
 
@@ -158,7 +172,7 @@ describe(BoardImportJobProcessService.name, () => {
 				await service.process(job.id);
 
 				expect(runner.run).not.toHaveBeenCalled();
-				expect(repo.save).not.toHaveBeenCalled();
+				expect(repo.closeAttempt).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
 		});
@@ -178,6 +192,7 @@ describe(BoardImportJobProcessService.name, () => {
 				] as const;
 
 				repo.findById.mockResolvedValueOnce(job);
+				repo.closeAttempt.mockResolvedValueOnce(true);
 
 				return { job, status, logEntry };
 			};
@@ -187,7 +202,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ status }));
+				expect(repo.closeAttempt).toHaveBeenCalledWith(job.id, job.attempts, status);
 				expect(runner.run).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
@@ -207,6 +222,7 @@ describe(BoardImportJobProcessService.name, () => {
 				] as const;
 
 				repo.findById.mockResolvedValueOnce(job);
+				repo.closeAttempt.mockResolvedValueOnce(true);
 
 				return { job, status, logEntry };
 			};
@@ -216,7 +232,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ status }));
+				expect(repo.closeAttempt).toHaveBeenCalledWith(job.id, job.attempts, status);
 				expect(runner.run).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
@@ -244,6 +260,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 					return new Promise<void>(() => {});
 				});
+				repo.closeAttempt.mockResolvedValueOnce(true);
 
 				const getSignal = (): AbortSignal | undefined => signal;
 
@@ -258,8 +275,7 @@ describe(BoardImportJobProcessService.name, () => {
 				await result;
 
 				expect(getSignal()?.aborted).toEqual(true);
-				expect(startedJob.status).toEqual(status);
-				expect(repo.save).toHaveBeenLastCalledWith(startedJob);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
 			});
 		});
 
@@ -285,6 +301,7 @@ describe(BoardImportJobProcessService.name, () => {
 				repo.findById.mockResolvedValueOnce(job);
 				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockRejectedValueOnce(new Error('import failed'));
+				repo.closeAttempt.mockResolvedValueOnce(true);
 
 				return { job, startedJob, status, logEntry };
 			};
@@ -294,8 +311,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(startedJob.status).toEqual(status);
-				expect(repo.save).toHaveBeenLastCalledWith(startedJob);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
 		});
@@ -310,22 +326,61 @@ describe(BoardImportJobProcessService.name, () => {
 					startedAt: new Date(),
 				});
 				const error = new Error('import failed');
-				const status = BoardImportJobStatus.RUNNING;
 
 				repo.findById.mockResolvedValueOnce(job);
 				repo.startAttempt.mockResolvedValueOnce(startedJob);
 				runner.run.mockRejectedValueOnce(error);
 
-				return { job, startedJob, error, status };
+				return { job, error };
 			};
 
-			it('should pass the error and keep the status running', async () => {
-				const { job, startedJob, error, status } = setup();
+			it('should pass the error and store no end status', async () => {
+				const { job, error } = setup();
 
 				await expect(service.process(job.id)).rejects.toThrow(error);
 
-				expect(startedJob.status).toEqual(status);
-				expect(repo.save).not.toHaveBeenCalled();
+				expect(repo.closeAttempt).not.toHaveBeenCalled();
+			});
+
+			it('should abort the signal', async () => {
+				const { job, error } = setup();
+
+				await expect(service.process(job.id)).rejects.toThrow(error);
+
+				const signal = runner.run.mock.calls[0][1];
+				expect(signal.aborted).toEqual(true);
+			});
+		});
+
+		describe('when another worker stored the end status of the job first', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				const startedJob = boardImportJobFactory.build({
+					id: job.id,
+					status: BoardImportJobStatus.RUNNING,
+					attempts: 1,
+					startedAt: new Date(),
+				});
+				const logEntry = [
+					'Board import job end status not stored',
+					{ jobId: job.id, reason: BoardImportJobLogReason.OUTDATED_ATTEMPT, attempts: startedJob.attempts },
+				] as const;
+
+				repo.findById.mockResolvedValueOnce(job);
+				repo.startAttempt.mockResolvedValueOnce(startedJob);
+				runner.run.mockResolvedValueOnce();
+				repo.closeAttempt.mockResolvedValueOnce(false);
+
+				return { job, logEntry };
+			};
+
+			it('should resolve and log that the end status was not stored', async () => {
+				const { job, logEntry } = setup();
+
+				await service.process(job.id);
+
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
+				expect(logger.info).not.toHaveBeenCalledWith('Board import job finished', expect.anything());
 			});
 		});
 
@@ -347,7 +402,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(id);
 
-				expect(repo.save).not.toHaveBeenCalled();
+				expect(repo.closeAttempt).not.toHaveBeenCalled();
 				expect(runner.run).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
@@ -373,7 +428,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 					await service.process(job.id);
 
-					expect(repo.save).not.toHaveBeenCalled();
+					expect(repo.closeAttempt).not.toHaveBeenCalled();
 					expect(runner.run).not.toHaveBeenCalled();
 					expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 				});

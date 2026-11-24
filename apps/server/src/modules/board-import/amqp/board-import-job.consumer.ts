@@ -3,6 +3,7 @@ import { Logger } from '@infra/logger';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 import { type Channel, type ConsumeMessage } from 'amqplib';
+import { isMongoId } from 'class-validator';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '../board-import-exchange.config';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../board-import.config';
 import { BoardImportJobProcessService } from '../domain';
@@ -39,9 +40,9 @@ export class BoardImportJobConsumer implements OnModuleInit {
 	public async handleMessage(message: BoardImportJobMessage | undefined): Promise<void | Nack> {
 		const jobId = message?.jobId;
 
-		// A message without a job id can never succeed, so it must not go back to the queue.
-		if (typeof jobId !== 'string') {
-			this.logger.warning('Board import job message without job id dropped');
+		// A message without a valid job id can never succeed, so it must not go back to the queue.
+		if (typeof jobId !== 'string' || !isMongoId(jobId)) {
+			this.logger.warning('Board import job message without valid job id dropped');
 
 			return;
 		}

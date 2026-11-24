@@ -238,9 +238,12 @@ describe(BoardImportJobConsumer.name, () => {
 			});
 		});
 
-		describe('when the message has no job id', () => {
+		describe.each([
+			['has no job id', undefined],
+			['has a job id that is no ObjectId', { jobId: 'not-an-object-id' }],
+		])('when the message %s', (_, message: BoardImportJobMessage | undefined) => {
 			const setup = () => {
-				const logEntry = ['Board import job message without job id dropped'] as const;
+				const logEntry = ['Board import job message without valid job id dropped'] as const;
 
 				return { logEntry };
 			};
@@ -248,7 +251,7 @@ describe(BoardImportJobConsumer.name, () => {
 			it('should resolve and not process a job', async () => {
 				const { logEntry } = setup();
 
-				await consumer.handleMessage(undefined);
+				await consumer.handleMessage(message);
 
 				expect(processService.process).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);

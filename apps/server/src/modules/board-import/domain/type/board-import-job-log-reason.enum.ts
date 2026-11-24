@@ -3,4 +3,5 @@ export enum BoardImportJobLogReason {
 	MAX_DURATION = 'max-duration',
 	JOB_NOT_FOUND = 'job-not-found',
 	JOB_CLOSED = 'job-closed',
+	OUTDATED_ATTEMPT = 'outdated-attempt',
 }

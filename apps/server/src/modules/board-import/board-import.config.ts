@@ -6,6 +6,8 @@ export const BOARD_IMPORT_CONFIG_TOKEN = 'BOARD_IMPORT_CONFIG_TOKEN';
 
 // A timer with a delay above 2^31 - 1 milliseconds fires at once.
 const MAX_TIMER_DELAY_IN_MINUTES = 35791;
+// The delay runs in the same delivery as the import, so it counts against the acknowledgement timeout of RabbitMQ.
+const MAX_RETRY_DELAY_IN_SECONDS = 60;
 
 @Configuration()
 export class BoardImportConfig {
@@ -33,5 +35,6 @@ export class BoardImportConfig {
 	@StringToNumber()
 	@IsNumber()
 	@Min(0)
+	@Max(MAX_RETRY_DELAY_IN_SECONDS)
 	public jobRetryDelayInSeconds = 10;
 }

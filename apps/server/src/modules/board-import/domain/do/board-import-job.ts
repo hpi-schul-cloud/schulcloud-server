@@ -47,12 +47,4 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 		return isClosed;
 	}
-
-	public finish(): void {
-		this.props.status = BoardImportJobStatus.FINISHED;
-	}
-
-	public fail(): void {
-		this.props.status = BoardImportJobStatus.FAILED;
-	}
 }

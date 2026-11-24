@@ -249,6 +249,86 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 		);
 	});
 
+	describe('closeAttempt', () => {
+		describe.each([BoardImportJobStatus.FINISHED, BoardImportJobStatus.FAILED] as const)(
+			'when the job is running in the given attempt and gets the status %s',
+			(status) => {
+				const setup = async () => {
+					const entity = boardImportJobEntityFactory.build({ status: BoardImportJobStatus.RUNNING, attempts: 2 });
+					const updatedAt = new Date('2026-01-01T00:00:00.000Z');
+					entity.updatedAt = updatedAt;
+					await em.persist(entity).flush();
+					em.clear();
+
+					return { id: entity.id, attempts: entity.attempts, updatedAt };
+				};
+
+				it('should store the status and return true', async () => {
+					const { id, attempts } = await setup();
+
+					const result = await repo.closeAttempt(id, attempts, status);
+
+					const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+					expect(result).toEqual(true);
+					expect(entity).toMatchObject({ status, attempts });
+				});
+
+				it('should update the change date', async () => {
+					const { id, attempts, updatedAt } = await setup();
+
+					await repo.closeAttempt(id, attempts, status);
+
+					const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+					expect(entity.updatedAt.getTime()).toBeGreaterThan(updatedAt.getTime());
+				});
+			}
+		);
+
+		describe('when the job is running in a later attempt', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ status: BoardImportJobStatus.RUNNING, attempts: 2 });
+				await em.persist(entity).flush();
+				em.clear();
+				const outdatedAttempts = entity.attempts - 1;
+
+				return { id: entity.id, attempts: entity.attempts, status: entity.status, outdatedAttempts };
+			};
+
+			it('should not change the job and return false', async () => {
+				const { id, attempts, status, outdatedAttempts } = await setup();
+
+				const result = await repo.closeAttempt(id, outdatedAttempts, BoardImportJobStatus.FINISHED);
+
+				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+				expect(result).toEqual(false);
+				expect(entity).toMatchObject({ status, attempts });
+			});
+		});
+
+		describe.each([
+			[BoardImportJobStatus.FINISHED, BoardImportJobStatus.FAILED],
+			[BoardImportJobStatus.FAILED, BoardImportJobStatus.FINISHED],
+		] as const)('when the job already has the end status %s', (status, otherStatus) => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ status, attempts: 2 });
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { id: entity.id, attempts: entity.attempts };
+			};
+
+			it('should not change the job and return false', async () => {
+				const { id, attempts } = await setup();
+
+				const result = await repo.closeAttempt(id, attempts, otherStatus);
+
+				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+				expect(result).toEqual(false);
+				expect(entity.status).toEqual(status);
+			});
+		});
+	});
+
 	describe('failIfWaiting', () => {
 		describe('when the job is waiting', () => {
 			const setup = async () => {

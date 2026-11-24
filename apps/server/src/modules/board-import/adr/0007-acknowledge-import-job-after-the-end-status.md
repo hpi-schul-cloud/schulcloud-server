@@ -23,4 +23,4 @@ The helper `registerAmqpSubscriber` of the provisioning module catches each erro
 
 - When a worker stops, the broker delivers its open jobs again. No job gets lost.
 - A job can run more than one time. Each import step must be safe to repeat.
-- The prefetch count multiplied by the number of workers is the maximum number of parallel imports.
+- If the import steps obey the abort signal, the prefetch count multiplied by the number of workers is the maximum number of parallel imports. An import that ignores the signal continues after its job is `failed`, while the worker takes the next job.

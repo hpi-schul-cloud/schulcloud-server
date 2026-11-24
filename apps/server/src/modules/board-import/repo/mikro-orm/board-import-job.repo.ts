@@ -62,6 +62,21 @@ export class BoardImportJobMikroOrmRepo
 		return domainObject;
 	}
 
+	public async closeAttempt(
+		id: EntityId,
+		attempts: number,
+		status: BoardImportJobStatus.FINISHED | BoardImportJobStatus.FAILED
+	): Promise<boolean> {
+		const updatedCount = await this.em.nativeUpdate(
+			BoardImportJobEntity,
+			{ id, status: BoardImportJobStatus.RUNNING, attempts },
+			{ status, updatedAt: new Date() }
+		);
+		const isClosed = updatedCount > 0;
+
+		return isClosed;
+	}
+
 	public async failIfWaiting(id: EntityId): Promise<boolean> {
 		const updatedCount = await this.em.nativeUpdate(
 			BoardImportJobEntity,
