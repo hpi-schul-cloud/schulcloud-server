@@ -353,18 +353,26 @@ describe('[logger] masking in the feathers logger', () => {
 		const TOKEN = 'resettoken123abc';
 		const SHARE_TOKEN = 'sharetokenvalue42';
 
-		// Collects what the console transports write, winston writes asynchronously.
-		const captureOutput = async (log) => {
+		// Collects what the console transports write. winston writes asynchronously, so it waits for the expected
+		// number of writes (the request logger's transport is not exported, so its 'logged' event cannot be awaited).
+		const captureOutput = async (log, expectedWrites) => {
 			const lines = [];
 			const originalWrite = process.stdout.write;
-			process.stdout.write = (chunk, ...args) => {
-				lines.push(String(chunk));
-				return typeof args[args.length - 1] === 'function' ? args[args.length - 1]() || true : true;
-			};
 			try {
-				log();
 				await new Promise((resolve) => {
-					setTimeout(resolve, 20);
+					process.stdout.write = (chunk, ...args) => {
+						lines.push(String(chunk));
+						if (lines.length === expectedWrites) {
+							resolve();
+						}
+						const callback = args.find((arg) => typeof arg === 'function');
+						if (callback) {
+							callback();
+						}
+
+						return true;
+					};
+					log();
 				});
 			} finally {
 				process.stdout.write = originalWrite;
@@ -416,7 +424,7 @@ describe('[logger] masking in the feathers logger', () => {
 			const output = await captureOutput(() => {
 				requestLog(`GET /passwordRecovery/${TOKEN}?shareToken=${SHARE_TOKEN}&page=2`);
 				syncLogger.error(`sync failed for /passwordRecovery/${TOKEN}`);
-			});
+			}, 2);
 
 			expect(output).to.include('Request GET /passwordRecovery/***?shareToken=***&page=2');
 			expect(output).to.include('sync failed for /passwordRecovery/***');
