@@ -14,6 +14,10 @@ export interface BoardImportJobEntityProps {
 	link: string;
 
 	expiresAt: Date;
+
+	attempts: number;
+
+	startedAt?: Date;
 }
 
 @Entity({ tableName: 'board-import-jobs' })
@@ -31,6 +35,12 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 	@Property()
 	expiresAt: Date;
 
+	@Property()
+	attempts: number;
+
+	@Property({ nullable: true })
+	startedAt?: Date;
+
 	constructor(props: BoardImportJobEntityProps) {
 		super();
 		if (props.id) {
@@ -40,5 +50,7 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 		this.userId = props.userId;
 		this.link = props.link;
 		this.expiresAt = props.expiresAt;
+		this.attempts = props.attempts;
+		this.startedAt = props.startedAt;
 	}
 }

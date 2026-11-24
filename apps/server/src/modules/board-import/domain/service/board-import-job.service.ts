@@ -25,6 +25,7 @@ export class BoardImportJobService {
 			userId,
 			link,
 			expiresAt,
+			attempts: 0,
 		});
 
 		const savedJob = await this.boardImportJobRepo.save(job);
@@ -32,11 +33,15 @@ export class BoardImportJobService {
 		try {
 			await this.boardImportJobProducer.publishJob({ jobId: savedJob.id }, savedJob.expiresAt);
 		} catch (error) {
-			// The broker can still enqueue a message after a publish error, so the job must not run.
-			savedJob.status = BoardImportJobStatus.FAILED;
-			await this.boardImportJobRepo.save(savedJob);
+			// The broker can still enqueue a message after a publish error. The job fails only if no worker took it.
+			const isFailed = await this.boardImportJobRepo.failIfWaiting(savedJob.id);
+			const startedJob = isFailed ? null : await this.boardImportJobRepo.findById(savedJob.id);
 
-			throw error;
+			if (!startedJob) {
+				throw error;
+			}
+
+			return startedJob;
 		}
 
 		return savedJob;

@@ -11,6 +11,7 @@ export const boardImportJobFactory = DomainObjectFactory.define<BoardImportJob, 
 			userId: new ObjectId().toHexString(),
 			link: `https://example.com/board-${sequence}`,
 			expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+			attempts: 0,
 		};
 
 		return props;

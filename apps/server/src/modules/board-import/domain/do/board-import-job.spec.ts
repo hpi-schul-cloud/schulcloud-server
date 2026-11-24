@@ -6,7 +6,7 @@ describe(BoardImportJob.name, () => {
 	describe('getters', () => {
 		describe('when the job is built', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build();
+				const job = boardImportJobFactory.build({ startedAt: new Date() });
 				const props = job.getProps();
 
 				return { job, props };
@@ -21,6 +21,8 @@ describe(BoardImportJob.name, () => {
 					userId: job.userId,
 					link: job.link,
 					expiresAt: job.expiresAt,
+					attempts: job.attempts,
+					startedAt: job.startedAt,
 				};
 
 				expect(result).toEqual(props);
@@ -28,21 +30,25 @@ describe(BoardImportJob.name, () => {
 		});
 	});
 
-	describe('status', () => {
-		describe('when the status is set', () => {
+	describe('isClosed', () => {
+		describe.each([
+			[BoardImportJobStatus.WAITING, false],
+			[BoardImportJobStatus.RUNNING, false],
+			[BoardImportJobStatus.FINISHED, true],
+			[BoardImportJobStatus.FAILED, true],
+		])('when the status is %s', (status, expected) => {
 			const setup = () => {
-				const job = boardImportJobFactory.build({ status: BoardImportJobStatus.WAITING });
-				const status = BoardImportJobStatus.FAILED;
+				const job = boardImportJobFactory.build({ status });
 
-				return { job, status };
+				return { job };
 			};
 
-			it('should change the status', () => {
-				const { job, status } = setup();
+			it(`should return ${String(expected)}`, () => {
+				const { job } = setup();
 
-				job.status = status;
+				const result = job.isClosed();
 
-				expect(job.status).toEqual(status);
+				expect(result).toEqual(expected);
 			});
 		});
 	});
