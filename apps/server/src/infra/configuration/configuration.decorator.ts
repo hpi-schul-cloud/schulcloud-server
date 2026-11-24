@@ -18,7 +18,7 @@ export interface WithConfigurationDecorator {
  */
 export function Configuration() {
 	return function ConfigurationDecorator<T extends new (...args: any[]) => object>(constructor: T): T {
-		return class extends constructor {
+		const ConfigurationClass = class extends constructor {
 			constructor(...args: any[]) {
 				super(...args);
 				const proxyInstance = new Proxy(this, {
@@ -63,6 +63,10 @@ export function Configuration() {
 				return propertyAccessKeys;
 			}
 		};
+
+		Object.defineProperty(ConfigurationClass, 'name', { value: constructor.name });
+
+		return ConfigurationClass;
 	};
 }
 
