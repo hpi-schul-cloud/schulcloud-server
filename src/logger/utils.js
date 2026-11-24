@@ -15,13 +15,12 @@ const defineValue = (target, key, value) => {
 };
 
 // Keeps the error class, name, message and stack (LoggingUtils logs errors by them), only its fields are converted.
-const copyError = (error, copies) => {
+const copyError = (error, ancestors) => {
 	const copy = Object.create(Object.getPrototypeOf(error));
-	copies.set(error, copy);
 	for (const key of Reflect.ownKeys(error)) {
 		const { enumerable } = Object.getOwnPropertyDescriptor(error, key);
 		// Read through the error: stack can be an accessor that only works on the original error.
-		const value = enumerable || key === 'cause' ? toJsonValues(error[key], copies) : error[key];
+		const value = enumerable || key === 'cause' ? toJsonValues(error[key], ancestors) : error[key];
 		Object.defineProperty(copy, key, { value, enumerable, writable: true, configurable: true });
 	}
 
@@ -37,49 +36,50 @@ const callToJson = (value) => {
 	}
 };
 
-// Values with toJSON (dates, mongoose documents) become what the JSON log line showed before masking was added.
-// The masking below copies objects property by property, so a date would become {} and a document its internal fields.
-// Everything is copied, the objects passed to the logger are not changed. ObjectIds, buffers and streams are left
-// to LoggingUtils, which summarizes them like the Nest logger does.
-function toJsonValues(value, copies = new WeakMap()) {
-	if (typeof value !== 'object' || value === null || summarizeOpaqueLogValue(value) !== undefined) {
-		return value;
-	}
-
-	if (copies.has(value)) {
-		return copies.get(value);
-	}
-
+const copyValue = (value, ancestors) => {
 	if (value instanceof Error) {
-		return copyError(value, copies);
+		return copyError(value, ancestors);
 	}
 
 	const converted = typeof value.toJSON === 'function' ? callToJson(value) : undefined;
 	if (converted) {
-		// Set before descending, so a toJSON result that references the value again cannot loop.
-		copies.set(value, converted.json);
-		const result = converted.json === value ? value : toJsonValues(converted.json, copies);
-		copies.set(value, result);
-
-		return result;
+		return converted.json === value ? value : toJsonValues(converted.json, ancestors);
 	}
 
 	if (Array.isArray(value)) {
-		const copy = [];
-		copies.set(value, copy);
-		value.forEach((item) => copy.push(toJsonValues(item, copies)));
-
-		return copy;
+		return value.map((item) => toJsonValues(item, ancestors));
 	}
 
 	// Class instances become plain objects with their own fields, as in JSON and in LoggingUtils.
 	const copy = {};
-	copies.set(value, copy);
 	for (const [key, item] of Object.entries(value)) {
-		defineValue(copy, key, toJsonValues(item, copies));
+		defineValue(copy, key, toJsonValues(item, ancestors));
 	}
 
 	return copy;
+};
+
+// Values with toJSON (dates, mongoose documents) become what the JSON log line showed before masking was added.
+// The masking below copies objects property by property, so a date would become {} and a document its internal fields.
+// Everything is copied, the objects passed to the logger are not changed. ObjectIds, buffers and streams are left
+// to LoggingUtils, which summarizes them like the Nest logger does.
+// Every occurrence of an object gets its own copy: LoggingUtils logs an object it has seen before as "[Circular]",
+// so only real cycles (an object inside itself) are replaced by "[Circular]" here.
+function toJsonValues(value, ancestors = new Set()) {
+	if (typeof value !== 'object' || value === null || summarizeOpaqueLogValue(value) !== undefined) {
+		return value;
+	}
+
+	if (ancestors.has(value)) {
+		return '[Circular]';
+	}
+
+	ancestors.add(value);
+	try {
+		return copyValue(value, ancestors);
+	} finally {
+		ancestors.delete(value);
+	}
 }
 
 // Redacts values of sensitive field names (token, password, ...) and Bearer tokens, like LoggingUtils for Nest loggables.

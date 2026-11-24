@@ -157,6 +157,28 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(line.buffer).to.equal('[Binary 5 bytes]');
 	});
 
+	it('should log an object referenced twice both times', () => {
+		const shared = { a: 1 };
+
+		const line = toJsonLine({ message: 'shared', x: shared, y: shared, list: [shared, shared] });
+
+		expect(line.x).to.eql({ a: 1 });
+		expect(line.y).to.eql({ a: 1 });
+		expect(line.list).to.eql([{ a: 1 }, { a: 1 }]);
+	});
+
+	it('should log a real cycle as [Circular]', () => {
+		const parent = { name: 'parent' };
+		parent.self = parent;
+		const doc = { id: 1 };
+		doc.toJSON = () => ({ id: 1, original: doc });
+
+		const line = toJsonLine({ message: 'cycle', parent, doc });
+
+		expect(line.parent).to.eql({ name: 'parent', self: '[Circular]' });
+		expect(line.doc).to.eql({ id: 1, original: '[Circular]' });
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE
