@@ -15,7 +15,12 @@ export class MediaActivationsSyncReportLoggable {
 			message,
 			data: {
 				mediaSourceDataFormat: this.mediaSourceDataFormat,
-				report: JSON.stringify(this.report),
+				report: {
+					...this.report,
+					operations: this.report.operations.map((operation) => {
+						return { ...operation };
+					}),
+				},
 			},
 		};
 	}

@@ -25,6 +25,15 @@ spec:
         - port: 27017
           protocol: TCP
 
+    # RabbitMQ
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: rabbitmq
+      ports:
+        - port: 5672
+          protocol: TCP
+
     # Session Valkey with Sentinel
     - to:
         - podSelector:

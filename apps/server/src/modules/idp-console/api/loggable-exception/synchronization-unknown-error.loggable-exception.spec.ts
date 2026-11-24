@@ -18,8 +18,6 @@ describe(SynchronizationUnknownErrorLoggableException.name, () => {
 				'Unknown error occurred during synchronization process of users provisioned by an external system';
 			const systemId = new ObjectId().toHexString();
 
-			jest.mocked(isAxiosError).mockReturnValue(isAxios);
-
 			const axiosError: Error = {
 				message: 'fail',
 				response: {
@@ -30,6 +28,8 @@ describe(SynchronizationUnknownErrorLoggableException.name, () => {
 				},
 				stack: 'Error stack trace',
 			} as unknown as Error;
+			// Only the given error counts as an axios error, like the real isAxiosError (logging inspects nested values too).
+			jest.mocked(isAxiosError).mockImplementation((value) => isAxios && value === axiosError);
 
 			const exception = isAxios
 				? new SynchronizationUnknownErrorLoggableException(systemId, axiosError)

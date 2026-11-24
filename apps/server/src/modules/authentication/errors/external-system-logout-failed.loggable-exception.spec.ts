@@ -17,21 +17,16 @@ describe(ExternalSystemLogoutFailedLoggableException.name, () => {
 				});
 				const exception = new ExternalSystemLogoutFailedLoggableException(userId, systemId, axiosError);
 
-				const expectedAxiosErrorData = JSON.stringify({
-					status: axiosError.status,
-					data: axiosError.message,
-				});
-
 				return {
 					exception,
 					userId,
 					systemId,
-					expectedAxiosErrorData,
+					axiosError,
 				};
 			};
 
 			it('should return the correct log message', () => {
-				const { exception, userId, systemId, expectedAxiosErrorData } = setup();
+				const { exception, userId, systemId, axiosError } = setup();
 
 				const message = exception.getLogMessage();
 
@@ -39,10 +34,10 @@ describe(ExternalSystemLogoutFailedLoggableException.name, () => {
 					type: 'INTERNAL_SERVER_ERROR',
 					stack: exception.stack,
 					message: `Request to logout external system ${systemId} for user ${userId} had failed`,
+					error: axiosError,
 					data: {
 						userId,
 						systemId,
-						axiosError: expectedAxiosErrorData,
 					},
 				});
 			});
@@ -60,21 +55,16 @@ describe(ExternalSystemLogoutFailedLoggableException.name, () => {
 				});
 				const exception = new ExternalSystemLogoutFailedLoggableException(userId, systemId, axiosError);
 
-				const expectedAxiosErrorData = JSON.stringify({
-					status: axiosError.status,
-					data: axiosError.response?.data,
-				});
-
 				return {
 					exception,
 					userId,
 					systemId,
-					expectedAxiosErrorData,
+					axiosError,
 				};
 			};
 
 			it('should return the correct log message', () => {
-				const { exception, userId, systemId, expectedAxiosErrorData } = setup();
+				const { exception, userId, systemId, axiosError } = setup();
 
 				const message = exception.getLogMessage();
 
@@ -82,10 +72,10 @@ describe(ExternalSystemLogoutFailedLoggableException.name, () => {
 					type: 'INTERNAL_SERVER_ERROR',
 					stack: exception.stack,
 					message: `Request to logout external system ${systemId} for user ${userId} had failed`,
+					error: axiosError,
 					data: {
 						userId,
 						systemId,
-						axiosError: expectedAxiosErrorData,
 					},
 				});
 			});
