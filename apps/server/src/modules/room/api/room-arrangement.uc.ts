@@ -185,6 +185,53 @@ export class RoomArrangementUc {
 		return arrangement.getVisibleArrangement(accessibleRooms);
 	}
 
+	// Contract stubs for the round-3 additions, implemented by the backend step.
+	public async updateGroupsCollapsed(
+		userId: EntityId,
+		expectedRevision: number,
+		collapsed: boolean
+	): Promise<VisibleRoomArrangement> {
+		this.checkFeatureRoomGroupingEnabled();
+
+		const { accessibleRooms } = await this.getUserRoomAccess(userId);
+		const arrangement = await this.roomArrangementService.setAllGroupsCollapsed(
+			userId,
+			expectedRevision,
+			accessibleRooms,
+			collapsed
+		);
+
+		return arrangement.getVisibleArrangement(accessibleRooms);
+	}
+
+	public async moveRoomsToSection(
+		userId: EntityId,
+		expectedRevision: number,
+		roomIds: EntityId[],
+		targetGroupId: EntityId | null
+	): Promise<VisibleRoomArrangement> {
+		this.checkFeatureRoomGroupingEnabled();
+
+		const { roomAuthorizables, accessibleRooms } = await this.getUserRoomAccess(userId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const canArrangeAllRooms = roomIds.every((roomId) => {
+			const roomAuthorizable = roomAuthorizables.find((item) => item.roomId === roomId);
+
+			return roomAuthorizable !== undefined && this.roomRule.can('arrangeRooms', user, roomAuthorizable);
+		});
+		throwForbiddenIfFalse(canArrangeAllRooms);
+
+		const arrangement = await this.roomArrangementService.moveRoomsToSection(
+			userId,
+			expectedRevision,
+			accessibleRooms,
+			roomIds,
+			targetGroupId
+		);
+
+		return arrangement.getVisibleArrangement(accessibleRooms);
+	}
+
 	public async updatePreferences(
 		userId: EntityId,
 		expectedRevision: number,

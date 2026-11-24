@@ -905,6 +905,265 @@ describe('Room Arrangement Controller (API)', () => {
 		});
 	});
 
+	describe('PATCH /room-arrangements/me/group-collapse', () => {
+		describe('when the feature is disabled', () => {
+			it('should return a 403 error', async () => {
+				const { loggedInClient } = await setupUserWithRooms(0);
+				config.featureRoomGroupingEnabled = false;
+
+				const response = await loggedInClient.patch('group-collapse', { expectedRevision: 0, collapsed: true });
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when groups change', () => {
+			it('should collapse every group', async () => {
+				const { loggedInClient, user } = await setupUserWithRooms(0);
+				await createGroup(loggedInClient, 'A');
+				const { revision } = await createGroup(loggedInClient, 'B');
+
+				const response = await loggedInClient.patch('group-collapse', { expectedRevision: revision, collapsed: true });
+
+				expect(response.status).toBe(HttpStatus.OK);
+				expect((response.body as RoomArrangementResponse).revision).toBe(revision + 1);
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.groups?.map((group) => group.collapsed)).toEqual([true, true]);
+			});
+		});
+
+		describe('when every group already has the value', () => {
+			it('should succeed without increasing the revision', async () => {
+				const { loggedInClient, user } = await setupUserWithRooms(0);
+				await createGroup(loggedInClient, 'A');
+				const { revision } = await createGroup(loggedInClient, 'B');
+
+				const response = await loggedInClient.patch('group-collapse', { expectedRevision: revision, collapsed: false });
+
+				expect(response.status).toBe(HttpStatus.OK);
+				expect((response.body as RoomArrangementResponse).revision).toBe(revision);
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.revision).toBe(revision);
+			});
+		});
+
+		describe('when collapsed is missing or null', () => {
+			it.each([[{}], [{ collapsed: null }]])('should return a 400 validation error for %j', async (params) => {
+				const { loggedInClient } = await setupUserWithRooms(0);
+
+				const response = await loggedInClient.patch('group-collapse', { expectedRevision: 0, ...params });
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+		});
+	});
+
+	describe('PATCH /room-arrangements/me/room-positions', () => {
+		describe('when the feature is disabled', () => {
+			it('should return a 403 error', async () => {
+				const { loggedInClient, rooms } = await setupUserWithRooms(1);
+				config.featureRoomGroupingEnabled = false;
+
+				const response = await loggedInClient.patch('room-positions', {
+					expectedRevision: 0,
+					roomIds: [rooms[0].id],
+					targetGroupId: null,
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when several rooms are moved into a group', () => {
+			it('should append them in the listed order in one revision step', async () => {
+				const { loggedInClient, user, rooms } = await setupUserWithRooms(4);
+				const { createdGroupId } = await createGroup(loggedInClient, 'Informatik');
+				await moveRoom(loggedInClient, rooms[0].id, createdGroupId);
+				const { revision } = await getArrangement(loggedInClient);
+
+				const response = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision,
+					roomIds: [rooms[3].id, rooms[0].id, rooms[1].id],
+					targetGroupId: createdGroupId,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(response.body).toEqual({
+					revision: revision + 1,
+					ungroupedRoomIds: [rooms[2].id],
+					groups: [
+						{
+							id: createdGroupId,
+							name: 'Informatik',
+							collapsed: false,
+							roomIds: [rooms[3].id, rooms[0].id, rooms[1].id],
+						},
+					],
+					confirmGroupDeletion: true,
+				});
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.revision).toBe(revision + 1);
+				expect(stored.ungroupedRoomIds).toEqual([rooms[2].id]);
+				expect(stored.groups?.[0].roomIds).toEqual([rooms[3].id, rooms[0].id, rooms[1].id]);
+				expect(stored.items.map((item) => item.id)).toEqual([rooms[2].id, rooms[3].id, rooms[0].id, rooms[1].id]);
+			});
+		});
+
+		describe('when the target is null', () => {
+			it('should move the rooms to the ungrouped rooms and keep hidden rooms in place', async () => {
+				const { loggedInClient, user, rooms } = await setupUserWithRooms(3);
+				const { createdGroupId } = await createGroup(loggedInClient, 'Informatik');
+				await moveRoom(loggedInClient, rooms[0].id, createdGroupId);
+				await moveRoom(loggedInClient, rooms[1].id, createdGroupId);
+				await moveRoom(loggedInClient, rooms[2].id, createdGroupId);
+				await archiveRoom(rooms[1].id, true);
+				const { revision } = await getArrangement(loggedInClient);
+
+				const response = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision,
+					roomIds: [rooms[2].id, rooms[0].id],
+					targetGroupId: null,
+				});
+
+				expect((response.body as RoomArrangementResponse).ungroupedRoomIds).toEqual([rooms[2].id, rooms[0].id]);
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.ungroupedRoomIds).toEqual([rooms[2].id, rooms[0].id]);
+				expect(stored.groups?.[0].roomIds).toEqual([rooms[1].id]);
+			});
+		});
+
+		describe('when the result equals the current state', () => {
+			it('should succeed without increasing the revision', async () => {
+				const { loggedInClient, rooms } = await setupUserWithRooms(2);
+				const { revision } = await getArrangement(loggedInClient);
+
+				const response = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision,
+					roomIds: [rooms[1].id],
+					targetGroupId: null,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+				expect((response.body as RoomArrangementResponse).revision).toBe(revision);
+			});
+		});
+
+		describe('when the revision is stale', () => {
+			it('should return a 409 conflict and apply nothing', async () => {
+				const { loggedInClient, user, rooms } = await setupUserWithRooms(2);
+				const { createdGroupId, revision } = await createGroup(loggedInClient, 'Informatik');
+
+				const response = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision - 1,
+					roomIds: [rooms[0].id],
+					targetGroupId: createdGroupId,
+				});
+
+				expect(response.status).toBe(HttpStatus.CONFLICT);
+				expect(response.body).toEqual(expect.objectContaining({ details: { reason: 'REVISION' } }));
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.groups?.[0].roomIds).toEqual([]);
+			});
+		});
+
+		describe('when the target group belongs to another user or does not exist', () => {
+			it('should return a 404 error', async () => {
+				const owner = await setupUserWithRooms(0);
+				const { createdGroupId } = await createGroup(owner.loggedInClient, 'Informatik');
+				const { loggedInClient, rooms } = await setupUserWithRooms(1);
+				const { revision } = await getArrangement(loggedInClient);
+
+				const foreign = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision,
+					roomIds: [rooms[0].id],
+					targetGroupId: createdGroupId,
+				});
+				const unknown = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision,
+					roomIds: [rooms[0].id],
+					targetGroupId: new ObjectId().toHexString(),
+				});
+
+				expect(foreign.status).toBe(HttpStatus.NOT_FOUND);
+				expect(foreign.body).toEqual(expect.objectContaining({ type: 'ROOM_GROUP_NOT_FOUND' }));
+				expect(unknown.status).toBe(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when one of the rooms is not a membership room', () => {
+			it('should return a 403 error and apply nothing', async () => {
+				const { loggedInClient, user, rooms } = await setupUserWithRooms(1);
+				const other = await setupUserWithRooms(1);
+				const { createdGroupId, revision } = await createGroup(loggedInClient, 'Informatik');
+
+				const response = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision,
+					roomIds: [rooms[0].id, other.rooms[0].id],
+					targetGroupId: createdGroupId,
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.groups?.[0].roomIds).toEqual([]);
+				expect(stored.revision).toBe(revision);
+			});
+		});
+
+		describe('when one of the rooms is locked', () => {
+			it('should return a 403 error for a teacher', async () => {
+				const roomSetup = new RoomSetup(em, testApiClient);
+				await roomSetup.setup([['Teacher', 'sameSchool', 'teacher', 'roomadmin']]);
+				const loggedInClient = await roomSetup.loginUser('Teacher');
+				const { createdGroupId, revision } = await createGroup(loggedInClient, 'Gesperrt');
+
+				const response = await loggedInClient.patch('room-positions', {
+					expectedRevision: revision,
+					roomIds: [roomSetup.room.id],
+					targetGroupId: createdGroupId,
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when the params are not valid', () => {
+			it.each([
+				[
+					'empty room ids',
+					() => {
+						return { roomIds: [], targetGroupId: null };
+					},
+				],
+				[
+					'duplicate room ids',
+					(roomId: string) => {
+						return { roomIds: [roomId, roomId], targetGroupId: null };
+					},
+				],
+				[
+					'a malformed room id',
+					() => {
+						return { roomIds: ['x'], targetGroupId: null };
+					},
+				],
+				[
+					'a missing target key',
+					(roomId: string) => {
+						return { roomIds: [roomId] };
+					},
+				],
+			])('should return a 400 validation error for %s', async (_description, buildBody) => {
+				const { loggedInClient, rooms } = await setupUserWithRooms(1);
+				const body = buildBody(rooms[0].id);
+
+				const response = await loggedInClient.patch('room-positions', { expectedRevision: 1, ...body });
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
+			});
+		});
+	});
+
 	describe('PATCH /room-arrangements/me/preferences', () => {
 		describe('when the preference changes', () => {
 			it('should store it', async () => {

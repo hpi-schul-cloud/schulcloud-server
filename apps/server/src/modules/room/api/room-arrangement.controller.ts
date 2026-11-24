@@ -18,6 +18,8 @@ import { ApiValidationError } from '@shared/common/error';
 import { CreateRoomGroupBodyParams } from './dto/request/create-room-group.body.params';
 import { DeleteRoomGroupBodyParams } from './dto/request/delete-room-group.body.params';
 import { MoveRoomInArrangementBodyParams } from './dto/request/move-room-in-arrangement.body.params';
+import { MoveRoomsInArrangementBodyParams } from './dto/request/move-rooms-in-arrangement.body.params';
+import { UpdateRoomGroupsCollapsedBodyParams } from './dto/request/update-room-groups-collapsed.body.params';
 import { RoomGroupUrlParams } from './dto/request/room-group.url.params';
 import { UpdateRoomArrangementPreferencesBodyParams } from './dto/request/update-room-arrangement-preferences.body.params';
 import { UpdateRoomGroupOrderBodyParams } from './dto/request/update-room-group-order.body.params';
@@ -171,6 +173,56 @@ export class RoomArrangementController {
 				targetGroupId: bodyParams.targetGroupId,
 				beforeRoomId: bodyParams.beforeRoomId,
 			}
+		);
+
+		const response = RoomArrangementMapper.mapToRoomArrangementResponse(arrangement);
+
+		return response;
+	}
+
+	@Patch('group-collapse')
+	@ApiOperation({ summary: 'Collapse or expand all room groups at once.' })
+	@ApiResponse({ status: HttpStatus.OK, type: RoomArrangementResponse })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.CONFLICT, type: ErrorResponse })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async updateGroupsCollapsed(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() bodyParams: UpdateRoomGroupsCollapsedBodyParams
+	): Promise<RoomArrangementResponse> {
+		const arrangement = await this.roomArrangementUc.updateGroupsCollapsed(
+			currentUser.userId,
+			bodyParams.expectedRevision,
+			bodyParams.collapsed
+		);
+
+		const response = RoomArrangementMapper.mapToRoomArrangementResponse(arrangement);
+
+		return response;
+	}
+
+	@Patch('room-positions')
+	@ApiOperation({
+		summary: 'Move several rooms at once to the end of a section. A null group id means the ungrouped rooms.',
+	})
+	@ApiResponse({ status: HttpStatus.OK, type: RoomArrangementResponse })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: ErrorResponse })
+	@ApiResponse({ status: HttpStatus.CONFLICT, type: ErrorResponse })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async moveRooms(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() bodyParams: MoveRoomsInArrangementBodyParams
+	): Promise<RoomArrangementResponse> {
+		const arrangement = await this.roomArrangementUc.moveRoomsToSection(
+			currentUser.userId,
+			bodyParams.expectedRevision,
+			bodyParams.roomIds,
+			bodyParams.targetGroupId
 		);
 
 		const response = RoomArrangementMapper.mapToRoomArrangementResponse(arrangement);

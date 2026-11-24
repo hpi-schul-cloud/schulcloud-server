@@ -119,6 +119,33 @@ export class RoomArrangementService {
 		return arrangement;
 	}
 
+	public async setAllGroupsCollapsed(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		collapsed: boolean
+	): Promise<RoomArrangement> {
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) =>
+			item.setAllGroupsCollapsed(collapsed)
+		);
+
+		return arrangement;
+	}
+
+	public async moveRoomsToSection(
+		userId: EntityId,
+		expectedRevision: number,
+		accessibleRooms: RoomArrangementRoomInfo[],
+		roomIds: EntityId[],
+		targetGroupId: EntityId | null
+	): Promise<RoomArrangement> {
+		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) =>
+			item.moveRoomsToSection(roomIds, targetGroupId, accessibleRooms)
+		);
+
+		return arrangement;
+	}
+
 	public async setConfirmGroupDeletion(
 		userId: EntityId,
 		expectedRevision: number,

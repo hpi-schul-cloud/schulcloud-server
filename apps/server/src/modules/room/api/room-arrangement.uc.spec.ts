@@ -220,6 +220,8 @@ describe(RoomArrangementUc.name, () => {
 					}),
 			],
 			['updatePreferences', () => uc.updatePreferences(userId, 0, false)],
+			['updateGroupsCollapsed', () => uc.updateGroupsCollapsed(userId, 0, true)],
+			['moveRoomsToSection', () => uc.moveRoomsToSection(userId, 0, [groupId], null)],
 		])('%s should throw a feature disabled exception', async (_name, act) => {
 			config.featureRoomGroupingEnabled = false;
 
@@ -355,6 +357,112 @@ describe(RoomArrangementUc.name, () => {
 
 			expect(roomArrangementService.setConfirmGroupDeletion).toHaveBeenCalledWith(user.id, 2, [], false);
 			expect(result.confirmGroupDeletion).toBe(false);
+		});
+	});
+
+	describe('updateGroupsCollapsed', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			setupRoomAccess([], user.id);
+			const group = roomGroupPropsFactory.build({ collapsed: true });
+			roomArrangementService.setAllGroupsCollapsed.mockResolvedValueOnce(
+				roomArrangementFactory.build({ groups: [group] })
+			);
+
+			return { user, group };
+		};
+
+		it('should collapse all groups without checking room permissions', async () => {
+			const { user, group } = setup();
+
+			const result = await uc.updateGroupsCollapsed(user.id, 2, true);
+
+			expect(roomArrangementService.setAllGroupsCollapsed).toHaveBeenCalledWith(user.id, 2, [], true);
+			expect(roomRule.can).not.toHaveBeenCalled();
+			expect(result.groups).toEqual([group]);
+		});
+	});
+
+	describe('moveRoomsToSection', () => {
+		describe('when the user may not arrange one of the rooms', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const rooms = roomFactory.buildList(3);
+				setupRoomAccess(rooms, user.id);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				roomRule.can.mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true);
+
+				return { user, rooms };
+			};
+
+			it('should throw a forbidden exception and not write', async () => {
+				const { user, rooms } = setup();
+
+				const promise = uc.moveRoomsToSection(
+					user.id,
+					0,
+					rooms.map((room) => room.id),
+					null
+				);
+
+				await expect(promise).rejects.toThrow(ForbiddenException);
+				expect(roomArrangementService.moveRoomsToSection).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when one of the rooms is not a membership room', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const [room, foreignRoom] = roomFactory.buildList(2);
+				setupRoomAccess([room], user.id);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				roomRule.can.mockReturnValueOnce(true);
+
+				return { user, room, foreignRoom };
+			};
+
+			it('should throw a forbidden exception and not write', async () => {
+				const { user, room, foreignRoom } = setup();
+
+				const promise = uc.moveRoomsToSection(user.id, 0, [room.id, foreignRoom.id], null);
+
+				await expect(promise).rejects.toThrow(ForbiddenException);
+				expect(roomArrangementService.moveRoomsToSection).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the user may arrange all rooms', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const rooms = roomFactory.buildList(2);
+				setupRoomAccess(rooms, user.id);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				roomRule.can.mockReturnValueOnce(true).mockReturnValueOnce(true);
+				const group = roomGroupPropsFactory.build({ roomIds: rooms.map((room) => room.id) });
+				roomArrangementService.moveRoomsToSection.mockResolvedValueOnce(
+					roomArrangementFactory.build({ groups: [group] })
+				);
+
+				return { user, rooms, group };
+			};
+
+			it('should move the rooms', async () => {
+				const { user, rooms, group } = setup();
+				const roomIds = rooms.map((room) => room.id);
+
+				const result = await uc.moveRoomsToSection(user.id, 1, roomIds, group.id);
+
+				expect(roomArrangementService.moveRoomsToSection).toHaveBeenCalledWith(
+					user.id,
+					1,
+					rooms.map((room) => {
+						return { id: room.id, createdAt: room.createdAt, isVisible: true };
+					}),
+					roomIds,
+					group.id
+				);
+				expect(result.groups).toEqual([group]);
+			});
 		});
 	});
 

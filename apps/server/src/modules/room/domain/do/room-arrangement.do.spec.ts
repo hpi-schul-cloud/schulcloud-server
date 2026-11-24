@@ -707,6 +707,127 @@ describe('RoomArrangement', () => {
 		});
 	});
 
+	describe('setAllGroupsCollapsed', () => {
+		describe('when some groups differ', () => {
+			it('should set the value on every group and return true', () => {
+				const groups = [roomGroupPropsFactory.build({ collapsed: true }), roomGroupPropsFactory.build()];
+				const arrangement = roomArrangementFactory.build({ groups });
+
+				const result = arrangement.setAllGroupsCollapsed(true);
+
+				expect(result).toBe(true);
+				expect(arrangement.groups.map((group) => group.collapsed)).toEqual([true, true]);
+				expect(arrangement.groups.map((group) => group.name)).toEqual(groups.map((group) => group.name));
+			});
+		});
+
+		describe('when every group already has the value', () => {
+			it('should return false', () => {
+				const arrangement = roomArrangementFactory.build({ groups: roomGroupPropsFactory.buildList(2) });
+
+				const result = arrangement.setAllGroupsCollapsed(false);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when there are no groups', () => {
+			it('should return false', () => {
+				const arrangement = roomArrangementFactory.build();
+
+				const result = arrangement.setAllGroupsCollapsed(true);
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('moveRoomsToSection', () => {
+		const setup = () => {
+			const [u1, u2, u3, g1, g2] = roomArrangementRoomInfoFactory.buildList(5);
+			const hiddenUngrouped = roomArrangementRoomInfoFactory.build({ isVisible: false });
+			const hiddenGrouped = roomArrangementRoomInfoFactory.build({ isVisible: false });
+			const group = roomGroupPropsFactory.build({ roomIds: [g1.id, hiddenGrouped.id, g2.id] });
+			const other = roomGroupPropsFactory.build();
+			const arrangement = roomArrangementFactory.build({
+				ungroupedRoomIds: [u1.id, hiddenUngrouped.id, u2.id, u3.id],
+				groups: [group, other],
+			});
+			const rooms = [u1, u2, u3, g1, g2, hiddenUngrouped, hiddenGrouped];
+
+			return { arrangement, rooms, group, other, u1, u2, u3, g1, g2, hiddenUngrouped, hiddenGrouped };
+		};
+
+		describe('when rooms from several sections are moved into a group', () => {
+			it('should append them in the listed order and keep all other rooms in order', () => {
+				const { arrangement, rooms, group, u1, u2, u3, g1, g2, hiddenUngrouped, hiddenGrouped } = setup();
+
+				const result = arrangement.moveRoomsToSection([u3.id, g1.id, u1.id], group.id, rooms);
+
+				expect(result).toBe(true);
+				expect(arrangement.ungroupedRoomIds).toEqual([hiddenUngrouped.id, u2.id]);
+				expect(arrangement.groups[0].roomIds).toEqual([hiddenGrouped.id, g2.id, u3.id, g1.id, u1.id]);
+				expect(arrangement.groups[1].roomIds).toEqual([]);
+			});
+		});
+
+		describe('when rooms are moved to the ungrouped rooms', () => {
+			it('should append them after hidden rooms', () => {
+				const { arrangement, rooms, u1, u2, u3, g1, g2, hiddenUngrouped, hiddenGrouped } = setup();
+
+				arrangement.moveRoomsToSection([g2.id, g1.id], null, rooms);
+
+				expect(arrangement.ungroupedRoomIds).toEqual([u1.id, hiddenUngrouped.id, u2.id, u3.id, g2.id, g1.id]);
+				expect(arrangement.groups[0].roomIds).toEqual([hiddenGrouped.id]);
+			});
+		});
+
+		describe('when listed rooms are already in the target', () => {
+			it('should move them to the end in the listed order', () => {
+				const { arrangement, rooms, u1, u2, u3, hiddenUngrouped } = setup();
+
+				const result = arrangement.moveRoomsToSection([u2.id, u1.id], null, rooms);
+
+				expect(result).toBe(true);
+				expect(arrangement.ungroupedRoomIds).toEqual([hiddenUngrouped.id, u3.id, u2.id, u1.id]);
+			});
+		});
+
+		describe('when the result equals the current state', () => {
+			it('should return false', () => {
+				const { arrangement, rooms, group, g2 } = setup();
+
+				const result = arrangement.moveRoomsToSection([g2.id], group.id, rooms);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when the target group is unknown', () => {
+			it('should throw a not found error and change nothing', () => {
+				const { arrangement, rooms, u1 } = setup();
+				const before = arrangement.getAllRoomIds();
+
+				const act = () => arrangement.moveRoomsToSection([u1.id], new ObjectId().toHexString(), rooms);
+
+				expect(act).toThrow(RoomGroupNotFoundError);
+				expect(arrangement.getAllRoomIds()).toEqual(before);
+			});
+		});
+
+		describe('when a listed room is not visible', () => {
+			it('should throw a state conflict and change nothing', () => {
+				const { arrangement, rooms, other, u1, hiddenGrouped } = setup();
+				const before = arrangement.getAllRoomIds();
+
+				const act = () => arrangement.moveRoomsToSection([u1.id, hiddenGrouped.id], other.id, rooms);
+
+				expect(catchError(act)).toMatchObject({ code: 409, details: { reason: RoomArrangementConflictReason.STATE } });
+				expect(arrangement.getAllRoomIds()).toEqual(before);
+			});
+		});
+	});
+
 	describe('setConfirmGroupDeletion', () => {
 		describe('when the value changes', () => {
 			it('should set it and return true', () => {

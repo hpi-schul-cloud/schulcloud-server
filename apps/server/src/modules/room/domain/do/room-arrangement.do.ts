@@ -277,6 +277,48 @@ export class RoomArrangement extends DomainObject<RoomArrangementProps> {
 		return changed;
 	}
 
+	public setAllGroupsCollapsed(collapsed: boolean): boolean {
+		const changed = this.props.groups.some((group) => group.collapsed !== collapsed);
+
+		this.props.groups.forEach((group) => {
+			group.collapsed = collapsed;
+		});
+
+		return changed;
+	}
+
+	/**
+	 * Removes the rooms from their sections and appends them to the target section in the given order.
+	 * All other rooms, including hidden ones, keep their relative order.
+	 */
+	public moveRoomsToSection(
+		roomIds: EntityId[],
+		targetGroupId: EntityId | null,
+		rooms: RoomArrangementRoomInfo[]
+	): boolean {
+		this.getSectionRoomIds(targetGroupId);
+		const visibleRoomIds = this.getVisibleRoomIdSet(rooms);
+		const arrangedRoomIds = new Set(this.getAllRoomIds());
+
+		if (roomIds.some((roomId) => !visibleRoomIds.has(roomId) || !arrangedRoomIds.has(roomId))) {
+			throw new RoomArrangementConflictError(RoomArrangementConflictReason.STATE);
+		}
+
+		const previousRoomIds = this.getSectionsSnapshot();
+		const movedRoomIds = new Set(roomIds);
+		const keepRoom = (roomId: EntityId): boolean => !movedRoomIds.has(roomId);
+
+		this.props.ungroupedRoomIds = this.props.ungroupedRoomIds.filter(keepRoom);
+		this.props.groups.forEach((group) => {
+			group.roomIds = group.roomIds.filter(keepRoom);
+		});
+		this.getSectionRoomIds(targetGroupId).push(...movedRoomIds);
+
+		const changed = !isEqual(previousRoomIds, this.getSectionsSnapshot());
+
+		return changed;
+	}
+
 	public setConfirmGroupDeletion(confirmGroupDeletion: boolean): boolean {
 		if (this.props.confirmGroupDeletion === confirmGroupDeletion) {
 			return false;
@@ -285,6 +327,12 @@ export class RoomArrangement extends DomainObject<RoomArrangementProps> {
 		this.props.confirmGroupDeletion = confirmGroupDeletion;
 
 		return true;
+	}
+
+	private getSectionsSnapshot(): EntityId[][] {
+		const snapshot = [[...this.props.ungroupedRoomIds], ...this.props.groups.map((group) => [...group.roomIds])];
+
+		return snapshot;
 	}
 
 	private moveRoomBefore(

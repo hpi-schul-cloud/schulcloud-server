@@ -342,6 +342,98 @@ describe(RoomArrangementService.name, () => {
 		});
 	});
 
+	describe('setAllGroupsCollapsed', () => {
+		describe('when nothing changes', () => {
+			const setup = () => {
+				const arrangement = roomArrangementFactory.build({
+					groups: [roomGroupPropsFactory.build({ collapsed: true })],
+				});
+				repo.findOrCreateByUserId.mockResolvedValueOnce(arrangement);
+
+				return { arrangement };
+			};
+
+			it('should not write', async () => {
+				const { arrangement } = setup();
+
+				const result = await service.setAllGroupsCollapsed(arrangement.userId, 0, [], true);
+
+				expect(result.revision).toBe(0);
+				expect(repo.updateIfRevisionMatches).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when groups change', () => {
+			const setup = () => {
+				const arrangement = roomArrangementFactory.build({ groups: roomGroupPropsFactory.buildList(2) });
+				repo.findOrCreateByUserId.mockResolvedValueOnce(arrangement);
+				repo.updateIfRevisionMatches.mockResolvedValueOnce(true);
+
+				return { arrangement };
+			};
+
+			it('should write once', async () => {
+				const { arrangement } = setup();
+
+				const result = await service.setAllGroupsCollapsed(arrangement.userId, 0, [], true);
+
+				expect(result.groups.every((group) => group.collapsed)).toBe(true);
+				expect(repo.updateIfRevisionMatches).toHaveBeenCalledTimes(1);
+			});
+		});
+	});
+
+	describe('moveRoomsToSection', () => {
+		describe('when the revision is stale', () => {
+			const setup = () => {
+				const room = roomArrangementRoomInfoFactory.build();
+				const arrangement = roomArrangementFactory.build({ revision: 2, ungroupedRoomIds: [room.id] });
+				repo.findOrCreateByUserId.mockResolvedValueOnce(arrangement);
+
+				return { arrangement, room };
+			};
+
+			it('should throw a revision conflict without writing', async () => {
+				const { arrangement, room } = setup();
+
+				const promise = service.moveRoomsToSection(arrangement.userId, 1, [room], [room.id], null);
+
+				await expect(promise).rejects.toEqual(conflict(RoomArrangementConflictReason.REVISION));
+				expect(repo.updateIfRevisionMatches).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the rooms move', () => {
+			const setup = () => {
+				const rooms = roomArrangementRoomInfoFactory.buildList(2);
+				const group = roomGroupPropsFactory.build();
+				const arrangement = roomArrangementFactory.build({
+					ungroupedRoomIds: rooms.map((room) => room.id),
+					groups: [group],
+				});
+				repo.findOrCreateByUserId.mockResolvedValueOnce(arrangement);
+				repo.updateIfRevisionMatches.mockResolvedValueOnce(true);
+
+				return { arrangement, rooms, group };
+			};
+
+			it('should apply all moves in one write', async () => {
+				const { arrangement, rooms, group } = setup();
+
+				const result = await service.moveRoomsToSection(
+					arrangement.userId,
+					0,
+					rooms,
+					[rooms[1].id, rooms[0].id],
+					group.id
+				);
+
+				expect(result.groups[0].roomIds).toEqual([rooms[1].id, rooms[0].id]);
+				expect(repo.updateIfRevisionMatches).toHaveBeenCalledTimes(1);
+			});
+		});
+	});
+
 	describe('setConfirmGroupDeletion', () => {
 		const setup = () => {
 			const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: true });
