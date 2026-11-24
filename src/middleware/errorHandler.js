@@ -15,6 +15,7 @@ const { API_VALIDATION_ERROR_TYPE } = require('../errors/commonErrorTypes');
 
 const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
 const logger = require('../logger');
+const { isSensitiveName } = require('../../dist/apps/server/infra/logger/sensitive-value');
 
 const MAX_LEVEL_FILTER = 12;
 
@@ -95,43 +96,27 @@ const formatAndLogErrors = (error, req, res, next) => {
 	return next(error);
 };
 
-// map to lower case and test as lower case
-const secretDataKeys = (() =>
-	[
-		'headers',
-		'password',
-		'passwort',
-		'new_password',
-		'new-password',
-		'oauth-password',
-		'current-password',
-		'passwort_1',
-		'passwort_2',
-		'password_1',
-		'password_2',
-		'password-1',
-		'password-2',
-		'password_verification',
-		'password_control',
-		'PASSWORD_HASH',
-		'password_new',
-		'accessToken',
-		'ticket',
-		'firstName',
-		'lastName',
-		'email',
-		'birthday',
-		'description',
-		'gradeComment',
-		'_csrf',
-		'searchUserPassword',
-		'authorization',
-		'student-email',
-		'toHash',
-	].map((k) => k.toLocaleLowerCase()))();
+// Personal data and other values that the shared sensitive name rule does not cover; compared in lower case.
+// Passwords, tokens, authorization and the like are covered by isSensitiveName.
+const additionalSecretDataKeys = [
+	'headers',
+	'ticket',
+	'firstName',
+	'lastName',
+	'email',
+	'birthday',
+	'description',
+	'gradeComment',
+	'_csrf',
+	'student-email',
+	'toHash',
+].map((k) => k.toLocaleLowerCase());
+
+const isSecretDataKey = (key) => isSensitiveName(key) || additionalSecretDataKeys.includes(key.toLocaleLowerCase());
 
 const filterSecretValue = (key, value) => {
-	if (secretDataKeys.includes(key.toLocaleLowerCase())) {
+	// A boolean is never a secret, so flags such as forcePasswordChange stay readable.
+	if (isSecretDataKey(key) && typeof value !== 'boolean') {
 		// E-Mail-Maskierung, falls value eine E-Mail-Adresse ist
 		if (typeof value === 'string' && /^[^@\s]{3,}[^@\s]*@[^@\s]+\.[^@\s]+$/.test(value)) {
 			// Split in local und domain
@@ -314,3 +299,4 @@ const errorHandler = (app) => {
 	app.use(getErrorResponse);
 };
 module.exports = errorHandler;
+module.exports.isSecretDataKey = isSecretDataKey;
