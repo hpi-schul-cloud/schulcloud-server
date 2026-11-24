@@ -696,8 +696,42 @@ describe(LoggingUtils.name, () => {
 			});
 
 			expect(result).toEqual({
-				passwordHash: 'hash...56 [REDACTED]',
-				credentialsId: 'cred...56 [REDACTED]',
+				passwordHash: '[REDACTED]',
+				credentialsId: '[REDACTED]',
+			});
+		});
+
+		it('should redact password, credential and PIN values completely', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				password: 'Sommer2026!x',
+				newPasswort: 'Basic sommer-2026-passwort',
+				clientCredentials: 'client-credential-value',
+				registrationPins: 'pin-value-123456',
+			});
+
+			expect(result).toEqual({
+				password: '[REDACTED]',
+				newPasswort: '[REDACTED]',
+				clientCredentials: '[REDACTED]',
+				registrationPins: '[REDACTED]',
+			});
+		});
+
+		it('should keep the first and last characters of tokens, secrets, keys and cookies', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				accessToken: 'access-token-123456',
+				clientSecret: 'client-secret-123456',
+				apiKey: 'api-key-value-123456',
+				cookie: 'session-cookie-123456',
+				authorization: 'Bearer bearer-token-123456',
+			});
+
+			expect(result).toEqual({
+				accessToken: 'acce...56 [REDACTED]',
+				clientSecret: 'clie...56 [REDACTED]',
+				apiKey: 'api-...56 [REDACTED]',
+				cookie: 'sess...56 [REDACTED]',
+				authorization: 'Bearer bear...56 [REDACTED]',
 			});
 		});
 	});

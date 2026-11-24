@@ -1,4 +1,4 @@
-import { isSensitiveName } from './sensitive-value';
+import { isCredentialName, isSensitiveName } from './sensitive-value';
 
 describe('isSensitiveName', () => {
 	describe('when a name contains cookie, auth, token or secret', () => {
@@ -124,4 +124,26 @@ describe('isSensitiveName', () => {
 			}
 		);
 	});
+});
+
+describe('isCredentialName', () => {
+	it.each([
+		'password',
+		'searchUserPassword',
+		'passwort_1',
+		'passwd',
+		'clientCredentials',
+		'pin',
+		'userPINs',
+		'PIN_CODE',
+	])('should match %s', (name) => {
+		expect(isCredentialName(name)).toBe(true);
+	});
+
+	it.each(['accessToken', 'clientSecret', 'authorization', 'cookie', 'apiKey', 'x-api-client', 'pinned', 'spinner'])(
+		'should not match %s',
+		(name) => {
+			expect(isCredentialName(name)).toBe(false);
+		}
+	);
 });

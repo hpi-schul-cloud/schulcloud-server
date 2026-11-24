@@ -3,7 +3,7 @@ import { type AxiosError, isAxiosError } from 'axios';
 import util from 'node:util';
 import { getAxiosErrorFields } from './axios-error-fields';
 import { summarizeOpaqueLogValue } from './opaque-log-value';
-import { isSensitiveName, maskSecret } from './sensitive-value';
+import { isCredentialName, isSensitiveName, maskSecret } from './sensitive-value';
 import { type LogMessageWithContext } from './types';
 
 export class LoggingUtils {
@@ -149,12 +149,13 @@ export class LoggingUtils {
 	}
 
 	private static redactEntryValue(key: string, value: unknown, visited: WeakSet<object>): unknown {
-		// A boolean is never a secret, so flags such as forcePasswordChange or hasPin stay readable.
+		// Booleans are not masked: they cannot hold a credential and flags such as forcePasswordChange must stay readable.
 		if (!isSensitiveName(key) || typeof value === 'boolean') {
 			return this.redactSensitiveObject(value, visited);
 		}
 
-		if (typeof value !== 'string') {
+		// Passwords, credentials and PINs are redacted completely; tokens, keys and cookies keep a few characters.
+		if (typeof value !== 'string' || isCredentialName(key)) {
 			return '[REDACTED]';
 		}
 
