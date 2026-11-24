@@ -105,9 +105,10 @@ describe('Board Import Controller (API)', () => {
 				const { loggedInClient } = await setupLoggedInClient();
 				const { link, target } = boardImportJobFactory.build();
 				const body = { link, targetType: target.type, targetId: target.id };
+				const jobCount = 0;
 				config.featureBoardImportEnabled = false;
 
-				return { loggedInClient, link, body };
+				return { loggedInClient, link, body, jobCount };
 			};
 
 			it('should return status 403', async () => {
@@ -119,12 +120,12 @@ describe('Board Import Controller (API)', () => {
 			});
 
 			it('should not store a job', async () => {
-				const { loggedInClient, link, body } = await setup();
+				const { loggedInClient, link, body, jobCount } = await setup();
 
 				await loggedInClient.post('', body);
 
 				const count = await em.count(BoardImportJobEntity, { link });
-				expect(count).toEqual(0);
+				expect(count).toEqual(jobCount);
 			});
 		});
 
