@@ -60,9 +60,10 @@ const toPattern = (route: SecretPathRoute): RegExp => {
 
 const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPattern);
 
-// Also matches the array forms name[]= and name%5B%5D=, values end at the next & or #.
+// Also matches the array forms of the qs parser: name[]=, name[0]= and their encoded forms (name%5B0%5D=).
+// Values end at the next & or #.
 const SECRET_QUERY_PATTERN = new RegExp(
-	String.raw`([?&](?:${SECRET_QUERY_PARAMS.map(escapeRegExp).join('|')})(?:\[\]|%5B%5D)?=)[^&#]*`,
+	String.raw`([?&](?:${SECRET_QUERY_PARAMS.map(escapeRegExp).join('|')})(?:\[[^\]&#=]*\]|%5B(?:(?!%5D)[^&#=])*%5D)?=)[^&#]*`,
 	'gi'
 );
 

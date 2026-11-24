@@ -24,6 +24,14 @@ describe('url-path-secrets', () => {
 			],
 			['/room-invitation-links?roomInvitationLinkIds[]=a', '/room-invitation-links?roomInvitationLinkIds[]=***'],
 			[
+				'/room-invitation-links?roomInvitationLinkIds[0]=a&roomInvitationLinkIds[1]=b',
+				'/room-invitation-links?roomInvitationLinkIds[0]=***&roomInvitationLinkIds[1]=***',
+			],
+			[
+				'/room-invitation-links?roomInvitationLinkIds%5B0%5D=a&roomInvitationLinkIds%5b1%5d=b',
+				'/room-invitation-links?roomInvitationLinkIds%5B0%5D=***&roomInvitationLinkIds%5b1%5d=***',
+			],
+			[
 				'/room-invitation-links?x=1&roomInvitationLinkIds%5B%5D=a#f',
 				'/room-invitation-links?x=1&roomInvitationLinkIds%5B%5D=***#f',
 			],
