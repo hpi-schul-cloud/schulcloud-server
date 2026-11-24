@@ -384,6 +384,35 @@ describe(BoardImportJobProcessService.name, () => {
 			});
 		});
 
+		describe('when another worker stored the end status before the worker sets the job to failed', () => {
+			const setup = () => {
+				const attempts = config.jobMaxAttempts;
+				const job = boardImportJobFactory.build({
+					status: BoardImportJobStatus.RUNNING,
+					attempts,
+					startedAt: new Date(),
+				});
+				const logEntry = [
+					'Board import job end status not stored',
+					{ jobId: job.id, reason: BoardImportJobLogReason.OUTDATED_ATTEMPT, attempts },
+				] as const;
+
+				repo.findById.mockResolvedValueOnce(job);
+				repo.closeAttempt.mockResolvedValueOnce(false);
+
+				return { job, logEntry };
+			};
+
+			it('should resolve and log that the end status was not stored', async () => {
+				const { job, logEntry } = setup();
+
+				await service.process(job.id);
+
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
+				expect(logger.warning).not.toHaveBeenCalledWith('Board import job failed', expect.anything());
+			});
+		});
+
 		describe('when the job does not exist', () => {
 			const setup = () => {
 				const { id } = boardImportJobFactory.build();
