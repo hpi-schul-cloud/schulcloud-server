@@ -1,6 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger, LoggingUtils } from '@infra/logger';
-import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common/error';
@@ -289,6 +289,40 @@ describe('GlobalErrorFilter', () => {
 				const logEntry = JSON.stringify(LoggingUtils.createMessageWithContext(loggable));
 				expect(logEntry).not.toContain(Object.values(params)[0]);
 				expect(logEntry).not.toContain('queryToken');
+			});
+		});
+
+		describe('when nest throws its 404 for an unknown route with a secret in the url', () => {
+			const setup = () => {
+				const url = '/api/v3/sharetoken/secretShareToken';
+				// The exact error Nest's RoutesResolver throws: `Cannot ${method} ${url}` with the original url.
+				const error = new NotFoundException(`Cannot POST ${url}`);
+				const request = { method: 'POST', url: '/sharetoken/secretShareToken', params: {}, query: {} };
+				const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
+
+				return { error, context };
+			};
+
+			it('should log neither message, stack nor response with the secret', () => {
+				const { error, context } = setup();
+
+				domainErrorHandler.execHttpContext(error, context);
+
+				const loggable = logger.error.mock.calls[0][0];
+				const logEntry = JSON.stringify(LoggingUtils.createMessageWithContext(loggable));
+				expect(logEntry).not.toContain('secretShareToken');
+				expect(logEntry).toContain('Cannot POST /api/v3/sharetoken/***');
+				expect(logEntry).toContain('NotFoundException: Cannot POST /api/v3/sharetoken/***\\n    at ');
+			});
+
+			it('should keep the error type and not change the thrown error', () => {
+				const { error, context } = setup();
+
+				domainErrorHandler.execHttpContext(error, context);
+
+				const loggable = logger.error.mock.calls[0][0];
+				expect(loggable.getLogMessage()).toMatchObject({ type: 'Technical Error' });
+				expect(error.message).toBe('Cannot POST /api/v3/sharetoken/secretShareToken');
 			});
 		});
 

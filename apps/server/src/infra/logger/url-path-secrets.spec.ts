@@ -1,4 +1,9 @@
-import { redactSecretPathParams, redactSecretQueryParams, redactSecretsInUrl } from './url-path-secrets';
+import {
+	redactSecretPathParams,
+	redactSecretQueryParams,
+	redactSecretsInText,
+	redactSecretsInUrl,
+} from './url-path-secrets';
 
 describe('url-path-secrets', () => {
 	describe('redactSecretsInUrl', () => {
@@ -95,5 +100,30 @@ describe('url-path-secrets', () => {
 			expect(result).toEqual({ roomInvitationLinkIds: '***', other: 'c' });
 			expect(query.roomInvitationLinkIds).toEqual(['a', 'b']);
 		});
+	});
+
+	describe('redactSecretsInText', () => {
+		it.each([
+			['Cannot POST /api/v3/sharetoken/abc123', 'Cannot POST /api/v3/sharetoken/***'],
+			['Cannot GET /api/v3/registrations/by-secret/s3cr3t/typo', 'Cannot GET /api/v3/registrations/by-secret/***/typo'],
+			[
+				'NotFoundException: Cannot GET /api/v3/sharetoken/abc123\n    at callback (routes-resolver.js:77:19)',
+				'NotFoundException: Cannot GET /api/v3/sharetoken/***\n    at callback (routes-resolver.js:77:19)',
+			],
+			['url "/link/shortId" failed', 'url "/link/***" failed'],
+			[
+				'Cannot DELETE /api/v3/room-invitation-links?roomInvitationLinkIds=a&roomInvitationLinkIds[1]=b now',
+				'Cannot DELETE /api/v3/room-invitation-links?roomInvitationLinkIds=***&roomInvitationLinkIds[1]=*** now',
+			],
+		])('should redact the secret in %s', (text, expected) => {
+			expect(redactSecretsInText(text)).toBe(expected);
+		});
+
+		it.each(['Cannot GET /api/v3/rooms/1', 'Cannot GET /other/sharetoken/abc', 'see sharetoken/abc'])(
+			'should not change %s',
+			(text) => {
+				expect(redactSecretsInText(text)).toBe(text);
+			}
+		);
 	});
 });

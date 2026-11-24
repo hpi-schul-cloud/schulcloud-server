@@ -49,23 +49,45 @@ const MOUNT_PREFIX = String.raw`(?:[a-z][a-z0-9+.-]*://[^/?#]*)?(?:/api(?:/v\d+)
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
-const toPattern = (route: SecretPathRoute): RegExp => {
-	const notSecret = route.notSecret?.length ? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/?#]|$))` : '';
+// In free text (e.g. Nest's "Cannot GET /sharetoken/abc") a URL starts after whitespace, a quote or "=", and ends there too.
+const TEXT_URL_START = String.raw`(?:^|[\s"'(=])`;
+const TEXT_STOP = String.raw`\s"'`;
 
-	const secret = route.spansSlashes ? '[^?#]+' : '[^/?#]+';
+const toPattern = (route: SecretPathRoute, inText: boolean): RegExp => {
+	const stop = inText ? TEXT_STOP : '';
+	const notSecret = route.notSecret?.length
+		? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/?#${stop}]|$))`
+		: '';
+	const secret = route.spansSlashes ? `[^?#${stop}]+` : `[^/?#${stop}]+`;
+	const start = inText ? TEXT_URL_START : '^';
 
 	// Express routes are case-insensitive, so /ShareToken/abc reaches the same handler.
-	return new RegExp(`^(${MOUNT_PREFIX}/${escapeRegExp(route.prefix)}/)${notSecret}${secret}`, 'i');
+	return new RegExp(
+		`(${start}${MOUNT_PREFIX}/${escapeRegExp(route.prefix)}/)${notSecret}${secret}`,
+		inText ? 'gi' : 'i'
+	);
 };
 
-const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPattern);
+const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map((route) => toPattern(route, false));
+
+const SECRET_PATH_PATTERNS_IN_TEXT = SECRET_PATH_ROUTES.map((route) => toPattern(route, true));
 
 // Also matches the array forms of the qs parser: name[]=, name[0]= and their encoded forms (name%5B0%5D=).
-// Values end at the next & or #.
-const SECRET_QUERY_PATTERN = new RegExp(
-	String.raw`([?&](?:${SECRET_QUERY_PARAMS.map(escapeRegExp).join('|')})(?:\[[^\]&#=]*\]|%5B(?:(?!%5D)[^&#=])*%5D)?=)[^&#]*`,
-	'gi'
-);
+// Values end at the next & or # (in free text also at whitespace or a quote).
+const toQueryPattern = (inText: boolean): RegExp =>
+	new RegExp(
+		String.raw`([?&](?:${SECRET_QUERY_PARAMS.map(escapeRegExp).join('|')})(?:\[[^\]&#=]*\]|%5B(?:(?!%5D)[^&#=])*%5D)?=)[^&#${inText ? TEXT_STOP : ''}]*`,
+		'gi'
+	);
+
+const SECRET_QUERY_PATTERN = toQueryPattern(false);
+
+const SECRET_QUERY_PATTERN_IN_TEXT = toQueryPattern(true);
+
+const redactWith = (text: string, pathPatterns: RegExp[], queryPattern: RegExp): string =>
+	pathPatterns
+		.reduce((redacted, pattern) => redacted.replace(pattern, `$1${REDACTED}`), text)
+		.replace(queryPattern, `$1${REDACTED}`);
 
 const SECRET_PARAM_NAMES = new Set(SECRET_PATH_ROUTES.flatMap((route) => route.params));
 
@@ -95,12 +117,18 @@ export const redactSecretsInUrl = <T>(url: T): T => {
 		return url;
 	}
 
-	const redactedPath = SECRET_PATH_PATTERNS.reduce(
-		(redacted, pattern) => redacted.replace(pattern, `$1${REDACTED}`),
-		url as string
-	);
+	return redactWith(url, SECRET_PATH_PATTERNS, SECRET_QUERY_PATTERN) as T;
+};
 
-	return redactedPath.replace(SECRET_QUERY_PATTERN, `$1${REDACTED}`) as T;
+/**
+ * Replaces secrets of URLs inside a longer text, e.g. the message "Cannot GET /api/v3/sharetoken/abc" of a Nest 404.
+ */
+export const redactSecretsInText = <T>(text: T): T => {
+	if (typeof text !== 'string') {
+		return text;
+	}
+
+	return redactWith(text, SECRET_PATH_PATTERNS_IN_TEXT, SECRET_QUERY_PATTERN_IN_TEXT) as T;
 };
 
 /** Returns a copy of the route params where params that hold a secret path segment are redacted. */
