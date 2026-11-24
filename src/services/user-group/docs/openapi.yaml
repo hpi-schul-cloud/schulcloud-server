@@ -293,6 +293,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/courses'
+        '400':
+          description: invalid data, e.g. update operators, dotted keys or teacherIds/substitutionIds containing users without the teacher role
         '401':
           description: not authenticated
         '500':
@@ -350,6 +352,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/courses'
+        '400':
+          description: invalid data, e.g. update operators, dotted keys or teacherIds/substitutionIds containing users without the teacher role
         '401':
           description: not authenticated
         '404':
@@ -382,6 +386,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/courses'
+        '400':
+          description: invalid data, e.g. update operators, dotted keys or teacherIds/substitutionIds containing users without the teacher role
         '401':
           description: not authenticated
         '404':
