@@ -90,6 +90,11 @@ const copyValue = (value, ancestors) => {
 		return value.map((item) => toJsonValues(item, ancestors));
 	}
 
+	// JSON and LoggingUtils would log a Map or Set as {}, their content is logged as entries or items instead.
+	if (value instanceof Map || value instanceof Set) {
+		return toJsonValues(value instanceof Set ? [...value] : [...value.entries()], ancestors);
+	}
+
 	// Class instances become plain objects with their own fields, as in JSON and in LoggingUtils.
 	const copy = {};
 	for (const [key, item] of Object.entries(value)) {

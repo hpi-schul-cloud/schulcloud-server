@@ -322,6 +322,17 @@ describe('[logger] masking in the feathers logger', () => {
 		});
 	});
 
+	it('should log the content of a Map and a Set', () => {
+		const line = toJsonLine({
+			message: 'collections',
+			map: new Map([['token', SECRET]]),
+			set: new Set(['a', SECRET]),
+		});
+
+		expect(line.map).to.eql([['token', '***']]);
+		expect(line.set).to.eql(['a', '***']);
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE
