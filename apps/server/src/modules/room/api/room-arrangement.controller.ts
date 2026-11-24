@@ -245,7 +245,10 @@ export class RoomArrangementController {
 		const arrangement = await this.roomArrangementUc.updatePreferences(
 			currentUser.userId,
 			bodyParams.expectedRevision,
-			bodyParams.confirmGroupDeletion
+			{
+				confirmGroupDeletion: bodyParams.confirmGroupDeletion,
+				groupingHintDismissed: bodyParams.groupingHintDismissed,
+			}
 		);
 
 		const response = RoomArrangementMapper.mapToRoomArrangementResponse(arrangement);

@@ -9,6 +9,7 @@ import { throwForbiddenIfFalse } from '@shared/common/utils/wrap-with-exception'
 import { EntityId } from '@shared/domain/types';
 import {
 	Room,
+	RoomArrangementPreferencesUpdate,
 	RoomArrangementRoomInfo,
 	RoomArrangementService,
 	RoomGroupUpdate,
@@ -235,16 +236,16 @@ export class RoomArrangementUc {
 	public async updatePreferences(
 		userId: EntityId,
 		expectedRevision: number,
-		confirmGroupDeletion: boolean
+		update: RoomArrangementPreferencesUpdate
 	): Promise<VisibleRoomArrangement> {
 		this.checkFeatureRoomGroupingEnabled();
 
 		const { accessibleRooms } = await this.getUserRoomAccess(userId);
-		const arrangement = await this.roomArrangementService.setConfirmGroupDeletion(
+		const arrangement = await this.roomArrangementService.updatePreferences(
 			userId,
 			expectedRevision,
 			accessibleRooms,
-			confirmGroupDeletion
+			update
 		);
 
 		return arrangement.getVisibleArrangement(accessibleRooms);

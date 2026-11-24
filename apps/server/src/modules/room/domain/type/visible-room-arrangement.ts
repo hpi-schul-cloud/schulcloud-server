@@ -12,6 +12,7 @@ export interface VisibleRoomArrangement {
 	ungroupedRoomIds: EntityId[];
 	groups: VisibleRoomGroup[];
 	confirmGroupDeletion: boolean;
+	groupingHintDismissed: boolean;
 }
 
 export interface VisibleRoomArrangementWithCreatedGroup extends VisibleRoomArrangement {

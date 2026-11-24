@@ -219,7 +219,7 @@ describe(RoomArrangementUc.name, () => {
 						beforeRoomId: null,
 					}),
 			],
-			['updatePreferences', () => uc.updatePreferences(userId, 0, false)],
+			['updatePreferences', () => uc.updatePreferences(userId, 0, { confirmGroupDeletion: false })],
 			['updateGroupsCollapsed', () => uc.updateGroupsCollapsed(userId, 0, true)],
 			['moveRoomsToSection', () => uc.moveRoomsToSection(userId, 0, [groupId], null)],
 		])('%s should throw a feature disabled exception', async (_name, act) => {
@@ -256,6 +256,7 @@ describe(RoomArrangementUc.name, () => {
 				ungroupedRoomIds: [room.id],
 				groups: [],
 				confirmGroupDeletion: true,
+				groupingHintDismissed: false,
 			});
 		});
 	});
@@ -343,20 +344,23 @@ describe(RoomArrangementUc.name, () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			setupRoomAccess([], user.id);
-			roomArrangementService.setConfirmGroupDeletion.mockResolvedValueOnce(
-				roomArrangementFactory.build({ confirmGroupDeletion: false })
+			roomArrangementService.updatePreferences.mockResolvedValueOnce(
+				roomArrangementFactory.build({ confirmGroupDeletion: false, groupingHintDismissed: true })
 			);
 
 			return { user };
 		};
 
-		it('should change the preference', async () => {
+		it('should change the given preferences', async () => {
 			const { user } = setup();
 
-			const result = await uc.updatePreferences(user.id, 2, false);
+			const result = await uc.updatePreferences(user.id, 2, { groupingHintDismissed: true });
 
-			expect(roomArrangementService.setConfirmGroupDeletion).toHaveBeenCalledWith(user.id, 2, [], false);
+			expect(roomArrangementService.updatePreferences).toHaveBeenCalledWith(user.id, 2, [], {
+				groupingHintDismissed: true,
+			});
 			expect(result.confirmGroupDeletion).toBe(false);
+			expect(result.groupingHintDismissed).toBe(true);
 		});
 	});
 

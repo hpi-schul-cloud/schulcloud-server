@@ -34,11 +34,15 @@ export class RoomArrangementResponse {
 	@ApiProperty()
 	confirmGroupDeletion: boolean;
 
+	@ApiProperty({ description: 'Whether the user dismissed the first-run hint about room groups.' })
+	groupingHintDismissed: boolean;
+
 	constructor(props: RoomArrangementResponse) {
 		this.revision = props.revision;
 		this.ungroupedRoomIds = props.ungroupedRoomIds;
 		this.groups = props.groups;
 		this.confirmGroupDeletion = props.confirmGroupDeletion;
+		this.groupingHintDismissed = props.groupingHintDismissed;
 	}
 }
 

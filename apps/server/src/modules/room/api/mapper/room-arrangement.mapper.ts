@@ -15,6 +15,7 @@ export class RoomArrangementMapper {
 			ungroupedRoomIds: [...arrangement.ungroupedRoomIds],
 			groups: RoomArrangementMapper.mapToRoomGroupResponses(arrangement),
 			confirmGroupDeletion: arrangement.confirmGroupDeletion,
+			groupingHintDismissed: arrangement.groupingHintDismissed,
 		});
 
 		return response;
@@ -28,6 +29,7 @@ export class RoomArrangementMapper {
 			ungroupedRoomIds: [...arrangement.ungroupedRoomIds],
 			groups: RoomArrangementMapper.mapToRoomGroupResponses(arrangement),
 			confirmGroupDeletion: arrangement.confirmGroupDeletion,
+			groupingHintDismissed: arrangement.groupingHintDismissed,
 			createdGroupId: arrangement.createdGroupId,
 		});
 

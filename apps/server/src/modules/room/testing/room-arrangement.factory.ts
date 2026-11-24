@@ -12,6 +12,7 @@ export const roomArrangementFactory = BaseFactory.define<RoomArrangement, RoomAr
 		ungroupedRoomIds: [],
 		groups: [],
 		confirmGroupDeletion: true,
+		groupingHintDismissed: false,
 	};
 
 	return props;

@@ -35,6 +35,7 @@ export interface RoomArrangementEntityProps {
 	ungroupedRoomIds?: EntityId[];
 	groups?: RoomGroupProps[];
 	confirmGroupDeletion?: boolean;
+	groupingHintDismissed?: boolean;
 }
 
 /**
@@ -62,6 +63,9 @@ export class RoomArrangementEntity extends BaseEntityWithTimestamps implements R
 
 	@Property({ nullable: true })
 	confirmGroupDeletion?: boolean;
+
+	@Property({ nullable: true })
+	groupingHintDismissed?: boolean;
 
 	@Embedded(() => RoomArrangementItemEmbeddable, { array: true, nullable: false })
 	items: RoomArrangementItemEmbeddable[] = [];

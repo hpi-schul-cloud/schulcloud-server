@@ -6,6 +6,7 @@ import { RoomArrangement } from '../do/room-arrangement.do';
 import { RoomArrangementConflictError } from '../error/room-arrangement-conflict.error';
 import {
 	RoomArrangementConflictReason,
+	RoomArrangementPreferencesUpdate,
 	RoomArrangementRoomInfo,
 	RoomGroupUpdate,
 	RoomPositionCommand,
@@ -146,14 +147,14 @@ export class RoomArrangementService {
 		return arrangement;
 	}
 
-	public async setConfirmGroupDeletion(
+	public async updatePreferences(
 		userId: EntityId,
 		expectedRevision: number,
 		accessibleRooms: RoomArrangementRoomInfo[],
-		confirmGroupDeletion: boolean
+		update: RoomArrangementPreferencesUpdate
 	): Promise<RoomArrangement> {
 		const arrangement = await this.updateArrangement(userId, expectedRevision, accessibleRooms, (item) =>
-			item.setConfirmGroupDeletion(confirmGroupDeletion)
+			item.updatePreferences(update)
 		);
 
 		return arrangement;

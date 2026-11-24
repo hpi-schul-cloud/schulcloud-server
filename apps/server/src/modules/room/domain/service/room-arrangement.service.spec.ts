@@ -434,22 +434,46 @@ describe(RoomArrangementService.name, () => {
 		});
 	});
 
-	describe('setConfirmGroupDeletion', () => {
-		const setup = () => {
-			const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: true });
-			repo.findOrCreateByUserId.mockResolvedValueOnce(arrangement);
-			repo.updateIfRevisionMatches.mockResolvedValueOnce(true);
+	describe('updatePreferences', () => {
+		describe('when a preference changes', () => {
+			const setup = () => {
+				const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: true });
+				repo.findOrCreateByUserId.mockResolvedValueOnce(arrangement);
+				repo.updateIfRevisionMatches.mockResolvedValueOnce(true);
 
-			return { arrangement };
-		};
+				return { arrangement };
+			};
 
-		it('should change the preference', async () => {
-			const { arrangement } = setup();
+			it('should change only the given preference in one write', async () => {
+				const { arrangement } = setup();
 
-			const result = await service.setConfirmGroupDeletion(arrangement.userId, 0, [], false);
+				const result = await service.updatePreferences(arrangement.userId, 0, [], { confirmGroupDeletion: false });
 
-			expect(result.confirmGroupDeletion).toBe(false);
-			expect(repo.updateIfRevisionMatches).toHaveBeenCalledTimes(1);
+				expect(result.confirmGroupDeletion).toBe(false);
+				expect(result.groupingHintDismissed).toBe(false);
+				expect(repo.updateIfRevisionMatches).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when nothing changes', () => {
+			const setup = () => {
+				const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: true, groupingHintDismissed: true });
+				repo.findOrCreateByUserId.mockResolvedValueOnce(arrangement);
+
+				return { arrangement };
+			};
+
+			it('should not write', async () => {
+				const { arrangement } = setup();
+
+				const result = await service.updatePreferences(arrangement.userId, 0, [], {
+					confirmGroupDeletion: true,
+					groupingHintDismissed: true,
+				});
+
+				expect(result.revision).toBe(0);
+				expect(repo.updateIfRevisionMatches).not.toHaveBeenCalled();
+			});
 		});
 	});
 

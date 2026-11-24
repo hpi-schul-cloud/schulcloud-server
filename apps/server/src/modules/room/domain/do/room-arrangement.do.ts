@@ -9,6 +9,7 @@ import { RoomGroupNameDuplicateError } from '../error/room-group-name-duplicate.
 import { RoomGroupNotFoundError } from '../error/room-group-not-found.error';
 import {
 	RoomArrangementConflictReason,
+	type RoomArrangementPreferencesUpdate,
 	type RoomArrangementRoomInfo,
 	type RoomGroupProps,
 	type RoomGroupUpdate,
@@ -24,6 +25,7 @@ export interface RoomArrangementProps extends AuthorizableObject {
 	ungroupedRoomIds: EntityId[];
 	groups: RoomGroupProps[];
 	confirmGroupDeletion: boolean;
+	groupingHintDismissed: boolean;
 }
 
 const compareByCreatedAtAndId = (a: RoomArrangementRoomInfo, b: RoomArrangementRoomInfo): number => {
@@ -69,6 +71,10 @@ export class RoomArrangement extends DomainObject<RoomArrangementProps> {
 
 	get confirmGroupDeletion(): boolean {
 		return this.props.confirmGroupDeletion;
+	}
+
+	get groupingHintDismissed(): boolean {
+		return this.props.groupingHintDismissed;
 	}
 
 	public hasGroups(): boolean {
@@ -143,6 +149,7 @@ export class RoomArrangement extends DomainObject<RoomArrangementProps> {
 				};
 			}),
 			confirmGroupDeletion: this.props.confirmGroupDeletion,
+			groupingHintDismissed: this.props.groupingHintDismissed,
 		};
 
 		return visibleArrangement;
@@ -327,6 +334,25 @@ export class RoomArrangement extends DomainObject<RoomArrangementProps> {
 		this.props.confirmGroupDeletion = confirmGroupDeletion;
 
 		return true;
+	}
+
+	/** Changes only the given preferences. Non-boolean values are ignored. */
+	public updatePreferences(update: RoomArrangementPreferencesUpdate): boolean {
+		let changed = false;
+
+		if (typeof update.confirmGroupDeletion === 'boolean') {
+			changed = this.setConfirmGroupDeletion(update.confirmGroupDeletion) || changed;
+		}
+
+		if (
+			typeof update.groupingHintDismissed === 'boolean' &&
+			update.groupingHintDismissed !== this.props.groupingHintDismissed
+		) {
+			this.props.groupingHintDismissed = update.groupingHintDismissed;
+			changed = true;
+		}
+
+		return changed;
 	}
 
 	private getSectionsSnapshot(): EntityId[][] {

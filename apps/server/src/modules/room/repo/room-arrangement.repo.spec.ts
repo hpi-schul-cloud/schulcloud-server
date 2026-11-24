@@ -77,6 +77,7 @@ describe(RoomArrangementRepo.name, () => {
 					ungroupedRoomIds: [],
 					groups: [],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 				});
 				const stored = await findStoredArrangements(userId);
 				expect(stored).toEqual([
@@ -87,6 +88,7 @@ describe(RoomArrangementRepo.name, () => {
 						ungroupedRoomIds: [],
 						groups: [],
 						confirmGroupDeletion: true,
+						groupingHintDismissed: false,
 						items: [],
 					}),
 				]);
@@ -154,6 +156,7 @@ describe(RoomArrangementRepo.name, () => {
 					ungroupedRoomIds: [r1.id],
 					groups: [group],
 					confirmGroupDeletion: false,
+					groupingHintDismissed: false,
 				});
 				const [after] = await findStoredArrangements(entity.userId);
 				expect(after).toEqual(before);
@@ -184,6 +187,7 @@ describe(RoomArrangementRepo.name, () => {
 					ungroupedRoomIds: [r3.id, r1.id, r2.id],
 					groups: [],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 				});
 				const stored = await findStoredArrangements(entity.userId);
 				expect(stored).toEqual([
@@ -194,6 +198,7 @@ describe(RoomArrangementRepo.name, () => {
 						ungroupedRoomIds: [r3.id, r1.id, r2.id],
 						groups: [],
 						confirmGroupDeletion: true,
+						groupingHintDismissed: false,
 						items: [{ id: r3.id }, { id: r1.id }, { id: r2.id }],
 					}),
 				]);
@@ -267,7 +272,7 @@ describe(RoomArrangementRepo.name, () => {
 				const arrangement = await repo.findOrCreateByUserId(userId);
 				arrangement.createGroup(new ObjectId().toHexString(), 'Deutsch');
 				arrangement.moveRoom({ roomId: r1.id, sourceGroupId: null, targetGroupId: null, beforeRoomId: null }, rooms);
-				arrangement.setConfirmGroupDeletion(false);
+				arrangement.updatePreferences({ confirmGroupDeletion: false, groupingHintDismissed: true });
 				await repo.updateIfRevisionMatches(arrangement);
 
 				const reloaded = await repo.findOrCreateByUserId(userId);

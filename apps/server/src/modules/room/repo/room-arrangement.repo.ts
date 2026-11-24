@@ -14,6 +14,7 @@ interface RoomArrangementDocument {
 	ungroupedRoomIds?: EntityId[];
 	groups?: RoomGroupProps[];
 	confirmGroupDeletion?: boolean;
+	groupingHintDismissed?: boolean;
 	items?: RoomArrangementItem[];
 	createdAt?: Date;
 	updatedAt?: Date;
@@ -72,6 +73,7 @@ export class RoomArrangementRepo {
 					ungroupedRoomIds: arrangement.ungroupedRoomIds,
 					groups: arrangement.groups,
 					confirmGroupDeletion: arrangement.confirmGroupDeletion,
+					groupingHintDismissed: arrangement.groupingHintDismissed,
 					items: arrangement.getAllRoomIds().map((id) => {
 						return { id };
 					}),
@@ -115,6 +117,7 @@ export class RoomArrangementRepo {
 						ungroupedRoomIds: [],
 						groups: [],
 						confirmGroupDeletion: true,
+						groupingHintDismissed: false,
 						items: [],
 						createdAt: now,
 						updatedAt: now,
@@ -153,6 +156,7 @@ export class RoomArrangementRepo {
 					ungroupedRoomIds,
 					groups: [],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 					items: ungroupedRoomIds.map((id) => {
 						return { id };
 					}),
@@ -179,6 +183,7 @@ export class RoomArrangementRepo {
 				};
 			}),
 			confirmGroupDeletion: document.confirmGroupDeletion ?? true,
+			groupingHintDismissed: document.groupingHintDismissed ?? false,
 		});
 
 		return arrangement;

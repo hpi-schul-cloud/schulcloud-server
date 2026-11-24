@@ -188,6 +188,7 @@ describe('RoomArrangement', () => {
 					{ id: emptyGroup.id, name: emptyGroup.name, collapsed: false, roomIds: [] },
 				],
 				confirmGroupDeletion: false,
+				groupingHintDismissed: false,
 			});
 		});
 
@@ -824,6 +825,65 @@ describe('RoomArrangement', () => {
 
 				expect(catchError(act)).toMatchObject({ code: 409, details: { reason: RoomArrangementConflictReason.STATE } });
 				expect(arrangement.getAllRoomIds()).toEqual(before);
+			});
+		});
+	});
+
+	describe('updatePreferences', () => {
+		describe('when only the grouping hint is given', () => {
+			it('should change only the grouping hint', () => {
+				const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: false, groupingHintDismissed: false });
+
+				const result = arrangement.updatePreferences({ groupingHintDismissed: true });
+
+				expect(result).toBe(true);
+				expect(arrangement.groupingHintDismissed).toBe(true);
+				expect(arrangement.confirmGroupDeletion).toBe(false);
+			});
+		});
+
+		describe('when only the deletion confirmation is given', () => {
+			it('should change only the deletion confirmation', () => {
+				const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: true, groupingHintDismissed: true });
+
+				const result = arrangement.updatePreferences({ confirmGroupDeletion: false });
+
+				expect(result).toBe(true);
+				expect(arrangement.confirmGroupDeletion).toBe(false);
+				expect(arrangement.groupingHintDismissed).toBe(true);
+			});
+		});
+
+		describe('when both values are unchanged', () => {
+			it('should return false', () => {
+				const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: true, groupingHintDismissed: true });
+
+				const result = arrangement.updatePreferences({ confirmGroupDeletion: true, groupingHintDismissed: true });
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when no preference is given', () => {
+			it('should return false', () => {
+				const arrangement = roomArrangementFactory.build();
+
+				const result = arrangement.updatePreferences({});
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when both values change', () => {
+			it('should change both', () => {
+				const arrangement = roomArrangementFactory.build({ confirmGroupDeletion: true, groupingHintDismissed: false });
+
+				const result = arrangement.updatePreferences({ confirmGroupDeletion: false, groupingHintDismissed: true });
+
+				expect(result).toBe(true);
+				expect(arrangement.getProps()).toEqual(
+					expect.objectContaining({ confirmGroupDeletion: false, groupingHintDismissed: true })
+				);
 			});
 		});
 	});

@@ -180,6 +180,7 @@ describe('Room Arrangement Controller (API)', () => {
 					ungroupedRoomIds: rooms.map((room) => room.id),
 					groups: [],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 				});
 				const stored = await findStoredArrangement(user.id);
 				expect(stored.ungroupedRoomIds).toEqual(rooms.map((room) => room.id));
@@ -225,6 +226,7 @@ describe('Room Arrangement Controller (API)', () => {
 					ungroupedRoomIds: legacyOrder,
 					groups: [],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 				});
 			});
 		});
@@ -340,6 +342,7 @@ describe('Room Arrangement Controller (API)', () => {
 					ungroupedRoomIds: expect.any(Array),
 					groups: [{ id: body.createdGroupId, name: 'Informatik', collapsed: false, roomIds: [] }],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 					createdGroupId: expect.any(String),
 				});
 				const stored = await findStoredArrangement(user.id);
@@ -601,6 +604,7 @@ describe('Room Arrangement Controller (API)', () => {
 					ungroupedRoomIds: [rooms[0].id, rooms[1].id, rooms[2].id],
 					groups: [],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 				});
 				const storedRooms = await em.find(RoomEntity, {});
 				expect(storedRooms.map((room) => room.id).sort()).toEqual(rooms.map((room) => room.id).sort());
@@ -1000,6 +1004,7 @@ describe('Room Arrangement Controller (API)', () => {
 						},
 					],
 					confirmGroupDeletion: true,
+					groupingHintDismissed: false,
 				});
 				const stored = await findStoredArrangement(user.id);
 				expect(stored.revision).toBe(revision + 1);
@@ -1193,6 +1198,78 @@ describe('Room Arrangement Controller (API)', () => {
 				});
 
 				expect((response.body as RoomArrangementResponse).revision).toBe(revision);
+			});
+		});
+
+		describe('when the grouping hint is dismissed', () => {
+			it('should store only that preference, increase the revision and return it on GET', async () => {
+				const { loggedInClient, user } = await setupUserWithRooms(1);
+				const { revision } = await getArrangement(loggedInClient);
+
+				const response = await loggedInClient.patch('preferences', {
+					expectedRevision: revision,
+					groupingHintDismissed: true,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(response.body).toEqual(
+					expect.objectContaining({ revision: revision + 1, groupingHintDismissed: true, confirmGroupDeletion: true })
+				);
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.groupingHintDismissed).toBe(true);
+				expect(stored.confirmGroupDeletion).toBe(true);
+				expect(stored.revision).toBe(revision + 1);
+				const arrangement = await getArrangement(loggedInClient);
+				expect(arrangement.groupingHintDismissed).toBe(true);
+				expect(arrangement.revision).toBe(revision + 1);
+			});
+		});
+
+		describe('when the stored document has no grouping hint value', () => {
+			it('should return false', async () => {
+				const { loggedInClient, user } = await setupUserWithRooms(0);
+				await em
+					.persist(
+						roomArrangementEntityFactory.build({
+							userId: user.id,
+							schemaVersion: 2,
+							revision: 3,
+							ungroupedRoomIds: [],
+							groups: [],
+							confirmGroupDeletion: true,
+							items: [],
+						})
+					)
+					.flush();
+				em.clear();
+
+				const arrangement = await getArrangement(loggedInClient);
+
+				expect(arrangement).toEqual(expect.objectContaining({ revision: 3, groupingHintDismissed: false }));
+			});
+		});
+
+		describe('when the params are not valid', () => {
+			it.each([
+				['no preference', {}],
+				['a null grouping hint', { groupingHintDismissed: null }],
+				['a null deletion confirmation', { confirmGroupDeletion: null }],
+				[
+					'a null deletion confirmation with a valid grouping hint',
+					{ confirmGroupDeletion: null, groupingHintDismissed: true },
+				],
+			])('should return a 400 validation error for %s and change nothing', async (_description, params) => {
+				const { loggedInClient, user } = await setupUserWithRooms(0);
+				const { revision } = await getArrangement(loggedInClient);
+
+				const response = await loggedInClient.patch('preferences', { expectedRevision: revision, ...params });
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
+				const stored = await findStoredArrangement(user.id);
+				expect(stored.revision).toBe(revision);
+				expect(stored.groupingHintDismissed).toBe(false);
+				expect(stored.confirmGroupDeletion).toBe(true);
 			});
 		});
 	});

@@ -26,6 +26,11 @@ export interface RoomGroupUpdate {
 	collapsed?: boolean;
 }
 
+export interface RoomArrangementPreferencesUpdate {
+	confirmGroupDeletion?: boolean;
+	groupingHintDismissed?: boolean;
+}
+
 export interface RoomPositionCommand {
 	roomId: EntityId;
 	sourceGroupId: EntityId | null;
