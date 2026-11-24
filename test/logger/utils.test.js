@@ -104,6 +104,54 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(meta).to.eql({ config: { value: SECRET }, token: 'abcdefghijklmnopqrstuvwxyz' });
 	});
 
+	it('should not change the object passed as the whole log entry', () => {
+		// logger.info(obj) and logger.log(obj) pass the caller's object itself through the formats.
+		const entry = { level: 'info', message: `x ${SECRET}`, password: 'plainpassword123' };
+
+		const line = JSON.parse(getProductionFormat().transform(entry)[MESSAGE]);
+
+		expect(line.password).to.equal('plai...23 [REDACTED]');
+		expect(entry.password).to.equal('plainpassword123');
+		expect(entry.message).to.equal(`x ${SECRET}`);
+	});
+
+	it('should log dates inside class instances and errors as in JSON', () => {
+		class Thing {
+			constructor() {
+				this.createdAt = new Date('2026-01-02T03:04:05.000Z');
+			}
+		}
+		const error = new Error('boom');
+		error.data = { at: new Date('2026-01-02T03:04:05.000Z') };
+
+		const line = toJsonLine({ message: 'dates', thing: new Thing(), error });
+
+		expect(line.thing).to.eql({ createdAt: '2026-01-02T03:04:05.000Z' });
+		expect(line.error).to.include({ name: 'Error', message: 'boom' });
+		expect(line.error.stack).to.include('Error: boom');
+		expect(line.error.data).to.eql({ at: '2026-01-02T03:04:05.000Z' });
+	});
+
+	it('should log a value whose toJSON throws by its fields', () => {
+		const line = toJsonLine({
+			message: 'broken',
+			broken: {
+				a: 1,
+				toJSON: () => {
+					throw new Error('toJSON failed');
+				},
+			},
+		});
+
+		expect(line.broken).to.eql({ a: 1 });
+	});
+
+	it('should summarize buffers as binary like the Nest logger', () => {
+		const line = toJsonLine({ message: 'binary', buffer: Buffer.from('hello') });
+
+		expect(line.buffer).to.equal('[Binary 5 bytes]');
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE
