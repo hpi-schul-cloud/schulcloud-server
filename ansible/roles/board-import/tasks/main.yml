@@ -47,6 +47,34 @@
   tags:
     - deployment
 
+- name: Board import worker configmap
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: worker-configmap.yml.j2
+    apply: yes
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - configmap
+
+- name: Add board import worker egress network policy
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: worker-egress-networkpolicy.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - networkPolicy
+
+- name: Board import worker deployment
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: worker-deployment.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  tags:
+    - deployment
+
 - name: Board import API service
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config

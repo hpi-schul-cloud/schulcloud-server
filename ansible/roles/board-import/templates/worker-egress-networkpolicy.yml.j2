@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: board-import-worker-egress
+  namespace: {{ NAMESPACE }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: board-import-worker
+  policyTypes:
+    - Egress
+  egress:
+    # DNS to all addresses: the cluster DNS setup is not known on all clusters.
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+
+    # MongoDB is outside the cluster and has no fixed address range.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - port: 27017
+          protocol: TCP
+
+    # RabbitMQ
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: rabbitmq
+      ports:
+        - port: 5672
+          protocol: TCP
+
+    # Source tools: HTTPS to public addresses only. A network policy does not know host names,
+    # so the code checks the host of each link.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              # Link-local addresses, for example the metadata service of the cloud provider
+              - 169.254.0.0/16
+      ports:
+        - port: 443
+          protocol: TCP
