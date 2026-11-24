@@ -12,7 +12,7 @@ An import job contains the user ID and the share link, which can contain an acce
 
 - An import job is deleted 30 days after it was created.
 - The job has the field `expiresAt` with a TTL index. MongoDB deletes the job.
-- The period is a configuration value (`BOARD_IMPORT_JOB_RETENTION_IN_DAYS`, default 30).
+- The period is a configuration value (`BOARD_IMPORT_JOB_RETENTION_IN_DAYS`, default 30, range 1 to 49). RabbitMQ rejects a message expiration above 2^32-1 ms (about 49.7 days). With a value above 49, the apps do not start.
 - The RabbitMQ message of a job gets the same expiry time as the job.
 
 ## Consequences

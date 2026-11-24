@@ -15,6 +15,8 @@ export class BoardImportConfig {
 	@StringToNumber()
 	@IsInt()
 	@Min(1)
+	// The RabbitMQ message expires with the job, and RabbitMQ rejects an expiration above 2^32-1 ms (about 49.7 days).
+	@Max(49)
 	public jobRetentionInDays = 30;
 
 	@ConfigProperty('BOARD_IMPORT_JOB_MAX_ATTEMPTS')
