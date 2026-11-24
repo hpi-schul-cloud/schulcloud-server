@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { type NextFunction, type Request, type Response } from 'express';
 import { type LoggerConfig } from './logger.config';
-import { redactSecretsInUrlPath } from './url-path-secrets';
+import { redactSecretsInUrl } from './url-path-secrets';
 
 export const createRequestLoggerMiddleware =
 	(loggerConfig: LoggerConfig): ((request: Request, response: Response, next: NextFunction) => void) =>
@@ -11,7 +11,7 @@ export const createRequestLoggerMiddleware =
 
 			const startAt = process.hrtime();
 			const { method } = request;
-			const url = redactSecretsInUrlPath(request.originalUrl);
+			const url = redactSecretsInUrl(request.originalUrl);
 
 			response.on('finish', () => {
 				try {

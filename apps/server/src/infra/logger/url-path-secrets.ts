@@ -33,6 +33,12 @@ const SECRET_PATH_ROUTES: SecretPathRoute[] = [
 	{ prefix: 'link', params: [], notSecret: ['api'] },
 ];
 
+/**
+ * Query params that carry the same secrets as a path above, e.g. DELETE /room-invitation-links?roomInvitationLinkIds=...
+ * Query params that are secret by their name (accessToken, ...) are handled by the logger's field-name list.
+ */
+const SECRET_QUERY_PARAMS = ['roomInvitationLinkIds'];
+
 // The same route is reached under several mount paths: Nest under /api/v3 (request.url inside Nest has no prefix),
 // Feathers under /, /api, /api/v1 and /legacy/v1 (see server.app.ts and legacyForward.js).
 // A request target can also be in absolute form (GET http://host/path, RFC 9112), Express routes it by its path.
@@ -49,32 +55,50 @@ const toPattern = (route: SecretPathRoute): RegExp => {
 
 const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPattern);
 
+// Also matches the array forms name[]= and name%5B%5D=, values end at the next & or #.
+const SECRET_QUERY_PATTERN = new RegExp(
+	String.raw`([?&](?:${SECRET_QUERY_PARAMS.map(escapeRegExp).join('|')})(?:\[\]|%5B%5D)?=)[^&#]*`,
+	'gi'
+);
+
 const SECRET_PARAM_NAMES = new Set(SECRET_PATH_ROUTES.flatMap((route) => route.params));
 
-/** Replaces secrets in the path of a URL (e.g. /sharetoken/abc becomes /sharetoken/***). Other URLs stay unchanged. */
-export const redactSecretsInUrlPath = <T>(url: T): T => {
-	if (typeof url !== 'string') {
-		return url;
+const SECRET_QUERY_PARAM_NAMES = new Set(SECRET_QUERY_PARAMS);
+
+const redactKeys = <T>(record: T, names: Set<string>): T => {
+	if (typeof record !== 'object' || record === null) {
+		return record;
 	}
 
-	return SECRET_PATH_PATTERNS.reduce(
-		(redacted, pattern) => redacted.replace(pattern, `$1${REDACTED}`),
-		url as string
-	) as T;
-};
-
-/** Returns a copy of the route params where params that hold a secret path segment are redacted. */
-export const redactSecretPathParams = <T>(params: T): T => {
-	if (typeof params !== 'object' || params === null) {
-		return params;
-	}
-
-	const redacted = { ...params } as Record<string, unknown>;
+	const redacted = { ...record } as Record<string, unknown>;
 	for (const key of Object.keys(redacted)) {
-		if (SECRET_PARAM_NAMES.has(key)) {
+		if (names.has(key)) {
 			redacted[key] = REDACTED;
 		}
 	}
 
 	return redacted as T;
 };
+
+/**
+ * Replaces secrets in the path and the query of a URL (e.g. /sharetoken/abc becomes /sharetoken/***).
+ * Other URLs stay unchanged.
+ */
+export const redactSecretsInUrl = <T>(url: T): T => {
+	if (typeof url !== 'string') {
+		return url;
+	}
+
+	const redactedPath = SECRET_PATH_PATTERNS.reduce(
+		(redacted, pattern) => redacted.replace(pattern, `$1${REDACTED}`),
+		url as string
+	);
+
+	return redactedPath.replace(SECRET_QUERY_PATTERN, `$1${REDACTED}`) as T;
+};
+
+/** Returns a copy of the route params where params that hold a secret path segment are redacted. */
+export const redactSecretPathParams = <T>(params: T): T => redactKeys(params, SECRET_PARAM_NAMES);
+
+/** Returns a copy of the parsed query where params that carry a path secret are redacted. */
+export const redactSecretQueryParams = <T>(query: T): T => redactKeys(query, SECRET_QUERY_PARAM_NAMES);

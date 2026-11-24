@@ -1,5 +1,11 @@
 import { ICurrentUser } from '@infra/auth-guard';
-import { Logger, LoggingUtils, redactSecretPathParams, redactSecretsInUrlPath } from '@infra/logger';
+import {
+	Logger,
+	LoggingUtils,
+	redactSecretPathParams,
+	redactSecretQueryParams,
+	redactSecretsInUrl,
+} from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Loggable, LogMessageDataObject } from '@shared/common/loggable';
@@ -23,9 +29,9 @@ export class DomainErrorHandler {
 			userId: user?.userId,
 			request: {
 				method: request.method,
-				endpoint: redactSecretsInUrlPath(request.url),
+				endpoint: redactSecretsInUrl(request.url),
 				params: redactSecretPathParams(request.params),
-				query: request.query,
+				query: redactSecretQueryParams(request.query),
 			},
 		};
 		const loggable = this.createErrorLoggable(error, requestInfo);

@@ -12,7 +12,7 @@ const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const services = require('./services');
 const requestLog = require('./logger/RequestLogger');
-const { redactSecretsInUrlPath } = require('../dist/apps/server/infra/logger/url-path-secrets');
+const { redactSecretsInUrl } = require('../dist/apps/server/infra/logger/url-path-secrets');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
@@ -78,7 +78,7 @@ const setupApp = async (orm) => {
 
 	if (Configuration.get('REQUEST_LOGGING_ENABLED') === true) {
 		app.use((req, res, next) => {
-			requestLog(`${req.method} ${redactSecretsInUrlPath(req.originalUrl)}`);
+			requestLog(`${req.method} ${redactSecretsInUrl(req.originalUrl)}`);
 			next();
 		});
 	}

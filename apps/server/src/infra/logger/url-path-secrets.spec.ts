@@ -1,7 +1,7 @@
-import { redactSecretPathParams, redactSecretsInUrlPath } from './url-path-secrets';
+import { redactSecretPathParams, redactSecretQueryParams, redactSecretsInUrl } from './url-path-secrets';
 
 describe('url-path-secrets', () => {
-	describe('redactSecretsInUrlPath', () => {
+	describe('redactSecretsInUrl', () => {
 		it.each([
 			['/sharetoken/abc123', '/sharetoken/***'],
 			['/sharetoken/abc123/import', '/sharetoken/***/import'],
@@ -17,9 +17,18 @@ describe('url-path-secrets', () => {
 			['/users/linkImport/hash?x=1', '/users/linkImport/***?x=1'],
 			['http://localhost:3030/api/v3/sharetoken/abc123', 'http://localhost:3030/api/v3/sharetoken/***'],
 			['https://host.example/passwordRecovery/tok?x=1', 'https://host.example/passwordRecovery/***?x=1'],
+			[
+				'/room-invitation-links?roomInvitationLinkIds=a&roomInvitationLinkIds=b',
+				'/room-invitation-links?roomInvitationLinkIds=***&roomInvitationLinkIds=***',
+			],
+			['/room-invitation-links?roomInvitationLinkIds[]=a', '/room-invitation-links?roomInvitationLinkIds[]=***'],
+			[
+				'/room-invitation-links?x=1&roomInvitationLinkIds%5B%5D=a#f',
+				'/room-invitation-links?x=1&roomInvitationLinkIds%5B%5D=***#f',
+			],
 			['/link/shortId', '/link/***'],
 		])('should redact the secret in %s', (url, expected) => {
-			expect(redactSecretsInUrlPath(url)).toBe(expected);
+			expect(redactSecretsInUrl(url)).toBe(expected);
 		});
 
 		it.each([
@@ -29,6 +38,7 @@ describe('url-path-secrets', () => {
 			'/registrations',
 			'/room-invitation-links',
 			'/rooms/1/room-invitation-links',
+			'/room-invitation-links?otherIds=a',
 			'/passwordRecovery/reset',
 			'/passwordRecovery/api',
 			'/link/api',
@@ -37,11 +47,11 @@ describe('url-path-secrets', () => {
 			'/other/sharetoken/abc',
 			'http://host/other/sharetoken/abc',
 		])('should not change %s', (url) => {
-			expect(redactSecretsInUrlPath(url)).toBe(url);
+			expect(redactSecretsInUrl(url)).toBe(url);
 		});
 
 		it('should return non-string values unchanged', () => {
-			expect(redactSecretsInUrlPath(undefined)).toBeUndefined();
+			expect(redactSecretsInUrl(undefined)).toBeUndefined();
 		});
 	});
 
@@ -64,6 +74,17 @@ describe('url-path-secrets', () => {
 
 		it('should return non-object values unchanged', () => {
 			expect(redactSecretPathParams(undefined)).toBeUndefined();
+		});
+	});
+
+	describe('redactSecretQueryParams', () => {
+		it('should redact query params that carry a path secret', () => {
+			const query = { roomInvitationLinkIds: ['a', 'b'], other: 'c' };
+
+			const result = redactSecretQueryParams(query);
+
+			expect(result).toEqual({ roomInvitationLinkIds: '***', other: 'c' });
+			expect(query.roomInvitationLinkIds).toEqual(['a', 'b']);
 		});
 	});
 });

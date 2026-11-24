@@ -291,5 +291,23 @@ describe('GlobalErrorFilter', () => {
 				expect(logEntry).not.toContain('queryToken');
 			});
 		});
+
+		describe('when the query contains room invitation link ids', () => {
+			it('should log neither the url nor the query with the ids', () => {
+				const error = new Error('test');
+				const request = {
+					method: 'DELETE',
+					url: '/room-invitation-links?roomInvitationLinkIds=secretLinkA&roomInvitationLinkIds=secretLinkB',
+					params: {},
+					query: { roomInvitationLinkIds: ['secretLinkA', 'secretLinkB'] },
+				};
+				const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
+
+				domainErrorHandler.execHttpContext(error, context);
+
+				const logEntry = JSON.stringify(LoggingUtils.createMessageWithContext(logger.error.mock.calls[0][0]));
+				expect(logEntry).not.toContain('secretLink');
+			});
+		});
 	});
 });
