@@ -18,12 +18,14 @@ const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 /**
  * GETs that create or persist state. SameSite=Lax still sends the jwt cookie on a
  * cross-site top-level navigation, so these cannot be treated as ordinary reads.
+ * Express dispatches HEAD to the GET handler, and route matching is case-insensitive,
+ * so HEAD and any capitalization of these paths are checked the same way.
  *
  * - collaborative-text-editor get-or-creates the editor and sets the Etherpad session cookie.
  * - tools/context/:id/launch may persist an LTI pseudonym via createLaunchRequest.
  */
 const PROTECTED_GET_PATH =
-	/^\/(?:api\/v3\/)?(?:collaborative-text-editor\/[^/]+\/[^/]+|tools\/context\/[^/]+\/launch)$/;
+	/^\/(?:api\/v3\/)?(?:collaborative-text-editor\/[^/]+\/[^/]+|tools\/context\/[^/]+\/launch)$/i;
 
 const SAME_ORIGIN_FETCH_SITES = new Set(['same-origin', 'none']);
 
@@ -69,7 +71,7 @@ function isStateChanging(request: Request): boolean {
 		return true;
 	}
 
-	if (method !== 'GET') {
+	if (method !== 'GET' && method !== 'HEAD') {
 		return false;
 	}
 

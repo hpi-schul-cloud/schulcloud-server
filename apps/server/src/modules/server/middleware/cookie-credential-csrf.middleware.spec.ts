@@ -31,6 +31,7 @@ interface RequestOptions {
 }
 
 let createCalls = 0;
+let protectedGetCalls = 0;
 
 @Controller('items')
 class ItemsController {
@@ -47,14 +48,31 @@ class ItemsController {
 	}
 }
 
-@Module({ controllers: [ItemsController] })
+@Controller()
+class ProtectedGetController {
+	@Get('collaborative-text-editor/:parentType/:parentId')
+	public openEditor(): { ok: boolean } {
+		protectedGetCalls += 1;
+
+		return { ok: true };
+	}
+
+	@Get('tools/context/:contextExternalToolId/launch')
+	public launch(): { ok: boolean } {
+		protectedGetCalls += 1;
+
+		return { ok: true };
+	}
+}
+
+@Module({ controllers: [ItemsController, ProtectedGetController] })
 class ModuleConfiguredApp implements NestModule {
 	public configure(consumer: MiddlewareConsumer): void {
 		configureCookieCredentialCsrf(consumer);
 	}
 }
 
-@Module({ controllers: [ItemsController] })
+@Module({ controllers: [ItemsController, ProtectedGetController] })
 class ExpressConfiguredApp {}
 
 describe('cookieCredentialCsrfMiddleware', () => {
@@ -234,8 +252,14 @@ describe('cookieCredentialCsrfMiddleware', () => {
 			allow(createRequest({ method: 'GET', path: '/pseudonyms/username/opaque', headers: { cookie } }));
 		});
 
-		it('ignores safe methods other than the listed GETs', () => {
-			allow(createRequest({ method: 'HEAD', headers: { cookie, 'sec-fetch-site': 'cross-site' } }));
+		it('ignores safe methods other than the listed GETs and their HEAD', () => {
+			allow(
+				createRequest({
+					method: 'HEAD',
+					path: '/pseudonyms/username/opaque',
+					headers: { cookie, 'sec-fetch-site': 'cross-site' },
+				})
+			);
 			next.mockClear();
 			allow(createRequest({ method: 'OPTIONS', headers: { cookie, 'sec-fetch-site': 'cross-site' } }));
 		});
@@ -248,9 +272,33 @@ describe('cookieCredentialCsrfMiddleware', () => {
 			['/tools/context/tool-1/launch', 'same-origin', true],
 			['/api/v3/tools/context/tool-1/launch/', 'none', true],
 			['/tools/context/tool-1/launch/extra', 'cross-site', true],
+			['/COLLABORATIVE-TEXT-EDITOR/course/parent-1', 'cross-site', false],
+			['/api/v3/Tools/Context/tool-1/Launch', 'cross-site', false],
+			['/API/V3/collaborative-text-editor/course/parent-1', 'same-origin', true],
 		])('protects state-changing GET %s when Sec-Fetch-Site is %s (allowed=%s)', (path, fetchSite, allowed) => {
 			const request = createRequest({
 				method: 'GET',
+				path,
+				headers: { cookie, 'sec-fetch-site': fetchSite },
+			});
+
+			if (allowed) {
+				allow(request);
+				return;
+			}
+
+			deny(request);
+		});
+
+		it.each([
+			['/collaborative-text-editor/course/parent-1', 'cross-site', false],
+			['/collaborative-text-editor/course/parent-1', 'same-origin', true],
+			['/TOOLS/CONTEXT/tool-1/LAUNCH', 'cross-site', false],
+			['/tools/context/tool-1/launch', 'same-origin', true],
+			['/pseudonyms/username/opaque', 'cross-site', true],
+		])('protects HEAD %s when Sec-Fetch-Site is %s (allowed=%s)', (path, fetchSite, allowed) => {
+			const request = createRequest({
+				method: 'HEAD',
 				path,
 				headers: { cookie, 'sec-fetch-site': fetchSite },
 			});
@@ -305,6 +353,7 @@ describe('CookieCredentialCsrfMiddleware on a Nest app', () => {
 
 		beforeEach(() => {
 			createCalls = 0;
+			protectedGetCalls = 0;
 		});
 
 		it('denies a cross-site cookie POST before the handler runs', async () => {
@@ -365,13 +414,45 @@ describe('CookieCredentialCsrfMiddleware on a Nest app', () => {
 				.get('/collaborative-text-editor/course/parent-1')
 				.set('Cookie', 'jwt=token')
 				.set('Sec-Fetch-Site', 'cross-site');
+
+			expect(denied.status).toBe(HttpStatus.FORBIDDEN);
+			expect(protectedGetCalls).toBe(0);
+
 			const allowed = await supertest(app.getHttpServer() as Server)
 				.get('/collaborative-text-editor/course/parent-1')
 				.set('Cookie', 'jwt=token')
 				.set('Sec-Fetch-Site', 'same-origin');
 
+			expect(allowed.status).toBe(HttpStatus.OK);
+			expect(protectedGetCalls).toBe(1);
+		});
+
+		it('denies a mixed-case cross-site GET before the handler runs', async () => {
+			const response = await supertest(app.getHttpServer() as Server)
+				.get('/COLLABORATIVE-TEXT-EDITOR/course/parent-1')
+				.set('Cookie', 'jwt=token')
+				.set('Sec-Fetch-Site', 'cross-site');
+
+			expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			expect(protectedGetCalls).toBe(0);
+		});
+
+		it('denies a cross-site HEAD to the collaborative-text-editor route before the handler runs', async () => {
+			const denied = await supertest(app.getHttpServer() as Server)
+				.head('/collaborative-text-editor/course/parent-1')
+				.set('Cookie', 'jwt=token')
+				.set('Sec-Fetch-Site', 'cross-site');
+
 			expect(denied.status).toBe(HttpStatus.FORBIDDEN);
-			expect(allowed.status).not.toBe(HttpStatus.FORBIDDEN);
+			expect(protectedGetCalls).toBe(0);
+
+			const allowed = await supertest(app.getHttpServer() as Server)
+				.head('/collaborative-text-editor/course/parent-1')
+				.set('Cookie', 'jwt=token')
+				.set('Sec-Fetch-Site', 'same-origin');
+
+			expect(allowed.status).toBe(HttpStatus.OK);
+			expect(protectedGetCalls).toBe(1);
 		});
 	});
 
