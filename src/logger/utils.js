@@ -124,6 +124,9 @@ const copyValue = (value, ancestors) => {
 	return copy;
 };
 
+// Nesting levels of an entry that are logged, counted from the entry itself. Deeper values are logged as [Object] or [Array].
+const MAX_DEPTH = 10;
+
 // Values with toJSON (dates, mongoose documents) become what the JSON log line showed before masking was added.
 // The masking below copies objects property by property, so a date would become {} and a document its internal fields.
 // Everything is copied, the objects passed to the logger are not changed. ObjectIds, buffers and streams are left
@@ -141,6 +144,12 @@ function toJsonValues(value, ancestors = new Set()) {
 
 	if (ancestors.has(value)) {
 		return '[Circular]';
+	}
+
+	// Every occurrence is copied, so an object shared on many levels ({ a: node, b: node }) would grow exponentially.
+	// The limit also keeps very deep values from overflowing the stack.
+	if (ancestors.size >= MAX_DEPTH) {
+		return Array.isArray(value) ? '[Array]' : '[Object]';
 	}
 
 	ancestors.add(value);

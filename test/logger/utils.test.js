@@ -217,7 +217,7 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(line).not.to.have.property('password');
 	});
 
-	it('should log a safe entry instead of throwing for very deep nesting', () => {
+	it('should log very deep nesting up to a depth limit', () => {
 		const deep = {};
 		let current = deep;
 		for (let i = 0; i < 20000; i += 1) {
@@ -225,10 +225,27 @@ describe('[logger] masking in the feathers logger', () => {
 			current = current.next;
 		}
 
-		const line = JSON.parse(getProductionFormat().transform({ level: 'info', message: 'deep', deep })[MESSAGE]);
+		const output = getProductionFormat().transform({ level: 'info', message: 'deep', deep })[MESSAGE];
 
-		expect(line).to.include({ level: 'info', message: 'deep', maskingFailed: true });
-		expect(line).not.to.have.property('deep');
+		const line = JSON.parse(output);
+		expect(line).not.to.have.property('maskingFailed');
+		expect(line.deep.next.value).to.equal('***');
+		expect(output).to.include('"next":"[Object]"');
+		expect(output).not.to.include(SECRET);
+	});
+
+	it('should log an object shared on many levels quickly', () => {
+		let node = { leaf: true };
+		for (let i = 0; i < 20; i += 1) {
+			node = { a: node, b: node };
+		}
+
+		const start = Date.now();
+		const line = toJsonLine({ message: 'shared', node });
+
+		expect(Date.now() - start).to.be.below(500);
+		expect(line.node.a).to.eql(line.node.b);
+		expect(JSON.stringify(line.node)).to.include('[Object]');
 	});
 
 	it('should log only the summary of an axios error passed as the whole entry', () => {
