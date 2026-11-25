@@ -94,7 +94,11 @@ describe(BoardImportTokenService.name, () => {
 
 				await service.createToken(job, deadline);
 
-				expect(jwtIssuerService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(payload, lifetimeInSeconds);
+				expect(jwtIssuerService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
+					payload,
+					lifetimeInSeconds,
+					'import_'
+				);
 			});
 
 			it('should return the token', async () => {

@@ -172,6 +172,11 @@ export class BoardImportJobProcessService {
 
 			return;
 		}
-		this.logger.warning('Board import job failed', { jobId: job.id, reason, attempts: job.attempts });
+		this.logger.warning('Board import job failed', {
+			jobId: job.id,
+			userId: job.userId,
+			reason,
+			attempts: job.attempts,
+		});
 	}
 }

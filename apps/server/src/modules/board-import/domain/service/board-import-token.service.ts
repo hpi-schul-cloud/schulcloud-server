@@ -12,6 +12,8 @@ import { BoardImportJobLogReason } from '../type';
 const MILLISECONDS_PER_SECOND = 1000;
 // A request that starts just before the deadline of the job must still be valid when the API checks it.
 const LIFETIME_MARGIN_IN_SECONDS = 60;
+// Makes the whitelist entries of the worker distinguishable from the sessions of users. See ADR 0011.
+const TOKEN_ID_PREFIX = 'import_';
 
 @Injectable()
 export class BoardImportTokenService {
@@ -52,7 +54,7 @@ export class BoardImportTokenService {
 		const remainingInSeconds = Math.ceil((deadline.getTime() - Date.now()) / MILLISECONDS_PER_SECOND);
 		const lifetimeInSeconds = Math.max(remainingInSeconds, 0) + LIFETIME_MARGIN_IN_SECONDS;
 
-		const token = await this.jwtIssuerService.generateJwtAndAddToWhitelist(payload, lifetimeInSeconds);
+		const token = await this.jwtIssuerService.generateJwtAndAddToWhitelist(payload, lifetimeInSeconds, TOKEN_ID_PREFIX);
 
 		this.logger.info('Board import token created', { jobId: job.id, userId: job.userId });
 

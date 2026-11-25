@@ -121,23 +121,56 @@ describe(BoardImportUserSession.name, () => {
 			});
 		});
 
-		describe('when the API answers with 403', () => {
+		describe('when the API answers with 403 one time', () => {
+			const setup = () => {
+				const { job, session, request } = setupSession();
+				const token = 'token';
+				const newToken = 'new-token';
+				const response = 'response';
+
+				tokenService.createToken.mockResolvedValueOnce(token).mockResolvedValueOnce(newToken);
+				request.mockRejectedValueOnce(buildErrorWithStatus(HttpStatus.FORBIDDEN)).mockResolvedValueOnce(response);
+
+				return { job, session, request, token, newToken, response };
+			};
+
+			it('should send the request again with a new token', async () => {
+				const { session, request, newToken, response } = setup();
+
+				const result = await session.call(request);
+
+				expect(request).toHaveBeenNthCalledWith(2, newToken);
+				expect(result).toEqual(response);
+			});
+
+			it('should remove the first token', async () => {
+				const { job, session, request, token } = setup();
+
+				await session.call(request);
+
+				expect(tokenService.removeToken).toHaveBeenCalledWith(job, token);
+			});
+		});
+
+		describe('when the API answers with 403 two times', () => {
 			const setup = () => {
 				const { session, request } = setupSession();
 				const error = new BoardImportJobRejectedError(BoardImportJobLogReason.BOARD_API_FORBIDDEN);
 
-				tokenService.createToken.mockResolvedValueOnce('token');
-				request.mockRejectedValueOnce(buildErrorWithStatus(HttpStatus.FORBIDDEN));
+				tokenService.createToken.mockResolvedValueOnce('token').mockResolvedValueOnce('new-token');
+				request
+					.mockRejectedValueOnce(buildErrorWithStatus(HttpStatus.FORBIDDEN))
+					.mockRejectedValueOnce(buildErrorWithStatus(HttpStatus.FORBIDDEN));
 
 				return { session, request, error };
 			};
 
-			it('should reject the job and not send the request again', async () => {
+			it('should reject the job after the second request', async () => {
 				const { session, request, error } = setup();
 
 				await expect(session.call(request)).rejects.toEqual(error);
 
-				expect(request).toHaveBeenCalledTimes(1);
+				expect(request).toHaveBeenCalledTimes(2);
 			});
 		});
 

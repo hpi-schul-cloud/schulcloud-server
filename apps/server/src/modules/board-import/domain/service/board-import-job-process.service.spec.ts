@@ -199,7 +199,7 @@ describe(BoardImportJobProcessService.name, () => {
 				const status = BoardImportJobStatus.FAILED;
 				const logEntry = [
 					'Board import job failed',
-					{ jobId: job.id, reason: BoardImportJobLogReason.MAX_ATTEMPTS, attempts: attempts },
+					{ jobId: job.id, userId: job.userId, reason: BoardImportJobLogReason.MAX_ATTEMPTS, attempts: attempts },
 				] as const;
 
 				repo.findById.mockResolvedValueOnce(job);
@@ -229,7 +229,7 @@ describe(BoardImportJobProcessService.name, () => {
 				const status = BoardImportJobStatus.FAILED;
 				const logEntry = [
 					'Board import job failed',
-					{ jobId: job.id, reason: BoardImportJobLogReason.MAX_DURATION, attempts: job.attempts },
+					{ jobId: job.id, userId: job.userId, reason: BoardImportJobLogReason.MAX_DURATION, attempts: job.attempts },
 				] as const;
 
 				repo.findById.mockResolvedValueOnce(job);
@@ -306,7 +306,12 @@ describe(BoardImportJobProcessService.name, () => {
 				const status = BoardImportJobStatus.FAILED;
 				const logEntry = [
 					'Board import job failed',
-					{ jobId: job.id, reason: BoardImportJobLogReason.MAX_ATTEMPTS, attempts: config.jobMaxAttempts },
+					{
+						jobId: job.id,
+						userId: startedJob.userId,
+						reason: BoardImportJobLogReason.MAX_ATTEMPTS,
+						attempts: config.jobMaxAttempts,
+					},
 				] as const;
 
 				repo.findById.mockResolvedValueOnce(job);
@@ -338,7 +343,10 @@ describe(BoardImportJobProcessService.name, () => {
 				});
 				const reason = BoardImportJobLogReason.BOARD_API_FORBIDDEN;
 				const status = BoardImportJobStatus.FAILED;
-				const logEntry = ['Board import job failed', { jobId: job.id, reason, attempts: startedJob.attempts }] as const;
+				const logEntry = [
+					'Board import job failed',
+					{ jobId: job.id, userId: startedJob.userId, reason, attempts: startedJob.attempts },
+				] as const;
 
 				repo.findById.mockResolvedValueOnce(job);
 				repo.startAttempt.mockResolvedValueOnce(startedJob);

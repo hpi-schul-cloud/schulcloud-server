@@ -22,15 +22,22 @@ export class BoardImportUserSession {
 
 			return result;
 		} catch (error) {
-			if (!this.hasStatus(error, HttpStatus.UNAUTHORIZED)) {
+			if (!this.hasStatus(error, HttpStatus.UNAUTHORIZED) && !this.hasStatus(error, HttpStatus.FORBIDDEN)) {
 				throw error;
 			}
 		}
 
 		await this.close();
-		const result = await this.send(request);
+		try {
+			const result = await this.send(request);
 
-		return result;
+			return result;
+		} catch (error) {
+			if (this.hasStatus(error, HttpStatus.FORBIDDEN)) {
+				throw new BoardImportJobRejectedError(BoardImportJobLogReason.BOARD_API_FORBIDDEN);
+			}
+			throw error;
+		}
 	}
 
 	public async close(): Promise<void> {
@@ -47,16 +54,9 @@ export class BoardImportUserSession {
 		this.signal.throwIfAborted();
 		this.token ??= await this.boardImportTokenService.createToken(this.job, this.deadline);
 
-		try {
-			const result = await request(this.token);
+		const result = await request(this.token);
 
-			return result;
-		} catch (error) {
-			if (this.hasStatus(error, HttpStatus.FORBIDDEN)) {
-				throw new BoardImportJobRejectedError(BoardImportJobLogReason.BOARD_API_FORBIDDEN);
-			}
-			throw error;
-		}
+		return result;
 	}
 
 	private hasStatus(error: unknown, status: HttpStatus): boolean {
