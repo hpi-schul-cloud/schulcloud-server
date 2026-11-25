@@ -79,7 +79,7 @@ describe('[logger] masking in the feathers logger', () => {
 			accessToken: 'abcdefghijklmnopqrstuvwxyz',
 		});
 
-		expect(line.user).to.eql({ name: 'max', password: 'not-...et [REDACTED]' });
+		expect(line.user).to.eql({ name: 'max', password: '[REDACTED]' });
 		expect(line.accessToken).to.equal('abcd...yz [REDACTED]');
 	});
 
@@ -126,7 +126,7 @@ describe('[logger] masking in the feathers logger', () => {
 
 		const line = JSON.parse(getProductionFormat().transform(entry)[MESSAGE]);
 
-		expect(line.password).to.equal('plai...23 [REDACTED]');
+		expect(line.password).to.equal('[REDACTED]');
 		expect(entry.password).to.equal('plainpassword123');
 		expect(entry.message).to.equal(`x ${SECRET}`);
 	});
@@ -366,11 +366,11 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(output).not.to.include('hunter2secret');
 		expect(output).not.to.include('supersecretkey');
 		expect(line.map).to.eql({
-			password: 'hunt...et [REDACTED]',
+			password: '[REDACTED]',
 			'x-api-key': 'supe...ey [REDACTED]',
 			name: 'max',
 		});
-		expect(line.byId).to.eql([[1, { password: 'hunt...et [REDACTED]', value: '***' }]]);
+		expect(line.byId).to.eql([[1, { password: '[REDACTED]', value: '***' }]]);
 	});
 
 	it('should not keep the caller arguments of the splat symbol', () => {
