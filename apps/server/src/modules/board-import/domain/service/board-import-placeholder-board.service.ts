@@ -7,8 +7,9 @@ import {
 	type ColumnResponse,
 	ContentElementType,
 } from '@infra/common-cartridge-clients';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { type EntityId, InputFormat } from '@shared/domain/types';
+import { isAxiosError } from 'axios';
 import { escape } from 'lodash';
 import { type BoardImportJob } from '../do';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
@@ -28,8 +29,7 @@ export class BoardImportPlaceholderBoardService {
 
 	// Each part is created only if it does not exist, so a new attempt continues the board of the attempt before.
 	public async write(job: BoardImportJob, session: BoardImportUserSession): Promise<void> {
-		const boardId = job.boardId ?? (await this.createBoard(job, session));
-		const columns = job.boardId ? await this.findColumns(boardId, session) : [];
+		const { boardId, columns } = await this.findOrCreateBoard(job, session);
 		const column = columns[0] ?? (await session.call((token) => this.boardsClient.createBoardColumn(token, boardId)));
 		const card = await this.findOrCreateCard(column, session);
 		const elementId =
@@ -48,10 +48,47 @@ export class BoardImportPlaceholderBoardService {
 		);
 	}
 
-	private async findColumns(boardId: EntityId, session: BoardImportUserSession): Promise<ColumnResponse[]> {
-		const board = await session.call((token) => this.boardsClient.getBoardSkeletonById(token, boardId));
+	private async findOrCreateBoard(
+		job: BoardImportJob,
+		session: BoardImportUserSession
+	): Promise<{ boardId: EntityId; columns: ColumnResponse[] }> {
+		if (job.boardId) {
+			const columns = await this.findColumns(job, job.boardId, session);
+			if (columns) {
+				return { boardId: job.boardId, columns };
+			}
+		}
 
-		return board.columns;
+		const boardId = await this.createBoard(job, session);
+
+		return { boardId, columns: [] };
+	}
+
+	// The user can delete the board between two attempts. Then the job starts again with a new board.
+	private async findColumns(
+		job: BoardImportJob,
+		boardId: EntityId,
+		session: BoardImportUserSession
+	): Promise<ColumnResponse[] | undefined> {
+		try {
+			const board = await session.call((token) => this.boardsClient.getBoardSkeletonById(token, boardId));
+
+			return board.columns;
+		} catch (error) {
+			if (!this.isNotFound(error)) {
+				throw error;
+			}
+		}
+
+		await this.boardImportJobRepo.removeBoardId(job.id);
+
+		return undefined;
+	}
+
+	private isNotFound(error: unknown): boolean {
+		const isNotFound = isAxiosError(error) && error.response?.status === HttpStatus.NOT_FOUND;
+
+		return isNotFound;
 	}
 
 	private async findOrCreateCard(column: ColumnResponse, session: BoardImportUserSession): Promise<CardResponse> {

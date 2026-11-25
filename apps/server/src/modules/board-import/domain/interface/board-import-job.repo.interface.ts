@@ -28,6 +28,8 @@ export interface BoardImportJobRepo {
 	failIfOpen(id: EntityId): Promise<boolean>;
 
 	setBoardId(id: EntityId, boardId: EntityId): Promise<void>;
+
+	removeBoardId(id: EntityId): Promise<void>;
 }
 
 export const BOARD_IMPORT_JOB_REPO = 'BOARD_IMPORT_JOB_REPO';

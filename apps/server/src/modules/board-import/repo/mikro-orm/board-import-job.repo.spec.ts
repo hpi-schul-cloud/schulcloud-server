@@ -477,4 +477,25 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			});
 		});
 	});
+
+	describe('removeBoardId', () => {
+		describe('when the job has a board', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ boardId: new ObjectId() });
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { id: entity.id };
+			};
+
+			it('should remove the board from the job', async () => {
+				const { id } = await setup();
+
+				await repo.removeBoardId(id);
+
+				const job = await repo.findById(id);
+				expect(job?.boardId).toBeUndefined();
+			});
+		});
+	});
 });

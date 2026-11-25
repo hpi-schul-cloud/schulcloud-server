@@ -10,7 +10,10 @@ import {
 	ColumnClientAdapter,
 	type ColumnResponse,
 } from '@infra/common-cartridge-clients';
+import { HttpStatus } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { boardImportJobFactory } from '../../testing';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportTargetType } from '../type';
@@ -77,6 +80,8 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 				const job = boardImportJobFactory.build({ link: 'https://example.com/board?a=1&b=<2>', target });
 				const boardParams = { title: 'Import', parentId: target.id, parentType: target.type, layout: 'columns' };
 				const text = '<p>https://example.com/board?a=1&amp;b=&lt;2&gt;</p>';
+				const cardParams = {};
+				const createElementParams = { type: 'richText' };
 				const elementParams = { data: { type: 'richText', content: { text, inputFormat: 'richTextCk5' } } };
 
 				boardsClient.createBoard.mockResolvedValueOnce({ id: boardId });
@@ -86,7 +91,19 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<CardControllerCreateElement201Response>({ id: elementId })
 				);
 
-				return { job, session, token, boardId, columnId, cardId, elementId, boardParams, elementParams };
+				return {
+					job,
+					session,
+					token,
+					boardId,
+					columnId,
+					cardId,
+					elementId,
+					boardParams,
+					cardParams,
+					createElementParams,
+					elementParams,
+				};
 			};
 
 			it('should create the board in the target as the user', async () => {
@@ -106,13 +123,13 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			});
 
 			it('should create a column, a card and a text element as the user', async () => {
-				const { job, session, token, boardId, columnId, cardId } = setup();
+				const { job, session, token, boardId, columnId, cardId, cardParams, createElementParams } = setup();
 
 				await service.write(job, session);
 
 				expect(boardsClient.createBoardColumn).toHaveBeenCalledWith(token, boardId);
-				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, {});
-				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, cardId, { type: 'richText' });
+				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, cardParams);
+				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, cardId, createElementParams);
 			});
 
 			it('should write the link of the job as text into the element', async () => {
@@ -203,6 +220,77 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 				await service.write(job, session);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
+			});
+		});
+
+		describe('when the board of the job does not exist anymore', () => {
+			const setup = () => {
+				const { token, session } = setupSession();
+				const { boardId, columnId, cardId, elementId } = setupIds();
+				const newBoardId = new ObjectId().toHexString();
+				const job = boardImportJobFactory.build({ boardId });
+				const notFoundError = axiosErrorFactory.build({
+					response: axiosResponseFactory.build({ status: HttpStatus.NOT_FOUND }),
+				});
+
+				boardsClient.getBoardSkeletonById.mockRejectedValueOnce(notFoundError);
+				boardsClient.createBoard.mockResolvedValueOnce({ id: newBoardId });
+				boardsClient.createBoardColumn.mockResolvedValueOnce(createMock<ColumnResponse>({ id: columnId, cards: [] }));
+				columnClient.createCard.mockResolvedValueOnce(createMock<CardResponse>({ id: cardId, elements: [] }));
+				cardClient.createCardElement.mockResolvedValueOnce(
+					createMock<CardControllerCreateElement201Response>({ id: elementId })
+				);
+
+				return { job, session, token, newBoardId, elementId };
+			};
+
+			it('should remove the board from the job', async () => {
+				const { job, session } = setup();
+
+				await service.write(job, session);
+
+				expect(repo.removeBoardId).toHaveBeenCalledWith(job.id);
+			});
+
+			it('should create and store a new board', async () => {
+				const { job, session, token, newBoardId } = setup();
+
+				await service.write(job, session);
+
+				expect(boardsClient.createBoard).toHaveBeenCalledWith(token, expect.anything());
+				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, newBoardId);
+				expect(boardsClient.createBoardColumn).toHaveBeenCalledWith(token, newBoardId);
+			});
+
+			it('should write the text into the new element', async () => {
+				const { job, session, token, elementId } = setup();
+
+				await service.write(job, session);
+
+				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
+			});
+		});
+
+		describe('when the board of the job cannot be read for another reason', () => {
+			const setup = () => {
+				const { session } = setupSession();
+				const job = boardImportJobFactory.build({ boardId: new ObjectId().toHexString() });
+				const error = axiosErrorFactory.build({
+					response: axiosResponseFactory.build({ status: HttpStatus.INTERNAL_SERVER_ERROR }),
+				});
+
+				boardsClient.getBoardSkeletonById.mockRejectedValueOnce(error);
+
+				return { job, session, error };
+			};
+
+			it('should pass the error and keep the board in the job', async () => {
+				const { job, session, error } = setup();
+
+				await expect(service.write(job, session)).rejects.toBe(error);
+
+				expect(repo.removeBoardId).not.toHaveBeenCalled();
+				expect(boardsClient.createBoard).not.toHaveBeenCalled();
 			});
 		});
 

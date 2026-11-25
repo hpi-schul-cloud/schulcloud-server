@@ -108,6 +108,12 @@ export class BoardImportJobMikroOrmRepo
 		await this.em.nativeUpdate(BoardImportJobEntity, { id }, { boardId: new ObjectId(boardId), updatedAt: new Date() });
 	}
 
+	public async removeBoardId(id: EntityId): Promise<void> {
+		await this.em
+			.getCollection(BoardImportJobEntity)
+			.updateOne({ _id: new ObjectId(id) }, { $unset: { boardId: '' }, $set: { updatedAt: new Date() } });
+	}
+
 	private mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {
 		try {
 			const domainObject = BoardImportJobMapper.mapEntityToDO(entity);
