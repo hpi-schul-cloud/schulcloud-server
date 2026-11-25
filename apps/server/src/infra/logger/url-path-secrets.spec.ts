@@ -192,7 +192,9 @@ describe('url-path-secrets', () => {
 
 			redactSecretsInText(text);
 
-			expect(performance.now() - start).toBeLessThan(50);
+			// Measured at 4-16 ms locally. CI runs jest with coverage instrumentation, which is several times slower,
+			// so the limit is generous. A quadratic pattern would still take seconds on 200 KB.
+			expect(performance.now() - start).toBeLessThan(1000);
 		});
 	});
 });
