@@ -1,9 +1,10 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
-import { IsBoolean, IsInt, IsNumber, IsPositive, Max, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsNumber, IsPositive, IsUrl, Max, Min } from 'class-validator';
 
 export const BOARD_IMPORT_CONFIG_TOKEN = 'BOARD_IMPORT_CONFIG_TOKEN';
 export const BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN = 'BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN';
+export const BOARD_IMPORT_SERVER_API_CONFIG_TOKEN = 'BOARD_IMPORT_SERVER_API_CONFIG_TOKEN';
 
 @Configuration()
 export class BoardImportPublicApiConfig {
@@ -11,6 +12,13 @@ export class BoardImportPublicApiConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public featureBoardImportEnabled = false;
+}
+
+@Configuration()
+export class BoardImportServerApiConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	public basePath!: string;
 }
 
 // A timer with a delay above 2^31 - 1 milliseconds fires at once.

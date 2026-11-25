@@ -62,11 +62,19 @@ spec:
         env:
         - name: NODE_OPTIONS
           value: "--max-old-space-size={{ ((BOARD_IMPORT_WORKER_MEMORY_LIMITS | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
+{# Only this key of the server secret. The import API must not get the private key. #}
+        - name: JWT_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-secret
+              key: JWT_PRIVATE_KEY
         envFrom:
         - configMapRef:
             name: board-import-worker-configmap
         - secretRef:
             name: board-import-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['/nodejs/bin/node', 'dist/apps/server/apps/board-import-worker.app']
         readinessProbe:
           httpGet:

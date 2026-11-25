@@ -26,6 +26,8 @@ export interface BoardImportJobRepo {
 	// Sets the job to failed only if it has no end status. Does not read the other fields of the job.
 	// Returns false when the job has an end status.
 	failIfOpen(id: EntityId): Promise<boolean>;
+
+	setBoardId(id: EntityId, boardId: EntityId): Promise<void>;
 }
 
 export const BOARD_IMPORT_JOB_REPO = 'BOARD_IMPORT_JOB_REPO';

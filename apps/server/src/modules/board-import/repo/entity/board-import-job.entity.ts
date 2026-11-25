@@ -22,6 +22,8 @@ export interface BoardImportJobEntityProps {
 	attempts: number;
 
 	startedAt?: Date;
+
+	boardId?: ObjectId;
 }
 
 @Entity({ tableName: 'board-import-jobs' })
@@ -51,6 +53,9 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	startedAt?: Date;
 
+	@Property({ nullable: true })
+	boardId?: ObjectId;
+
 	constructor(props: BoardImportJobEntityProps) {
 		super();
 		if (props.id) {
@@ -64,5 +69,6 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 		this.expiresAt = props.expiresAt;
 		this.attempts = props.attempts;
 		this.startedAt = props.startedAt;
+		this.boardId = props.boardId;
 	}
 }

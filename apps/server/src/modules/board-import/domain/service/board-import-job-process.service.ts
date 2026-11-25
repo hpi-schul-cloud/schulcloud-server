@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { type BoardImportJob } from '../do';
-import { BoardImportJobUnreadableError } from '../error';
+import { BoardImportJobRejectedError, BoardImportJobUnreadableError } from '../error';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportRunnerService } from './board-import-runner.service';
@@ -80,6 +80,11 @@ export class BoardImportJobProcessService {
 		try {
 			isInTime = await this.runWithTimeLimit(job, remainingTimeInMs);
 		} catch (error) {
+			if (error instanceof BoardImportJobRejectedError) {
+				await this.fail(job, error.reason);
+
+				return;
+			}
 			if (this.hasAttemptsLeft(job)) {
 				throw error;
 			}
@@ -136,8 +141,10 @@ export class BoardImportJobProcessService {
 			timer = setTimeout(() => resolve(false), timeLimitInMs);
 		});
 
+		const deadline = new Date(Date.now() + timeLimitInMs);
+
 		try {
-			const run = this.boardImportRunnerService.run(job, abortController.signal).then(() => true);
+			const run = this.boardImportRunnerService.run(job, abortController.signal, deadline).then(() => true);
 			const isInTime = await Promise.race([run, timeLimit]);
 
 			return isInTime;

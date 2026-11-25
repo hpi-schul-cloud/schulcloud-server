@@ -34,6 +34,17 @@ spec:
         - port: 5672
           protocol: TCP
 
+    # Session Valkey with Sentinel
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: session
+      ports:
+        - port: 6379
+          protocol: TCP
+        - port: 26379
+          protocol: TCP
+
     # Server API with the board endpoints
     - to:
         - podSelector:

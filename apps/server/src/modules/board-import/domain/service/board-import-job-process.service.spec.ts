@@ -3,7 +3,7 @@ import { Logger } from '@infra/logger';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { boardImportJobFactory } from '../../testing';
-import { BoardImportJobUnreadableError } from '../error';
+import { BoardImportJobRejectedError, BoardImportJobUnreadableError } from '../error';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportJobProcessService } from './board-import-job-process.service';
@@ -75,8 +75,18 @@ describe(BoardImportJobProcessService.name, () => {
 				runner.run.mockResolvedValueOnce();
 				repo.closeAttempt.mockResolvedValueOnce(true);
 
-				return { job, startedJob, now };
+				const deadline = new Date(now.getTime() + config.jobMaxDurationInMinutes * 60 * 1000);
+
+				return { job, startedJob, now, deadline };
 			};
+
+			it('should pass the deadline of the job to the import', async () => {
+				const { job, deadline } = setup();
+
+				await service.process(job.id);
+
+				expect(runner.run.mock.calls[0][2]).toEqual(deadline);
+			});
 
 			it('should start the attempt before the import runs', async () => {
 				const { job, startedJob, now } = setup();
@@ -84,7 +94,7 @@ describe(BoardImportJobProcessService.name, () => {
 				await service.process(job.id);
 
 				expect(repo.startAttempt).toHaveBeenCalledWith(job.id, now);
-				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal));
+				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal), expect.any(Date));
 				expect(repo.startAttempt.mock.invocationCallOrder[0]).toBeLessThan(runner.run.mock.invocationCallOrder[0]);
 			});
 
@@ -148,7 +158,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal));
+				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal), expect.any(Date));
 				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
 			});
 		});
@@ -308,6 +318,37 @@ describe(BoardImportJobProcessService.name, () => {
 			};
 
 			it('should resolve and save the status failed', async () => {
+				const { job, startedJob, status, logEntry } = setup();
+
+				await service.process(job.id);
+
+				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
+			});
+		});
+
+		describe('when the import rejects the job and the job has attempts left', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				const startedJob = boardImportJobFactory.build({
+					id: job.id,
+					status: BoardImportJobStatus.RUNNING,
+					attempts: 1,
+					startedAt: new Date(),
+				});
+				const reason = BoardImportJobLogReason.BOARD_API_FORBIDDEN;
+				const status = BoardImportJobStatus.FAILED;
+				const logEntry = ['Board import job failed', { jobId: job.id, reason, attempts: startedJob.attempts }] as const;
+
+				repo.findById.mockResolvedValueOnce(job);
+				repo.startAttempt.mockResolvedValueOnce(startedJob);
+				runner.run.mockRejectedValueOnce(new BoardImportJobRejectedError(reason));
+				repo.closeAttempt.mockResolvedValueOnce(true);
+
+				return { job, startedJob, status, logEntry };
+			};
+
+			it('should resolve and save the status failed with the reason', async () => {
 				const { job, startedJob, status, logEntry } = setup();
 
 				await service.process(job.id);

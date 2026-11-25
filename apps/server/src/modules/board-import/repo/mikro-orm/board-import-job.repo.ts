@@ -104,6 +104,10 @@ export class BoardImportJobMikroOrmRepo
 		return isFailed;
 	}
 
+	public async setBoardId(id: EntityId, boardId: EntityId): Promise<void> {
+		await this.em.nativeUpdate(BoardImportJobEntity, { id }, { boardId: new ObjectId(boardId), updatedAt: new Date() });
+	}
+
 	private mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {
 		try {
 			const domainObject = BoardImportJobMapper.mapEntityToDO(entity);

@@ -5,4 +5,8 @@ export enum BoardImportJobLogReason {
 	JOB_CLOSED = 'job-closed',
 	OUTDATED_ATTEMPT = 'outdated-attempt',
 	JOB_UNREADABLE = 'job-unreadable',
+	USER_NOT_FOUND = 'user-not-found',
+	ACCOUNT_NOT_FOUND = 'account-not-found',
+	ACCOUNT_DEACTIVATED = 'account-deactivated',
+	BOARD_API_FORBIDDEN = 'board-api-forbidden',
 }

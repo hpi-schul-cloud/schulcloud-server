@@ -16,6 +16,8 @@ export interface BoardImportJobProps extends AuthorizableObject {
 	attempts: number;
 
 	startedAt?: Date;
+
+	boardId?: EntityId;
 }
 
 export class BoardImportJob extends DomainObject<BoardImportJobProps> {
@@ -45,6 +47,10 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 	get startedAt(): Date | undefined {
 		return this.props.startedAt;
+	}
+
+	get boardId(): EntityId | undefined {
+		return this.props.boardId;
 	}
 
 	public isClosed(): boolean {
