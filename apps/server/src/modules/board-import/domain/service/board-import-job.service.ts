@@ -5,7 +5,7 @@ import { BoardImportJobProducer } from '../../amqp';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { BoardImportJob } from '../do';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
-import { BoardImportJobStatus } from '../type';
+import { BoardImportJobStatus, type BoardImportTarget } from '../type';
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -17,13 +17,14 @@ export class BoardImportJobService {
 		private readonly boardImportJobProducer: BoardImportJobProducer
 	) {}
 
-	public async create(userId: EntityId, link: string): Promise<BoardImportJob> {
+	public async create(userId: EntityId, link: string, target: BoardImportTarget): Promise<BoardImportJob> {
 		const expiresAt = new Date(Date.now() + this.config.jobRetentionInDays * MILLISECONDS_PER_DAY);
 		const job = new BoardImportJob({
 			id: new ObjectId().toHexString(),
 			status: BoardImportJobStatus.WAITING,
 			userId,
 			link,
+			target,
 			expiresAt,
 			attempts: 0,
 		});

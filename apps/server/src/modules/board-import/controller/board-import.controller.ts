@@ -3,6 +3,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiCreatedResponse,
+	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -25,11 +26,13 @@ export class BoardImportController {
 	@ApiCreatedResponse({ type: BoardImportJobResponse })
 	@ApiBadRequestResponse({ type: ApiValidationError })
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
+	@ApiForbiddenResponse({ description: 'The board import is disabled.' })
 	public async startImport(
 		@Body() bodyParams: CreateBoardImportJobBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardImportJobResponse> {
-		const job = await this.boardImportUc.startImport(currentUser.userId, bodyParams.link);
+		const target = { type: bodyParams.targetType, id: bodyParams.targetId };
+		const job = await this.boardImportUc.startImport(currentUser.userId, bodyParams.link, target);
 		const response = BoardImportJobResponseMapper.mapToResponse(job);
 
 		return response;

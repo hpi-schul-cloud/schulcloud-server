@@ -38,23 +38,24 @@ describe(BoardImportController.name, () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build();
 				const job = boardImportJobFactory.build({ userId: currentUser.userId });
+				const bodyParams = { link: job.link, targetType: job.target.type, targetId: job.target.id };
 				boardImportUc.startImport.mockResolvedValueOnce(job);
 
-				return { currentUser, job };
+				return { currentUser, job, bodyParams };
 			};
 
-			it('should start the import for the current user', async () => {
-				const { currentUser, job } = setup();
+			it('should start the import for the current user and the target', async () => {
+				const { currentUser, job, bodyParams } = setup();
 
-				await controller.startImport({ link: job.link }, currentUser);
+				await controller.startImport(bodyParams, currentUser);
 
-				expect(boardImportUc.startImport).toHaveBeenCalledWith(currentUser.userId, job.link);
+				expect(boardImportUc.startImport).toHaveBeenCalledWith(currentUser.userId, job.link, job.target);
 			});
 
 			it('should return the id and the status of the job', async () => {
-				const { currentUser, job } = setup();
+				const { currentUser, bodyParams, job } = setup();
 
-				const response = await controller.startImport({ link: job.link }, currentUser);
+				const response = await controller.startImport(bodyParams, currentUser);
 
 				expect(response).toEqual({ id: job.id, status: job.status });
 			});

@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { BoardImportJobStatus } from '../../domain';
+import { BoardImportJobStatus, BoardImportJobUnreadableError } from '../../domain';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 import { BoardImportJobEntity } from '../entity';
 import { BoardImportJobMikroOrmRepo } from './board-import-job.repo';
@@ -50,6 +50,8 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					status: job.status,
 					userId: new ObjectId(job.userId),
 					link: job.link,
+					targetType: job.target.type,
+					targetId: new ObjectId(job.target.id),
 					expiresAt: job.expiresAt,
 					attempts: job.attempts,
 					startedAt: job.startedAt,
@@ -70,6 +72,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					status: entity.status,
 					userId: entity.userId.toHexString(),
 					link: entity.link,
+					target: { type: entity.targetType, id: entity.targetId.toHexString() },
 					expiresAt: entity.expiresAt,
 					attempts: entity.attempts,
 					startedAt: entity.startedAt,
@@ -106,6 +109,25 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const job = await repo.findById(id);
 
 				expect(job?.attempts).toEqual(attempts);
+			});
+		});
+
+		describe('when the stored job has no target', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build();
+				await em.persist(entity).flush();
+				await em
+					.getCollection(BoardImportJobEntity)
+					.updateOne({ _id: new ObjectId(entity.id) }, { $unset: { targetType: '', targetId: '' } });
+				em.clear();
+
+				return { id: entity.id };
+			};
+
+			it('should throw an unreadable error', async () => {
+				const { id } = await setup();
+
+				await expect(repo.findById(id)).rejects.toThrow(BoardImportJobUnreadableError);
 			});
 		});
 
@@ -376,6 +398,52 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const { id, status } = await setup();
 
 				const result = await repo.failIfWaiting(id);
+
+				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+				expect(result).toEqual(false);
+				expect(entity.status).toEqual(status);
+			});
+		});
+	});
+
+	describe('failIfOpen', () => {
+		describe.each([BoardImportJobStatus.WAITING, BoardImportJobStatus.RUNNING])('when the job is %s', (status) => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ status });
+				await em.persist(entity).flush();
+				await em
+					.getCollection(BoardImportJobEntity)
+					.updateOne({ _id: new ObjectId(entity.id) }, { $unset: { targetType: '', targetId: '' } });
+				em.clear();
+				const expectedStatus = BoardImportJobStatus.FAILED;
+
+				return { id: entity.id, expectedStatus };
+			};
+
+			it('should set the job to failed without reading it and return true', async () => {
+				const { id, expectedStatus } = await setup();
+
+				const result = await repo.failIfOpen(id);
+
+				const document = await em.getCollection(BoardImportJobEntity).findOne({ _id: new ObjectId(id) });
+				expect(result).toEqual(true);
+				expect(document?.status).toEqual(expectedStatus);
+			});
+		});
+
+		describe.each([BoardImportJobStatus.FINISHED, BoardImportJobStatus.FAILED])('when the job is %s', (status) => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ status });
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { id: entity.id, status };
+			};
+
+			it('should not change the job and return false', async () => {
+				const { id, status } = await setup();
+
+				const result = await repo.failIfOpen(id);
 
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(result).toEqual(false);

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainObjectFactory } from '@testing/factory/domainobject';
-import { BoardImportJob, type BoardImportJobProps, BoardImportJobStatus } from '../domain';
+import { BoardImportJob, type BoardImportJobProps, BoardImportJobStatus, BoardImportTargetType } from '../domain';
 
 export const boardImportJobFactory = DomainObjectFactory.define<BoardImportJob, BoardImportJobProps>(
 	BoardImportJob,
@@ -10,6 +10,7 @@ export const boardImportJobFactory = DomainObjectFactory.define<BoardImportJob, 
 			status: BoardImportJobStatus.WAITING,
 			userId: new ObjectId().toHexString(),
 			link: `https://example.com/board-${sequence}`,
+			target: { type: BoardImportTargetType.ROOM, id: new ObjectId().toHexString() },
 			expiresAt: new Date(Date.now() + 60 * 60 * 1000),
 			attempts: 0,
 		};
