@@ -25,7 +25,7 @@ Rejected alternatives:
 - The code that creates a token moves from the authentication module into a small module that the login and the worker both use. The worker does not import the authentication module, because that module also loads the login strategies.
 - The job stores only the ID of the user. For each token, the worker reads the user, the roles and the account through the services of the user module and the account module. The import module has no repositories of its own for this data. If the user or the account does not exist, or if the account is deactivated, the job gets the status `failed`.
 - The token expires at the deadline of the job plus a small margin. The deadline is the first start plus the maximum duration (see [0008](0008-retry-import-jobs-through-redelivery.md)). At the end of the attempt, the worker removes the token from the whitelist.
-- The token has no support flag and no service account flag. The worker does not store it and does not log it. When it creates a token, it logs the job ID and the user ID.
+- The token has no support flag and no service account flag. The worker does not store it and does not log it. When it creates a token, it logs the job ID and the user ID. When a job fails because of the user, the account or a 403, it logs the reason with the same IDs.
 - If the board API answers with 403, the job gets the status `failed`. If it answers with 401, the worker creates a new token and sends the request again one time. After a second 401, the attempt fails and the broker delivers the message again.
 
 ## Consequences
@@ -35,12 +35,13 @@ Rejected alternatives:
 - The worker has read and write access to the full database of the instance. This access is the trust boundary of the worker, not the JWT. The REST API protects against errors in the worker, not against a worker that an attacker controls.
 - With the private key, the worker can make a token for each user, also for administrators, in all services that trust the key. The worker also reads content from the internet. The instance has one key pair and no procedure to replace it. When the key pair is replaced after a leak, all users must log in again.
 - The token permits all that the user can do, and a write of the worker looks like an action of the user.
-- The import cannot always revoke a token. A worker that stops does not remove it, and a request that is still in progress can add a removed whitelist entry again. Then the expiry date is the only limit.
+- The worker removes the token at the end of the attempt, but in two cases the token stays valid. A worker that stops suddenly does not remove it. A request that is still in progress can add the removed whitelist entry again. The token then stays valid until its expiry date, or until it is not used for `JWT_TIMEOUT_SECONDS` (2 hours by default).
 
 ### Behaviour
 
 - A logout of the user does not stop the import. An OIDC backchannel logout and the deletion of the user remove all tokens of the account. The worker then continues with a new token.
 - The claims of a token are those at the start of the attempt. A job can wait up to 30 days by default (see [0006](0006-delete-import-jobs-after-30-days.md)) before the worker creates the first token.
+- The exporter of the session Valkey counts each whitelist entry as a session. Thus a token of the worker is in the session metrics until its entry is removed.
 - No call creates a full board. A restart of the worker continues from the intermediate states in the job.
 
 ### Deployment
