@@ -11,6 +11,9 @@ export class BoardImportJobMapper {
 			userId: entity.userId.toHexString(),
 			link: entity.link,
 			expiresAt: entity.expiresAt,
+			// A job that was stored without a counter has had no attempt.
+			attempts: entity.attempts ?? 0,
+			startedAt: entity.startedAt,
 		});
 
 		return domainObject;
@@ -22,6 +25,8 @@ export class BoardImportJobMapper {
 			userId: new ObjectId(domainObject.userId),
 			link: domainObject.link,
 			expiresAt: domainObject.expiresAt,
+			attempts: domainObject.attempts,
+			startedAt: domainObject.startedAt,
 		};
 
 		return props;

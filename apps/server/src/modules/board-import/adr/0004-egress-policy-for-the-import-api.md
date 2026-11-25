@@ -1,0 +1,27 @@
+# 0004 - Egress policy for the import API
+
+## Status
+
+Accepted (2026-11-18)
+
+## Context
+
+The import API accepts links from users. A link can point to an internal service or to a host that is not a source tool. Most deployments of the SchulCloud have no limit for outgoing traffic.
+
+## Decision
+
+The pods of the import API have their own egress network policy. It permits only the services that the API uses:
+
+- DNS (port 53 to all addresses, because the DNS setup is not the same on all clusters)
+- MongoDB (port 27017 to all addresses, because MongoDB is outside the cluster and has no fixed address range)
+- RabbitMQ in the same namespace
+- the session Valkey with Sentinel
+
+The Ansible role applies the policy before the deployment.
+
+## Consequences
+
+- The import API can connect to hosts outside its namespace only on port 53 and port 27017. Thus it cannot send a request to a source tool or to an HTTP service on a usual port. It can only check the format of a link. Only the worker reads the source.
+- A network policy does not know host names, so it cannot limit the links to the hosts of the source tools. This needs a check of the host in the code. The check does not exist yet: the import API checks only that a link uses `https`, has no user name and password, and has a host name with a top-level domain. Thus `https://localhost/` and service names without a domain are rejected, but IP addresses such as `https://10.0.0.5/` pass. The check of the host must also reject IP addresses. It must exist before the worker reads a source.
+- When the API uses a new service, the policy must permit it. If not, the pod cannot connect and possibly does not start.
+- The worker needs its own egress policy, because it must reach the source tools.

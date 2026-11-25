@@ -1,7 +1,7 @@
 galaxy_info:
   role_name: board-import
   author: Schul-Cloud Verbund
-  description: Role for installing the board import API
+  description: Role for installing the board import API and the board import worker
   company: Schul-Cloud Verbund
   license: license (AGPLv3)
   min_ansible_version: "2.8"
