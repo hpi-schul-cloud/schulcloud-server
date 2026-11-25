@@ -459,6 +459,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(id);
 
+				expect(repo.failIfOpen).toHaveBeenCalledWith(id);
 				expect(runner.run).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
