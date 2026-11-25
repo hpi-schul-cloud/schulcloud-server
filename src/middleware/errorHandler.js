@@ -169,6 +169,8 @@ const shallowCopy = (value) => {
 	return copy;
 };
 
+const DEPTH_MARKER = '<max level exceeded>';
+
 const isPlainObject = (value) => {
 	const prototype = Object.getPrototypeOf(value);
 
@@ -225,10 +227,12 @@ const maskValue = (value, level, state) => {
 		return summary;
 	}
 	if (level > MAX_LEVEL_FILTER) {
-		return '<max level exceeded>';
+		return DEPTH_MARKER;
 	}
-	if (state.done.has(value)) {
-		return state.done.get(value);
+	// A copy cut at the depth limit is only reused on a path at least as deep; a shallower path masks it again.
+	const cached = state.done.get(value);
+	if (cached && (!state.truncated.has(value) || cached.level <= level)) {
+		return cached.result;
 	}
 	// A cycle back to an object that is still being masked points to its copy, which is filled below.
 	if (state.inProgress.has(value)) {
@@ -240,14 +244,23 @@ const maskValue = (value, level, state) => {
 	const pending = {};
 	state.inProgress.set(value, pending);
 	const changes = [];
+	let truncated = false;
 	Object.entries(value).forEach(([key, item]) => {
 		const maskedItem = filterSecretValue(key, item);
 		const newItem = maskedItem !== item ? maskedItem : maskValue(item, level + 1, state);
+		if (typeof item === 'object' && item !== null && (newItem === DEPTH_MARKER || state.truncated.has(item))) {
+			truncated = true;
+		}
 		if (newItem !== item) {
 			changes.push([key, newItem]);
 		}
 	});
 	state.inProgress.delete(value);
+	if (truncated) {
+		state.truncated.add(value);
+	} else {
+		state.truncated.delete(value);
+	}
 
 	let result = value;
 	if (changes.length > 0 || pending.copy) {
@@ -256,13 +269,14 @@ const maskValue = (value, level, state) => {
 			result[key] = newItem;
 		});
 	}
-	state.done.set(value, result);
+	state.done.set(value, { result, level });
 
 	return result;
 };
 
 // One masking pass over everything that is logged.
-const maskLogEntry = (entry) => maskValue(entry, 0, { done: new WeakMap(), inProgress: new WeakMap() });
+const maskLogEntry = (entry) =>
+	maskValue(entry, 0, { done: new WeakMap(), inProgress: new WeakMap(), truncated: new WeakSet() });
 
 const readSafely = (read) => {
 	try {

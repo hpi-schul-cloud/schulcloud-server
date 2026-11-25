@@ -336,5 +336,21 @@ describe('errorHandler', () => {
 			expect(entry).to.deep.equal({ name: 'Error', message: 'test', maskingFailed: true });
 			expect(nextErrors[nextErrors.length - 1]).to.equal(error);
 		});
+
+		it('should not reuse a copy cut at the depth limit for a shallower path', () => {
+			const shared = { password: 'real-password', inner: { value: 'kept' } };
+			let chain = shared;
+			for (let wrapper = 0; wrapper < 11; wrapper += 1) {
+				chain = { nested: chain };
+			}
+			const error = new Error('test');
+			error.deep = chain;
+			error.shallow = shared;
+
+			const { entry } = runErrorHandler(error, createRequest());
+
+			expect(util.inspect(entry.deep, { depth: null })).to.contain('<max level exceeded>');
+			expect(entry.shallow).to.deep.equal({ password: '<secret>', inner: { value: 'kept' } });
+		});
 	});
 });
