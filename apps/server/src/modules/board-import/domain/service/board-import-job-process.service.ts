@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { type BoardImportJob } from '../do';
+import { BoardImportJobUnreadableError } from '../error';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportRunnerService } from './board-import-runner.service';
@@ -20,7 +21,18 @@ export class BoardImportJobProcessService {
 
 	// Resolves when the job has an end status or needs no work. Rejects when the job must be delivered again.
 	public async process(jobId: EntityId): Promise<void> {
-		const job = await this.boardImportJobRepo.findById(jobId);
+		let job: BoardImportJob | null;
+		try {
+			job = await this.boardImportJobRepo.findById(jobId);
+		} catch (error) {
+			if (error instanceof BoardImportJobUnreadableError) {
+				// A redelivery cannot repair the stored job, so it fails at once and the queue goes on.
+				await this.failUnreadable(jobId);
+
+				return;
+			}
+			throw error;
+		}
 
 		if (!job) {
 			this.logger.warning('Board import job skipped', { jobId, reason: BoardImportJobLogReason.JOB_NOT_FOUND });
@@ -134,6 +146,16 @@ export class BoardImportJobProcessService {
 			// Stops the steps that still run after a timeout or after another step failed.
 			abortController.abort();
 		}
+	}
+
+	private async failUnreadable(jobId: EntityId): Promise<void> {
+		const isFailed = await this.boardImportJobRepo.failIfOpen(jobId);
+		if (!isFailed) {
+			this.logSkippedClosedJob(jobId);
+
+			return;
+		}
+		this.logger.warning('Board import job failed', { jobId, reason: BoardImportJobLogReason.JOB_UNREADABLE });
 	}
 
 	private async fail(job: BoardImportJob, reason: BoardImportJobLogReason): Promise<void> {

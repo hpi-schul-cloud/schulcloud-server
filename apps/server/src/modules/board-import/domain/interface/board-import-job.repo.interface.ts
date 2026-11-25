@@ -5,6 +5,7 @@ import { type BoardImportJobStatus } from '../type';
 export interface BoardImportJobRepo {
 	save(job: BoardImportJob): Promise<BoardImportJob>;
 
+	// Throws BoardImportJobUnreadableError when the stored job does not match the domain object.
 	findById(id: EntityId): Promise<BoardImportJob | null>;
 
 	// Sets a job that has no end status to running and counts the attempt, in one database operation.
@@ -21,6 +22,10 @@ export interface BoardImportJobRepo {
 
 	// Sets the job to failed only if it is still waiting. Returns false when the job has another status.
 	failIfWaiting(id: EntityId): Promise<boolean>;
+
+	// Sets the job to failed only if it has no end status. Does not read the other fields of the job.
+	// Returns false when the job has an end status.
+	failIfOpen(id: EntityId): Promise<boolean>;
 }
 
 export const BOARD_IMPORT_JOB_REPO = 'BOARD_IMPORT_JOB_REPO';

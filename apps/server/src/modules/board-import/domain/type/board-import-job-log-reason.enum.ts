@@ -4,4 +4,5 @@ export enum BoardImportJobLogReason {
 	JOB_NOT_FOUND = 'job-not-found',
 	JOB_CLOSED = 'job-closed',
 	OUTDATED_ATTEMPT = 'outdated-attempt',
+	JOB_UNREADABLE = 'job-unreadable',
 }
