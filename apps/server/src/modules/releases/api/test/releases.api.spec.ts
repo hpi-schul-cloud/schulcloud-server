@@ -145,10 +145,10 @@ describe('Releases Controller (API)', () => {
 		});
 	});
 
-	describe('GET /releases/fetch', () => {
+	describe('POST /releases/fetch', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
-				const response = await testApiClient.get('fetch');
+				const response = await testApiClient.post('fetch');
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -160,7 +160,7 @@ describe('Releases Controller (API)', () => {
 				em.clear();
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				const response = await loggedInClient.get('fetch');
+				const response = await loggedInClient.post('fetch');
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
@@ -233,7 +233,7 @@ describe('Releases Controller (API)', () => {
 				it('should respond with an empty body', async () => {
 					const { loggedInClient } = await setup();
 
-					const response = await loggedInClient.get('fetch');
+					const response = await loggedInClient.post('fetch');
 
 					expect(response.status).toBe(HttpStatus.OK);
 					expect(response.body).toEqual({});
@@ -242,7 +242,7 @@ describe('Releases Controller (API)', () => {
 				it('should replace the old releases with the fetched ones', async () => {
 					const { loggedInClient } = await setup();
 
-					await loggedInClient.get('fetch');
+					await loggedInClient.post('fetch');
 
 					const releases = await em.find(ReleaseEntity, {}, { orderBy: { publishedAt: 'asc' } });
 					expect(releases.map((release) => release.name)).toEqual(['Release 1', 'Release 2']);
@@ -254,8 +254,8 @@ describe('Releases Controller (API)', () => {
 						of(axiosResponseFactory.build({ data: [githubRelease(1, 'no images'), githubRelease(2, 'no images')] }))
 					);
 
-					await loggedInClient.get('fetch');
-					await loggedInClient.get('fetch');
+					await loggedInClient.post('fetch');
+					await loggedInClient.post('fetch');
 
 					const releases = await em.find(ReleaseEntity, {}, { orderBy: { publishedAt: 'asc' } });
 					expect(releases.map((release) => release.githubId)).toEqual([1, 2]);
@@ -264,7 +264,7 @@ describe('Releases Controller (API)', () => {
 				it('should store the image, link it in the body and remove unreferenced images', async () => {
 					const { loggedInClient, imageUrl, unusedImage } = await setup();
 
-					await loggedInClient.get('fetch');
+					await loggedInClient.post('fetch');
 
 					const images = await em.find(ReleaseImageEntity, {});
 					expect(images).toHaveLength(1);
@@ -299,7 +299,7 @@ describe('Releases Controller (API)', () => {
 				it('should respond with an error and keep the existing releases', async () => {
 					const { loggedInClient } = await setup();
 
-					const response = await loggedInClient.get('fetch');
+					const response = await loggedInClient.post('fetch');
 
 					expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
 					const releases = await em.find(ReleaseEntity, {});
