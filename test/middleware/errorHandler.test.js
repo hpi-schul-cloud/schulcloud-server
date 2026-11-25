@@ -104,6 +104,29 @@ describe('errorHandler', () => {
 			});
 		});
 
+		it('should mask an email-like password completely and keep email masking for email fields', () => {
+			const filterSecrets = getFilterSecretsMiddleware();
+			const req = {
+				originalUrl: '/users',
+				headers: {},
+				body: {
+					password: 'Sommer@2026.de',
+					userPin: 'pin@example.org',
+					email: 'someone@example.com',
+					'student-email': 'student@example.com',
+				},
+			};
+
+			filterSecrets(new Error('test'), req, {}, () => {});
+
+			expect(req.body).to.deep.equal({
+				password: '<secret>',
+				userPin: '<secret>',
+				email: 'som****@example.com',
+				'student-email': 'stu****@example.com',
+			});
+		});
+
 		it('should replace the password recovery token and the registration hash in the request body', () => {
 			const filterSecrets = getFilterSecretsMiddleware();
 			const req = {

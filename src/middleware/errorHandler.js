@@ -113,26 +113,32 @@ const additionalSecretDataKeys = [
 	'toHash',
 ].map((k) => k.toLocaleLowerCase());
 
+// Only values of these keys are masked as an email address (som****@example.org); other secrets become '<secret>'.
+const emailDataKeys = ['email', 'student-email'];
+
 const isSecretDataKey = (key) => isSensitiveName(key) || additionalSecretDataKeys.includes(key.toLocaleLowerCase());
+
+const maskEmail = (value) => {
+	const [local, domain] = value.split('@');
+	if (local.length > 3) {
+		return `${local.slice(0, 3)}${'*'.repeat(local.length - 3)}@${domain}`;
+	}
+
+	return `${'*'.repeat(local.length)}@${domain}`;
+};
 
 const filterSecretValue = (key, value) => {
 	// Booleans are not masked: they cannot hold a credential and flags such as forcePasswordChange must stay readable.
-	if (isSecretDataKey(key) && typeof value !== 'boolean') {
-		// E-Mail-Maskierung, falls value eine E-Mail-Adresse ist
-		if (typeof value === 'string' && /^[^@\s]{3,}[^@\s]*@[^@\s]+\.[^@\s]+$/.test(value)) {
-			// Split in local und domain
-			const [local, domain] = value.split('@');
-			if (local.length > 3) {
-				const masked = local.slice(0, 3) + '*'.repeat(local.length - 3);
-				return masked + '@' + domain;
-			} else {
-				// Weniger als 3 Zeichen vor dem @, alles maskieren
-				return '*'.repeat(local.length) + '@' + domain;
-			}
-		}
-		return '<secret>';
+	if (!isSecretDataKey(key) || typeof value === 'boolean') {
+		return value;
 	}
-	return value;
+
+	const isEmailKey = emailDataKeys.includes(key.toLocaleLowerCase());
+	if (isEmailKey && typeof value === 'string' && /^[^@\s]{3,}[^@\s]*@[^@\s]+\.[^@\s]+$/.test(value)) {
+		return maskEmail(value);
+	}
+
+	return '<secret>';
 };
 
 const filterDeep = (newData, level = 0) => {
