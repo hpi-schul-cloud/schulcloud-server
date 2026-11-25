@@ -148,12 +148,13 @@ describe('url-path-secrets', () => {
 			expect(redactSecretsInText(text)).toBe(expected);
 		});
 
-		it('should keep a JSON line valid', () => {
+		it('should keep a JSON line valid and stop at a quote or backslash inside a secret', () => {
 			const line = JSON.stringify({ message: 'Cannot GET /sharetoken/a"b\\c', url: '/x?token=a"b' });
 
 			const parsed = JSON.parse(redactSecretsInText(line)) as Record<string, string>;
 
-			expect(parsed.message).not.toContain('a"b');
+			// Real tokens never contain quotes or backslashes; the part after them stays visible.
+			expect(parsed).toEqual({ message: 'Cannot GET /sharetoken/***"b\\c', url: '/x?token=***"b' });
 		});
 
 		it.each([
