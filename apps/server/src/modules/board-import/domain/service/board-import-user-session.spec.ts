@@ -43,7 +43,7 @@ describe(BoardImportUserSession.name, () => {
 				const response = 'response';
 
 				tokenService.createToken.mockResolvedValueOnce(token);
-				request.mockResolvedValue(response);
+				request.mockResolvedValueOnce(response).mockResolvedValueOnce(response);
 
 				return { job, session, request, token, response };
 			};

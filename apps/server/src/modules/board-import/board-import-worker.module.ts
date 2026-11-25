@@ -14,16 +14,16 @@ import {
 	BoardImportConfig,
 	BoardImportServerApiConfig,
 } from './board-import.config';
-import { BoardImportModule } from './board-import.module';
+import { BOARD_IMPORT_JOB_REPO } from './domain';
 import { BoardImportJobProcessService } from './domain/service/board-import-job-process.service';
 import { BoardImportPlaceholderBoardService } from './domain/service/board-import-placeholder-board.service';
 import { BoardImportRunnerService } from './domain/service/board-import-runner.service';
 import { BoardImportTokenService } from './domain/service/board-import-token.service';
+import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 
 @Module({
 	imports: [
 		ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig),
-		BoardImportModule,
 		BoardImportAmqpModule,
 		LoggerModule,
 		UserModule,
@@ -33,6 +33,10 @@ import { BoardImportTokenService } from './domain/service/board-import-token.ser
 		CommonCartridgeClientsModule.register(BOARD_IMPORT_SERVER_API_CONFIG_TOKEN, BoardImportServerApiConfig),
 	],
 	providers: [
+		{
+			provide: BOARD_IMPORT_JOB_REPO,
+			useClass: BoardImportJobMikroOrmRepo,
+		},
 		BoardImportJobProcessService,
 		BoardImportRunnerService,
 		BoardImportTokenService,

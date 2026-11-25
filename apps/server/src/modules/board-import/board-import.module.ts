@@ -14,6 +14,6 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		},
 		BoardImportJobService,
 	],
-	exports: [BoardImportJobService, BOARD_IMPORT_JOB_REPO],
+	exports: [BoardImportJobService],
 })
 export class BoardImportModule {}

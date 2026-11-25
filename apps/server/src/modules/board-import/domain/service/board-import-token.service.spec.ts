@@ -85,24 +85,25 @@ describe(BoardImportTokenService.name, () => {
 				};
 				const marginInSeconds = 60;
 				const lifetimeInSeconds = remainingInSeconds + marginInSeconds;
+				const tokenIdPrefix = 'import_';
 				const logEntry = ['Board import token created', { jobId: job.id, userId: job.userId }] as const;
 
 				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				accountService.findByUserId.mockResolvedValueOnce(account);
 				jwtIssuerService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(token);
 
-				return { job, token, payload, lifetimeInSeconds, logEntry };
+				return { job, token, payload, lifetimeInSeconds, tokenIdPrefix, logEntry };
 			};
 
 			it('should create a token for the user that expires after the deadline of the job', async () => {
-				const { job, payload, lifetimeInSeconds } = setup();
+				const { job, payload, lifetimeInSeconds, tokenIdPrefix } = setup();
 
 				await service.createToken(job);
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
 					payload,
 					lifetimeInSeconds,
-					'import_'
+					tokenIdPrefix
 				);
 			});
 
