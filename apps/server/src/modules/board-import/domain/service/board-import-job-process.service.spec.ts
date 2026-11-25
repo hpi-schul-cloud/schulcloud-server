@@ -3,6 +3,7 @@ import { Logger } from '@infra/logger';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { boardImportJobFactory } from '../../testing';
+import { BoardImportJobUnreadableError } from '../error';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportJobProcessService } from './board-import-job-process.service';
@@ -410,6 +411,75 @@ describe(BoardImportJobProcessService.name, () => {
 
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 				expect(logger.warning).not.toHaveBeenCalledWith('Board import job failed', expect.anything());
+			});
+		});
+
+		describe('when the stored job cannot be read', () => {
+			const setup = () => {
+				const { id } = boardImportJobFactory.build();
+				const logEntry = [
+					'Board import job failed',
+					{ jobId: id, reason: BoardImportJobLogReason.JOB_UNREADABLE },
+				] as const;
+
+				repo.findById.mockRejectedValueOnce(new BoardImportJobUnreadableError(new TypeError()));
+				repo.failIfOpen.mockResolvedValueOnce(true);
+
+				return { id, logEntry };
+			};
+
+			it('should set the job to failed and resolve without an import', async () => {
+				const { id, logEntry } = setup();
+
+				await service.process(id);
+
+				expect(repo.failIfOpen).toHaveBeenCalledWith(id);
+				expect(repo.startAttempt).not.toHaveBeenCalled();
+				expect(runner.run).not.toHaveBeenCalled();
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
+			});
+		});
+
+		describe('when the stored job cannot be read and has an end status', () => {
+			const setup = () => {
+				const { id } = boardImportJobFactory.build();
+				const logEntry = [
+					'Board import job skipped',
+					{ jobId: id, reason: BoardImportJobLogReason.JOB_CLOSED },
+				] as const;
+
+				repo.findById.mockRejectedValueOnce(new BoardImportJobUnreadableError(new TypeError()));
+				repo.failIfOpen.mockResolvedValueOnce(false);
+
+				return { id, logEntry };
+			};
+
+			it('should resolve and log the skip', async () => {
+				const { id, logEntry } = setup();
+
+				await service.process(id);
+
+				expect(runner.run).not.toHaveBeenCalled();
+				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
+			});
+		});
+
+		describe('when the job cannot be loaded for another reason', () => {
+			const setup = () => {
+				const { id } = boardImportJobFactory.build();
+				const error = new Error('database not available');
+
+				repo.findById.mockRejectedValueOnce(error);
+
+				return { id, error };
+			};
+
+			it('should reject and not change the job', async () => {
+				const { id, error } = setup();
+
+				await expect(service.process(id)).rejects.toThrow(error);
+
+				expect(repo.failIfOpen).not.toHaveBeenCalled();
 			});
 		});
 
