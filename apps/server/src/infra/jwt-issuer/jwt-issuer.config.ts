@@ -3,10 +3,10 @@ import { Transform } from 'class-transformer';
 import { IsString } from 'class-validator';
 import { Algorithm } from 'jsonwebtoken';
 
-export const JWT_STRATEGY_CONFIG_TOKEN = 'JWT_STRATEGY_CONFIG_TOKEN';
+export const JWT_ISSUER_CONFIG_TOKEN = 'JWT_ISSUER_CONFIG_TOKEN';
 
 @Configuration()
-export class JwtModuleConfig {
+export class JwtIssuerConfig {
 	@ConfigProperty('JWT_PRIVATE_KEY')
 	@Secret()
 	@IsString()

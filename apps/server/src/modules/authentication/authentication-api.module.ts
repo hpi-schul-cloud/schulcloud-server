@@ -1,4 +1,5 @@
 import { ConfigurationModule } from '@infra/configuration';
+import { JwtIssuerModule } from '@infra/jwt-issuer';
 import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { UserModule } from '@modules/user/user.module';
@@ -12,6 +13,7 @@ import { LoginUc, LogoutUc } from './uc';
 	imports: [
 		UserModule,
 		AuthenticationModule,
+		JwtIssuerModule,
 		AuthorizationModule,
 		LoggerModule,
 		ConfigurationModule.register(AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig),

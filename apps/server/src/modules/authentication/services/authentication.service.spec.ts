@@ -2,6 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { jwtPayloadFactory } from '@infra/auth-guard/testing';
 import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
+import { JwtIssuerService } from '@infra/jwt-issuer';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { Logger } from '@infra/logger';
 import { Account, AccountService } from '@modules/account';
@@ -11,7 +12,6 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpService } from '@nestjs/axios';
 import { UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import jwt from 'jsonwebtoken';
@@ -29,7 +29,7 @@ describe(AuthenticationService.name, () => {
 
 	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
-	let jwtService: DeepMocked<JwtService>;
+	let jwtIssuerService: DeepMocked<JwtIssuerService>;
 	let config: AuthenticationConfig;
 
 	const mockAccount: Account = new Account({
@@ -50,8 +50,8 @@ describe(AuthenticationService.name, () => {
 					useValue: createMock<JwtWhitelistAdapter>(),
 				},
 				{
-					provide: JwtService,
-					useValue: createMock<JwtService>(),
+					provide: JwtIssuerService,
+					useValue: createMock<JwtIssuerService>(),
 				},
 				{
 					provide: AccountService,
@@ -83,7 +83,7 @@ describe(AuthenticationService.name, () => {
 		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
-		jwtService = module.get(JwtService);
+		jwtIssuerService = module.get(JwtIssuerService);
 		config = module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
@@ -160,28 +160,30 @@ describe(AuthenticationService.name, () => {
 				);
 				const expiresIn = 150;
 				config.jwtLifetimeSupportSeconds = expiresIn;
+				const jwtToken = 'jwt';
 
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
-				jwtService.sign.mockReturnValueOnce('jwt');
+				jwtIssuerService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(jwtToken);
 
 				const expectedPayload = new JwtPayloadBuilder(mockCurrentUser).asSupportUser(supportUser.id).build();
 
-				return { supportUser, targetUser, mockCurrentUser, targetUserAccount, expectedPayload, expiresIn };
+				return { supportUser, targetUser, expectedPayload, expiresIn, jwtToken };
 			};
 
 			it('should pass the correct parameters', async () => {
-				const { supportUser, targetUser, mockCurrentUser, expectedPayload, expiresIn } = setup();
+				const { supportUser, targetUser, expectedPayload, expiresIn } = setup();
 
 				await authenticationService.generateSupportJwt(supportUser, targetUser);
 
-				expect(jwtService.sign).toHaveBeenCalledWith(
-					expectedPayload,
-					expect.objectContaining({
-						subject: mockCurrentUser.accountId,
-						jwtid: expect.any(String),
-						expiresIn,
-					})
-				);
+				expect(jwtIssuerService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(expectedPayload, expiresIn);
+			});
+
+			it('should return the jwt', async () => {
+				const { supportUser, targetUser, jwtToken } = setup();
+
+				const result = await authenticationService.generateSupportJwt(supportUser, targetUser);
+
+				expect(result).toEqual(jwtToken);
 			});
 		});
 	});
