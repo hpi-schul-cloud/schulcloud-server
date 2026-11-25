@@ -1,7 +1,6 @@
 import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { CourseEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
-import type { TeamEntity } from '@modules/team/repo';
 import type { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -97,8 +96,6 @@ export abstract class News extends BaseEntityWithTimestamps {
 		let news: News;
 		if (targetModel === NewsTargetModel.Course) {
 			news = new CourseNews(props);
-		} else if (targetModel === NewsTargetModel.Team) {
-			news = new TeamNews(props);
 		} else {
 			news = new SchoolNews(props);
 		}
@@ -126,16 +123,5 @@ export class CourseNews extends News {
 	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.Course;
-	}
-}
-
-@Entity({ discriminatorValue: NewsTargetModel.Team })
-export class TeamNews extends News {
-	@ManyToOne('TeamEntity')
-	target!: TeamEntity;
-
-	constructor(props: NewsProperties) {
-		super(props);
-		this.targetModel = NewsTargetModel.Team;
 	}
 }

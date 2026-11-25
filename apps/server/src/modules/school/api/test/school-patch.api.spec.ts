@@ -187,28 +187,6 @@ describe('School Controller (API)', () => {
 						});
 					});
 
-					describe.skip('when enableStudentTeamCreation in params is not a boolean', () => {
-						it('should return 400', async () => {
-							const { loggedInClient, school } = await setup();
-
-							const response = await loggedInClient.patch(school.id).send({
-								enableStudentTeamCreation: '123',
-							});
-
-							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-							expect(response.body).toEqual(
-								expect.objectContaining({
-									validationErrors: [
-										{
-											errors: ['enableStudentTeamCreation must be a boolean value'],
-											field: ['enableStudentTeamCreation'],
-										},
-									],
-								})
-							);
-						});
-					});
-
 					describe('when features param is not valid', () => {
 						it('should return 400', async () => {
 							const { loggedInClient, school } = await setup();
@@ -392,7 +370,7 @@ describe('School Controller (API)', () => {
 								fileStorageType: newParams.fileStorageType,
 								logo: newParams.logo,
 								officialSchoolNumber: newParams.officialSchoolNumber,
-								instanceFeatures: ['isTeamCreationByStudentsEnabled'],
+								instanceFeatures: [],
 							};
 
 							return { loggedInClient, school, expectedResponse, newParams };

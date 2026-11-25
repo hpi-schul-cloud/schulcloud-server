@@ -41,19 +41,19 @@ describe('News Scope', () => {
 			expect(JSON.stringify(result)).toBe(JSON.stringify(expected));
 		});
 		it('should create scope query for multiple targets', () => {
-			const courseTargetId = new ObjectId().toHexString();
-			const teamTargetId = new ObjectId().toHexString();
-			const target = {
+			const courseTargetId1 = new ObjectId().toHexString();
+			const courseTargetId2 = new ObjectId().toHexString();
+			const target1 = {
 				targetModel: NewsTargetModel.Course,
-				targetIds: [courseTargetId],
+				targetIds: [courseTargetId1],
 			} as NewsTargetFilter;
 
 			const target2 = {
-				targetModel: NewsTargetModel.Team,
-				targetIds: [teamTargetId],
+				targetModel: NewsTargetModel.Course,
+				targetIds: [courseTargetId2],
 			} as NewsTargetFilter;
 			const scope = new NewsScope();
-			scope.byTargets([target, target2]);
+			scope.byTargets([target1, target2]);
 			const result = scope.query;
 			const expected = {
 				$or: [
@@ -63,17 +63,17 @@ describe('News Scope', () => {
 								targetModel: NewsTargetModel.Course,
 							},
 							{
-								target: { $in: [courseTargetId] },
+								target: { $in: [courseTargetId1] },
 							},
 						],
 					},
 					{
 						$and: [
 							{
-								targetModel: NewsTargetModel.Team,
+								targetModel: NewsTargetModel.Course,
 							},
 							{
-								target: { $in: [teamTargetId] },
+								target: { $in: [courseTargetId2] },
 							},
 						],
 					},

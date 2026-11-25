@@ -25,7 +25,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from '../server.config';
 import { ConfigResponse } from './dto';
 import { ConfigResponseMapper } from './mapper';
-import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '@modules/team';
 
 @Injectable()
 export class ServerUc {
@@ -51,7 +50,6 @@ export class ServerUc {
 		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
 		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
 		@Inject(FWU_PUBLIC_API_CONFIG_TOKEN) private readonly fwuConfig: FwuPublicApiConfig,
-		@Inject(TEAM_PUBLIC_API_CONFIG_TOKEN) private readonly teamConfig: TeamPublicApiConfig,
 		@Inject(NOTIFICATION_PUBLIC_API_CONFIG_TOKEN) private readonly notificationConfig: NotificationPublicApiConfig,
 		@Inject(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly boardImportConfig: BoardImportPublicApiConfig
 	) {}
@@ -77,7 +75,6 @@ export class ServerUc {
 			this.userImportConfig,
 			this.userLoginMigrationConfig,
 			this.fwuConfig,
-			this.teamConfig,
 			this.notificationConfig,
 			this.boardImportConfig
 		);

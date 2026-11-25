@@ -19,7 +19,6 @@ export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	ModuleName.PSEUDONYM,
 	ModuleName.TASK,
 	ModuleName.TASK_SUBMISSION,
-	ModuleName.TEAM,
 	ModuleName.USER_CALENDAR,
 	// ModuleName.USER,
 	ModuleName.USER_REGISTRATIONPIN,

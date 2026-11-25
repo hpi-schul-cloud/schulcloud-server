@@ -1,9 +1,8 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
-import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
-import { ExternalTool, ExternalToolService, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool';
+import { ExternalTool, ExternalToolService, Lti11ToolConfig } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
 import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import {
@@ -12,7 +11,6 @@ import {
 	CustomParameterType,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	TokenEndpointAuthMethod,
 	ToolContextType,
 } from '@modules/tool/common/enum';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -26,8 +24,6 @@ describe(ExternalToolsSeedDataService.name, () => {
 	let config: ManagementSeedDataConfig;
 	let encryptionService: DeepMocked<EncryptionService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let oauthProviderService: DeepMocked<OauthProviderService>;
-	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -60,8 +56,6 @@ describe(ExternalToolsSeedDataService.name, () => {
 		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		encryptionService = module.get(DefaultEncryptionService);
 		externalToolService = module.get(ExternalToolService);
-		oauthProviderService = module.get(OauthProviderService);
-		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -73,75 +67,21 @@ describe(ExternalToolsSeedDataService.name, () => {
 	});
 
 	describe('import', () => {
-		describe('when the nextcloud variables are defined', () => {
+		describe('when the bilo variables are defined', () => {
 			const setup = () => {
-				const clientId = 'Nextcloud_id';
-				config.nextcloudSocialloginOidcInternalName = 'SchulcloudNextcloud';
-				config.nextcloudBaseUrl = 'https://nextcloud.localhost:9090';
-				config.nextcloudClientId = clientId;
-				config.nextcloudClientSecret = 'Nextcloud_secret';
-				config.nextcloudScopes = 'openid';
 				config.ctlSeedSecretOnlineDiaDeutsch = 'deutsch_secret';
 				config.ctlSeedSecretOnlineDiaMathe = 'mathe_secret';
 				config.ctlSeedSecretMerlin = 'merlin_secret';
 				config.ctlSeedBiloLtiKey = 'bilo_lti_key';
 				config.ctlSeedBiloLtiSecret = 'bilo_lti_secret';
 
-				const error = new Error('Client not found');
-				oauthProviderService.deleteOAuth2Client.mockRejectedValueOnce(error);
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_bilo_lti_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_deutsch_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_mathe_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_merlin_secret');
 
-				return {
-					clientId,
-					error,
-				};
+				return {};
 			};
-
-			it('should should delete any remaining oauth2 nextcloud clients', async () => {
-				const { clientId } = setup();
-
-				await service.import();
-
-				expect(oauthProviderService.deleteOAuth2Client).toHaveBeenCalledWith(clientId);
-			});
-
-			it('should should log an error if no client had to be deleted', async () => {
-				const { error } = setup();
-
-				await service.import();
-
-				expect(logger.debug).toHaveBeenCalledWith(new ErrorLoggable(error));
-			});
-
-			it('should import nextcloud', async () => {
-				setup();
-
-				await service.import();
-
-				expect(externalToolService.createExternalTool).toHaveBeenCalledWith<[ExternalTool]>(
-					new ExternalTool({
-						id: '65f958bdd8b35469f14032b1',
-						name: 'SchulcloudNextcloud',
-						config: new Oauth2ToolConfig({
-							baseUrl: 'https://nextcloud.localhost:9090',
-							clientId: 'Nextcloud_id',
-							clientSecret: 'Nextcloud_secret',
-							skipConsent: true,
-							scope: 'openid',
-							redirectUris: ['https://nextcloud.localhost:9090/apps/user_oidc/code'],
-							frontchannelLogoutUri: 'https://nextcloud.localhost:9090/apps/schulcloud/logout',
-							tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
-						}),
-						openNewTab: true,
-						isHidden: true,
-						isDeactivated: false,
-						isPreferred: false,
-					})
-				);
-			});
 
 			it('should import the Bildungslogin template', async () => {
 				setup();
@@ -354,12 +294,12 @@ describe(ExternalToolsSeedDataService.name, () => {
 				);
 			});
 
-			it('should return 5', async () => {
+			it('should return 4', async () => {
 				setup();
 
 				const result = await service.import();
 
-				expect(result).toEqual(5);
+				expect(result).toEqual(4);
 			});
 		});
 	});

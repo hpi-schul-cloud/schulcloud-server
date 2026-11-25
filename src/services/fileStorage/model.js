@@ -102,7 +102,7 @@ const fileSchema = new Schema({
 	refOwnerModel: {
 		type: String,
 		required: true,
-		enum: ['user', 'course', 'teams'],
+		enum: ['user', 'course'],
 	},
 	creator: {
 		type: Schema.Types.ObjectId,

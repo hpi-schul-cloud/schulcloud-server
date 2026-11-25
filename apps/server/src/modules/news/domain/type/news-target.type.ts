@@ -1,5 +1,4 @@
 import type { CourseEntity } from '@modules/course/repo';
 import { type SchoolEntity } from '@modules/school/repo';
-import type { TeamEntity } from '@modules/team/repo';
 
-export type NewsTarget = SchoolEntity | TeamEntity | CourseEntity;
+export type NewsTarget = SchoolEntity | CourseEntity;

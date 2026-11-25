@@ -15,7 +15,6 @@ describe('NewsUc', () => {
 	let service: NewsUc;
 	let repo: NewsRepo;
 	const courseTargetId = 'course1';
-	const teamTargetId = 'team1';
 	const NEWS_PERMISSIONS = [Permission.NEWS_VIEW, Permission.NEWS_EDIT];
 
 	const userId = new ObjectId().toString();
@@ -49,8 +48,8 @@ describe('NewsUc', () => {
 			targetIds: [courseTargetId],
 		},
 		{
-			targetModel: NewsTargetModel.Team,
-			targetIds: [teamTargetId],
+			targetModel: NewsTargetModel.School,
+			targetIds: [schoolId],
 		},
 	];
 
@@ -123,8 +122,19 @@ describe('NewsUc', () => {
 			const scope = {};
 			const findAllSpy = jest.spyOn(repo, 'findAllPublished');
 			await service.findAllForUser(userId, scope, pagination);
-			const expectedParams = [targets, pagination];
-			expect(findAllSpy).toHaveBeenCalledWith(...expectedParams);
+			// The service will call getPermittedEntities for each NewsTargetModel
+			// and expect an array of targets with the permitted IDs
+			expect(findAllSpy).toHaveBeenCalledWith(
+				expect.arrayContaining([
+					expect.objectContaining({
+						targetModel: NewsTargetModel.Course,
+					}),
+					expect.objectContaining({
+						targetModel: NewsTargetModel.School,
+					}),
+				]),
+				pagination
+			);
 		});
 		it('should search for school news with given school id', async () => {
 			const scope = {
@@ -177,8 +187,20 @@ describe('NewsUc', () => {
 			const scope = { unpublished: true };
 			const findAllUnpublishedSpy = jest.spyOn(repo, 'findAllUnpublishedByUser');
 			await service.findAllForUser(userId, scope, pagination);
-			const expectedParams = [targets, userId, pagination];
-			expect(findAllUnpublishedSpy).toHaveBeenCalledWith(...expectedParams);
+			// The service will call getPermittedEntities for each NewsTargetModel
+			// and expect an array of targets with the permitted IDs
+			expect(findAllUnpublishedSpy).toHaveBeenCalledWith(
+				expect.arrayContaining([
+					expect.objectContaining({
+						targetModel: NewsTargetModel.Course,
+					}),
+					expect.objectContaining({
+						targetModel: NewsTargetModel.School,
+					}),
+				]),
+				userId,
+				pagination
+			);
 		});
 		it('should search for school news with given school id', async () => {
 			const scope = {

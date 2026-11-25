@@ -1,7 +1,6 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import type { ObjectId } from '@mikro-orm/mongodb';
 
-// Same name as OauthProviderLoginFlowService.RETIRED_NEXTCLOUD_TOOL_NAME
 const NEXTCLOUD_TOOL_NAME = /^(Schulcloud)?Nextcloud$/i;
 
 export class Migration20261109170512 extends Migration {

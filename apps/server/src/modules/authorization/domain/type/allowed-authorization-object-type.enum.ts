@@ -5,7 +5,6 @@ export enum AuthorizableReferenceType {
 	CourseGroup = 'coursegroups',
 	Task = 'tasks',
 	Lesson = 'lessons',
-	Team = 'teams',
 	Submission = 'submissions',
 	SchoolExternalToolEntity = 'school-external-tools',
 	BoardNode = 'boardnodes',
