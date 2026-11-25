@@ -1,7 +1,6 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import { JwtIssuerModule } from '@infra/jwt-issuer';
-import { JwtWhitelistModule } from '@infra/jwt-whitelist';
 import { LoggerModule } from '@infra/logger';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
@@ -33,7 +32,6 @@ import { Oauth2Strategy } from './strategy/oauth2.strategy';
 		SystemModule,
 		OauthModule,
 		RoleModule,
-		JwtWhitelistModule.register(),
 		UserModule,
 		HttpModule,
 		EncryptionModule.register(AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig),

@@ -33,6 +33,6 @@ const createJwtOptions = (config: JwtIssuerConfig): JwtModuleOptions => {
 		JwtWhitelistModule.register(),
 	],
 	providers: [JwtIssuerService],
-	exports: [JwtIssuerService],
+	exports: [JwtIssuerService, JwtWhitelistModule],
 })
 export class JwtIssuerModule {}
