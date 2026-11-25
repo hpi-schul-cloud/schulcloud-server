@@ -72,6 +72,7 @@ describe(JwtIssuerService.name, () => {
 				await service.generateJwtAndAddToWhitelist(payload, expiresIn);
 
 				const jwtid = jwtService.sign.mock.calls[0][1]?.jwtid;
+				expect(jwtid).toEqual(expect.any(String));
 				expect(jwtWhitelistAdapter.addToWhitelist).toHaveBeenCalledWith(payload.accountId, jwtid);
 			});
 
@@ -81,6 +82,29 @@ describe(JwtIssuerService.name, () => {
 				const result = await service.generateJwtAndAddToWhitelist(payload, expiresIn);
 
 				expect(result).toEqual(jwt);
+			});
+		});
+
+		describe('when a prefix for the token id is given', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+				const payload = new JwtPayloadBuilder(currentUser).build();
+				const expiresIn = 150;
+				const jtiPrefix = 'prefix_';
+
+				jwtService.sign.mockReturnValueOnce('jwt');
+
+				return { payload, expiresIn, jtiPrefix };
+			};
+
+			it('should add a token id with the prefix to the whitelist', async () => {
+				const { payload, expiresIn, jtiPrefix } = setup();
+
+				await service.generateJwtAndAddToWhitelist(payload, expiresIn, jtiPrefix);
+
+				const jwtid = jwtService.sign.mock.calls[0][1]?.jwtid;
+				expect(jwtid).toEqual(expect.stringMatching(new RegExp(`^${jtiPrefix}.+`)));
+				expect(jwtWhitelistAdapter.addToWhitelist).toHaveBeenCalledWith(payload.accountId, jwtid);
 			});
 		});
 	});

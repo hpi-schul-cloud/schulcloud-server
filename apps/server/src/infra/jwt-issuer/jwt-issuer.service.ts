@@ -13,13 +13,14 @@ export class JwtIssuerService {
 
 	public async generateJwtAndAddToWhitelist(
 		createJwtPayload: CreateJwtPayload,
-		expiresIn: number | string
+		expiresIn: number | string,
+		jtiPrefix = ''
 	): Promise<string> {
-		const jti = randomUUID();
+		const jti = `${jtiPrefix}${randomUUID()}`;
 		const options: JwtSignOptions = {
 			subject: createJwtPayload.accountId,
 			jwtid: jti,
-			expiresIn: expiresIn as JwtSignOptions['expiresIn'], // Overwrites the value from the JwtModuleOptions.
+			expiresIn: expiresIn as JwtSignOptions['expiresIn'],
 		};
 		const accessToken = this.jwtService.sign(createJwtPayload, options);
 

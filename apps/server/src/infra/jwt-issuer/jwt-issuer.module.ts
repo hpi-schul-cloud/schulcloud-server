@@ -7,10 +7,9 @@ import { JWT_ISSUER_CONFIG_TOKEN, JwtIssuerConfig } from './jwt-issuer.config';
 import { JwtIssuerService } from './jwt-issuer.service';
 
 const createJwtOptions = (config: JwtIssuerConfig): JwtModuleOptions => {
-	const { algorithm, expiresIn, scDomain, privateKey, publicKey } = config;
+	const { algorithm, scDomain, privateKey } = config;
 	const signOptions: SignOptions = {
 		algorithm,
-		expiresIn: expiresIn as SignOptions['expiresIn'],
 		issuer: scDomain,
 		audience: scDomain,
 		header: { typ: 'JWT', alg: algorithm },
@@ -18,7 +17,6 @@ const createJwtOptions = (config: JwtIssuerConfig): JwtModuleOptions => {
 
 	const options: JwtModuleOptions = {
 		privateKey,
-		publicKey,
 		signOptions,
 	};
 
