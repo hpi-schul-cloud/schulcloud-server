@@ -75,6 +75,22 @@ const callToJson = (value) => {
 	}
 };
 
+// A Map with string keys becomes a plain object, so LoggingUtils redacts its values by key name like any other field.
+// Other keys cannot be field names, such a Map becomes [key, value] pairs.
+const copyMap = (map, ancestors) => {
+	const entries = [...map.entries()];
+	if (!entries.every(([key]) => typeof key === 'string')) {
+		return entries.map(([key, item]) => [toJsonValues(key, ancestors), toJsonValues(item, ancestors)]);
+	}
+
+	const copy = {};
+	for (const [key, item] of entries) {
+		defineValue(copy, maskSecretsInText(key), toJsonValues(item, ancestors));
+	}
+
+	return copy;
+};
+
 const copyValue = (value, ancestors) => {
 	if (value instanceof Error) {
 		return copyError(value, ancestors);
@@ -90,9 +106,13 @@ const copyValue = (value, ancestors) => {
 		return value.map((item) => toJsonValues(item, ancestors));
 	}
 
-	// JSON and LoggingUtils would log a Map or Set as {}, their content is logged as entries or items instead.
-	if (value instanceof Map || value instanceof Set) {
-		return toJsonValues(value instanceof Set ? [...value] : [...value.entries()], ancestors);
+	// JSON and LoggingUtils would log a Map or Set as {}, their content is logged instead.
+	if (value instanceof Set) {
+		return [...value].map((item) => toJsonValues(item, ancestors));
+	}
+
+	if (value instanceof Map) {
+		return copyMap(value, ancestors);
 	}
 
 	// Class instances become plain objects with their own fields, as in JSON and in LoggingUtils.

@@ -329,8 +329,31 @@ describe('[logger] masking in the feathers logger', () => {
 			set: new Set(['a', SECRET]),
 		});
 
-		expect(line.map).to.eql([['token', '***']]);
+		expect(line.map).to.eql({ token: '[REDACTED]' });
 		expect(line.set).to.eql(['a', '***']);
+	});
+
+	it('should redact values of a Map by their key names', () => {
+		const output = getProductionFormat().transform({
+			level: 'info',
+			message: 'map',
+			map: new Map([
+				['password', 'hunter2secret'],
+				['x-api-key', 'supersecretkey'],
+				['name', 'max'],
+			]),
+			byId: new Map([[1, { password: 'hunter2secret', value: SECRET }]]),
+		})[MESSAGE];
+
+		const line = JSON.parse(output);
+		expect(output).not.to.include('hunter2secret');
+		expect(output).not.to.include('supersecretkey');
+		expect(line.map).to.eql({
+			password: 'hunt...et [REDACTED]',
+			'x-api-key': 'supe...ey [REDACTED]',
+			name: 'max',
+		});
+		expect(line.byId).to.eql([[1, { password: 'hunt...et [REDACTED]', value: '***' }]]);
 	});
 
 	it('should mask in the develop format as well', () => {
