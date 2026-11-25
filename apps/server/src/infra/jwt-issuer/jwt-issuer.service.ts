@@ -23,7 +23,6 @@ export class JwtIssuerService {
 		};
 		const accessToken = this.jwtService.sign(createJwtPayload, options);
 
-		// Used legacy code and solve timeout in redis over JWT_EXTENDED_TIMEOUT_SECONDS
 		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
 
 		return accessToken;

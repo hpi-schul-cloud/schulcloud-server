@@ -1,7 +1,7 @@
 import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { Transform } from 'class-transformer';
 import { IsString } from 'class-validator';
-import { Algorithm } from 'jsonwebtoken';
+import { type Algorithm } from 'jsonwebtoken';
 
 export const JWT_ISSUER_CONFIG_TOKEN = 'JWT_ISSUER_CONFIG_TOKEN';
 

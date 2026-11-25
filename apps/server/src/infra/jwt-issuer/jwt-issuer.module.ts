@@ -16,14 +16,13 @@ const createJwtOptions = (config: JwtIssuerConfig): JwtModuleOptions => {
 		header: { typ: 'JWT', alg: algorithm },
 	};
 
-	const options = {
+	const options: JwtModuleOptions = {
 		privateKey,
 		publicKey,
 		signOptions,
-		verifyOptions: signOptions,
 	};
 
-	return options as JwtModuleOptions;
+	return options;
 };
 
 @Module({
