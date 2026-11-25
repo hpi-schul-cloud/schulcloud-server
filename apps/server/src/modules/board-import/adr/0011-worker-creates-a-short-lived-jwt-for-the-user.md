@@ -23,13 +23,14 @@ Alternatives that were rejected:
 ## Decision
 
 - At the start of each attempt, the worker creates a JWT for the user of the job. It signs the token with the JWT private key of the instance and adds it to the whitelist in the session Valkey, as the login of the server does.
+- The code that creates a token moves from the authentication module into a small module: the options to sign, the claims from user and account, and the entry in the whitelist. The login of the server and the worker use this module. The worker does not import the authentication module, because that module also loads the login strategies.
 - The job stores only the ID of the user. For each token, the worker reads the user, the roles and the account through the services of the user module and the account module. Thus the claims of the token are current, also when the job waited in the queue for a long time.
 - The import module has no repositories or entities of its own for users, roles and accounts, and it does not query their collections. This data stays in the modules that own it. The worker imports these modules and registers their entities, because all apps of the server use the same database. The provisioning consumers do the same for the user module.
 - If the user or the account does not exist, or if the account is deactivated, the worker creates no token and the job gets the status `failed`.
 - The token expires at the deadline of the job plus a small margin. The deadline is the first start plus the maximum duration (see [0008](0008-retry-import-jobs-through-redelivery.md)). At the end of the attempt, the worker removes the token from the whitelist.
 - The worker does not store the token and does not log it. When it creates a token, it logs the job ID and the user ID.
 - The token is not identified as a support token or as a service account token.
-- If the board API answers with 403, the job gets the status `failed`. If it answers with 401, the attempt fails and the broker delivers the message again.
+- If the board API answers with 403, the job gets the status `failed`. If it answers with 401, the worker creates a new token and sends the request again one time. If the answer is 401 again, the attempt fails and the broker delivers the message again.
 
 ## Consequences
 
@@ -40,10 +41,11 @@ Alternatives that were rejected:
 - A worker that stops does not remove its token. The token is not stored, so the import cannot revoke it. It stays valid until its expiry date.
 - The whitelist check reads the entry and then writes it again. A request of an aborted import step that is still in progress can write a removed entry again. Then only the expiry date limits the token.
 - A job can wait in the queue until it expires (see [0006](0006-delete-import-jobs-after-30-days.md)). The worker then creates a token for a user who possibly did not log in for a long time. It checks only that the user and the account exist and that the account is not deactivated. There is no maximum age for a waiting job.
-- A logout of the user does not stop the import. An OIDC backchannel logout and the deletion of the user remove all tokens of the account. The attempt then fails with 401, and the next attempt creates a new token.
+- A logout of the user does not stop the import. An OIDC backchannel logout and the deletion of the user remove all tokens of the account. The worker then gets 401 and continues with a new token, so such a logout does not use an attempt.
 - The roles in the token are the roles at the start of the attempt. A change during an attempt has an effect only where a service reads the user from the database, as the board module does.
 - The worker loads the user module and the account module with all modules that these import. Thus the worker app becomes larger and can need more configuration.
 - The worker needs the JWT private key, the domain of the instance and the configuration of the session Valkey. Its egress policy must permit the session Valkey with Sentinel. This replaces the rule about the session Valkey in [0009](0009-egress-policy-for-the-import-worker.md).
 - The worker needs its own secret. If not, the import API also gets the private key. The private key is then in two secrets, and a key rotation must change the two.
-- The options to sign a JWT are in the authentication module and in the import module. They must stay the same.
+- The import changes code of the authentication module. The login must behave as before.
+- The token has no claim that identifies the import. Thus a write of the worker looks like an action of the user. Only the log entry of the worker shows that the import created a token.
 - No call creates a full board. A restart of the worker continues from the intermediate states in the job.
