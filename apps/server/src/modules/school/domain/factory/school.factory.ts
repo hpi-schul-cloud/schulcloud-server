@@ -7,17 +7,8 @@ export class SchoolFactory {
 	}
 
 	public static buildFromPartialBody(school: School, partialBody: SchoolUpdateBody): School {
-		const {
-			name,
-			officialSchoolNumber,
-			logo,
-			fileStorageType,
-			language,
-			features,
-			permissions,
-			countyId,
-			enableStudentTeamCreation,
-		} = partialBody;
+		const { name, officialSchoolNumber, logo, fileStorageType, language, features, permissions, countyId } =
+			partialBody;
 
 		if (countyId) {
 			school.updateCounty(countyId);
@@ -32,7 +23,6 @@ export class SchoolFactory {
 		props.language = language ?? props.language;
 		props.features = features ?? props.features;
 		props.permissions = permissions ?? props.permissions;
-		props.enableStudentTeamCreation = enableStudentTeamCreation ?? props.enableStudentTeamCreation;
 
 		const result = SchoolFactory.build(props);
 

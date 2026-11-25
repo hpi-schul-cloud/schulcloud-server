@@ -24,7 +24,6 @@ export class SchoolResponseMapper {
 		const features = Array.from(schoolProps.features);
 		const county = schoolProps.county && CountyResponseMapper.mapToResponse(schoolProps.county);
 		const systemIds = schoolProps.systemIds ?? [];
-		const instanceFeatures = Array.from(schoolProps.instanceFeatures ?? []);
 
 		const dto = new SchoolResponse({
 			...schoolProps,
@@ -37,7 +36,7 @@ export class SchoolResponseMapper {
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,
-			instanceFeatures,
+			instanceFeatures: [],
 		});
 
 		return dto;

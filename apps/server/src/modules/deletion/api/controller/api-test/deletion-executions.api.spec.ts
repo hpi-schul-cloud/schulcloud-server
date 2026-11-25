@@ -31,8 +31,6 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { Submission, Task } from '@modules/task/repo';
 import { submissionFactory, taskFactory } from '@modules/task/testing';
-import { TeamEntity } from '@modules/team/repo';
-import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { User } from '@modules/user/repo';
 import { USER_CONFIG_TOKEN } from '@modules/user/user.config';
 import { type INestApplication } from '@nestjs/common';
@@ -191,9 +189,6 @@ describe(`deletionExecution (api)`, () => {
 					school,
 				});
 
-				const teamUser = teamUserFactory.buildWithId({ user: studentUser });
-				const team = teamFactory.withTeamUser([teamUser]).build();
-
 				const submission = submissionFactory.buildWithId({
 					student: studentUser,
 					teamMembers: [studentUser],
@@ -243,7 +238,6 @@ describe(`deletionExecution (api)`, () => {
 						pseudonym,
 						mediaBoard,
 						task,
-						team,
 						submission,
 						groupSubmission,
 						registrationPin,
@@ -282,7 +276,6 @@ describe(`deletionExecution (api)`, () => {
 					mediaBoard,
 					news,
 					task,
-					team,
 					submission,
 					groupSubmission,
 					registrationPin,
@@ -307,7 +300,6 @@ describe(`deletionExecution (api)`, () => {
 					news,
 					pseudonym,
 					task,
-					team,
 					submission,
 					groupSubmission,
 					roomArrangement,
@@ -326,7 +318,6 @@ describe(`deletionExecution (api)`, () => {
 				const whereNews = { id: news.id, creator: teacherId };
 				const wherePseudonym = { id: pseudonym.id, userId: studentId };
 				const whereTask = { id: task.id, creator: teacherId };
-				const whereTeam = { id: team.id, userIds: { userId: studentId } };
 				const whereSubmission = { id: submission.id, studentId };
 				const whereGroupSubmission = {
 					id: groupSubmission.id,
@@ -388,9 +379,6 @@ describe(`deletionExecution (api)`, () => {
 
 				const checkTask = await em.findOne(Task, whereTask);
 				expect(checkTask).toBeNull();
-
-				const checkTeam = await em.findOne(TeamEntity, whereTeam);
-				expect(checkTeam).toBeNull();
 
 				const checkSubmission = await em.findOne(Submission, whereSubmission);
 				expect(checkSubmission).toBeNull();

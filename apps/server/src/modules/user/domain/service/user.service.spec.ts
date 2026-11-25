@@ -15,7 +15,7 @@ import { setupEntities } from '@testing/database';
 import { UserDto } from '../../api/dto';
 import { User, UserMikroOrmRepo } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
-import { TeacherVisibilityForExternalTeamInvitation, USER_CONFIG_TOKEN, type UserConfig } from '../../user.config';
+import { USER_CONFIG_TOKEN, type UserConfig } from '../../user.config';
 import { UserDo } from '../do';
 import { USER_DO_REPO, type UserDoRepo } from '../interface';
 import { UserDiscoverableQuery, type UserQuery } from '../query';
@@ -458,55 +458,15 @@ describe('UserService', () => {
 			expect(result).toEqual(expectedResult);
 		});
 
-		//  "disabled", "opt-in", "opt-out", "enabled"
-		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "enabled"', () => {
-			it('should query all teachers', async () => {
-				const { school, role } = setup();
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.ENABLED;
+		it('should query only teachers that specifically set discoverability to true', async () => {
+			const { school, role } = setup();
 
-				await service.findPublicTeachersBySchool(school.id);
+			await service.findPublicTeachersBySchool(school.id);
 
-				expect(userDoRepo.find).toHaveBeenCalledWith({ schoolId: school.id, roleId: role.id }, undefined);
-			});
-		});
-
-		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-out"', () => {
-			it('should query teachers that did not specifically set discoverability to false', async () => {
-				const { school, role } = setup();
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_OUT;
-
-				await service.findPublicTeachersBySchool(school.id);
-
-				expect(userDoRepo.find).toHaveBeenCalledWith(
-					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.NOT_FALSE },
-					undefined
-				);
-			});
-		});
-
-		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "opt-in"', () => {
-			it('should query only teachers that specifically set discoverability to true', async () => {
-				const { school, role } = setup();
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
-
-				await service.findPublicTeachersBySchool(school.id);
-
-				expect(userDoRepo.find).toHaveBeenCalledWith(
-					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.TRUE },
-					undefined
-				);
-			});
-		});
-
-		describe('when TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION is set to "disabled"', () => {
-			it('should return empty result', async () => {
-				const { school } = setup();
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.DISABLED;
-
-				const result = await service.findPublicTeachersBySchool(school.id);
-
-				expect(result).toEqual(expect.objectContaining({ data: [], total: 0 }));
-			});
+			expect(userDoRepo.find).toHaveBeenCalledWith(
+				{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.TRUE },
+				undefined
+			);
 		});
 	});
 

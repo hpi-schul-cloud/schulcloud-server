@@ -3,8 +3,6 @@ import { FeathersAuthorizationService } from '@modules/authorization';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { TeamEntity } from '@modules/team/repo';
-import { teamFactory } from '@modules/team/testing';
 import { type User } from '@modules/user/repo';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -17,7 +15,6 @@ import { News } from '../../repo';
 import { CreateNewsParams, type NewsListResponse, type NewsResponse, type UpdateNewsParams } from '../dto';
 
 const newsApiRoute = '/news';
-const teamsApiRoute = '/team';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;
@@ -25,18 +22,13 @@ describe('News Controller (API)', () => {
 
 	const courseTargetId = new ObjectId().toHexString();
 	const unpublishedCourseTargetId = new ObjectId().toHexString();
-	const teamTargetId = new ObjectId().toHexString();
+	const course2TargetId = new ObjectId().toHexString();
 	const targets = [
 		{
 			targetModel: NewsTargetModel.Course,
-			targetIds: [courseTargetId, unpublishedCourseTargetId],
-		},
-		{
-			targetModel: NewsTargetModel.Team,
-			targetIds: [teamTargetId],
+			targetIds: [courseTargetId, unpublishedCourseTargetId, course2TargetId],
 		},
 	];
-	const emptyPaginationResponse: NewsListResponse = { data: [], total: 0 };
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -60,7 +52,6 @@ describe('News Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(TeamEntity, {});
 		await em.nativeDelete(CourseEntity, {});
 		await em.nativeDelete(News, {});
 	});
@@ -94,13 +85,6 @@ describe('News Controller (API)', () => {
 		course.id = id;
 		await em.persist(course).flush();
 		return course;
-	};
-
-	const createTeamTarget = async (id: EntityId) => {
-		const team = teamFactory.build();
-		team.id = id;
-		await em.persist(team).flush();
-		return team;
 	};
 
 	describe('GET /news', () => {
@@ -233,55 +217,6 @@ describe('News Controller (API)', () => {
 				const { news } = await setup();
 
 				await new TestApiClientBuilder(app, newsApiRoute).build().get(`${news._id.toHexString()}`).expect(401);
-			});
-		});
-	});
-
-	describe('GET /team/{teamId}/news', () => {
-		describe('when user is authenticated', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await createTeamTarget(teamTargetId);
-				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
-
-				await em.persist([studentAccount, studentUser]).flush();
-
-				const loggedInClient = await new TestApiClientBuilder(app, teamsApiRoute).build(studentAccount);
-
-				return { loggedInClient, news };
-			};
-
-			it('should get team-news by id', async () => {
-				const { loggedInClient, news } = await setup();
-
-				const response = await loggedInClient.get(`${teamTargetId}/news`).expect(200);
-
-				const body = response.body as NewsListResponse;
-				expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
-			});
-
-			it('should not throw if a team was not found', async () => {
-				const { loggedInClient } = await setup();
-
-				const randomId = new ObjectId().toHexString();
-				await loggedInClient.get(`${randomId}/news`).expect(200).expect(emptyPaginationResponse);
-			});
-		});
-
-		describe('when user is not authenticated', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
-
-				await em.persist([studentAccount, studentUser]).flush();
-
-				return { news };
-			};
-
-			it('should return 401 status', async () => {
-				await setup();
-
-				await new TestApiClientBuilder(app, teamsApiRoute).build().get(`${teamTargetId}/news`).expect(401);
 			});
 		});
 	});

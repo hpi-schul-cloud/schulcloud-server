@@ -2,7 +2,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
-import { ExternalTool, ExternalToolService, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool';
+import { ExternalTool, ExternalToolService, Lti11ToolConfig } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
 import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import {
@@ -11,7 +11,6 @@ import {
 	CustomParameterType,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	TokenEndpointAuthMethod,
 	ToolContextType,
 } from '@modules/tool/common/enum';
 import { Inject, Injectable } from '@nestjs/common';
@@ -30,41 +29,13 @@ export class ExternalToolsSeedDataService {
 	public async import(): Promise<number> {
 		const externalTools: ExternalTool[] = [];
 
-		const nextcloudName: string | undefined = this.config.nextcloudSocialloginOidcInternalName;
 		const {
 			ctlSeedBiloLtiKey: biloLtiKey,
 			ctlSeedBiloLtiSecret: biloLtiSecret,
 			ctlSeedSecretOnlineDiaDeutsch: onlineDiaDeutschSecret,
 			ctlSeedSecretOnlineDiaMathe: onlineDiaMatheSecret,
 			ctlSeedSecretMerlin: merlinSecret,
-			nextcloudBaseUrl,
-			nextcloudClientId,
-			nextcloudClientSecret,
-			nextcloudScopes,
 		} = this.config;
-		if (nextcloudBaseUrl && nextcloudClientId && nextcloudClientSecret) {
-			externalTools.push(
-				new ExternalTool({
-					id: '65f958bdd8b35469f14032b1',
-					name: nextcloudName || 'SchulcloudNextcloud',
-					config: new Oauth2ToolConfig({
-						baseUrl: nextcloudBaseUrl,
-						clientId: nextcloudClientId,
-						clientSecret: nextcloudClientSecret,
-						skipConsent: true,
-						scope: nextcloudScopes || 'openid offline profile email groups',
-						redirectUris: [`${nextcloudBaseUrl}/apps/user_oidc/code`],
-						frontchannelLogoutUri: `${nextcloudBaseUrl}/apps/schulcloud/logout`,
-						tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
-					}),
-					openNewTab: true,
-					isHidden: true,
-					isDeactivated: false,
-					isPreferred: false,
-				})
-			);
-		}
-
 		if (biloLtiKey && biloLtiSecret) {
 			externalTools.push(
 				new ExternalTool({

@@ -18,7 +18,6 @@
 	"HYDRA_URI": "http://hydra:9000",
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
-	"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": "opt-in",
 	"TEACHER_STUDENT_VISIBILITY": {
 		"IS_CONFIGURABLE": false,
 		"IS_ENABLED_BY_DEFAULT": true,
