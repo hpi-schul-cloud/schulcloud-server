@@ -4,7 +4,7 @@
 
 Accepted (2026-11-24)
 
-The rule about the session Valkey is superseded by [0011](0011-worker-creates-a-short-lived-jwt-for-the-user.md) (2026-11-25).
+The rule about the session Valkey is superseded by [0011](0011-worker-creates-a-short-lived-jwt-for-the-user.md) (2026-11-25). The worker can then reach the session Valkey, so the check of the host in the code must reject it also.
 
 ## Context
 
