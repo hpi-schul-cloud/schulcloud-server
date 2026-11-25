@@ -383,6 +383,24 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(info).not.to.have.property(Symbol.for('splat'));
 	});
 
+	it('should mask a config secret in a key of the entry', () => {
+		// A secret without a sensitive word, otherwise the value would be redacted by the key name as well.
+		const keySecret = 'plainkeyvalue99';
+		SecretRegistry.register(keySecret);
+
+		const output = getProductionFormat().transform({
+			level: 'info',
+			message: 'keys',
+			[keySecret]: 1,
+			nested: { [keySecret]: 2 },
+		})[MESSAGE];
+
+		const line = JSON.parse(output);
+		expect(output).not.to.include(keySecret);
+		expect(line['***']).to.equal(1);
+		expect(line.nested).to.eql({ '***': 2 });
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE

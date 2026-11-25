@@ -183,7 +183,8 @@ const redactSensitiveFields = format((info) => {
 	// a summary without its request config, and an own toJSON would be called by the serializer.
 	const result = createBaseEntry(info);
 	for (const [key, value] of Object.entries(redacted)) {
-		defineValue(result, key, value);
+		// Keys inside the fields are masked by maskSecretsInFields, the keys of the entry itself here.
+		defineValue(result, maskSecretsInText(key), value);
 	}
 
 	return result;
