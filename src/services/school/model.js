@@ -83,12 +83,6 @@ const schoolSchema = new Schema(
 			default: defaultFeatures,
 			enum: Object.values(SCHOOL_FEATURES),
 		},
-		/**
-		 * depending on system settings,
-		 * an admin may opt-in or -out,
-		 * default=null dependent on STUDENT_TEAM_CREATION
-		 */
-		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		inUserMigration: { type: Boolean },
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },

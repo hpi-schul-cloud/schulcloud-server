@@ -137,18 +137,6 @@
 			},
 			"default": {}
 		},
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
-			"type": "string",
-			"default": "disabled",
-			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
-			"description": "defines whether external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
-		},
-		"STUDENT_TEAM_CREATION": {
-			"type": "string",
-			"default": "opt-out",
-			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
-			"description": "defines whether students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
-		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
 			"default": 86400,
@@ -448,10 +436,6 @@
 			"type:": "string",
 			"default": "http://hydra.localhost:9000",
 			"description": "Internal Hydra URI"
-		},
-		"COLLABORATIVE_STORAGE_PROVIDER": {
-			"type:": "string",
-			"description": "Selects the storage provider strategy for the collaborative storage"
 		},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",

@@ -287,25 +287,8 @@ exports.mapPaginationQuery = (context) => {
 	return Promise.resolve(context);
 };
 
-exports.checkCorrectCourseOrTeamId = async (context) => {
-	const { courseId, courseGroupId, teamId } = context.data || {};
-
-	if (teamId) {
-		const userId = context.params.account.userId.toString();
-		const query = {
-			userIds: {
-				$elemMatch: { userId },
-			},
-			$select: ['_id'],
-		};
-
-		const team = await context.app.service('teams').get(teamId, { query });
-
-		if (team === null) {
-			throw new Forbidden("The entered team doesn't belong to you!");
-		}
-		return context;
-	}
+exports.checkCorrectCourseId = async (context) => {
+	const { courseId, courseGroupId } = context.data || {};
 
 	if (courseGroupId || courseId) {
 		const userId = context.params.account.userId.toString();
@@ -545,21 +528,6 @@ exports.denyIfNotCurrentSchoolOrEmpty =
 			return context;
 		}
 		return this.denyIfNotCurrentSchool(errorMessage)(context);
-	};
-
-exports.denyIfStudentTeamCreationNotAllowed =
-	({ errorMessage = 'The current user is not allowed to list other users!' }) =>
-	async (context) => {
-		const currentUser = await getUser(context);
-		if (!testIfRoleNameExist(currentUser, 'student')) {
-			return context;
-		}
-		const currentUserSchoolId = currentUser.schoolId;
-		const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
-		if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
-			throw new Forbidden(errorMessage);
-		}
-		return context;
 	};
 
 function validatedAttachments(attachments) {

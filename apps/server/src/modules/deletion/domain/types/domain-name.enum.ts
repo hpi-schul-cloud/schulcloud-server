@@ -13,7 +13,6 @@ export enum DomainName {
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',
 	TASK = 'task',
-	TEAMS = 'teams',
 	USER = 'user',
 	SUBMISSIONS = 'submissions',
 	NEWS = 'news',

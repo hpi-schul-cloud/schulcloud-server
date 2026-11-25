@@ -178,9 +178,7 @@ describe('School Controller (API)', () => {
 					},
 					features: [],
 					systemIds: systems.map((system) => system.id),
-					// TODO: The feature isTeamCreationByStudentsEnabled is set based on the config value STUDENT_TEAM_CREATION.
-					// We need to discuss how to go about the config in API tests!
-					instanceFeatures: ['isTeamCreationByStudentsEnabled'],
+					instanceFeatures: [],
 				};
 
 				const loggedInClient = await testApiClient.login(studentAccount);

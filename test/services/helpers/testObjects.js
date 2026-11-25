@@ -35,7 +35,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		registrationPins,
 		storageProviders,
 		submissions,
-		teams,
 		testSystem,
 		users,
 		importUsers,
@@ -53,7 +52,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 				classes,
 				courses,
 				courseGroups,
-				teams,
 				registrationPins,
 				roles,
 				schools,
@@ -95,7 +93,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 			schools: schools.info,
 			storageProviders: storageProviders.info,
 			submissions: submissions.info(),
-			teams: teams.info,
 			tempPins: users.tempPinIds,
 			testSystem: testSystem.info,
 			users: users.info,
@@ -103,12 +100,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 			importUsers: importUsers.info,
 			roles: roles.info(),
 		};
-	};
-
-	const createTestTeamWithOwner = async (userData) => {
-		const user = await users.create(userData);
-		const team = await teams.create(user);
-		return { team, user };
 	};
 
 	const setupUser = async (userData) => {
@@ -154,13 +145,11 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		createTestUser: users.create,
 		createTestYear: years.create,
 		createTestImportUser: importUsers.create,
-		createTestTeamWithOwner,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		generateJWTFromUser: login.generateJWTFromUser,
 		lessons,
-		teams,
 		files,
 		classes,
 		schools,

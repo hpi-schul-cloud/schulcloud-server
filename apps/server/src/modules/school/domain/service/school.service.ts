@@ -3,7 +3,6 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
-import { SCHOOL_CONFIG_TOKEN, SchoolConfig, StudentTeamCreationOption } from '../../school.config';
 import { School, SchoolProps, SchoolYear, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
 import { SchoolFactory } from '../factory';
@@ -14,27 +13,22 @@ import {
 	SystemNotFoundLoggableException,
 } from '../loggable';
 import { SchoolQuery } from '../query';
-import { InstanceFeature } from '../type';
 
 @Injectable()
 export class SchoolService {
 	constructor(
 		@Inject(SCHOOL_REPO) private readonly schoolRepo: SchoolRepo,
-		private readonly systemService: SystemService,
-		@Inject(SCHOOL_CONFIG_TOKEN) private readonly config: SchoolConfig
+		private readonly systemService: SystemService
 	) {}
 
 	public async getSchoolById(schoolId: EntityId): Promise<School> {
-		let school = await this.schoolRepo.getSchoolById(schoolId);
-
-		school = this.addInstanceFeatures(school);
+		const school = await this.schoolRepo.getSchoolById(schoolId);
 
 		return school;
 	}
 
 	public async getSchoolsByIds(schoolIds: EntityId[]): Promise<School[]> {
-		const entities = await this.schoolRepo.getSchoolsByIds(schoolIds);
-		const schools = entities.map((entity) => this.addInstanceFeatures(entity));
+		const schools = await this.schoolRepo.getSchoolsByIds(schoolIds);
 
 		return schools;
 	}
@@ -46,9 +40,7 @@ export class SchoolService {
 	}
 
 	public async getSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
-		let schools = await this.schoolRepo.getSchools(query, options);
-
-		schools = schools.map((school) => this.addInstanceFeatures(school));
+		const schools = await this.schoolRepo.getSchools(query, options);
 
 		return schools;
 	}
@@ -80,9 +72,7 @@ export class SchoolService {
 	): Promise<{ schools: School[]; count: number }> {
 		const result = await this.schoolRepo.getSchoolList(options, federalStateId);
 
-		const schools = result.schools.map((school) => this.addInstanceFeatures(school));
-
-		return { schools, count: result.count };
+		return result;
 	}
 
 	public async getCurrentYear(schoolId: EntityId): Promise<SchoolYear | undefined> {
@@ -138,8 +128,7 @@ export class SchoolService {
 	public async updateSchool(school: School, body: SchoolUpdateBody): Promise<School> {
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
 
-		let updatedSchool = await this.schoolRepo.save(fullSchoolObject);
-		updatedSchool = this.addInstanceFeatures(updatedSchool);
+		const updatedSchool = await this.schoolRepo.save(fullSchoolObject);
 
 		return updatedSchool;
 	}
@@ -211,29 +200,6 @@ export class SchoolService {
 				schoolForLdapLoginProps.systems.push(systemForLdapLogin);
 			}
 		});
-	}
-
-	// TODO: The logic for setting this feature should better be part of the creation of a school object.
-	// But it has to be discussed, how to implement that. Thus we leave the logic here for now.
-	private addInstanceFeatures(school: School): School {
-		if (this.canStudentCreateTeam(school)) {
-			school.addInstanceFeature(InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
-		}
-
-		return school;
-	}
-
-	private canStudentCreateTeam(school: School): boolean {
-		const configValue = this.config.studentTeamCreation;
-		const { enableStudentTeamCreation } = school.getProps();
-
-		return (
-			configValue === StudentTeamCreationOption.ENABLED ||
-			(configValue === StudentTeamCreationOption.OPT_IN && enableStudentTeamCreation) ||
-			// It is necessary to check enableStudentTeamCreation to be not false here,
-			// because it being undefined means that the school has not opted out yet.
-			(configValue === StudentTeamCreationOption.OPT_OUT && enableStudentTeamCreation !== false)
-		);
 	}
 
 	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {

@@ -1,10 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { disallow } = require('feathers-hooks-common');
 
 const { Forbidden } = require('../../../errors');
 const globalHooks = require('../../../hooks');
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const restrictToTeachersWithTeams = async (hook) => {
 	const permited = await globalHooks.hasRole(hook, hook.params.account.userId, 'teacher');
@@ -31,28 +29,8 @@ const filterForPublicTeacher = (hook) => {
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
 
-	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get(
-		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
-	);
-	switch (TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION) {
-		case 'opt-in':
-			// own school and other schools if opted-in
-			hook.params.query.$or = [{ schoolId: hook.params.account.schoolId }, { discoverable: true }];
-			break;
-		case 'opt-out':
-			// everybody who did not opt-out or from same school
-			hook.params.query.discoverable = { $ne: false }; // must not be false (but true or undefined/null)
-			break;
-		case 'disabled':
-			// force foreign school id to be set
-			if (equalIds(hook.params.account.schoolId, hook.params.query.schoolId) !== true) {
-				throw new Forbidden('access to foreign school teachers prohibited');
-			}
-			break;
-		default:
-			// 'enabled'
-			break;
-	}
+	// own school and other schools if opted-in
+	hook.params.query.$or = [{ schoolId: hook.params.account.schoolId }, { discoverable: true }];
 
 	return Promise.resolve(hook);
 };

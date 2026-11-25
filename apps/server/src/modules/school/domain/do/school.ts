@@ -2,13 +2,7 @@ import { ValidationError } from '@shared/common/error';
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { type LanguageType } from '@shared/domain/interface';
 import { type EntityId } from '@shared/domain/types';
-import {
-	type FileStorageType,
-	type InstanceFeature,
-	type SchoolFeature,
-	type SchoolPermissions,
-	SchoolPurpose,
-} from '../type';
+import { type FileStorageType, type SchoolFeature, type SchoolPermissions, SchoolPurpose } from '../type';
 import { type County } from './county';
 import { type FederalState } from './federal-state';
 import { type SchoolYear } from './school-year';
@@ -91,19 +85,6 @@ export class School extends DomainObject<SchoolProps> {
 		return permissions;
 	}
 
-	public addInstanceFeature(feature: InstanceFeature): void {
-		if (!this.props.instanceFeatures) {
-			this.props.instanceFeatures = new Set();
-		}
-		this.props.instanceFeatures.add(feature);
-	}
-
-	public removeInstanceFeature(feature: InstanceFeature): void {
-		if (this.props.instanceFeatures) {
-			this.props.instanceFeatures.delete(feature);
-		}
-	}
-
 	public updateCounty(countyId: EntityId): void {
 		const { county, federalState } = this.props;
 
@@ -181,16 +162,11 @@ export interface SchoolProps extends AuthorizableObject {
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;
-	instanceFeatures?: Set<InstanceFeature>;
 	systemIds: EntityId[];
 	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;
 	language?: LanguageType;
 	timezone?: string;
 	permissions?: SchoolPermissions;
-	// The enableStudentTeamCreation property is for compatibility with the existing data.
-	// It can't be mapped to a feature straight-forwardly,
-	// because the config value STUDENT_TEAM_CREATION has to be taken into account.
-	enableStudentTeamCreation?: boolean;
 	ldapLastSync?: string;
 }

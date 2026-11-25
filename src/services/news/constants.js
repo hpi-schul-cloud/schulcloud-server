@@ -5,5 +5,5 @@ module.exports = {
 		CREATE: 'NEWS_CREATE',
 		REMOVE: 'NEWS_CREATE',
 	},
-	targetModels: ['courses', 'teams', 'class', 'schools'],
+	targetModels: ['courses', 'class', 'schools'],
 };

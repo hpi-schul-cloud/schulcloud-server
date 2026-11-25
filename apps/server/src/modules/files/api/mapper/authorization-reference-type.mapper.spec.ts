@@ -20,14 +20,6 @@ describe('AuthorizationReferenceTypeMapper', () => {
 			});
 		});
 
-		describe('when mapping FileOwnerModel.TEAMS', () => {
-			it('should return AuthorizationBodyParamsReferenceType.TEAMS', () => {
-				const result = AuthorizationReferenceTypeMapper.mapOwnerTypeToReferenceType(FileOwnerModel.TEAMS);
-
-				expect(result).toBe(AuthorizationBodyParamsReferenceType.TEAMS);
-			});
-		});
-
 		describe('when mapping unknown FileOwnerModel', () => {
 			it('should throw an error', () => {
 				const unknownOwnerType = 'UNKNOWN' as FileOwnerModel;

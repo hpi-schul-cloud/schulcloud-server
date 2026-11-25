@@ -74,7 +74,6 @@ export class DeletionExecutionService {
 			[ModuleName.PSEUDONYM]: DomainName.PSEUDONYMS,
 			[ModuleName.TASK]: DomainName.TASK,
 			[ModuleName.TASK_SUBMISSION]: DomainName.SUBMISSIONS,
-			[ModuleName.TEAM]: DomainName.TEAMS,
 			[ModuleName.USER]: DomainName.USER,
 			[ModuleName.USER_CALENDAR]: DomainName.CALENDAR,
 			[ModuleName.USER_REGISTRATIONPIN]: DomainName.REGISTRATIONPIN,

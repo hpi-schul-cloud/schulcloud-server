@@ -1,6 +1,5 @@
 const assert = require('assert');
 const chai = require('chai');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
@@ -80,7 +79,6 @@ describe('school service', () => {
 				'name',
 				'id',
 				'years',
-				'isTeamCreationByStudentsEnabled',
 				'fileStorageType',
 				'documentBaseDir',
 				'inMaintenance',
@@ -99,7 +97,6 @@ describe('school service', () => {
 			const result = await schoolService.find({ query: { $sort: { _id: 1 } } });
 			result.data.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
-				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
 			});
 		});
 
@@ -110,7 +107,6 @@ describe('school service', () => {
 			});
 			result.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
-				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
 			});
 		});
 
@@ -350,69 +346,6 @@ describe('school service', () => {
 			expect(result.features).to.include('videoconference');
 		});
 
-		it('team creation by students should be updated according to environment setting without admin setting', async () => {
-			const school = await testObjects.createTestSchool({});
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-			let result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-		});
-
-		it('team creation by students should be updated according to environment setting and enabled by admin', async () => {
-			// school with enabled student team creation by admin
-			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: true });
-			expect(school.enableStudentTeamCreation).to.be.true;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-			let result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-		});
-
-		it('team creation by students should be updated according to environment setting and disabled by admin', async () => {
-			// school with enabled student team creation by admin
-			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: false });
-			expect(school.enableStudentTeamCreation).to.be.false;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-			let result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-		});
 		it('should fail to update officialSchoolNumber with wrong format', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({

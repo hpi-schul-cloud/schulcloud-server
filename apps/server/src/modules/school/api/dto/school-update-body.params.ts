@@ -76,9 +76,4 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsOptional()
 	@ApiPropertyOptional()
 	countyId?: EntityId;
-
-	@IsBoolean()
-	@IsOptional()
-	@ApiPropertyOptional()
-	enableStudentTeamCreation?: boolean;
 }

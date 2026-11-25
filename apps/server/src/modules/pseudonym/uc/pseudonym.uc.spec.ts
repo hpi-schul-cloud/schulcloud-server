@@ -2,8 +2,6 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { InstanceFeature, SchoolService } from '@modules/school';
-import { schoolFactory } from '@modules/school/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -23,7 +21,6 @@ describe('PseudonymUc', () => {
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
-	let schoolDomainService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -43,10 +40,6 @@ describe('PseudonymUc', () => {
 					provide: LegacySchoolService,
 					useValue: createMock<LegacySchoolService>(),
 				},
-				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
 			],
 		}).compile();
 
@@ -54,7 +47,6 @@ describe('PseudonymUc', () => {
 		pseudonymService = module.get(PseudonymService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(LegacySchoolService);
-		schoolDomainService = module.get(SchoolService);
 	});
 
 	beforeEach(() => {
@@ -191,18 +183,8 @@ describe('PseudonymUc', () => {
 			await expect(uc.resolveNameForUser(requestingUser.id, 'pseudonym')).resolves.toBe('Ada Lovelace');
 		});
 
-		it('keeps the legacy restriction on students listing users', async () => {
+		it('returns the authorized user name for students', async () => {
 			const { requestingUser } = setup(true);
-			schoolDomainService.getSchoolById.mockResolvedValue(schoolFactory.build());
-
-			await expect(uc.resolveNameForUser(requestingUser.id, 'pseudonym')).rejects.toThrow(ForbiddenException);
-		});
-
-		it('allows students when student team creation is enabled', async () => {
-			const { requestingUser } = setup(true);
-			schoolDomainService.getSchoolById.mockResolvedValue(
-				schoolFactory.build({ instanceFeatures: new Set([InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED]) })
-			);
 
 			await expect(uc.resolveNameForUser(requestingUser.id, 'pseudonym')).resolves.toBe('Ada Lovelace');
 		});
