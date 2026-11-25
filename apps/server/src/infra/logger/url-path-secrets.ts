@@ -75,9 +75,11 @@ const toPathPattern = (route: SecretPathRoute): RegExp => {
 		? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/${secretStop}]|$))`
 		: '';
 	const secret = route.spansSlashes ? `[^${secretStop}]+` : `[^/${secretStop}]+`;
+	// A value starting with ":" is a route template (e.g. "Mapped {/api/v3/sharetoken/:token, GET} route" at startup).
+	const notTemplate = '(?!:)';
 
 	// Express routes are case-insensitive, so /ShareToken/abc reaches the same handler.
-	return new RegExp(`(${URL_START}${MOUNT_PREFIX}/+${prefix}/+)${notSecret}${secret}`, 'gi');
+	return new RegExp(`(${URL_START}${MOUNT_PREFIX}/+${prefix}/+)${notTemplate}${notSecret}${secret}`, 'gi');
 };
 
 const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPathPattern);

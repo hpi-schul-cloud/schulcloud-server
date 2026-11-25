@@ -162,6 +162,10 @@ describe('url-path-secrets', () => {
 			'see sharetoken/abc',
 			'/rooms?page=2&limit=10',
 			'a & b=c',
+			'Mapped {/api/v3/sharetoken/:token, GET} route',
+			'Mapped {/api/v3/sharetoken/:token/import, POST} route',
+			'Mapped {/api/v3/authorization/resolve-token/:token/ttl/:tokenTtlInSeconds, GET} route',
+			'Mapped {/api/v3/room-invitation-links/:roomInvitationLinkId, PUT} route',
 		])('should not change %s', (text) => {
 			expect(redactSecretsInText(text)).toBe(text);
 		});
