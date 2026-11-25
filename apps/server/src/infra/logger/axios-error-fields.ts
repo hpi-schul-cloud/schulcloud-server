@@ -14,12 +14,8 @@ export interface AxiosErrorFields {
 const isSensitiveQueryParamName = (name: string): boolean => {
 	const lower = name.toLowerCase();
 
-	return (
-		isSensitiveName(lower) ||
-		lower.includes('signature') ||
-		lower.includes('credential') ||
-		lower.includes('awsaccesskeyid')
-	);
+	// The original name, not lower: the pin rule splits camelCase words (userPin, pinCode).
+	return isSensitiveName(name) || lower.includes('signature') || lower.includes('awsaccesskeyid');
 };
 
 // A loop instead of a regular expression: /\/+$/ backtracks on input with many slashes (polynomial runtime).

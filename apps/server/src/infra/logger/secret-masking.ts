@@ -4,7 +4,7 @@ import { summarizeOpaqueLogValue } from './opaque-log-value';
 
 const MASK = '***';
 // The scheme is case-insensitive (RFC 7617), so basic and BASIC are decoded as well.
-const BASIC_AUTH = /\b(Basic)\s+([A-Za-z0-9+/]+={0,2})/gi;
+const BASIC_AUTH = /\b(Basic)\s+([A-Z0-9+/]+={0,2})/gi;
 
 let cachedVersion = -1;
 let cachedPattern: RegExp | undefined;
