@@ -128,8 +128,7 @@ export class BoardImportJobProcessService {
 
 	private getRemainingTimeInMs(job: BoardImportJob, now: Date): number {
 		const maxDurationInMs = this.config.jobMaxDurationInMinutes * MILLISECONDS_PER_MINUTE;
-		const startedAt = job.startedAt ?? now;
-		const remainingTimeInMs = startedAt.getTime() + maxDurationInMs - now.getTime();
+		const remainingTimeInMs = job.getDeadline(maxDurationInMs, now).getTime() - now.getTime();
 
 		return remainingTimeInMs;
 	}
@@ -141,10 +140,8 @@ export class BoardImportJobProcessService {
 			timer = setTimeout(() => resolve(false), timeLimitInMs);
 		});
 
-		const deadline = new Date(Date.now() + timeLimitInMs);
-
 		try {
-			const run = this.boardImportRunnerService.run(job, abortController.signal, deadline).then(() => true);
+			const run = this.boardImportRunnerService.run(job, abortController.signal).then(() => true);
 			const isInTime = await Promise.race([run, timeLimit]);
 
 			return isInTime;

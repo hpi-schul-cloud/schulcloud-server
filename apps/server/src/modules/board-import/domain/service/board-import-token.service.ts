@@ -4,12 +4,14 @@ import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { Logger } from '@infra/logger';
 import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { type BoardImportJob } from '../do';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason } from '../type';
 
 const MILLISECONDS_PER_SECOND = 1000;
+const MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND;
 // A request that starts just before the deadline of the job must still be valid when the API checks it.
 const LIFETIME_MARGIN_IN_SECONDS = 60;
 // Makes the whitelist entries of the worker distinguishable from the sessions of users. See ADR 0011.
@@ -18,6 +20,7 @@ const TOKEN_ID_PREFIX = 'import_';
 @Injectable()
 export class BoardImportTokenService {
 	constructor(
+		@Inject(BOARD_IMPORT_CONFIG_TOKEN) private readonly config: BoardImportConfig,
 		private readonly userService: UserService,
 		private readonly accountService: AccountService,
 		private readonly jwtIssuerService: JwtIssuerService,
@@ -25,8 +28,7 @@ export class BoardImportTokenService {
 		private readonly logger: Logger
 	) {}
 
-	// The deadline is the time at which the job reaches its maximum duration.
-	public async createToken(job: BoardImportJob, deadline: Date): Promise<string> {
+	public async createToken(job: BoardImportJob): Promise<string> {
 		const [user, account] = await Promise.all([
 			this.userService.findByIdOrNull(job.userId),
 			this.accountService.findByUserId(job.userId),
@@ -51,7 +53,10 @@ export class BoardImportTokenService {
 			.withExternalSystem(account.systemId)
 			.build();
 		const payload = new JwtPayloadBuilder(currentUser).build();
-		const remainingInSeconds = Math.ceil((deadline.getTime() - Date.now()) / MILLISECONDS_PER_SECOND);
+		const now = new Date();
+		const maxDurationInMs = this.config.jobMaxDurationInMinutes * MILLISECONDS_PER_MINUTE;
+		const deadline = job.getDeadline(maxDurationInMs, now);
+		const remainingInSeconds = Math.ceil((deadline.getTime() - now.getTime()) / MILLISECONDS_PER_SECOND);
 		const lifetimeInSeconds = Math.max(remainingInSeconds, 0) + LIFETIME_MARGIN_IN_SECONDS;
 
 		const token = await this.jwtIssuerService.generateJwtAndAddToWhitelist(payload, lifetimeInSeconds, TOKEN_ID_PREFIX);

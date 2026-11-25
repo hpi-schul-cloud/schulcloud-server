@@ -12,7 +12,6 @@ export class BoardImportUserSession {
 	constructor(
 		private readonly job: BoardImportJob,
 		private readonly signal: AbortSignal,
-		private readonly deadline: Date,
 		private readonly boardImportTokenService: BoardImportTokenService
 	) {}
 
@@ -52,7 +51,7 @@ export class BoardImportUserSession {
 
 	private async send<T>(request: (token: string) => Promise<T>): Promise<T> {
 		this.signal.throwIfAborted();
-		this.token ??= await this.boardImportTokenService.createToken(this.job, this.deadline);
+		this.token ??= await this.boardImportTokenService.createToken(this.job);
 
 		const result = await request(this.token);
 

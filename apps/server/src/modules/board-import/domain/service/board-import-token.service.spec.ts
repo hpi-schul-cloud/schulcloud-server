@@ -11,6 +11,7 @@ import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import jwt from 'jsonwebtoken';
+import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { boardImportJobFactory } from '../../testing';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason } from '../type';
@@ -24,11 +25,13 @@ describe(BoardImportTokenService.name, () => {
 	let jwtIssuerService: DeepMocked<JwtIssuerService>;
 	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let logger: DeepMocked<Logger>;
+	let config: BoardImportConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardImportTokenService,
+				{ provide: BOARD_IMPORT_CONFIG_TOKEN, useValue: new BoardImportConfig() },
 				{ provide: UserService, useValue: createMock<UserService>() },
 				{ provide: AccountService, useValue: createMock<AccountService>() },
 				{ provide: JwtIssuerService, useValue: createMock<JwtIssuerService>() },
@@ -43,6 +46,7 @@ describe(BoardImportTokenService.name, () => {
 		jwtIssuerService = module.get(JwtIssuerService);
 		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 		logger = module.get(Logger);
+		config = module.get(BOARD_IMPORT_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -61,11 +65,12 @@ describe(BoardImportTokenService.name, () => {
 				jest.useFakeTimers({ now });
 
 				const remainingInSeconds = 15 * 60;
-				const deadline = new Date(now.getTime() + remainingInSeconds * 1000);
+				const maxDurationInSeconds = config.jobMaxDurationInMinutes * 60;
+				const startedAt = new Date(now.getTime() - (maxDurationInSeconds - remainingInSeconds) * 1000);
 				const role = { id: new ObjectId().toHexString(), name: RoleName.TEACHER };
 				const user = userDoFactory.withRoles([role]).buildWithId();
 				const account = accountDoFactory.build({ userId: user.id, systemId: new ObjectId().toHexString() });
-				const job = boardImportJobFactory.build({ userId: user.id });
+				const job = boardImportJobFactory.build({ userId: user.id, startedAt });
 				const token = 'token';
 				const payload = {
 					accountId: account.id,
@@ -86,13 +91,13 @@ describe(BoardImportTokenService.name, () => {
 				accountService.findByUserId.mockResolvedValueOnce(account);
 				jwtIssuerService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(token);
 
-				return { job, deadline, token, payload, lifetimeInSeconds, logEntry };
+				return { job, token, payload, lifetimeInSeconds, logEntry };
 			};
 
 			it('should create a token for the user that expires after the deadline of the job', async () => {
-				const { job, deadline, payload, lifetimeInSeconds } = setup();
+				const { job, payload, lifetimeInSeconds } = setup();
 
-				await service.createToken(job, deadline);
+				await service.createToken(job);
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
 					payload,
@@ -102,17 +107,17 @@ describe(BoardImportTokenService.name, () => {
 			});
 
 			it('should return the token', async () => {
-				const { job, deadline, token } = setup();
+				const { job, token } = setup();
 
-				const result = await service.createToken(job, deadline);
+				const result = await service.createToken(job);
 
 				expect(result).toEqual(token);
 			});
 
 			it('should log the job and the user', async () => {
-				const { job, deadline, logEntry } = setup();
+				const { job, logEntry } = setup();
 
-				await service.createToken(job, deadline);
+				await service.createToken(job);
 
 				expect(logger.info).toHaveBeenCalledWith(...logEntry);
 			});
@@ -130,15 +135,13 @@ describe(BoardImportTokenService.name, () => {
 				accountService.findByUserId.mockResolvedValueOnce(account);
 				jwtIssuerService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(token);
 
-				const deadline = new Date(Date.now() + 60 * 1000);
-
-				return { job, deadline, token };
+				return { job, token };
 			};
 
 			it('should return the token', async () => {
-				const { job, deadline, token } = setup();
+				const { job, token } = setup();
 
-				const result = await service.createToken(job, deadline);
+				const result = await service.createToken(job);
 
 				expect(result).toEqual(token);
 			});
@@ -151,15 +154,13 @@ describe(BoardImportTokenService.name, () => {
 
 				userService.findByIdOrNull.mockResolvedValueOnce(null);
 
-				const deadline = new Date(Date.now() + 60 * 1000);
-
-				return { job, deadline, error };
+				return { job, error };
 			};
 
 			it('should reject the job and create no token', async () => {
-				const { job, deadline, error } = setup();
+				const { job, error } = setup();
 
-				await expect(service.createToken(job, deadline)).rejects.toEqual(error);
+				await expect(service.createToken(job)).rejects.toEqual(error);
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).not.toHaveBeenCalled();
 			});
@@ -174,15 +175,13 @@ describe(BoardImportTokenService.name, () => {
 				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				accountService.findByUserId.mockResolvedValueOnce(null);
 
-				const deadline = new Date(Date.now() + 60 * 1000);
-
-				return { job, deadline, error };
+				return { job, error };
 			};
 
 			it('should reject the job and create no token', async () => {
-				const { job, deadline, error } = setup();
+				const { job, error } = setup();
 
-				await expect(service.createToken(job, deadline)).rejects.toEqual(error);
+				await expect(service.createToken(job)).rejects.toEqual(error);
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).not.toHaveBeenCalled();
 			});
@@ -199,15 +198,13 @@ describe(BoardImportTokenService.name, () => {
 				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				accountService.findByUserId.mockResolvedValueOnce(account);
 
-				const deadline = new Date(Date.now() + 60 * 1000);
-
-				return { job, deadline, error };
+				return { job, error };
 			};
 
 			it('should reject the job and create no token', async () => {
-				const { job, deadline, error } = setup();
+				const { job, error } = setup();
 
-				await expect(service.createToken(job, deadline)).rejects.toEqual(error);
+				await expect(service.createToken(job)).rejects.toEqual(error);
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).not.toHaveBeenCalled();
 			});

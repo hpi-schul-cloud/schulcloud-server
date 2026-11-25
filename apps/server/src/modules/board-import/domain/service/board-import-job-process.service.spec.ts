@@ -75,18 +75,8 @@ describe(BoardImportJobProcessService.name, () => {
 				runner.run.mockResolvedValueOnce();
 				repo.closeAttempt.mockResolvedValueOnce(true);
 
-				const deadline = new Date(now.getTime() + config.jobMaxDurationInMinutes * 60 * 1000);
-
-				return { job, startedJob, now, deadline };
+				return { job, startedJob, now };
 			};
-
-			it('should pass the deadline of the job to the import', async () => {
-				const { job, deadline } = setup();
-
-				await service.process(job.id);
-
-				expect(runner.run.mock.calls[0][2]).toEqual(deadline);
-			});
 
 			it('should start the attempt before the import runs', async () => {
 				const { job, startedJob, now } = setup();
@@ -94,7 +84,7 @@ describe(BoardImportJobProcessService.name, () => {
 				await service.process(job.id);
 
 				expect(repo.startAttempt).toHaveBeenCalledWith(job.id, now);
-				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal), expect.any(Date));
+				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal));
 				expect(repo.startAttempt.mock.invocationCallOrder[0]).toBeLessThan(runner.run.mock.invocationCallOrder[0]);
 			});
 
@@ -158,7 +148,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal), expect.any(Date));
+				expect(runner.run).toHaveBeenCalledWith(startedJob, expect.any(AbortSignal));
 				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
 			});
 		});

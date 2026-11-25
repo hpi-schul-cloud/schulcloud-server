@@ -29,32 +29,31 @@ describe(BoardImportUserSession.name, () => {
 	const setupSession = () => {
 		const job = boardImportJobFactory.build();
 		const abortController = new AbortController();
-		const deadline = new Date(Date.now() + 60 * 1000);
-		const session = new BoardImportUserSession(job, abortController.signal, deadline, tokenService);
+		const session = new BoardImportUserSession(job, abortController.signal, tokenService);
 		const request = jest.fn<Promise<string>, [string]>();
 
-		return { job, deadline, abortController, session, request };
+		return { job, abortController, session, request };
 	};
 
 	describe('call', () => {
 		describe('when the request succeeds', () => {
 			const setup = () => {
-				const { job, deadline, session, request } = setupSession();
+				const { job, session, request } = setupSession();
 				const token = 'token';
 				const response = 'response';
 
 				tokenService.createToken.mockResolvedValueOnce(token);
 				request.mockResolvedValue(response);
 
-				return { job, deadline, session, request, token, response };
+				return { job, session, request, token, response };
 			};
 
 			it('should send the request with a token for the job and return the result', async () => {
-				const { job, deadline, session, request, token, response } = setup();
+				const { job, session, request, token, response } = setup();
 
 				const result = await session.call(request);
 
-				expect(tokenService.createToken).toHaveBeenCalledWith(job, deadline);
+				expect(tokenService.createToken).toHaveBeenCalledWith(job);
 				expect(request).toHaveBeenCalledWith(token);
 				expect(result).toEqual(response);
 			});

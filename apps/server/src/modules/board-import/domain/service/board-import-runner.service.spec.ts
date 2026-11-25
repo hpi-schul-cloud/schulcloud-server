@@ -40,38 +40,37 @@ describe(BoardImportRunnerService.name, () => {
 		const setupRun = () => {
 			const job = boardImportJobFactory.build();
 			const { signal } = new AbortController();
-			const deadline = new Date(Date.now() + 60 * 1000);
 			const token = 'token';
 
 			tokenService.createToken.mockResolvedValueOnce(token);
 
-			return { job, signal, deadline, token };
+			return { job, signal, token };
 		};
 
 		describe('when the board is written', () => {
 			const setup = () => {
-				const { job, signal, deadline, token } = setupRun();
+				const { job, signal, token } = setupRun();
 
 				placeholderBoardService.write.mockImplementationOnce(async (_job, session) => {
 					await session.call(() => Promise.resolve());
 				});
 
-				return { job, signal, deadline, token };
+				return { job, signal, token };
 			};
 
-			it('should write the board of the job with a token that is valid until the deadline', async () => {
-				const { job, signal, deadline } = setup();
+			it('should write the board of the job with a token for the job', async () => {
+				const { job, signal } = setup();
 
-				await service.run(job, signal, deadline);
+				await service.run(job, signal);
 
 				expect(placeholderBoardService.write).toHaveBeenCalledWith(job, expect.anything());
-				expect(tokenService.createToken).toHaveBeenCalledWith(job, deadline);
+				expect(tokenService.createToken).toHaveBeenCalledWith(job);
 			});
 
 			it('should remove the token of the attempt', async () => {
-				const { job, signal, deadline, token } = setup();
+				const { job, signal, token } = setup();
 
-				await service.run(job, signal, deadline);
+				await service.run(job, signal);
 
 				expect(tokenService.removeToken).toHaveBeenCalledWith(job, token);
 			});
@@ -79,20 +78,20 @@ describe(BoardImportRunnerService.name, () => {
 
 		describe('when a request fails', () => {
 			const setup = () => {
-				const { job, signal, deadline, token } = setupRun();
+				const { job, signal, token } = setupRun();
 				const error = new Error('request failed');
 
 				placeholderBoardService.write.mockImplementationOnce(async (_job, session) => {
 					await session.call(() => Promise.reject(error));
 				});
 
-				return { job, signal, deadline, token, error };
+				return { job, signal, token, error };
 			};
 
 			it('should remove the token of the attempt and pass the error', async () => {
-				const { job, signal, deadline, token, error } = setup();
+				const { job, signal, token, error } = setup();
 
-				await expect(service.run(job, signal, deadline)).rejects.toBe(error);
+				await expect(service.run(job, signal)).rejects.toBe(error);
 
 				expect(tokenService.removeToken).toHaveBeenCalledWith(job, token);
 			});

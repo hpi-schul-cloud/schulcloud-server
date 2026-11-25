@@ -53,6 +53,14 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 		return this.props.boardId;
 	}
 
+	// The maximum duration counts from the first start. A job that did not start yet counts from now.
+	public getDeadline(maxDurationInMs: number, now: Date): Date {
+		const startedAt = this.props.startedAt ?? now;
+		const deadline = new Date(startedAt.getTime() + maxDurationInMs);
+
+		return deadline;
+	}
+
 	public isClosed(): boolean {
 		const isClosed =
 			this.props.status === BoardImportJobStatus.FINISHED || this.props.status === BoardImportJobStatus.FAILED;

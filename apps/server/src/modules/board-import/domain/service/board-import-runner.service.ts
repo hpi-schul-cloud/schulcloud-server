@@ -11,9 +11,9 @@ export class BoardImportRunnerService {
 		private readonly boardImportPlaceholderBoardService: BoardImportPlaceholderBoardService
 	) {}
 
-	// The signal aborts when the run ends, also when the job reaches its maximum duration at the deadline.
-	public async run(job: BoardImportJob, signal: AbortSignal, deadline: Date): Promise<void> {
-		const session = new BoardImportUserSession(job, signal, deadline, this.boardImportTokenService);
+	// The signal aborts when the run ends, also when the job reaches its maximum duration.
+	public async run(job: BoardImportJob, signal: AbortSignal): Promise<void> {
+		const session = new BoardImportUserSession(job, signal, this.boardImportTokenService);
 
 		try {
 			await this.boardImportPlaceholderBoardService.write(job, session);
