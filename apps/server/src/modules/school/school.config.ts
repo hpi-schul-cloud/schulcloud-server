@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum StudentTeamCreationOption {
@@ -25,5 +25,6 @@ export class SchoolConfig {
 	@IsOptional()
 	@IsString()
 	@ConfigProperty('S3_KEY')
+	@Secret()
 	public S3_KEY?: string;
 }

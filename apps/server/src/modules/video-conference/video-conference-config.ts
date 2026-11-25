@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsString, IsUrl } from 'class-validator';
 
@@ -24,6 +24,8 @@ export class VideoConferenceConfig extends VideoConferencePublicApiConfig {
 
 	@IsString()
 	@ConfigProperty('VIDEOCONFERENCE_SALT')
+	// The BigBlueButton shared secret: with it, anyone can call the BBB API.
+	@Secret()
 	public videoConferenceSalt = '';
 
 	@IsString()

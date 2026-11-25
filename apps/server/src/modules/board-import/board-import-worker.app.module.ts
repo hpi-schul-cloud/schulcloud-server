@@ -2,18 +2,26 @@ import { CoreModule } from '@core/core.module';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { HealthApiModule, HealthEntities } from '@modules/health';
 import { Module } from '@nestjs/common';
-import { BoardImportModule } from './board-import.module';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { BoardImportWorkerModule } from './board-import-worker.module';
+import { ENTITIES } from './board-import.entity.imports';
+
+const imports = [CoreModule, HealthApiModule, BoardImportWorkerModule];
+const entities = [...ENTITIES, ...HealthEntities];
 
 @Module({
 	imports: [
-		CoreModule,
+		...imports,
 		DatabaseModule.register({
 			configInjectionToken: DATABASE_CONFIG_TOKEN,
 			configConstructor: DatabaseConfig,
-			entities: HealthEntities,
+			entities,
 		}),
-		HealthApiModule,
-		BoardImportModule,
 	],
 })
 export class BoardImportWorkerAppModule {}
+
+@Module({
+	imports: [...imports, MongoMemoryDatabaseModule.forRoot({ entities })],
+})
+export class BoardImportWorkerTestModule {}

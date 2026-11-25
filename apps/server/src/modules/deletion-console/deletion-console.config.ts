@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { IsString, IsUrl } from 'class-validator';
 
 export const DELETION_CONSOLE_CONFIG_TOKEN = 'DELETION_CONSOLE_CONFIG_TOKEN';
@@ -10,6 +10,7 @@ export class DeletionConsoleConfig {
 	public adminApiClientBaseUrl!: string;
 
 	@ConfigProperty('ADMIN_API_CLIENT__API_KEY')
+	@Secret()
 	@IsString()
 	public adminApiClientApiKey!: string;
 }

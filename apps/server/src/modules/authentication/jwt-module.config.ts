@@ -1,4 +1,4 @@
-import { ConfigProperty, Configuration } from '@infra/configuration';
+import { ConfigProperty, Configuration, Secret } from '@infra/configuration';
 import { Transform } from 'class-transformer';
 import { IsString } from 'class-validator';
 import { Algorithm } from 'jsonwebtoken';
@@ -8,6 +8,7 @@ export const JWT_STRATEGY_CONFIG_TOKEN = 'JWT_STRATEGY_CONFIG_TOKEN';
 @Configuration()
 export class JwtModuleConfig {
 	@ConfigProperty('JWT_PRIVATE_KEY')
+	@Secret()
 	@IsString()
 	@Transform(({ value }: { value: string }) => value.replace(/\\n/g, '\n'))
 	public privateKey!: string;
