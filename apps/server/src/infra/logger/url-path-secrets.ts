@@ -1,4 +1,5 @@
-// This file is also required by the legacy Feathers app from dist (src/middleware/errorHandler.js, src/app.js).
+// This file is also required by the legacy Feathers app from dist (src/middleware/errorHandler.js, src/app.js,
+// src/app.hooks.js).
 // Keep it free of path aliases and Nest imports, so it works there without the Nest module system.
 import { isSensitiveName } from './sensitive-value';
 
@@ -75,9 +76,11 @@ const toPathPattern = (route: SecretPathRoute): RegExp => {
 		? `(?!(?:${route.notSecret.map(escapeRegExp).join('|')})(?:[/${secretStop}]|$))`
 		: '';
 	const secret = route.spansSlashes ? `[^${secretStop}]+` : `[^/${secretStop}]+`;
+	// A value starting with ":" is a route template (e.g. "Mapped {/api/v3/sharetoken/:token, GET} route" at startup).
+	const notTemplate = '(?!:)';
 
 	// Express routes are case-insensitive, so /ShareToken/abc reaches the same handler.
-	return new RegExp(`(${URL_START}${MOUNT_PREFIX}/+${prefix}/+)${notSecret}${secret}`, 'gi');
+	return new RegExp(`(${URL_START}${MOUNT_PREFIX}/+${prefix}/+)${notTemplate}${notSecret}${secret}`, 'gi');
 };
 
 const SECRET_PATH_PATTERNS = SECRET_PATH_ROUTES.map(toPathPattern);

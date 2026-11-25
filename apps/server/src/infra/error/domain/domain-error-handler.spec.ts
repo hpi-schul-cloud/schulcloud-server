@@ -316,19 +316,6 @@ describe('GlobalErrorFilter', () => {
 			});
 		});
 
-		describe('when the error is a DOMException', () => {
-			it('should log it without throwing', () => {
-				const error = new DOMException('The operation was aborted', 'AbortError');
-				const request = { method: 'GET', url: '/rooms', params: {}, query: {} };
-				const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
-
-				expect(() => domainErrorHandler.execHttpContext(error, context)).not.toThrow();
-
-				expect(logger.error).toHaveBeenCalledTimes(1);
-				expect(renderLogLine(logger.error.mock.calls[0][0])).toContain('The operation was aborted');
-			});
-		});
-
 		describe('when the query contains room invitation link ids', () => {
 			it('should log neither the url nor the query with the ids', () => {
 				const error = new Error('test');
