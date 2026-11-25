@@ -15,8 +15,8 @@ import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@m
 import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { MoinSchuleClassModule } from '@modules/class-moin-schule/moin-schule-class.module';
-import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
+import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '@modules/board-import';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionPublicApiModule } from '@modules/deletion/deletion-public-api.module';
@@ -54,8 +54,6 @@ import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { TaskApiModule } from '@modules/task/task-api.module';
-import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '@modules/team';
-import { TeamApiModule } from '@modules/team/team-api.module';
 import { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from '@modules/tool';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { USER_PUBLIC_API_CONFIG_TOKEN, UserPublicApiConfig } from '@modules/user';
@@ -97,6 +95,7 @@ const serverModules = [
 	ConfigurationModule.register(NOTIFICATION_PUBLIC_API_CONFIG_TOKEN, NotificationPublicApiConfig),
 	ConfigurationModule.register(SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig),
 	ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
+	ConfigurationModule.register(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig),
 	ConfigurationModule.register(TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig),
 	ConfigurationModule.register(TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig),
 	ConfigurationModule.register(LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig),
@@ -104,7 +103,6 @@ const serverModules = [
 	ConfigurationModule.register(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig),
 	ConfigurationModule.register(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN, UserLoginMigrationPublicApiConfig),
 	ConfigurationModule.register(FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig),
-	ConfigurationModule.register(TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,
@@ -120,7 +118,6 @@ const serverModules = [
 	AuthorizationReferenceApiModule,
 	AuthorizationRulesModule,
 	AccountApiModule,
-	CollaborativeStorageModule,
 	MetaTagExtractorModule,
 	TaskApiModule,
 	LessonApiModule,
@@ -139,7 +136,6 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardApiModule,
 	GroupApiModule,
-	TeamApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
 	SchoolApiModule,

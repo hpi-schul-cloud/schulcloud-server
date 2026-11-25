@@ -1,6 +1,5 @@
 export enum SchoolFeature {
 	VIDEOCONFERENCE = 'videoconference',
-	NEXTCLOUD = 'nextcloud',
 	/** @deprecated use STUDENT_LIST Permission instead */
 	STUDENTVISIBILITY = 'studentVisibility',
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',

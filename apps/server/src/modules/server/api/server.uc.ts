@@ -1,6 +1,7 @@
 import { ALERT_PUBLIC_API_CONFIG, AlertPublicApiConfig } from '@modules/alert';
 import { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from '@modules/board';
 import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
+import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '@modules/board-import';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
@@ -24,7 +25,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from '../server.config';
 import { ConfigResponse } from './dto';
 import { ConfigResponseMapper } from './mapper';
-import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '@modules/team';
 
 @Injectable()
 export class ServerUc {
@@ -50,8 +50,8 @@ export class ServerUc {
 		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
 		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
 		@Inject(FWU_PUBLIC_API_CONFIG_TOKEN) private readonly fwuConfig: FwuPublicApiConfig,
-		@Inject(TEAM_PUBLIC_API_CONFIG_TOKEN) private readonly teamConfig: TeamPublicApiConfig,
-		@Inject(NOTIFICATION_PUBLIC_API_CONFIG_TOKEN) private readonly notificationConfig: NotificationPublicApiConfig
+		@Inject(NOTIFICATION_PUBLIC_API_CONFIG_TOKEN) private readonly notificationConfig: NotificationPublicApiConfig,
+		@Inject(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly boardImportConfig: BoardImportPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -75,8 +75,8 @@ export class ServerUc {
 			this.userImportConfig,
 			this.userLoginMigrationConfig,
 			this.fwuConfig,
-			this.teamConfig,
-			this.notificationConfig
+			this.notificationConfig,
+			this.boardImportConfig
 		);
 
 		return configDto;

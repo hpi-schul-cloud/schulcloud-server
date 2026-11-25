@@ -2,13 +2,19 @@ import { ErrorLoggable } from '@infra/error';
 import { ApiValidationError } from '@shared/common/error';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { boardImportJobFactory } from '../../testing';
 import { CreateBoardImportJobBodyParams } from './create-board-import-job.body.params';
 
 describe(CreateBoardImportJobBodyParams.name, () => {
 	describe('when the link is not valid', () => {
 		const setup = async () => {
 			const link = 'http://user:secret-token@example.com/board';
-			const bodyParams = plainToInstance(CreateBoardImportJobBodyParams, { link });
+			const { target } = boardImportJobFactory.build();
+			const bodyParams = plainToInstance(CreateBoardImportJobBodyParams, {
+				link,
+				targetType: target.type,
+				targetId: target.id,
+			});
 			const validationErrors = await validate(bodyParams);
 			const errorLoggable = new ErrorLoggable(new ApiValidationError(validationErrors));
 

@@ -1,6 +1,8 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '../board-import.config';
 import { BoardImportJobService } from '../domain';
 import { boardImportJobFactory } from '../testing';
 import { BoardImportUc } from './board-import.uc';
@@ -9,6 +11,7 @@ describe(BoardImportUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardImportUc;
 	let boardImportJobService: DeepMocked<BoardImportJobService>;
+	let config: BoardImportPublicApiConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -18,11 +21,16 @@ describe(BoardImportUc.name, () => {
 					provide: BoardImportJobService,
 					useValue: createMock<BoardImportJobService>(),
 				},
+				{
+					provide: BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN,
+					useValue: new BoardImportPublicApiConfig(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(BoardImportUc);
 		boardImportJobService = module.get(BoardImportJobService);
+		config = module.get(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -34,27 +42,53 @@ describe(BoardImportUc.name, () => {
 	});
 
 	describe('startImport', () => {
+		describe('when the feature is disabled', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				config.featureBoardImportEnabled = false;
+
+				return { job };
+			};
+
+			it('should throw a feature disabled exception', async () => {
+				const { job } = setup();
+
+				await expect(uc.startImport(job.userId, job.link, job.target)).rejects.toThrow(
+					FeatureDisabledLoggableException
+				);
+			});
+
+			it('should not create a job', async () => {
+				const { job } = setup();
+
+				await expect(uc.startImport(job.userId, job.link, job.target)).rejects.toThrow();
+
+				expect(boardImportJobService.create).not.toHaveBeenCalled();
+			});
+		});
+
 		describe('when the service creates a job', () => {
 			const setup = () => {
 				const job = boardImportJobFactory.build();
+				config.featureBoardImportEnabled = true;
 
 				boardImportJobService.create.mockResolvedValueOnce(job);
 
 				return { job };
 			};
 
-			it('should create the job for the user and the link', async () => {
+			it('should create the job for the user, the link and the target', async () => {
 				const { job } = setup();
 
-				await uc.startImport(job.userId, job.link);
+				await uc.startImport(job.userId, job.link, job.target);
 
-				expect(boardImportJobService.create).toHaveBeenCalledWith(job.userId, job.link);
+				expect(boardImportJobService.create).toHaveBeenCalledWith(job.userId, job.link, job.target);
 			});
 
 			it('should return the job', async () => {
 				const { job } = setup();
 
-				const result = await uc.startImport(job.userId, job.link);
+				const result = await uc.startImport(job.userId, job.link, job.target);
 
 				expect(result).toBe(job);
 			});

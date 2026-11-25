@@ -44,7 +44,6 @@ class ScopeResolver {
 		const userService = this.app.service('/users');
 		const courseService = this.app.service('/courses');
 		const classService = this.app.service('/classes');
-		const teamService = this.app.service('/teams');
 
 		const response = {
 			links: {
@@ -75,7 +74,7 @@ class ScopeResolver {
 			})
 		);
 
-		const [courses, coursesAdmin, classes, teams] = await Promise.all([
+		const [courses, coursesAdmin, classes] = await Promise.all([
 			courseService.find({
 				query: {
 					$limit: false,
@@ -94,12 +93,6 @@ class ScopeResolver {
 				query: {
 					$limit: false,
 					$or: [{ userIds: userId }, { teacherIds: userId }],
-				},
-			}),
-			teamService.find({
-				query: {
-					$limit: false,
-					userIds: { $elemMatch: { userId } },
 				},
 			}),
 		]);
@@ -123,27 +116,6 @@ class ScopeResolver {
 				scopeType: 'class',
 			};
 			return c;
-		});
-
-		teams.data.forEach((_team) => {
-			response.data.push(
-				getDataEntry({
-					type: 'scope',
-					id: _team._id,
-					name: _team.name,
-					// todo: only leaders have notification and write permissions
-					authorities: getPermissionsForScope(
-						true,
-						true,
-						false,
-						hasRemoveReadPermissionParam,
-						hasRemoveWritePermissionParam
-					),
-					attributes: {
-						scopeType: 'team',
-					},
-				})
-			);
 		});
 
 		const scopes = [].concat(courses.data, coursesAdmin.data, classes.data);

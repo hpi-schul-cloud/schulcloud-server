@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
@@ -332,27 +331,11 @@ describe('user service', () => {
 			}
 		});
 
-		it('does not allow students who may not create teams list other users', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
-			const studentParams = await testObjects.generateRequestParamsFromUser(student);
-			studentParams.query = {};
-
-			await app.service('schools').patch(student.schoolId, { enableStudentTeamCreation: false });
-
-			await expect(app.service('users').find(studentParams)).to.be.rejectedWith(
-				Error,
-				'The current user is not allowed to list other users!'
-			);
-		});
-
-		it('allows students who may create teams list other users', async () => {
+		it('allows students to list other users', async () => {
 			const school = await testObjects.createTestSchool();
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 			const studentParams = await testObjects.generateRequestParamsFromUser(student);
 			studentParams.query = {};
-			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-
-			await app.service('schools').patch(student.schoolId, { enableStudentTeamCreation: true });
 
 			const studentResults = await app.service('users').find(studentParams);
 			expect(studentResults.data).to.have.lengthOf(1);

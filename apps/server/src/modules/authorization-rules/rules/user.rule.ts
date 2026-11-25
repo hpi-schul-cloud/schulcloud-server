@@ -113,24 +113,6 @@ export class UserRule implements Rule<UserEntityOrDo> {
 	}
 
 	private isDiscoverable(user: UserEntityOrDo): boolean {
-		const discoverabilitySetting = this.authorizationHelper.getConfig('teacherVisibilityForExternalTeamInvitation');
-
-		if ((discoverabilitySetting as string) === 'disabled') {
-			return false;
-		}
-
-		if ((discoverabilitySetting as string) === 'enabled') {
-			return true;
-		}
-
-		if ((discoverabilitySetting as string) === 'opt-in') {
-			return user.discoverable ?? false;
-		}
-
-		if ((discoverabilitySetting as string) === 'opt-out') {
-			return user.discoverable ?? true;
-		}
-
-		throw new Error('Invalid discoverability setting');
+		return user.discoverable ?? false;
 	}
 }

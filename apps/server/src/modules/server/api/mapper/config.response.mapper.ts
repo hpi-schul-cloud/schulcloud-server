@@ -1,6 +1,7 @@
 import { type AlertPublicApiConfig } from '@modules/alert';
 import { type BoardPublicApiConfig } from '@modules/board';
 import { type BoardContextPublicApiConfig } from '@modules/board-context';
+import { type BoardImportPublicApiConfig } from '@modules/board-import';
 import { type CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { type FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { type LearnroomPublicApiConfig } from '@modules/learnroom';
@@ -19,7 +20,6 @@ import { type UserLoginMigrationPublicApiConfig } from '@modules/user-login-migr
 import { type VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { type ServerPublicApiConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
-import { type TeamPublicApiConfig } from '@modules/team';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(
@@ -42,8 +42,8 @@ export class ConfigResponseMapper {
 		userImportConfig: UserImportPublicApiConfig,
 		userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
 		fwuConfig: FwuPublicApiConfig,
-		teamConfig: TeamPublicApiConfig,
-		notificationConfig: NotificationPublicApiConfig
+		notificationConfig: NotificationPublicApiConfig,
+		boardImportConfig: BoardImportPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -65,8 +65,8 @@ export class ConfigResponseMapper {
 			...userImportConfig,
 			...userLoginMigrationConfig,
 			...fwuConfig,
-			...teamConfig,
 			...notificationConfig,
+			...boardImportConfig,
 		});
 
 		return configResponse;

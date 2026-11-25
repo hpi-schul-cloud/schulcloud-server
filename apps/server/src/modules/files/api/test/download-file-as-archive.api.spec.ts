@@ -24,8 +24,6 @@ import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'node:stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
-import { SignedUrlResponseVo } from '../../domain/vo';
-import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, type LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
 import { fileDomainFactory, userForLoginFactory } from '../../testing';
 import { DownloadArchiveUC } from '../download-archive.uc';
 import { LegacyFileArchiveController } from '../legacy-file-archive.controller';
@@ -36,7 +34,6 @@ describe('DownloadArchive Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let jwtConfig: TestJwtModuleConfig;
-	let config: LegacyFileArchiveConfig;
 	let authorizationClient: DeepMocked<AuthorizationClientAdapter>;
 	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
 
@@ -67,10 +64,6 @@ describe('DownloadArchive Controller (API)', () => {
 					provide: LegacyFileStorageAdapter,
 					useValue: createMock<LegacyFileStorageAdapter>(),
 				},
-				{
-					provide: LEGACY_FILE_ARCHIVE_CONFIG_TOKEN,
-					useValue: { featureTeamArchiveDownload: true, legacyBaseUrl: 'http://localhost:3030' },
-				},
 			],
 		})
 			.overrideProvider(AuthorizationClientAdapter)
@@ -81,7 +74,6 @@ describe('DownloadArchive Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		jwtConfig = moduleFixture.get(TEST_JWT_CONFIG_TOKEN);
-		config = moduleFixture.get(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN);
 		authorizationClient = moduleFixture.get(AuthorizationClientAdapter);
 		legacyFileStorageAdapter = moduleFixture.get(LegacyFileStorageAdapter);
 	});
@@ -99,7 +91,7 @@ describe('DownloadArchive Controller (API)', () => {
 			it('should return 401', async () => {
 				const params = {
 					ownerId: new ObjectId().toHexString(),
-					ownerType: FileOwnerModel.TEAMS,
+					ownerType: FileOwnerModel.COURSE,
 					archiveName: 'test-archive',
 				};
 
@@ -125,7 +117,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { loggedInClient } = await setup();
 				const params = {
 					ownerId: 'invalid-id',
-					ownerType: FileOwnerModel.TEAMS,
+					ownerType: FileOwnerModel.COURSE,
 					archiveName: 'test-archive',
 				};
 
@@ -167,71 +159,12 @@ describe('DownloadArchive Controller (API)', () => {
 					expect.objectContaining({
 						validationErrors: [
 							{
-								errors: ['ownerType must be one of the following values: user, course, teams'],
+								errors: ['ownerType must be one of the following values: user, course'],
 								field: ['ownerType'],
 							},
 						],
 					})
 				);
-			});
-		});
-
-		describe('when feature is not enabled', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persist([studentUser, studentAccount]).flush();
-
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
-					.withJwt(studentUser, jwtConfig)
-					.build(studentAccount);
-
-				config.featureTeamArchiveDownload = false;
-
-				return { loggedInClient };
-			};
-
-			it('should return 501', async () => {
-				const { loggedInClient } = await setup();
-				const params = {
-					ownerId: new ObjectId().toHexString(),
-					ownerType: FileOwnerModel.TEAMS,
-					archiveName: 'test-archive',
-				};
-
-				const response = await loggedInClient.post(undefined, params);
-
-				expect(response.status).toEqual(HttpStatus.NOT_IMPLEMENTED);
-
-				config.featureTeamArchiveDownload = true;
-			});
-		});
-
-		describe('when user does not have permission to access the team', () => {
-			const setup = async () => {
-				const teamId = new ObjectId().toHexString();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persist([studentUser, studentAccount]).flush();
-
-				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
-
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
-					.withJwt(studentUser, jwtConfig)
-					.build(studentAccount);
-
-				return { teamId, loggedInClient };
-			};
-
-			it('should return 403', async () => {
-				const { teamId, loggedInClient } = await setup();
-				const params = {
-					ownerId: teamId,
-					ownerType: FileOwnerModel.TEAMS,
-					archiveName: 'team-archive',
-				};
-
-				const response = await loggedInClient.post(undefined, params);
-
-				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 
@@ -289,58 +222,6 @@ describe('DownloadArchive Controller (API)', () => {
 				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when user successfully downloads team archive', () => {
-			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persist([teacherUser, teacherAccount]).flush();
-				const teamId = new ObjectId().toHexString();
-
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
-					.withJwt(teacherUser, jwtConfig)
-					.build(teacherAccount);
-				const archiveName = 'team-files';
-
-				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
-
-				const file1 = fileDomainFactory.build({
-					name: 'team-doc.pdf',
-					storageProviderId: storageProvider.id,
-					isDirectory: false,
-				});
-				const file2 = fileDomainFactory.build({
-					name: 'notes.txt',
-					storageProviderId: storageProvider.id,
-					isDirectory: false,
-				});
-
-				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
-				legacyFileStorageAdapter.probeFile.mockResolvedValue({ url: 'http://signed-url', size: 17 });
-				legacyFileStorageAdapter.downloadFileFromUrl.mockImplementation(() =>
-					Promise.resolve(Readable.from('mock file content'))
-				);
-				// @ts-expect-error - we only need the url property for this test
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-				legacyFileStorageAdapter.getSignedUrl.mockResolvedValue(new SignedUrlResponseVo('http://signed-url'));
-
-				return { teamId, loggedInClient, archiveName };
-			};
-
-			it('should return 200 with archive file', async () => {
-				const { teamId, loggedInClient, archiveName } = await setup();
-				const params = {
-					ownerId: teamId,
-					ownerType: FileOwnerModel.TEAMS,
-					archiveName,
-				};
-
-				const response = await loggedInClient.post(undefined, params);
-
-				expect(response.status).toEqual(HttpStatus.OK);
-				expect(response.headers['content-type']).toContain('application/zip');
-				expect(response.headers['content-disposition']).toContain(`filename="${archiveName}.zip"`);
 			});
 		});
 
@@ -452,11 +333,11 @@ describe('DownloadArchive Controller (API)', () => {
 	});
 
 	describe('listDownloadableFiles', () => {
-		describe('when user successfully lists team files', () => {
+		describe('when user successfully lists course files', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persist([teacherUser, teacherAccount]).flush();
-				const teamId = new ObjectId().toHexString();
+				const courseId = new ObjectId().toHexString();
 
 				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.withJwt(teacherUser, jwtConfig)
@@ -470,7 +351,7 @@ describe('DownloadArchive Controller (API)', () => {
 					isDirectory: true,
 				});
 				const file1 = fileDomainFactory.build({
-					name: 'team-doc.pdf',
+					name: 'course-doc.pdf',
 					storageProviderId: storageProvider.id,
 					isDirectory: false,
 					parentId: folder.id,
@@ -485,14 +366,14 @@ describe('DownloadArchive Controller (API)', () => {
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([folder, file1, file2]);
 				legacyFileStorageAdapter.downloadFile.mockResolvedValue(Readable.from('mock file content'));
 
-				return { teamId, loggedInClient, folder, file1, file2 };
+				return { courseId, loggedInClient, folder, file1, file2 };
 			};
 
 			it('should return 200 with archive file', async () => {
-				const { teamId, loggedInClient, folder, file1, file2 } = await setup();
+				const { courseId, loggedInClient, folder, file1, file2 } = await setup();
 				const params = {
-					ownerId: teamId,
-					ownerType: FileOwnerModel.TEAMS,
+					ownerId: courseId,
+					ownerType: FileOwnerModel.COURSE,
 					archiveName: folder.name,
 				};
 

@@ -92,7 +92,7 @@ export class NewsResponse {
 	targetId: string;
 
 	@ApiProperty({
-		description: 'The target object with id and name, could be the school, team, or course name',
+		description: 'The target object with id and name, could be the school or course name',
 	})
 	target: TargetInfoResponse;
 

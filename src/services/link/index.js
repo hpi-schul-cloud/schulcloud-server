@@ -122,9 +122,8 @@ module.exports = function setup() {
 		/**
 		 * Generates short expert invite link
 		 * @param data = object {
-		 *      role: user role = string "teamexpert"/"teamadministrator"
+		 *      role: user role = string
 		 *      host: current webaddress from client = string
-		 *      teamId: users teamId = string
 		 *      invitee: email of user who gets invited = string
 		 *      inviter: user id of user who generates the invite = ObjectId/string
 		 *      save: make hash link-friendly? = boolean (might be string)
@@ -135,7 +134,6 @@ module.exports = function setup() {
 				const linkInfo = {};
 				const expertSchoolId = data.esid;
 				const { email } = data;
-				const { teamId } = data;
 
 				if (email) {
 					const { data: userData } = await app.service('users').find({ query: { email } });
@@ -154,10 +152,6 @@ module.exports = function setup() {
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
 					linkInfo.link = `/registration/${expertSchoolId}/byexternalPerson/?importHash=${linkInfo.hash}`;
-				} else if (teamId) {
-					/** @replaced logic is inside team services now * */
-					// team accept link for existing users
-					linkInfo.link = `/teams/invitation/accept/${teamId}`;
 				} else {
 					logger.warning('Nicht alle Daten für den Experten-Link vorhanden.');
 					return Promise.resolve('Success!');

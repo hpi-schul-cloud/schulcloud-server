@@ -24,8 +24,6 @@ const { FileModel, FileUploadIntentModel, SecurityCheckStatusTypes } = require('
 const { schoolModel } = require('../school/model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
-const { teamsModel } = require('../teams/model');
-const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
@@ -129,17 +127,21 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 
 /**
  * @param {*} owner
- * @returns 'user' || 'course' || 'teams'
+ * @returns 'user' || 'course'
  */
 const getRefOwnerModel = async (owner) => {
-	let refOwnerModel = 'user';
-
 	if (owner) {
 		const isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
-		refOwnerModel = isCourse ? 'course' : 'teams';
+		if (isCourse) {
+			return 'course';
+		}
+		const isUser = Boolean(await userModel.findOne({ _id: owner }).exec());
+		if (isUser) {
+			return 'user';
+		}
+		throw new BadRequest('File owner must be an existing user or course.');
 	}
-
-	return refOwnerModel;
+	return 'user';
 };
 
 const fileStorageService = {
@@ -328,7 +330,7 @@ const fileStorageService = {
 		}
 		// remove file for user
 		await filesRepo.removeFileById(_id);
-	},
+	}
 };
 
 const signedUrlService = {
@@ -574,11 +576,6 @@ const directoryService = {
 			permissions.push(createPermission(studentRoleId, 'role', { write: false, delete: false }));
 		}
 
-		if (!sendPermissions) {
-			const teamObject = await teamsModel.findOne({ _id: owner }).lean().exec();
-			sendPermissions = teamObject ? teamObject.filePermission : [];
-		}
-
 		const props = sanitizeObj(
 			Object.assign(data, {
 				isDirectory: true,
@@ -586,7 +583,7 @@ const directoryService = {
 				parent,
 				refOwnerModel,
 				creator: userId,
-				permissions: [...permissions, ...sendPermissions].map(this.setRefId),
+				permissions: [...permissions, ...(sendPermissions || [])].map(this.setRefId),
 			})
 		);
 
@@ -623,7 +620,7 @@ const directoryService = {
 		const { parent } = query;
 		const { userId } = payload;
 
-		const scopeNames = ['courses', 'teams'];
+		const scopeNames = ['courses'];
 		const getScopeListService = (scopeName) => this.app.service(`/users/:scopeId/${scopeName}`);
 
 		const scopeFilters = await Promise.all(
@@ -946,46 +943,6 @@ const filePermissionService = {
 							return true;
 						})
 				);
-			},
-			teams() {
-				const { role: userRole } = owner.userIds.find((u) => userId.equals(u.userId));
-
-				return Promise.all(rolePromises)
-					.then(sortRoles)
-					.then((sortedRoles) => {
-						const userPos = sortedRoles.findIndex((roles) => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
-
-						return sortedRoles
-							.reduce((flat, roles, index) => {
-								if (index <= userPos) {
-									return [
-										...flat,
-										...roles.map(({ name, _id }) => ({
-											name,
-											_id,
-											sibling: index === userPos,
-										})),
-									];
-								}
-
-								return flat;
-							}, [])
-							.map(({ _id, name, sibling }) => {
-								const { read, write, refId } = rolePermissions.find(({ refId: id }) => id.equals(_id));
-								const reWrite = isFileCreator ? write : undefined;
-
-								const permissions = {
-									read: sibling ? undefined : read,
-									write: sibling ? reWrite : write,
-								};
-
-								return {
-									refId,
-									name,
-									...sanitizeObj(permissions),
-								};
-							});
-					});
 			},
 		};
 

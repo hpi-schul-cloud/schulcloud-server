@@ -20,7 +20,7 @@ export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}
 
 	/**
-	 * Create a news by a user in a given scope (school or team).
+	 * Create a news by a user in a given scope (school or course).
 	 */
 	@Post()
 	public async create(

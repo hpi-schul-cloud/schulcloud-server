@@ -1,6 +1,7 @@
 import { AlertPublicApiConfig } from '@modules/alert';
 import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { BoardImportPublicApiConfig } from '@modules/board-import';
 import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LearnroomPublicApiConfig } from '@modules/learnroom';
@@ -12,7 +13,6 @@ import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
-import { TeamPublicApiConfig } from '@modules/team';
 import { ToolPublicApiConfig } from '@modules/tool';
 import { UserPublicApiConfig } from '@modules/user';
 import { UserImportPublicApiConfig } from '@modules/user-import';
@@ -69,12 +69,6 @@ export class ConfigResponse {
 
 	@ApiProperty({ type: String, nullable: true })
 	ALERT_STATUS_URL: string | null;
-
-	@ApiProperty()
-	FEATURE_TEAMS_ENABLED: boolean;
-
-	@ApiProperty()
-	FEATURE_TEAM_CREATE_ROOM_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_FWU_CONTENT_ENABLED: boolean;
@@ -156,6 +150,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_CONSENT_NECESSARY: boolean;
+
+	@ApiProperty()
+	FEATURE_BOARD_IMPORT_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: boolean;
@@ -294,8 +291,8 @@ export class ConfigResponse {
 			UserImportPublicApiConfig &
 			UserLoginMigrationPublicApiConfig &
 			FwuPublicApiConfig &
-			TeamPublicApiConfig &
-			NotificationPublicApiConfig
+			NotificationPublicApiConfig &
+			BoardImportPublicApiConfig
 	) {
 		this.FEATURE_NOTIFICATIONS_ENABLED = config.featureNotificationsEnabled;
 		this.ACCESSIBILITY_REPORT_EMAIL = config.accessibilityReportEmail;
@@ -304,8 +301,6 @@ export class ConfigResponse {
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.adminTablesDisplayConsentColumn;
 		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
-		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
-		this.FEATURE_TEAM_CREATE_ROOM_ENABLED = config.featureTeamCreateRoomEnabled;
 		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
 		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.teacherStudentVisibilityIsEnabledByDefault;
@@ -331,6 +326,7 @@ export class ConfigResponse {
 		this.FEATURE_COPY_SERVICE_ENABLED = config.featureCopyServiceEnabled;
 		this.FEATURE_CONSENT_NECESSARY = config.featureConsentNecessary;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
+		this.FEATURE_BOARD_IMPORT_ENABLED = config.featureBoardImportEnabled;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.courseImportEnabled;
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE = config.courseImportMaxFileSize;
 		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;

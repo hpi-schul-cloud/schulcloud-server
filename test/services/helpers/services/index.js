@@ -15,7 +15,6 @@ const schoolGroups = require('./schoolGroups');
 const schools = require('./schools');
 const storageProviders = require('./storageProviders');
 const submissions = require('./submissions');
-const teams = require('./teams');
 const testSystem = require('./testSystem');
 const users = require('./users');
 const importUsers = require('./importUsers');
@@ -41,7 +40,6 @@ module.exports = (app, opt) => {
 		login: login(app, opt),
 		storageProviders: storageProviders(app),
 		submissions: submissions(app, opt),
-		teams: teams(app, opt),
 		testSystem: testSystem(app, opt),
 		users: users(app, opt),
 		importUsers: importUsers(opt),

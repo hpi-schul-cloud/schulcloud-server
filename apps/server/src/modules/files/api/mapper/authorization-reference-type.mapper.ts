@@ -8,8 +8,6 @@ export class AuthorizationReferenceTypeMapper {
 				return AuthorizationBodyParamsReferenceType.USERS;
 			case FileOwnerModel.COURSE:
 				return AuthorizationBodyParamsReferenceType.COURSES;
-			case FileOwnerModel.TEAMS:
-				return AuthorizationBodyParamsReferenceType.TEAMS;
 			default:
 				throw new Error('Unknown OwnerType');
 		}

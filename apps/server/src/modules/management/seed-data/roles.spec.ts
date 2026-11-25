@@ -33,7 +33,7 @@ describe('Role seed data generation', () => {
 				createdAt: '2017-01-01T00:06:37.148Z',
 				updatedAt: '2023-04-03T13:27:56.587Z',
 				name: RoleName.ADMINISTRATOR,
-				roles: [RoleName.TEAMOWNER], // <-- this is the problem
+				roles: [RoleName.USER],
 				permissions: [],
 			},
 		};

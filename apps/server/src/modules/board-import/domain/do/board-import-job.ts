@@ -1,6 +1,6 @@
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { type EntityId } from '@shared/domain/types';
-import { BoardImportJobStatus } from '../type';
+import { BoardImportJobStatus, type BoardImportTarget } from '../type';
 
 export interface BoardImportJobProps extends AuthorizableObject {
 	status: BoardImportJobStatus;
@@ -8,6 +8,8 @@ export interface BoardImportJobProps extends AuthorizableObject {
 	userId: EntityId;
 
 	link: string;
+
+	target: BoardImportTarget;
 
 	expiresAt: Date;
 
@@ -27,6 +29,10 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 	get link(): string {
 		return this.props.link;
+	}
+
+	get target(): BoardImportTarget {
+		return this.props.target;
 	}
 
 	get expiresAt(): Date {

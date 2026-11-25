@@ -154,14 +154,18 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
-		registrationService
+		return registrationService
 			.create({
 				importHash,
 				classOrSchoolId: '5f2987e020834114b8efd6f8',
 				email,
 				parent_email: email,
 				birthDate: moment('18.02.2015', 'DD.MM.YYYY'),
+			})
+			.then(() => {
+				throw new Error('should have failed');
 			})
 			.catch((err) => {
 				expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
@@ -178,14 +182,18 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
-		registrationService
+		return registrationService
 			.create({
 				importHash,
 				classOrSchoolId: '5f2987e020834114b8efd6f8',
 				email,
 				parent_email: parentEmail,
 				birthDate: moment('18.02.2015', 'DD.MM.YYYY'),
+			})
+			.then(() => {
+				throw new Error('should have failed');
 			})
 			.catch((err) => {
 				expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');

@@ -1,10 +1,8 @@
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
-	type AuthorizationConfig,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
-	TeacherVisibilityForExternalTeamInvitation,
 } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
@@ -21,7 +19,6 @@ describe('UserRule', () => {
 	let service: UserRule;
 	let authorizationHelper: AuthorizationHelper;
 	let injectionService: AuthorizationInjectionService;
-	let config: AuthorizationConfig;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -38,7 +35,6 @@ describe('UserRule', () => {
 		service = await module.get(UserRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 		injectionService = await module.get(AuthorizationInjectionService);
-		config = await module.get(AUTHORIZATION_CONFIG_TOKEN);
 	});
 
 	describe('constructor', () => {
@@ -54,7 +50,6 @@ describe('UserRule', () => {
 		const user = userFactory.buildWithId({ roles: [role], school });
 		const entity = userDoFactory.buildWithId();
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
@@ -65,7 +60,6 @@ describe('UserRule', () => {
 		const setup = () => {
 			const grantedPermission = 'a' as Permission;
 			const deniedPermission = 'c' as Permission;
-			config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
@@ -95,7 +89,6 @@ describe('UserRule', () => {
 		const setup = () => {
 			const grantedPermission = 'a' as Permission;
 			const deniedPermission = 'c' as Permission;
-			config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
@@ -176,67 +169,28 @@ describe('UserRule', () => {
 		});
 	});
 
-	describe('discoverability setting', () => {
+	describe('discoverability of a user of another school', () => {
 		describe.each([
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.ENABLED, userSetting: undefined, discoverable: true },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.ENABLED, userSetting: true, discoverable: true },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.ENABLED, userSetting: false, discoverable: true },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.OPT_IN, userSetting: undefined, discoverable: false },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.OPT_IN, userSetting: true, discoverable: true },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.OPT_IN, userSetting: false, discoverable: false },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.OPT_OUT, userSetting: undefined, discoverable: true },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.OPT_OUT, userSetting: true, discoverable: true },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.OPT_OUT, userSetting: false, discoverable: false },
-			{
-				systemSetting: TeacherVisibilityForExternalTeamInvitation.DISABLED,
-				userSetting: undefined,
-				discoverable: false,
-			},
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.DISABLED, userSetting: true, discoverable: false },
-			{ systemSetting: TeacherVisibilityForExternalTeamInvitation.DISABLED, userSetting: false, discoverable: false },
-		])(
-			"when discoverability system setting is '$systemSetting' and user-setting is '$userSetting'",
-			({ systemSetting, userSetting, discoverable }) => {
-				it(`should return ${discoverable === true ? 'true' : 'false'}`, () => {
-					const grantedPermission = 'a' as Permission;
-					config.teacherVisibilityForExternalTeamInvitation = systemSetting;
-
-					const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
-					const userSchool = schoolEntityFactory.buildWithId();
-					const user = userFactory.buildWithId({ roles: [role], school: userSchool });
-
-					const entitySchool = schoolEntityFactory.buildWithId();
-					const userEntity = userDoFactory.buildWithId({ schoolId: entitySchool.id, discoverable: userSetting });
-
-					const res = service.hasPermission(user, userEntity, {
-						action: Action.read,
-						requiredPermissions: [grantedPermission],
-					});
-
-					expect(res).toBe(discoverable);
-				});
-			}
-		);
-
-		describe('when discoverability system setting is an unknown value', () => {
-			it('should throw an error', () => {
+			{ userSetting: undefined, discoverable: false },
+			{ userSetting: true, discoverable: true },
+			{ userSetting: false, discoverable: false },
+		])("when user-setting is '$userSetting'", ({ userSetting, discoverable }) => {
+			it(`should return ${discoverable === true ? 'true' : 'false'}`, () => {
 				const grantedPermission = 'a' as Permission;
-				config.teacherVisibilityForExternalTeamInvitation =
-					'unknown-value' as TeacherVisibilityForExternalTeamInvitation;
 
 				const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 				const userSchool = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
 
 				const entitySchool = schoolEntityFactory.buildWithId();
-				const userEntity = userDoFactory.buildWithId({ schoolId: entitySchool.id });
+				const userEntity = userDoFactory.buildWithId({ schoolId: entitySchool.id, discoverable: userSetting });
 
-				expect(() =>
-					service.hasPermission(user, userEntity, {
-						action: Action.read,
-						requiredPermissions: [grantedPermission],
-					})
-				).toThrow('Invalid discoverability setting');
+				const res = service.hasPermission(user, userEntity, {
+					action: Action.read,
+					requiredPermissions: [grantedPermission],
+				});
+
+				expect(res).toBe(discoverable);
 			});
 		});
 	});
@@ -244,7 +198,6 @@ describe('UserRule', () => {
 	describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
 		describe('when user has instance operation permission for read action', () => {
 			const setup = () => {
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 				const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
 				const userSchool = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
@@ -265,7 +218,6 @@ describe('UserRule', () => {
 
 		describe('when user has instance operation permission for write action', () => {
 			const setup = () => {
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 				const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
 				const userSchool = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
@@ -286,7 +238,6 @@ describe('UserRule', () => {
 
 		describe('when user has instance operation permission but missing required permissions', () => {
 			const setup = () => {
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 				const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
 				const userSchool = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
@@ -312,7 +263,6 @@ describe('UserRule', () => {
 
 	describe('when the action is not read or write', () => {
 		const setup = () => {
-			config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 			const role = roleFactory.buildWithId({ permissions: [] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
@@ -334,7 +284,6 @@ describe('UserRule', () => {
 		describe('when authorizableUser is admin without teacher role and target user is not a teacher', () => {
 			const setup = () => {
 				const grantedPermission = 'a' as Permission;
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR, permissions: [grantedPermission] });
 				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT, permissions: [] });
 				const school = schoolEntityFactory.buildWithId();
@@ -362,7 +311,6 @@ describe('UserRule', () => {
 		describe('when authorizableUser is admin with teacher role', () => {
 			const setup = () => {
 				const grantedPermission = 'a' as Permission;
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR, permissions: [grantedPermission] });
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER, permissions: [grantedPermission] });
 				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT, permissions: [] });
@@ -412,7 +360,6 @@ describe('UserRule', () => {
 		describe('when accessing a User entity of the same school', () => {
 			const setup = () => {
 				const grantedPermission = 'a' as Permission;
-				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 				const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ roles: [role], school });
