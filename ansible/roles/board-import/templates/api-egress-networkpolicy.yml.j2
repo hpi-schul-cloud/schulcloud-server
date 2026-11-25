@@ -34,11 +34,9 @@ spec:
         - port: 5672
           protocol: TCP
 
-    # Session Valkey with Sentinel
+    # Session Valkey with Sentinel. A selector for the Valkey pods does not work: connections time out.
     - to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/instance: session
+        - podSelector: {}
       ports:
         - port: 6379
           protocol: TCP
