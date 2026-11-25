@@ -21,6 +21,7 @@ Alternatives that were rejected:
 
 - At the start of each attempt, the worker creates a JWT for the user of the job. It signs the token with the JWT private key of the instance and adds it to the whitelist in the session Valkey, as the login of the server does.
 - The job stores only the ID of the user. For each token, the worker reads the user, the roles and the account through the services of the user module and the account module. Thus the claims of the token are current, also when the job waited in the queue for a long time.
+- The import module has no repositories or entities of its own for users, roles and accounts, and it does not query their collections. This data stays in the modules that own it. The worker imports these modules and registers their entities, because all apps of the server use the same database. The provisioning consumers do the same for the user module.
 - If the user or the account does not exist, or if the account is deactivated, the worker creates no token and the job gets the status `failed`.
 - The token expires after the maximum duration of a job (see [0008](0008-retry-import-jobs-through-redelivery.md)) plus a small margin. At the end of the attempt, the worker removes the token from the whitelist.
 - The worker does not store the token and does not log it. When it creates a token, it logs the job ID and the user ID.
@@ -34,7 +35,7 @@ Alternatives that were rejected:
 - The file storage checks only the signature and the expiry date of a JWT, not the whitelist. There, the expiry date is the only limit for a token.
 - A logout of the user does not stop the import. An OIDC backchannel logout and the deletion of the user remove all tokens of the account. The attempt then fails with 401, and the next attempt creates a new token.
 - The roles in the token are the roles at the start of the attempt. A change during an attempt has an effect only where a service reads the user from the database, as the board module does.
-- The worker imports the user module and the account module and registers their entities, as the provisioning consumers do for the user module. It has no repositories of its own for this data.
+- The worker loads the user module and the account module with all modules that these import. Thus the worker app becomes larger and can need more configuration.
 - The worker needs the JWT private key, the domain of the instance and the configuration of the session Valkey. Its egress policy must permit the session Valkey with Sentinel. This replaces the rule about the session Valkey in [0009](0009-egress-policy-for-the-import-worker.md).
 - The worker needs its own secret. If not, the import API also gets the private key. The private key is then in two secrets, and a key rotation must change the two.
 - The options to sign a JWT are in the authentication module and in the import module. They must stay the same.
