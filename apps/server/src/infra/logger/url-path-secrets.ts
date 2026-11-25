@@ -1,4 +1,5 @@
-// This file is also required by the legacy Feathers app from dist (src/middleware/errorHandler.js, src/app.js).
+// This file is also required by the legacy Feathers app from dist (src/middleware/errorHandler.js, src/app.js,
+// src/app.hooks.js).
 // Keep it free of path aliases and Nest imports, so it works there without the Nest module system.
 import { isSensitiveName } from './sensitive-value';
 
