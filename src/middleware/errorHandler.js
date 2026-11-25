@@ -60,7 +60,7 @@ const getRequestInfo = (req) => {
 const getErrorLogData = (error) => {
 	let errorLogData;
 	if (isApplicationError(error) || isFeatherError(error)) {
-		// Application and Feathers Errors - the log entry is masked by maskLogEntry
+		// Application and Feathers Errors - the log entry is masked by createLogEntry
 		// type is override by logger for logging type
 		errorLogData = { ...error, errorType: error.type };
 		// nested in errors
@@ -81,18 +81,21 @@ const skipErrorLogging = (error) =>
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
 		if (skipErrorLogging(error)) {
-			logger.debug(maskLogEntry(error));
+			logger.debug(createLogEntry(() => error, error));
 			logger.warning(error.name);
 			return next(error);
 		}
 
-		const errorLogData = getErrorLogData(error);
-		const requestInfo = getRequestInfo(req);
-
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
 		// Only the log entry is masked, as a copy: the error and the request stay untouched.
-		logger.error(maskLogEntry({ ...errorLogData, ...requestInfo }));
+		const logEntry = createLogEntry(() => {
+			const errorLogData = getErrorLogData(error);
+			const requestInfo = getRequestInfo(req);
+
+			return { ...errorLogData, ...requestInfo };
+		}, error);
+		logger.error(logEntry);
 	}
 	return next(error);
 };
@@ -166,16 +169,60 @@ const shallowCopy = (value) => {
 	return copy;
 };
 
+const isPlainObject = (value) => {
+	const prototype = Object.getPrototypeOf(value);
+
+	return prototype === Object.prototype || prototype === null;
+};
+
+const isObjectId = (value) => value._bsontype === 'ObjectId';
+
+const isBinary = (value) =>
+	value instanceof ArrayBuffer ||
+	(typeof SharedArrayBuffer !== 'undefined' && value instanceof SharedArrayBuffer) ||
+	ArrayBuffer.isView(value);
+
+const getClassName = (value) => {
+	const { constructor } = Object.getPrototypeOf(value);
+
+	return typeof constructor === 'function' && constructor.name ? constructor.name : 'Object';
+};
+
 /**
- * Returns the value with secrets replaced. An object that contains a secret is copied, never changed:
- * the same objects are used elsewhere (reused request options, http agents, cookie jars).
- * An object without secrets is returned as it is, so Dates, ObjectIds or Buffers are logged as before.
+ * Objects that are not walked field by field: request, response, socket, agent, stream or cookie jar objects
+ * are large and hold raw header strings (ClientRequest._header, IncomingMessage.rawHeaders) with credentials.
+ * Returns the value to log instead, or undefined for plain objects, arrays and errors, which are masked.
+ */
+const summarizeObject = (value) => {
+	if (Array.isArray(value) || value instanceof Error || isPlainObject(value)) {
+		return undefined;
+	}
+	// Logged as before: as an ISO date and as the hex id.
+	if (value instanceof Date || isObjectId(value)) {
+		return value;
+	}
+	if (isBinary(value)) {
+		return `[Binary ${value.byteLength} bytes]`;
+	}
+
+	return `[${getClassName(value)}]`;
+};
+
+/**
+ * Returns the value with secrets replaced. Only plain objects, arrays and errors are walked; other objects
+ * are summarized (summarizeObject). An object that contains a secret is copied, never changed:
+ * the same objects are used elsewhere (reused request options, cookie jars).
+ * An object without secrets is returned as it is.
  * Each original object gets one copy per log entry (state), so an object reachable on several paths
  * (axios error.config === error.response.config) is masked the same on all of them, and cycles end.
  */
 const maskValue = (value, level, state) => {
 	if (typeof value !== 'object' || value === null) {
 		return value;
+	}
+	const summary = summarizeObject(value);
+	if (summary !== undefined) {
+		return summary;
 	}
 	if (level > MAX_LEVEL_FILTER) {
 		return '<max level exceeded>';
@@ -217,6 +264,33 @@ const maskValue = (value, level, state) => {
 // One masking pass over everything that is logged.
 const maskLogEntry = (entry) => maskValue(entry, 0, { done: new WeakMap(), inProgress: new WeakMap() });
 
+const readSafely = (read) => {
+	try {
+		return read();
+	} catch {
+		return undefined;
+	}
+};
+
+/**
+ * Builds and masks the log entry and never throws: if that fails (e.g. a getter that throws),
+ * only the error name and message are logged, never the unmasked data.
+ */
+const createLogEntry = (buildEntry, error) => {
+	try {
+		return maskLogEntry(buildEntry());
+	} catch {
+		const name = readSafely(() => error.name);
+		const message = readSafely(() => error.message);
+
+		return {
+			name: typeof name === 'string' ? name : undefined,
+			message: typeof message === 'string' ? message : undefined,
+			maskingFailed: true,
+		};
+	}
+};
+
 const secretQueryKeys = (() => ['accessToken', 'access_token'].map((k) => k.toLocaleLowerCase()))();
 const filterQuery = (url) => {
 	let newUrl = url;
@@ -242,7 +316,14 @@ const filterSecrets = (error, req, res, next) => {
 		// req.url = filterQuery(req.url);
 		req.originalUrl = filterQuery(req.originalUrl);
 		if (typeof error === 'object') {
-			maskedResponseParams.set(error, maskLogEntry({ ...error.params }));
+			let params;
+			try {
+				params = maskLogEntry({ ...error.params });
+			} catch {
+				// Never return unmasked params to the client.
+				params = '<secret>';
+			}
+			maskedResponseParams.set(error, params);
 		}
 	}
 	return next(error);

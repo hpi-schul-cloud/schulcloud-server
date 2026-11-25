@@ -1,5 +1,7 @@
 const { expect } = require('chai');
+const http = require('http');
 const util = require('util');
+const { ObjectId } = require('mongoose').Types;
 
 const logger = require('../../src/logger');
 
@@ -84,12 +86,14 @@ describe('errorHandler', () => {
 				},
 			};
 
+			const nextErrors = [];
 			try {
 				let current = error;
 				const middlewares = [];
 				errorHandler({ use: (middleware) => middlewares.push(middleware) });
 				middlewares.forEach((middleware) => {
 					middleware(current, req, res, (err) => {
+						nextErrors.push(err);
 						current = err;
 					});
 				});
@@ -99,7 +103,7 @@ describe('errorHandler', () => {
 
 			expect(logged).to.have.lengthOf(1);
 
-			return { entry: logged[0][0], response };
+			return { entry: logged[0][0], response, nextErrors };
 		};
 
 		const createRequest = (body = {}) => ({ originalUrl: '/users', method: 'POST', headers: {}, body });
@@ -279,6 +283,58 @@ describe('errorHandler', () => {
 			const { response } = runErrorHandler(error, createRequest());
 
 			expect(response.body.assertion_errors).to.deep.equal({ apiKey: '<secret>', field: 'schoolId' });
+		});
+
+		it('should log request, socket and other class instances only by their class name', () => {
+			class ClientRequest {
+				constructor() {
+					this._header = 'POST /token HTTP/1.1\r\nAuthorization: Bearer secret123\r\n';
+				}
+			}
+			const error = new Error('Request failed');
+			error.request = new ClientRequest();
+			error.details = { agent: new http.Agent(), url: 'https://idp.example.org/token' };
+
+			const { entry } = runErrorHandler(error, createRequest());
+
+			expect(entry.request).to.equal('[ClientRequest]');
+			expect(entry.details).to.deep.equal({ agent: '[Agent]', url: 'https://idp.example.org/token' });
+			expect(util.inspect(entry, { depth: null })).to.not.contain('secret123');
+			expect(error.request).to.be.instanceOf(ClientRequest);
+		});
+
+		it('should log binary data by its size and keep dates and ObjectIds', () => {
+			const createdAt = new Date(0);
+			const id = new ObjectId();
+			const error = new Error('test');
+			error.details = { file: Buffer.from('data'), bytes: new Uint8Array(3), createdAt, id };
+
+			const { entry } = runErrorHandler(error, createRequest());
+
+			expect(entry.details).to.deep.equal({
+				file: '[Binary 4 bytes]',
+				bytes: '[Binary 3 bytes]',
+				createdAt,
+				id,
+			});
+			expect(JSON.stringify(entry.details.id)).to.equal(JSON.stringify(id.toHexString()));
+		});
+
+		it('should log a fallback entry and continue when masking fails', () => {
+			const details = { password: 'real-password' };
+			Object.defineProperty(details, 'broken', {
+				enumerable: true,
+				get: () => {
+					throw new Error('getter failed');
+				},
+			});
+			const error = new Error('test');
+			error.details = details;
+
+			const { entry, nextErrors } = runErrorHandler(error, createRequest());
+
+			expect(entry).to.deep.equal({ name: 'Error', message: 'test', maskingFailed: true });
+			expect(nextErrors[nextErrors.length - 1]).to.equal(error);
 		});
 	});
 });
