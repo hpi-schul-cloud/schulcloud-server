@@ -4,6 +4,8 @@
 
 Accepted (2026-11-24)
 
+The rule about the session Valkey is superseded by [0011](0011-worker-creates-a-short-lived-jwt-for-the-user.md) (2026-11-25).
+
 ## Context
 
 The import worker reads boards and files from the source tools, so it must reach hosts on the internet. The links come from users and from the content of the source boards. A link can point to an internal service. The egress policy of the import API permits no HTTP traffic at all (see [0004](0004-egress-policy-for-the-import-api.md)), so the worker needs its own policy.
