@@ -373,6 +373,16 @@ describe('[logger] masking in the feathers logger', () => {
 		expect(line.byId).to.eql([[1, { password: 'hunt...et [REDACTED]', value: '***' }]]);
 	});
 
+	it('should not keep the caller arguments of the splat symbol', () => {
+		const info = maskSensitiveData().transform({
+			level: 'info',
+			message: 'x',
+			[Symbol.for('splat')]: [{ password: 'plainpassword123' }],
+		});
+
+		expect(info).not.to.have.property(Symbol.for('splat'));
+	});
+
 	it('should mask in the develop format as well', () => {
 		const output = getDevelopFormat().transform({ level: 'info', message: `secret ${SECRET}`, password: 'abc' })[
 			MESSAGE

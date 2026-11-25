@@ -160,14 +160,10 @@ function toJsonValues(value, ancestors = new Set()) {
 	}
 }
 
-// The entry fields winston and our formats set. The serializer sets the message symbol again, it is left out.
+// The entry fields winston and our formats set. Of winston's symbols only the level is kept: the serializer sets the
+// message symbol again, and the splat symbol holds the caller's raw arguments.
 const createBaseEntry = (info) => {
-	const entry = {};
-	for (const symbol of Object.getOwnPropertySymbols(info)) {
-		if (symbol !== MESSAGE) {
-			entry[symbol] = info[symbol];
-		}
-	}
+	const entry = { [LEVEL]: info[LEVEL] };
 	for (const key of ['level', 'timestamp', 'type']) {
 		if (typeof info[key] === 'string') {
 			entry[key] = maskSecretsInText(info[key]);
