@@ -25,6 +25,7 @@ Rejected alternatives:
 - The code that creates a token moves from the authentication module into a small module that the login and the worker both use. The worker does not import the authentication module, because that module also loads the login strategies.
 - The job stores only the ID of the user. For each token, the worker reads the user, the roles and the account through the services of the user module and the account module. The import module has no repositories of its own for this data. If the user or the account does not exist, or if the account is deactivated, the job gets the status `failed`.
 - The token expires at the deadline of the job plus a small margin. The deadline is the first start plus the maximum duration (see [0008](0008-retry-import-jobs-through-redelivery.md)). At the end of the attempt, the worker removes the token from the whitelist.
+- The token ID (`jti`) starts with `import_`, so the whitelist entries of the worker are distinguishable from the sessions of users.
 - The token has no support flag and no service account flag. The worker does not store it and does not log it. When it creates a token, it logs the job ID and the user ID. When a job fails because of the user, the account or a second 403, it logs the reason with the same IDs.
 - If the board API or the file storage answers with 401 or 403, the worker creates a new token and sends the request again one time. The file storage also answers with 403 when the token is not in the whitelist. After a second 403, the job gets the status `failed`. After a second 401, the attempt fails and the broker delivers the message again.
 - A second 403 and an error of the user or the account set the job to `failed` in each attempt, not only in the last one. This adds to the rule in [0008](0008-retry-import-jobs-through-redelivery.md).
@@ -42,11 +43,11 @@ Rejected alternatives:
 
 - A logout of the user does not stop the import. An OIDC backchannel logout removes all tokens of the account, and the worker then continues with a new token. The deletion of the user deactivates the account first, so the job gets the status `failed`.
 - The claims of a token are those at the time when the worker creates it. A job can wait up to 30 days by default (see [0006](0006-delete-import-jobs-after-30-days.md)) before the worker creates the first token.
-- The exporter of the session Valkey counts each whitelist entry as a session. Thus a token of the worker is in the session metrics until its entry is removed.
 - No call creates a full board. An attempt that fails can leave a part of a board, and the next attempt must handle it (see [0007](0007-acknowledge-import-job-after-the-end-status.md)).
 
 ### Deployment
 
 - The worker needs the JWT configuration of the server with the key pair, the domain of the instance, and the configuration and the password of the session Valkey. Its egress policy must permit the session Valkey with Sentinel. This replaces the rule about the session Valkey in [0009](0009-egress-policy-for-the-import-worker.md).
 - The worker needs its own secret, so that the import API does not get the private key. The key is then in two secrets, and a key rotation must change the two.
+- The exporter of the session Valkey in `dof_app_deploy` needs a second key group for the tokens of the worker. Without it, each of these tokens counts as a session.
 - The worker loads the user module and the account module and registers their entities. Thus the worker app becomes larger and can need more configuration.
