@@ -2,7 +2,7 @@ const winston = require('winston');
 // Compiled Nest code, so that both loggers mask the same way. In the server process the Feathers app runs next to Nest,
 // both load the same dist/apps/server/infra/configuration/secret-registry.js, so the secrets Nest registers at startup are
 // masked here too. Processes without the Nest ConfigurationModule (e.g. scripts) have an empty registry, there only
-// sensitive field names and Bearer tokens are redacted. Config values only Feathers reads are never registered.
+// sensitive field names, Bearer tokens and URL secrets are redacted. Config values only Feathers reads are never registered.
 const { LoggingUtils } = require('../../dist/apps/server/infra/logger/logging.utils');
 const { summarizeOpaqueLogValue } = require('../../dist/apps/server/infra/logger/opaque-log-value');
 const { maskSecretsInFields } = require('../../dist/apps/server/infra/logger/secret-masking');
