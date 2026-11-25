@@ -1,12 +1,14 @@
 const { expect } = require('chai');
 const express = require('express');
 const http = require('http');
+const jwt = require('jsonwebtoken');
 const sinon = require('sinon');
 const request = require('supertest');
 const util = require('util');
 const { ObjectId } = require('mongoose').Types;
 
 const logger = require('../../src/logger');
+const { getProductionFormat } = require('../../src/logger/utils');
 
 const errorHandler = require('../../src/middleware/errorHandler');
 const { ValidationError, AssertionError } = require('../../src/errors');
@@ -338,6 +340,57 @@ describe('errorHandler', () => {
 
 			expect(entry).to.deep.equal({ name: 'Error', message: 'test', maskingFailed: true });
 			expect(nextErrors[nextErrors.length - 1]).to.equal(error);
+		});
+
+		it('should return empty validation errors when masking the params fails', () => {
+			const params = { password: 'real-password' };
+			Object.defineProperty(params, 'broken', {
+				enumerable: true,
+				get: () => {
+					throw new Error('getter failed');
+				},
+			});
+			const error = new ValidationError(API_VALIDATION_ERROR_TYPE, params);
+
+			const { response } = runErrorHandler(error, createRequest());
+
+			expect(response.body.validation_errors).to.deep.equal({});
+		});
+
+		it('should log the ids from the jwt without the jwt and leave the header unchanged', () => {
+			const token = jwt.sign({ accountId: 'account1', userId: 'user1' }, 'test-key');
+			const req = { ...createRequest(), headers: { authorization: `Bearer ${token}` } };
+
+			const { entry } = runErrorHandler(new Error('test'), req);
+
+			expect(entry.user).to.deep.equal({ accountId: 'account1', userId: 'user1' });
+			expect(JSON.stringify(entry)).not.to.include(token);
+			expect(req.headers.authorization).to.equal(`Bearer ${token}`);
+		});
+
+		it('should write a log line without secrets through the feathers logger format', () => {
+			const MESSAGE = Symbol.for('message');
+			const error = new Error('test');
+			const shared = { clientSecret: 'secretClientValue', schoolId: 'school' };
+			error.details = { first: shared, second: shared, nested: { deeper: { password: 'secretPasswordValue' } } };
+			error.details.self = error.details;
+			const req = {
+				...createRequest({ password: 'secretBodyPassword', name: 'test' }),
+				originalUrl: '/passwordRecovery/secretRecoveryToken?page=2',
+			};
+
+			const { entry } = runErrorHandler(error, req);
+			const output = getProductionFormat().transform({ level: 'error', ...entry })[MESSAGE];
+			const line = JSON.parse(output);
+
+			expect(line.maskingFailed).to.equal(undefined);
+			['secretClientValue', 'secretPasswordValue', 'secretBodyPassword', 'secretRecoveryToken'].forEach((secret) =>
+				expect(output).not.to.include(secret)
+			);
+			expect(line.url).to.equal('/passwordRecovery/***?page=2');
+			expect(line.data.name).to.equal('test');
+			expect(line.details.first.schoolId).to.equal('school');
+			expect(req.originalUrl).to.equal('/passwordRecovery/secretRecoveryToken?page=2');
 		});
 
 		it('should not reuse a copy cut at the depth limit for a shallower path', () => {

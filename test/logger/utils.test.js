@@ -84,9 +84,10 @@ describe('[logger] masking in the feathers logger', () => {
 	});
 
 	it('should fully mask a config secret under a sensitive field name', () => {
-		const line = toJsonLine({ message: 'login', password: SECRET, headers: { authorization: `Bearer ${SECRET}` } });
+		const line = toJsonLine({ message: 'login', clientSecret: SECRET, headers: { authorization: `Bearer ${SECRET}` } });
 
-		expect(line.password).to.equal('[REDACTED]');
+		// clientSecret is shortened by LoggingUtils, not fully redacted like passwords: only the masking order hides it.
+		expect(line.clientSecret).to.equal('[REDACTED]');
 		expect(line.headers.authorization).to.equal('Bearer [REDACTED]');
 		expect(JSON.stringify(line)).not.to.include(SECRET.slice(0, 4));
 	});

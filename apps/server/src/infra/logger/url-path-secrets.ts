@@ -1,7 +1,7 @@
-// This file is also required by the legacy Feathers app from dist (src/middleware/errorHandler.js, src/app.js,
-// src/app.hooks.js).
+// This file is also required by the legacy Feathers app from dist (src/logger/utils.js, src/middleware/errorHandler.js,
+// src/app.js, src/app.hooks.js).
 // Keep it free of path aliases and Nest imports, so it works there without the Nest module system.
-import { isSensitiveName } from './sensitive-value';
+import { isSensitiveQueryParamName } from './sensitive-value';
 
 const REDACTED = '***';
 
@@ -40,13 +40,12 @@ const SECRET_PATH_ROUTES: SecretPathRoute[] = [
 
 /**
  * Query params that carry a credential although their name does not say so.
- * Query params with a sensitive name (accessToken, shareToken, ...; see isSensitiveName) are redacted as well.
+ * Query params with a sensitive name (accessToken, shareToken, pin, X-Amz-Signature, ...; see isSensitiveQueryParamName)
+ * are redacted as well.
  */
 const SECRET_QUERY_PARAMS = [
 	// Nest: DELETE /room-invitation-links?roomInvitationLinkIds=... The same ids as in the path above.
 	'roomInvitationLinkIds',
-	// Feathers: GET /registrationPins?pin=... The registration pin confirms a registration (see registrationPins hooks).
-	'pin',
 ];
 
 // Characters that end a URL in free text: whitespace, quotes, the backslash of a JSON escape (\n, \") and
@@ -94,7 +93,8 @@ const QUERY_PARAM_PATTERN = new RegExp(
 
 const SECRET_QUERY_PARAM_NAMES = new Set(SECRET_QUERY_PARAMS);
 
-const isSecretQueryParam = (name: string): boolean => SECRET_QUERY_PARAM_NAMES.has(name) || isSensitiveName(name);
+const isSecretQueryParam = (name: string): boolean =>
+	SECRET_QUERY_PARAM_NAMES.has(name) || isSensitiveQueryParamName(name);
 
 const SECRET_PARAM_NAMES = new Set(SECRET_PATH_ROUTES.flatMap((route) => route.params));
 

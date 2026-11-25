@@ -1,5 +1,5 @@
 import { type AxiosError } from 'axios';
-import { isSensitiveName } from './sensitive-value';
+import { isSensitiveQueryParamName } from './sensitive-value';
 
 export interface AxiosErrorFields {
 	code?: string;
@@ -9,14 +9,6 @@ export interface AxiosErrorFields {
 	url?: string;
 	responseData: unknown;
 }
-
-// Presigned S3 URLs carry a working signature and the access key id; the URL could be used until it expires.
-const isSensitiveQueryParamName = (name: string): boolean => {
-	const lower = name.toLowerCase();
-
-	// The original name, not lower: the pin rule splits camelCase words (userPin, pinCode).
-	return isSensitiveName(name) || lower.includes('signature') || lower.includes('awsaccesskeyid');
-};
 
 // A loop instead of a regular expression: /\/+$/ backtracks on input with many slashes (polynomial runtime).
 const trimSlashes = (value: string, side: 'start' | 'end'): string => {

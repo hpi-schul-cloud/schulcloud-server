@@ -291,7 +291,9 @@ describe('GlobalErrorFilter', () => {
 				domainErrorHandler.execHttpContext(error, context);
 
 				const loggable = logger.error.mock.calls[0][0];
-				expect(loggable.getLogMessage()).toMatchObject({ data: { request: { params: expectedParams } } });
+				expect(loggable.getLogMessage()).toMatchObject({
+					data: { request: { endpoint: expectedUrl, params: expectedParams } },
+				});
 				// What the logger writes: neither the path secret nor the query secret.
 				const line = renderLogLine(loggable);
 				expect(line).not.toContain(Object.values(params)[0]);

@@ -95,6 +95,15 @@ const maskCredential = (value: string): string => {
 	return `${value.slice(0, 4)}...${value.slice(-2)} [REDACTED]`;
 };
 
+// Query param names: the sensitive names plus those of presigned S3 URLs (X-Amz-Signature, AWSAccessKeyId),
+// which carry a working signature and the access key id; the URL could be used until it expires.
+export const isSensitiveQueryParamName = (name: string): boolean => {
+	const lower = name.toLowerCase();
+
+	// The original name, not lower: the pin rule splits camelCase words (userPin, pinCode).
+	return isSensitiveName(name) || lower.includes('signature') || lower.includes('awsaccesskeyid');
+};
+
 /**
  * Keeps the first and last characters of a secret so that log lines can still be told apart.
  * An auth scheme in front of the secret ("Bearer ...", "Basic ...") stays readable.

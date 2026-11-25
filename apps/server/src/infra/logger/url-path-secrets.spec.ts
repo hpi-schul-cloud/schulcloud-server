@@ -16,6 +16,14 @@ describe('url-path-secrets', () => {
 			['/legacy/v1/passwordRecovery/tok', '/legacy/v1/passwordRecovery/***'],
 			['/users/linkImport/hash?x=1', '/users/linkImport/***?x=1'],
 			['/registrationPins?email=a&pin=1234', '/registrationPins?email=a&pin=***'],
+			[
+				'https://s3.example.com/b/f?X-Amz-Credential=AKIA%2Fx&X-Amz-Signature=deadbeef&X-Amz-Expires=60',
+				'https://s3.example.com/b/f?X-Amz-Credential=***&X-Amz-Signature=***&X-Amz-Expires=60',
+			],
+			[
+				'https://s3.example.com/b/f?AWSAccessKeyId=AKIA&Signature=abc',
+				'https://s3.example.com/b/f?AWSAccessKeyId=***&Signature=***',
+			],
 			['/users/linkImport/$2a$08$ab/CDEF.gh?x=1', '/users/linkImport/***?x=1'],
 			['http://localhost:3030/api/v3/sharetoken/abc123', 'http://localhost:3030/api/v3/sharetoken/***'],
 			['https://host.example/passwordRecovery/tok?x=1', 'https://host.example/passwordRecovery/***?x=1'],

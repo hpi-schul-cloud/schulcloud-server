@@ -22,7 +22,7 @@ const MAX_LEVEL_FILTER = 12;
 
 const getRequestInfo = (req) => {
 	const info = {
-		url: req.originalUrl,
+		url: redactSecretsInText(req.originalUrl),
 		data: req.body,
 		method: req.method,
 	};
@@ -89,7 +89,9 @@ const formatAndLogErrors = (error, req, res, next) => {
 
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
-		// Only the log entry is masked, as a copy: the error and the request stay untouched.
+		// The masking works on a copy of the log entry and does not change the error or the request. Unchanged from
+		// before: filterSecrets filters the secret query of req.originalUrl, and cleanupIncomingMessage in
+		// getErrorLogData converts error.errors.response in place.
 		const logEntry = createLogEntry(() => {
 			const errorLogData = getErrorLogData(error);
 			const requestInfo = getRequestInfo(req);
@@ -329,14 +331,14 @@ const maskedResponseParams = new WeakMap();
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
 		// req.url = filterQuery(req.url);
-		req.originalUrl = redactSecretsInText(filterQuery(req.originalUrl));
+		req.originalUrl = filterQuery(req.originalUrl);
 		if (typeof error === 'object') {
 			let params;
 			try {
 				params = maskLogEntry({ ...error.params });
 			} catch {
-				// Never return unmasked params to the client.
-				params = '<secret>';
+				// Never return unmasked params to the client. An empty object keeps the type clients expect.
+				params = {};
 			}
 			maskedResponseParams.set(error, params);
 		}
