@@ -13,3 +13,4 @@ export { LoggerModule } from './logger.module';
 export { LoggingUtils } from './logging.utils';
 export { createRequestLoggerMiddleware } from './request-logger-middleware';
 export { type LogData } from './types';
+export { redactSecretPathParams, redactSecretQueryParams, redactSecretsInText } from './url-path-secrets';

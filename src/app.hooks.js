@@ -7,6 +7,15 @@ const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { extractJwtData } = require('./utils/extractJwtData');
+const { redactSecretQueryParams, redactSecretsInText } = require('../dist/apps/server/infra/logger/url-path-secrets');
+
+const REDACTED = '***';
+
+// For services like passwordRecovery or link the id is the secret (see the route list in url-path-secrets.ts).
+const redactSecretId = (path, id) => {
+	const url = `/${path}/${id}`;
+	return redactSecretsInText(url) === url ? id : REDACTED;
+};
 
 /**
  * Routes as (regular expressions) which should be ignored for the auto-logout feature.
@@ -46,7 +55,7 @@ const displayInternRequests = (level) => (context) => {
 		method,
 	};
 	if (id) {
-		out.id = id;
+		out.id = redactSecretId(path, id);
 	}
 	Object.keys(params).forEach((key) => {
 		if (params.key) {
@@ -113,13 +122,13 @@ const leadTimeDetection = (context) => {
 			const info = {
 				path,
 				method,
-				query,
+				query: redactSecretQueryParams(query),
 				timeDelta,
-				originalUrl,
+				originalUrl: redactSecretsInText(originalUrl),
 			};
 
 			if (id) {
-				info.id = id;
+				info.id = redactSecretId(path, id);
 			}
 
 			if (headers) {
@@ -180,6 +189,7 @@ function setupAppHooks(app) {
 
 module.exports = {
 	handleAutoLogout,
+	leadTimeDetection,
 	sanitizeDataHook,
 	setupAppHooks,
 };
