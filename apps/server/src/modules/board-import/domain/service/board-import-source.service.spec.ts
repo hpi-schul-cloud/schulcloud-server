@@ -40,12 +40,26 @@ describe(BoardImportSourceService.name, () => {
 				'https://taskcards.app/#/board/1',
 				'https://bra.taskcards.app/#/board/1',
 				'https://a.b.taskcards.app/#/board/1',
-				'https://WWW.TaskCards.de./#/board/1',
-				'https://www.taskcards.de:443/#/board/1',
-			])('should return the TaskCards source with the unchanged link for "%s"', (link: string) => {
+			])('should return the TaskCards source with the link "%s"', (link: string) => {
 				const result = service.resolveSource(link);
 
 				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link });
+			});
+		});
+
+		describe('when the link to a TaskCards host is not in the normalized form', () => {
+			it.each([
+				{ link: 'https://WWW.TaskCards.de./#/board/1', normalizedLink: 'https://www.taskcards.de./#/board/1' },
+				{ link: 'https://www.taskcards.de:443/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
+				{ link: 'https:www.taskcards.de/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
+				{ link: 'https://taskcards.de\\@evil.example/', normalizedLink: 'https://taskcards.de/@evil.example/' },
+				{ link: 'https://taskcards%2ede/board', normalizedLink: 'https://taskcards.de/board' },
+				{ link: 'https://www.task\ncards.de/board', normalizedLink: 'https://www.taskcards.de/board' },
+				{ link: 'https://school\u00AD.taskcards.app/', normalizedLink: 'https://school.taskcards.app/' },
+			])('should return the normalized link for "$link"', ({ link, normalizedLink }) => {
+				const result = service.resolveSource(link);
+
+				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link: normalizedLink });
 			});
 		});
 

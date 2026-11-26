@@ -11,7 +11,7 @@ export class BoardImportSourceService {
 	constructor(@Inject(BOARD_IMPORT_SOURCE_CONFIG_TOKEN) private readonly config: BoardImportSourceConfig) {}
 
 	public resolveSource(link: string): BoardImportSource {
-		const host = this.getHost(link);
+		const { host, normalizedLink } = this.parseLink(link);
 		const boardHostsBySourceType: Record<BoardImportSourceType, string[]> = {
 			[BoardImportSourceType.TASKCARDS]: this.config.taskcardsBoardHosts,
 		};
@@ -23,12 +23,13 @@ export class BoardImportSourceService {
 			throw new BoardImportSourceUnknownLoggableException();
 		}
 
-		const source: BoardImportSource = { type: sourceType, link };
+		// The normalized link has only one reading, so a later request cannot go to another host than the checked one.
+		const source: BoardImportSource = { type: sourceType, link: normalizedLink };
 
 		return source;
 	}
 
-	private getHost(link: string): string {
+	private parseLink(link: string): { host: string; normalizedLink: string } {
 		if (!URL.canParse(link)) {
 			throw new BoardImportLinkInvalidLoggableException();
 		}
@@ -43,7 +44,9 @@ export class BoardImportSourceService {
 			throw new BoardImportLinkInvalidLoggableException();
 		}
 
-		return host;
+		const result = { host, normalizedLink: url.href };
+
+		return result;
 	}
 
 	private isHostInEntry(host: string, entry: string): boolean {
