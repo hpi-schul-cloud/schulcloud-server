@@ -1,13 +1,23 @@
+import { RuntimeConfigService } from '@infra/runtime-config';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '../board-import.config';
-import { type BoardImportJob, BoardImportJobService, type BoardImportTarget } from '../domain';
+import {
+	BOARD_IMPORT_SOURCE_SWITCH_KEYS,
+	type BoardImportJob,
+	BoardImportJobService,
+	BoardImportSourceDisabledLoggableException,
+	BoardImportSourceService,
+	type BoardImportTarget,
+} from '../domain';
 
 @Injectable()
 export class BoardImportUc {
 	constructor(
 		private readonly boardImportJobService: BoardImportJobService,
+		private readonly boardImportSourceService: BoardImportSourceService,
+		private readonly runtimeConfigService: RuntimeConfigService,
 		@Inject(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly config: BoardImportPublicApiConfig
 	) {}
 
@@ -16,7 +26,15 @@ export class BoardImportUc {
 			throw new FeatureDisabledLoggableException('FEATURE_BOARD_IMPORT_ENABLED');
 		}
 
-		const job = await this.boardImportJobService.create(userId, link, target);
+		const source = this.boardImportSourceService.resolveSource(link);
+
+		const switchKey = BOARD_IMPORT_SOURCE_SWITCH_KEYS[source.type];
+		const isSourceEnabled = await this.runtimeConfigService.getBoolean(switchKey);
+		if (!isSourceEnabled) {
+			throw new BoardImportSourceDisabledLoggableException(source.type);
+		}
+
+		const job = await this.boardImportJobService.create(userId, source, target);
 
 		return job;
 	}

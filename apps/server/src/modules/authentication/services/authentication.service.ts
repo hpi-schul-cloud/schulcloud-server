@@ -1,11 +1,10 @@
-import { CreateJwtPayload, JwtPayloadBuilder, JwtPayloadVo } from '@infra/auth-guard';
+import { JwtPayloadBuilder, JwtPayloadVo } from '@infra/auth-guard';
+import { JwtIssuerService } from '@infra/jwt-issuer';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { Logger } from '@infra/logger';
 import { Account, AccountService } from '@modules/account';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { randomUUID } from 'crypto';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
@@ -14,7 +13,7 @@ import { CurrentUserMapper } from '../mapper';
 @Injectable()
 export class AuthenticationService {
 	constructor(
-		private readonly jwtService: JwtService,
+		private readonly jwtIssuerService: JwtIssuerService,
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig,
@@ -43,24 +42,6 @@ export class AuthenticationService {
 		return account;
 	}
 
-	public async generateJwtAndAddToWhitelist(
-		createJwtPayload: CreateJwtPayload,
-		expiresIn: number | string
-	): Promise<string> {
-		const jti = randomUUID();
-		const options: JwtSignOptions = {
-			subject: createJwtPayload.accountId,
-			jwtid: jti,
-			expiresIn: expiresIn as JwtSignOptions['expiresIn'], // Overwrites the value from the JwtModuleOptions.
-		};
-		const accessToken = this.jwtService.sign(createJwtPayload, options);
-
-		// Used legacy code and solve timeout in redis over JWT_EXTENDED_TIMEOUT_SECONDS
-		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
-
-		return accessToken;
-	}
-
 	public async generateSupportJwt(supportUser: User, targetUser: User): Promise<string> {
 		const targetUserAccount = await this.accountService.findByUserIdOrFail(targetUser.id);
 		const currentUser = CurrentUserMapper.userToICurrentUser(
@@ -72,7 +53,7 @@ export class AuthenticationService {
 		const createJwtPayload = new JwtPayloadBuilder(currentUser).asSupportUser(supportUser.id).build();
 		const expiresIn = this.config.jwtLifetimeSupportSeconds;
 
-		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload, expiresIn);
+		const jwtToken = await this.jwtIssuerService.generateJwtAndAddToWhitelist(createJwtPayload, expiresIn);
 
 		this.logger.info(new ShdUserCreateTokenLoggable(supportUser.id, targetUser.id, expiresIn));
 

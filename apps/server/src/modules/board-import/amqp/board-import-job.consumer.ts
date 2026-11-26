@@ -6,7 +6,7 @@ import { type Channel, type ConsumeMessage } from 'amqplib';
 import { isMongoId } from 'class-validator';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '../board-import-exchange.config';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../board-import.config';
-import { BoardImportJobProcessService } from '../domain';
+import { BoardImportJobProcessService } from '../domain/service/board-import-job-process.service';
 import { type BoardImportJobMessage } from './board-import-job.message';
 import { BoardImportEvents } from './board-import.exchange';
 

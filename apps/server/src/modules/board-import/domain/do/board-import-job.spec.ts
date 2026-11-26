@@ -19,7 +19,7 @@ describe(BoardImportJob.name, () => {
 					id: job.id,
 					status: job.status,
 					userId: job.userId,
-					link: job.link,
+					source: job.source,
 					target: job.target,
 					expiresAt: job.expiresAt,
 					attempts: job.attempts,
@@ -27,6 +27,47 @@ describe(BoardImportJob.name, () => {
 				};
 
 				expect(result).toEqual(props);
+			});
+		});
+	});
+
+	describe('getDeadline', () => {
+		describe('when the job has started', () => {
+			const setup = () => {
+				const startedAt = new Date('2026-01-01T00:00:00.000Z');
+				const now = new Date('2026-01-01T00:10:00.000Z');
+				const maxDurationInMs = 25 * 60 * 1000;
+				const job = boardImportJobFactory.build({ startedAt });
+				const expected = new Date(startedAt.getTime() + maxDurationInMs);
+
+				return { job, now, maxDurationInMs, expected };
+			};
+
+			it('should return the first start plus the maximum duration', () => {
+				const { job, now, maxDurationInMs, expected } = setup();
+
+				const result = job.getDeadline(maxDurationInMs, now);
+
+				expect(result).toEqual(expected);
+			});
+		});
+
+		describe('when the job has not started', () => {
+			const setup = () => {
+				const now = new Date('2026-01-01T00:10:00.000Z');
+				const maxDurationInMs = 25 * 60 * 1000;
+				const job = boardImportJobFactory.build({ startedAt: undefined });
+				const expected = new Date(now.getTime() + maxDurationInMs);
+
+				return { job, now, maxDurationInMs, expected };
+			};
+
+			it('should return the given time plus the maximum duration', () => {
+				const { job, now, maxDurationInMs, expected } = setup();
+
+				const result = job.getDeadline(maxDurationInMs, now);
+
+				expect(result).toEqual(expected);
 			});
 		});
 	});

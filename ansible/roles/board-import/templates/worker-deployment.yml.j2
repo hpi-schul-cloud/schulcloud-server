@@ -67,6 +67,11 @@ spec:
             name: board-import-worker-configmap
         - secretRef:
             name: board-import-secret
+{# Only the worker gets this secret. The import API must not get the JWT private key. #}
+        - secretRef:
+            name: board-import-worker-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['/nodejs/bin/node', 'dist/apps/server/apps/board-import-worker.app']
         readinessProbe:
           httpGet:

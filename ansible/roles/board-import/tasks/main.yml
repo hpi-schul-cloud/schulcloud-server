@@ -47,6 +47,16 @@
   tags:
     - deployment
 
+- name: Board import worker secret by 1Password
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: worker-onepassword.yml.j2
+    state: "{{ 'present' if WITH_BOARD_IMPORT | bool else 'absent' }}"
+  when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+  tags:
+    - 1password
+
 - name: Board import worker configmap
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
