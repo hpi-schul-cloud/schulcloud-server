@@ -36,11 +36,12 @@ export class BoardImportSourceService {
 
 		// The URL parser makes the host lowercase and converts each numeric form of an IPv4 address to the dotted form.
 		const url = new URL(link);
-		const host = url.hostname.replace(/\.$/, '');
+		const host = url.hostname;
+		const hasTrailingDot = host.endsWith('.');
 		const hasCredentials = url.username !== '' || url.password !== '';
 		const isIpAddress = host.startsWith('[') || isIP(host) !== 0;
 
-		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || isIpAddress) {
+		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || isIpAddress || hasTrailingDot) {
 			throw new BoardImportLinkInvalidLoggableException();
 		}
 

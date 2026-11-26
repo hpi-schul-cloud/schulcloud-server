@@ -49,7 +49,7 @@ describe(BoardImportSourceService.name, () => {
 
 		describe('when the link to a TaskCards host is not in the normalized form', () => {
 			it.each([
-				{ link: 'https://WWW.TaskCards.de./#/board/1', normalizedLink: 'https://www.taskcards.de./#/board/1' },
+				{ link: 'https://WWW.TaskCards.de/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
 				{ link: 'https://www.taskcards.de:443/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
 				{ link: 'https:www.taskcards.de/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
 				{ link: 'https://taskcards.de\\@evil.example/', normalizedLink: 'https://taskcards.de/@evil.example/' },
@@ -75,6 +75,9 @@ describe(BoardImportSourceService.name, () => {
 				'https://user:pw@www.taskcards.de/',
 				'https://taskcards.de@evil.example/',
 				'https://www.taskcards.de:8443/',
+				'https://www.taskcards.de./#/board/1',
+				'https://www.taskcards.de\u3002/#/board/1',
+				'https://www.taskcards.de\uFF61/#/board/1',
 				'https://127.0.0.1/',
 				'https://10.0.0.5/',
 				'https://169.254.169.254/',

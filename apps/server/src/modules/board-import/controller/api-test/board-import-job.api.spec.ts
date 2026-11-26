@@ -211,6 +211,11 @@ describe('Board Import Controller (API)', () => {
 			{ name: 'has an IP address as host', link: 'https://127.0.0.1/board', type: 'BOARD_IMPORT_LINK_INVALID' },
 			{ name: 'has a port', link: 'https://www.taskcards.de:8443/board', type: 'BOARD_IMPORT_LINK_INVALID' },
 			{
+				name: 'has a host with a dot at the end',
+				link: 'https://www.taskcards.de\u3002/board',
+				type: 'BOARD_IMPORT_LINK_INVALID',
+			},
+			{
 				name: 'does not point to a known source',
 				link: 'https://example.com/board',
 				type: 'BOARD_IMPORT_SOURCE_UNKNOWN',
