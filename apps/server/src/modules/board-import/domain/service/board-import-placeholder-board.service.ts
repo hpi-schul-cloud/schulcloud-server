@@ -41,7 +41,7 @@ export class BoardImportPlaceholderBoardService {
 				)
 			).id;
 
-		const text = `<p>${escape(job.link)}</p>`;
+		const text = `<p>${escape(job.source.link)}</p>`;
 		await session.call((token) =>
 			this.cardClient.updateCardElement(token, elementId, {
 				data: { type: ContentElementType.RICH_TEXT, content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 } },

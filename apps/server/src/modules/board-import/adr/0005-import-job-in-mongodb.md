@@ -14,7 +14,7 @@ The import runs in the context of the user. The imported content must belong to 
 
 - Each import is one import job in the collection `board-import-jobs`, in the MongoDB of the instance.
 - The job is the only place that holds the state of an import. The RabbitMQ message contains only the job ID.
-- The job contains the user ID, the share link, the target (room or course) that gets the board, the status (`waiting`, `running`, `finished`, `failed`) and the expiry date.
+- The job contains all data of the import, for example the user ID, the share link and the status.
 - The import API reads the user ID from the JWT when the import starts. The user ID does not come from the request body or from the source.
 - Only the user who started a job can read it. For a job of another user, the API gives the same answer as for a job that does not exist (404).
 

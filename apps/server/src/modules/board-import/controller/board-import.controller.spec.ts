@@ -38,7 +38,7 @@ describe(BoardImportController.name, () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build();
 				const job = boardImportJobFactory.build({ userId: currentUser.userId });
-				const bodyParams = { link: job.link, targetType: job.target.type, targetId: job.target.id };
+				const bodyParams = { link: job.source.link, targetType: job.target.type, targetId: job.target.id };
 				boardImportUc.startImport.mockResolvedValueOnce(job);
 
 				return { currentUser, job, bodyParams };
@@ -49,7 +49,7 @@ describe(BoardImportController.name, () => {
 
 				await controller.startImport(bodyParams, currentUser);
 
-				expect(boardImportUc.startImport).toHaveBeenCalledWith(currentUser.userId, job.link, job.target);
+				expect(boardImportUc.startImport).toHaveBeenCalledWith(currentUser.userId, job.source.link, job.target);
 			});
 
 			it('should return the id and the status of the job', async () => {

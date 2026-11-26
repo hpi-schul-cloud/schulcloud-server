@@ -1,10 +1,23 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
-import { IsBoolean, IsInt, IsNumber, IsPositive, IsUrl, Max, Min } from 'class-validator';
+import { CommaSeparatedStringToArray } from '@shared/controller/transformer/comma-separated-string-to-array.transformer';
+import {
+	ArrayNotEmpty,
+	IsArray,
+	IsBoolean,
+	IsInt,
+	IsNumber,
+	IsPositive,
+	IsUrl,
+	Matches,
+	Max,
+	Min,
+} from 'class-validator';
 
 export const BOARD_IMPORT_CONFIG_TOKEN = 'BOARD_IMPORT_CONFIG_TOKEN';
 export const BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN = 'BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN';
 export const BOARD_IMPORT_SERVER_API_CONFIG_TOKEN = 'BOARD_IMPORT_SERVER_API_CONFIG_TOKEN';
+export const BOARD_IMPORT_SOURCE_CONFIG_TOKEN = 'BOARD_IMPORT_SOURCE_CONFIG_TOKEN';
 
 @Configuration()
 export class BoardImportPublicApiConfig {
@@ -56,4 +69,18 @@ export class BoardImportConfig {
 	@Min(0)
 	@Max(MAX_RETRY_DELAY_IN_SECONDS)
 	public jobRetryDelayInSeconds = 10;
+}
+
+// A host name in lowercase, or "*." plus a domain for all its subdomains. The last label starts with a letter,
+// so an IPv4 address does not match.
+const HOST_ENTRY_PATTERN = /^(\*\.)?([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]([a-z0-9-]*[a-z0-9])?$/;
+
+@Configuration()
+export class BoardImportSourceConfig {
+	@ConfigProperty('BOARD_IMPORT_TASKCARDS_BOARD_HOSTS')
+	@CommaSeparatedStringToArray()
+	@IsArray()
+	@ArrayNotEmpty()
+	@Matches(HOST_ENTRY_PATTERN, { each: true })
+	public taskcardsBoardHosts: string[] = ['taskcards.de', '*.taskcards.de', 'taskcards.app', '*.taskcards.app'];
 }
