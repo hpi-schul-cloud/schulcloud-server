@@ -15,6 +15,7 @@ const MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND;
 // A request that starts just before the deadline of the job must still be valid when the API checks it.
 const LIFETIME_MARGIN_IN_SECONDS = 60;
 // Makes the whitelist entries of the worker distinguishable from the sessions of users. See ADR 0011.
+// The check-key-groups pattern of the session Valkey exporter in dof_app_deploy must match this prefix.
 const TOKEN_ID_PREFIX = 'import_';
 
 @Injectable()

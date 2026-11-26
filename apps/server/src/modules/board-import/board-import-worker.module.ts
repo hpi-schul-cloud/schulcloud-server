@@ -1,7 +1,6 @@
 import { CommonCartridgeClientsModule } from '@infra/common-cartridge-clients/common-cartridge-clients.module';
 import { ConfigurationModule } from '@infra/configuration';
 import { JwtIssuerModule } from '@infra/jwt-issuer';
-import { JwtWhitelistModule } from '@infra/jwt-whitelist';
 import { LoggerModule } from '@infra/logger';
 import { AccountModule } from '@modules/account';
 import { UserModule } from '@modules/user';
@@ -29,7 +28,6 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		UserModule,
 		AccountModule,
 		JwtIssuerModule,
-		JwtWhitelistModule.register(),
 		CommonCartridgeClientsModule.register(BOARD_IMPORT_SERVER_API_CONFIG_TOKEN, BoardImportServerApiConfig),
 	],
 	providers: [

@@ -32,8 +32,9 @@ export class BoardImportPlaceholderBoardService {
 		const { boardId, columns } = await this.findOrCreateBoard(job, session);
 		const column = columns[0] ?? (await session.call((token) => this.boardsClient.createBoardColumn(token, boardId)));
 		const card = await this.findOrCreateCard(column, session);
+		const textElement = card.elements.find((element) => element.type === ContentElementType.RICH_TEXT);
 		const elementId =
-			card.elements[0]?.id ??
+			textElement?.id ??
 			(
 				await session.call((token) =>
 					this.cardClient.createCardElement(token, card.id, { type: ContentElementType.RICH_TEXT })
@@ -92,17 +93,27 @@ export class BoardImportPlaceholderBoardService {
 	}
 
 	private async findOrCreateCard(column: ColumnResponse, session: BoardImportUserSession): Promise<CardResponse> {
+		const existingCard = await this.findFirstCard(column, session);
+		const card = existingCard ?? (await session.call((token) => this.columnClient.createCard(token, column.id, {})));
+
+		return card;
+	}
+
+	private async findFirstCard(
+		column: ColumnResponse,
+		session: BoardImportUserSession
+	): Promise<CardResponse | undefined> {
 		const cardId = column.cards[0]?.cardId;
 
 		if (cardId === undefined) {
-			const createdCard = await session.call((token) => this.columnClient.createCard(token, column.id, {}));
-
-			return createdCard;
+			return undefined;
 		}
 
+		// The list leaves out a card that does not exist anymore or that the user cannot read.
 		const cards = await session.call((token) => this.cardClient.getAllBoardCardsByIds(token, [cardId]));
+		const card = cards.data.at(0);
 
-		return cards.data[0];
+		return card;
 	}
 
 	private async createBoard(job: BoardImportJob, session: BoardImportUserSession): Promise<EntityId> {

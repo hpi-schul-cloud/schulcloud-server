@@ -9,6 +9,7 @@ import {
 	type CardResponse,
 	ColumnClientAdapter,
 	type ColumnResponse,
+	ContentElementType,
 } from '@infra/common-cartridge-clients';
 import { HttpStatus } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -187,7 +188,9 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<BoardResponse>({ columns: [{ id: columnId, cards: [{ cardId }] }] })
 				);
 				cardClient.getAllBoardCardsByIds.mockResolvedValueOnce(
-					createMock<CardListResponse>({ data: [{ elements: [{ id: elementId }] }] })
+					createMock<CardListResponse>({
+						data: [{ elements: [{ id: elementId, type: ContentElementType.RICH_TEXT }] }],
+					})
 				);
 
 				return { job, session, token, boardId, cardId, elementId };
@@ -220,6 +223,69 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 				await service.write(job, session);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
+			});
+		});
+
+		describe('when the card of the board cannot be read', () => {
+			const setup = () => {
+				const { token, session } = setupSession();
+				const { boardId, columnId, cardId, elementId } = setupIds();
+				const newCardId = new ObjectId().toHexString();
+				const job = boardImportJobFactory.build({ boardId });
+
+				boardsClient.getBoardSkeletonById.mockResolvedValueOnce(
+					createMock<BoardResponse>({ columns: [{ id: columnId, cards: [{ cardId }] }] })
+				);
+				cardClient.getAllBoardCardsByIds.mockResolvedValueOnce(createMock<CardListResponse>({ data: [] }));
+				columnClient.createCard.mockResolvedValueOnce(createMock<CardResponse>({ id: newCardId, elements: [] }));
+				cardClient.createCardElement.mockResolvedValueOnce(
+					createMock<CardControllerCreateElement201Response>({ id: elementId })
+				);
+
+				return { job, session, token, columnId, newCardId, elementId };
+			};
+
+			it('should create a new card and write the text into its element', async () => {
+				const { job, session, token, columnId, newCardId, elementId } = setup();
+
+				await service.write(job, session);
+
+				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, {});
+				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, newCardId, expect.anything());
+				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
+			});
+		});
+
+		describe('when the card of the board has no text element', () => {
+			const setup = () => {
+				const { token, session } = setupSession();
+				const { boardId, columnId, cardId, elementId } = setupIds();
+				const otherElementId = new ObjectId().toHexString();
+				const job = boardImportJobFactory.build({ boardId });
+
+				boardsClient.getBoardSkeletonById.mockResolvedValueOnce(
+					createMock<BoardResponse>({ columns: [{ id: columnId, cards: [{ cardId }] }] })
+				);
+				cardClient.getAllBoardCardsByIds.mockResolvedValueOnce(
+					createMock<CardListResponse>({
+						data: [{ id: cardId, elements: [{ id: otherElementId, type: ContentElementType.FILE }] }],
+					})
+				);
+				cardClient.createCardElement.mockResolvedValueOnce(
+					createMock<CardControllerCreateElement201Response>({ id: elementId })
+				);
+
+				return { job, session, token, cardId, elementId, otherElementId };
+			};
+
+			it('should create a text element and write the text into it', async () => {
+				const { job, session, token, cardId, elementId, otherElementId } = setup();
+
+				await service.write(job, session);
+
+				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, cardId, expect.anything());
+				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
+				expect(cardClient.updateCardElement).not.toHaveBeenCalledWith(token, otherElementId, expect.anything());
 			});
 		});
 
