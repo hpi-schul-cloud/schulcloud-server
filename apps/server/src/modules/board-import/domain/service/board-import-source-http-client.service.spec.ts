@@ -55,9 +55,12 @@ describe(BoardImportSourceHttpClientService.name, () => {
 			signal: new AbortController().signal,
 			...props,
 		};
-		sourceService.isLinkOfSource.mockReturnValue(true);
 
 		return { request };
+	};
+
+	const mockLinkChecks = (...results: boolean[]): void => {
+		results.forEach((result) => sourceService.isLinkOfSource.mockReturnValueOnce(result));
 	};
 
 	const mockResponse = (status: number, data = '', location?: string): void => {
@@ -82,18 +85,20 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		describe('when the source answers with status 200', () => {
 			const setup = () => {
 				const { request } = setupRequest();
+				const status = 200;
 				const body = '{"data":{}}';
-				mockResponse(200, body);
+				mockLinkChecks(true);
+				mockResponse(status, body);
 
-				return { request, body };
+				return { request, status, body };
 			};
 
 			it('should return the status and the body', async () => {
-				const { request, body } = setup();
+				const { request, status, body } = setup();
 
 				const result = await service.request(request);
 
-				expect(result).toEqual({ status: 200, body });
+				expect(result).toEqual({ status, body });
 			});
 
 			it('should check the URL for the source of the request', async () => {
@@ -144,9 +149,16 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the source answers with a status for a temporary error', () => {
-			it.each([408, 429, 500, 503])('should throw an error that permits a new attempt for %s', async (status) => {
+			const setup = (status: number) => {
 				const { request } = setupRequest();
+				mockLinkChecks(true);
 				mockResponse(status, 'error');
+
+				return { request };
+			};
+
+			it.each([408, 429, 500, 503])('should throw an error that permits a new attempt for %s', async (status) => {
+				const { request } = setup(status);
 
 				const error = await service.request(request).catch((e: unknown) => e);
 
@@ -156,54 +168,62 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the source answers with another error status', () => {
-			it.each([409, 404, 403])('should return the status %s and not throw', async (status: number) => {
+			const setup = (status: number) => {
 				const { request } = setupRequest();
-				mockResponse(status, 'error');
+				const body = 'error';
+				mockLinkChecks(true);
+				mockResponse(status, body);
+
+				return { request, body };
+			};
+
+			it.each([409, 404, 403])('should return the status %s and not throw', async (status: number) => {
+				const { request, body } = setup(status);
 
 				const result = await service.request(request);
 
-				expect(result).toEqual({ status, body: 'error' });
+				expect(result).toEqual({ status, body });
 			});
 		});
 
 		describe('when the source redirects with status 302 to the same host', () => {
 			const setup = () => {
 				const { request } = setupRequest();
-				mockResponse(302, '', 'https://www.taskcards.de/other');
-				mockResponse(200, 'final');
+				const location = 'https://www.taskcards.de/other';
+				const finalResponse = { status: 200, body: 'final' };
+				mockLinkChecks(true, true);
+				mockResponse(302, '', location);
+				mockResponse(finalResponse.status, finalResponse.body);
 
-				return { request };
+				return { request, location, finalResponse };
 			};
 
 			it('should return the answer of the redirect target', async () => {
-				const { request } = setup();
+				const { request, finalResponse } = setup();
 
 				const result = await service.request(request);
 
-				expect(result).toEqual({ status: 200, body: 'final' });
+				expect(result).toEqual(finalResponse);
 			});
 
 			it('should check the redirect target', async () => {
-				const { request } = setup();
+				const { request, location } = setup();
 
 				await service.request(request);
 
 				expect(sourceService.isLinkOfSource).toHaveBeenCalledTimes(2);
-				expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(
-					'https://www.taskcards.de/other',
-					request.sourceType
-				);
+				expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(location, request.sourceType);
 			});
 
 			it('should send a GET request without body and with the headers', async () => {
-				const { request } = setup();
+				const { request, location } = setup();
 
 				await service.request(request);
 
 				expect(getSentConfig(1)).toEqual(
 					expect.objectContaining({
 						method: 'GET',
-						url: 'https://www.taskcards.de/other',
+						url: location,
 						headers: request.headers,
 						data: undefined,
 					})
@@ -212,10 +232,17 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the source redirects with status 307', () => {
-			it('should keep the method and the body', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
+				mockLinkChecks(true, true);
 				mockResponse(307, '', 'https://www.taskcards.de/other');
 				mockResponse(200, 'final');
+
+				return { request };
+			};
+
+			it('should keep the method and the body', async () => {
+				const { request } = setup();
 
 				await service.request(request);
 
@@ -224,22 +251,37 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the redirect target is a relative path', () => {
-			it('should resolve it against the URL of the request', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
+				const resolvedUrl = 'https://www.taskcards.de/other';
+				mockLinkChecks(true, true);
 				mockResponse(308, '', '/other');
 				mockResponse(200, 'final');
 
+				return { request, resolvedUrl };
+			};
+
+			it('should resolve it against the URL of the request', async () => {
+				const { request, resolvedUrl } = setup();
+
 				await service.request(request);
 
-				expect(getSentConfig(1)).toEqual(expect.objectContaining({ url: 'https://www.taskcards.de/other' }));
+				expect(getSentConfig(1)).toEqual(expect.objectContaining({ url: resolvedUrl }));
 			});
 		});
 
 		describe('when the redirect target is another host of the source', () => {
-			it('should not send the headers of the caller', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
+				mockLinkChecks(true, true);
 				mockResponse(307, '', 'https://bra.taskcards.app/graphql');
 				mockResponse(200, 'final');
+
+				return { request };
+			};
+
+			it('should not send the headers of the caller', async () => {
+				const { request } = setup();
 
 				await service.request(request);
 
@@ -248,10 +290,15 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the URL of the request is not a link of the source', () => {
-			it('should reject the request and send nothing', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
-				sourceService.isLinkOfSource.mockReset();
-				sourceService.isLinkOfSource.mockReturnValueOnce(false);
+				mockLinkChecks(false);
+
+				return { request };
+			};
+
+			it('should reject the request and send nothing', async () => {
+				const { request } = setup();
 
 				await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
 
@@ -260,14 +307,18 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the redirect target is not a link of the source', () => {
+			const setup = (location: string) => {
+				const { request } = setupRequest();
+				mockLinkChecks(true, false);
+				mockResponse(302, '', location);
+
+				return { request };
+			};
+
 			it.each(['https://169.254.169.254/', 'http://www.taskcards.de/', 'https://evil.example/', 'https://api-svc/'])(
 				'should reject the redirect to "%s" and send no second request',
 				async (location: string) => {
-					const { request } = setupRequest();
-					sourceService.isLinkOfSource.mockReset();
-					sourceService.isLinkOfSource.mockReturnValueOnce(true);
-					sourceService.isLinkOfSource.mockReturnValueOnce(false);
-					mockResponse(302, '', location);
+					const { request } = setup(location);
 
 					await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
 
@@ -278,70 +329,114 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the agent rejects an address of the host', () => {
-			it('should reject the request', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
+				mockLinkChecks(true);
 				axiosInstance.request.mockRejectedValueOnce(
 					new AxiosError(
 						'DNS lookup 10.0.0.5(family:4, host:www.taskcards.de) is not allowed. Because, It is private IP address.'
 					)
 				);
 
+				return { request };
+			};
+
+			it('should reject the request', async () => {
+				const { request } = setup();
+
 				await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
 			});
 		});
 
 		describe('when the redirect target is not a URL', () => {
-			it('should reject the request', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
+				mockLinkChecks(true);
 				mockResponse(302, '', 'https://');
+
+				return { request };
+			};
+
+			it('should reject the request', async () => {
+				const { request } = setup();
 
 				await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
 			});
 		});
 
 		describe('when a redirect status has no location', () => {
-			it('should return the answer', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
-				mockResponse(302, 'no location');
+				const response = { status: 302, body: 'no location' };
+				mockLinkChecks(true);
+				mockResponse(response.status, response.body);
+
+				return { request, response };
+			};
+
+			it('should return the answer', async () => {
+				const { request, response } = setup();
 
 				const result = await service.request(request);
 
-				expect(result).toEqual({ status: 302, body: 'no location' });
+				expect(result).toEqual(response);
 			});
 		});
 
 		describe('when the source redirects more often than permitted', () => {
-			it('should reject the request after the permitted redirects', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
-				for (let i = 0; i <= config.maxRedirects; i += 1) {
+				const requestCount = config.maxRedirects + 1;
+				mockLinkChecks(...Array<boolean>(requestCount).fill(true));
+				for (let i = 0; i < requestCount; i += 1) {
 					mockResponse(302, '', '/again');
 				}
 
-				await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
+				return { request, requestCount };
+			};
 
-				expect(axiosInstance.request).toHaveBeenCalledTimes(config.maxRedirects + 1);
+			it('should reject the request after the permitted redirects', async () => {
+				const { request, requestCount } = setup();
+
+				await expectRejected(request, BoardImportJobLogReason.SOURCE_TOO_MANY_REDIRECTS);
+
+				expect(axiosInstance.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
 
 		describe('when the answer is larger than the limit', () => {
-			it('should reject the request', async () => {
+			const setup = () => {
 				const { request } = setupRequest();
+				mockLinkChecks(true);
 				axiosInstance.request.mockRejectedValueOnce(
 					new AxiosError('maxContentLength size of 10485760 exceeded', AxiosError.ERR_BAD_RESPONSE)
 				);
+
+				return { request };
+			};
+
+			it('should reject the request', async () => {
+				const { request } = setup();
 
 				await expectRejected(request, BoardImportJobLogReason.SOURCE_RESPONSE_TOO_LARGE);
 			});
 		});
 
 		describe('when the request fails with a network error or a timeout', () => {
+			const setup = (code: string) => {
+				const { request } = setupRequest();
+				mockLinkChecks(true);
+				axiosInstance.request.mockRejectedValueOnce(
+					new AxiosError(`failed for ${request.url}`, code, { url: request.url, headers: new AxiosHeaders() })
+				);
+
+				return { request };
+			};
+
 			it.each([AxiosError.ECONNABORTED, AxiosError.ETIMEDOUT, 'ECONNRESET'])(
 				'should throw an error without the URL for the code %s',
 				async (code: string) => {
-					const { request } = setupRequest();
-					axiosInstance.request.mockRejectedValueOnce(
-						new AxiosError(`failed for ${request.url}`, code, { url: request.url, headers: new AxiosHeaders() })
-					);
+					const { request } = setup(code);
 
 					const error = await service.request(request).catch((e: unknown) => e);
 
@@ -355,10 +450,16 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the signal is aborted', () => {
-			it('should throw before the first request', async () => {
+			const setup = () => {
 				const abortController = new AbortController();
 				abortController.abort();
 				const { request } = setupRequest({ signal: abortController.signal });
+
+				return { request };
+			};
+
+			it('should throw before the first request', async () => {
+				const { request } = setup();
 
 				await expect(service.request(request)).rejects.toThrow();
 
@@ -427,7 +528,7 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 		config.requestTimeoutInSeconds = new BoardImportSourceRequestConfig().requestTimeoutInSeconds;
 	});
 
-	const setup = (url: string) => {
+	const setupRequest = (url: string, linkCheckCount = 1) => {
 		const request: BoardImportSourceRequest = {
 			method: 'POST',
 			url,
@@ -435,14 +536,22 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 			sourceType: BoardImportSourceType.TASKCARDS,
 			signal: new AbortController().signal,
 		};
-		sourceService.isLinkOfSource.mockReturnValue(true);
+		for (let i = 0; i < linkCheckCount; i += 1) {
+			sourceService.isLinkOfSource.mockReturnValueOnce(true);
+		}
 
 		return { request };
 	};
 
 	describe('when the host of an https URL resolves to an address that is not public', () => {
+		const setup = () => {
+			const { request } = setupRequest('https://localhost/graphql');
+
+			return { request };
+		};
+
 		it('should reject the request', async () => {
-			const { request } = setup('https://localhost/graphql');
+			const { request } = setup();
 
 			const error = await service.request(request).catch((e: unknown) => e);
 
@@ -452,9 +561,15 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 	});
 
 	describe('when the answer is larger than the limit', () => {
-		it('should reject the request', async () => {
-			const { request } = setup(`${serverUrl}/large`);
+		const setup = () => {
+			const { request } = setupRequest(`${serverUrl}/large`);
 			config.maxResponseSizeInBytes = 1000;
+
+			return { request };
+		};
+
+		it('should reject the request', async () => {
+			const { request } = setup();
 
 			const error = await service.request(request).catch((e: unknown) => e);
 
@@ -464,9 +579,15 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 	});
 
 	describe('when the server sends the answer slowly and without end', () => {
-		it('should stop the request at the time limit with an error that permits a new attempt', async () => {
-			const { request } = setup(`${serverUrl}/slow`);
+		const setup = () => {
+			const { request } = setupRequest(`${serverUrl}/slow`);
 			config.requestTimeoutInSeconds = 1;
+
+			return { request };
+		};
+
+		it('should stop the request at the time limit with an error that permits a new attempt', async () => {
+			const { request } = setup();
 
 			const error = await service.request(request).catch((e: unknown) => e);
 
@@ -476,13 +597,21 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 	});
 
 	describe('when the server redirects', () => {
+		const setup = () => {
+			const { request } = setupRequest(`${serverUrl}/redirect`, 2);
+			const targetUrl = `${serverUrl}/final`;
+			const expectedResult = { status: 200, body: 'GET /final' };
+
+			return { request, targetUrl, expectedResult };
+		};
+
 		it('should follow the redirect itself and return the answer of the target', async () => {
-			const { request } = setup(`${serverUrl}/redirect`);
+			const { request, targetUrl, expectedResult } = setup();
 
 			const result = await service.request(request);
 
-			expect(result).toEqual({ status: 200, body: 'GET /final' });
-			expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(`${serverUrl}/final`, request.sourceType);
+			expect(result).toEqual(expectedResult);
+			expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(targetUrl, request.sourceType);
 		});
 	});
 });

@@ -145,11 +145,17 @@ describe(BoardImportRunnerService.name, () => {
 		});
 
 		describe('when the read of the source fails with a temporary error', () => {
-			it('should pass the error and write no board', async () => {
+			const setup = () => {
 				const job = boardImportJobFactory.build();
 				const { signal } = new AbortController();
 				const error = new Error('TaskCards request failed');
 				taskcardsService.readBoard.mockRejectedValueOnce(error);
+
+				return { job, signal, error };
+			};
+
+			it('should pass the error and write no board', async () => {
+				const { job, signal, error } = setup();
 
 				await expect(service.run(job, signal)).rejects.toBe(error);
 

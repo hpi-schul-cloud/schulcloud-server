@@ -28,7 +28,8 @@ const BOARD_QUERY_RETRY_DELAYS_IN_MS = [300, 800];
 
 type JsonObject = Record<string, unknown>;
 
-const isJsonObject = (value: unknown): value is JsonObject => typeof value === 'object' && value !== null;
+const isJsonObject = (value: unknown): value is JsonObject =>
+	typeof value === 'object' && value !== null && !Array.isArray(value);
 
 // Reads a board the same way as the web app of TaskCards does for a visitor. TaskCards has no official interface.
 @Injectable()

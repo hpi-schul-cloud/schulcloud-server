@@ -34,6 +34,10 @@ describe('parseTaskcardsLink', () => {
 				link: `https://bra.taskcards.app/#/board/${boardId}`,
 				expected: { boardId, token: undefined, baseUrl: 'https://bra.taskcards.app' },
 			},
+			{
+				link: `https://www.taskcards.de/#/board/${boardId}?ref=a?b&token=${token}`,
+				expected: { boardId, token, baseUrl: 'https://www.taskcards.de' },
+			},
 		])('should return the parts of "$link"', ({ link, expected }) => {
 			const result = parseTaskcardsLink(link);
 
@@ -48,6 +52,18 @@ describe('parseTaskcardsLink', () => {
 			'https://www.taskcards.de/#/dashboard',
 			`https://www.taskcards.de/#/board/${boardId}x`,
 			'not a link',
+		])('should return undefined for "%s"', (link: string) => {
+			const result = parseTaskcardsLink(link);
+
+			expect(result).toBeUndefined();
+		});
+	});
+
+	describe('when the token of the link can change the path of a request', () => {
+		it.each([
+			`https://www.taskcards.de/#/board/${boardId}?token=..`,
+			`https://www.taskcards.de/#/board/${boardId}?token=.`,
+			`https://www.taskcards.de/board/${boardId}?token=a%2Fb`,
 		])('should return undefined for "%s"', (link: string) => {
 			const result = parseTaskcardsLink(link);
 

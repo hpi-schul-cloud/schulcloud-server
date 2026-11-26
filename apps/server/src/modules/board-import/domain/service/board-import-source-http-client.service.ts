@@ -51,8 +51,6 @@ const ADDRESS_NOT_ALLOWED_MESSAGE_PART = 'is not allowed';
 // The only way for a request to a source. See ADR 0013.
 @Injectable()
 export class BoardImportSourceHttpClientService {
-	// The agent checks the addresses in the DNS lookup of the connection itself. It rejects the connection when one
-	// address of the host is not public. Thus no second lookup can give an address that is not checked.
 	private readonly httpsAgent = new RequestFilteringHttpsAgent();
 
 	constructor(
@@ -61,8 +59,8 @@ export class BoardImportSourceHttpClientService {
 		@Inject(BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN) private readonly config: BoardImportSourceRequestConfig
 	) {}
 
-	// Resolves with the last answer. Rejects with BoardImportJobRejectedError when a new attempt cannot help.
-	// Rejects with another error when a new attempt can help: network error, timeout, status 408, 429 or 5xx.
+	// Resolves with the last answer. Rejects with BoardImportJobRejectedError when a new attempt cannot help,
+	// and with another error when a new attempt can help.
 	public async request(request: BoardImportSourceRequest): Promise<BoardImportSourceResponse> {
 		let hop: Hop = {
 			method: request.method,
@@ -89,7 +87,7 @@ export class BoardImportSourceHttpClientService {
 				return result;
 			}
 			if (redirects >= this.config.maxRedirects) {
-				throw new BoardImportJobRejectedError(BoardImportJobLogReason.SOURCE_LINK_REJECTED);
+				throw new BoardImportJobRejectedError(BoardImportJobLogReason.SOURCE_TOO_MANY_REDIRECTS);
 			}
 			hop = this.getRedirectHop(hop, response.status, location);
 		}

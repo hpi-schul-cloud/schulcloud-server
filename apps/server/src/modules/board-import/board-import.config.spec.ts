@@ -106,9 +106,20 @@ describe(BoardImportSourceConfig.name, () => {
 });
 
 describe(BoardImportSourceRequestConfig.name, () => {
+	type Limit = 'requestTimeoutInSeconds' | 'maxResponseSizeInBytes' | 'maxRedirects';
+
+	const setup = (limit?: { property: Limit; value: number }) => {
+		const config = new BoardImportSourceRequestConfig();
+		if (limit) {
+			config[limit.property] = limit.value;
+		}
+
+		return { config };
+	};
+
 	describe('when no value is set', () => {
 		it('should be valid with the default limits', () => {
-			const config = new BoardImportSourceRequestConfig();
+			const { config } = setup();
 
 			const errors = validateSync(config);
 
@@ -119,8 +130,7 @@ describe(BoardImportSourceRequestConfig.name, () => {
 
 	describe('when no redirect is permitted', () => {
 		it('should be valid', () => {
-			const config = new BoardImportSourceRequestConfig();
-			config.maxRedirects = 0;
+			const { config } = setup({ property: 'maxRedirects', value: 0 });
 
 			const errors = validateSync(config);
 
@@ -129,18 +139,28 @@ describe(BoardImportSourceRequestConfig.name, () => {
 	});
 
 	describe('when a limit is below its minimum', () => {
-		it.each([
-			{ property: 'requestTimeoutInSeconds' as const, value: 0 },
-			{ property: 'maxResponseSizeInBytes' as const, value: 0 },
-			{ property: 'maxRedirects' as const, value: -1 },
-		])('should be invalid for $property = $value', ({ property, value }) => {
-			const config = new BoardImportSourceRequestConfig();
-			config[property] = value;
+		it.each<{ property: Limit; value: number }>([
+			{ property: 'requestTimeoutInSeconds', value: 0 },
+			{ property: 'maxResponseSizeInBytes', value: 0 },
+			{ property: 'maxRedirects', value: -1 },
+		])('should be invalid for $property = $value', (limit) => {
+			const { config } = setup(limit);
 
 			const errors = validateSync(config);
 
 			expect(errors).toHaveLength(1);
 			expect(errors[0].constraints).toHaveProperty('min');
+		});
+	});
+
+	describe('when the time limit is above the maximum delay of a timer', () => {
+		it('should be invalid', () => {
+			const { config } = setup({ property: 'requestTimeoutInSeconds', value: 2147484 });
+
+			const errors = validateSync(config);
+
+			expect(errors).toHaveLength(1);
+			expect(errors[0].constraints).toHaveProperty('max');
 		});
 	});
 });

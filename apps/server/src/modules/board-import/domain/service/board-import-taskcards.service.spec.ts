@@ -133,21 +133,34 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the link has no token', () => {
-			it('should read the board without the access call', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();
 				mockResponses({ status: 200, body: visitorBody }, { status: 200, body: boardBody });
+				const requestCount = 2;
+
+				return { job, signal, requestCount };
+			};
+
+			it('should read the board without the access call', async () => {
+				const { job, signal, requestCount } = setup();
 
 				const result = await service.readBoard(job, signal);
 
 				expect(result).toBe(boardBody);
-				expect(httpClient.request).toHaveBeenCalledTimes(2);
+				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
 
 		describe('when the access is unlocked already', () => {
-			it('should accept the status 409 and read the board', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithToken();
 				mockResponses({ status: 200, body: visitorBody }, { status: 409, body: '' }, { status: 200, body: boardBody });
+
+				return { job, signal };
+			};
+
+			it('should accept the status 409 and read the board', async () => {
+				const { job, signal } = setup();
 
 				const result = await service.readBoard(job, signal);
 
@@ -156,23 +169,36 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the source rejects the token of the link', () => {
-			it.each([403, 404])('should reject the job for the status %s', async (status: number) => {
+			const setup = (status: number) => {
 				const { job, signal } = setupJobWithToken();
 				mockResponses(
 					{ status: 200, body: visitorBody },
 					{ status, body: '{"message":"Permission is not available"}' }
 				);
+				const requestCount = 2;
+
+				return { job, signal, requestCount };
+			};
+
+			it.each([403, 404])('should reject the job for the status %s', async (status: number) => {
+				const { job, signal, requestCount } = setup(status);
 
 				const error = await readBoardError(job, signal);
 
 				expectNotReadable(error);
-				expect(httpClient.request).toHaveBeenCalledTimes(2);
+				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
 
 		describe('when the link contains no board id', () => {
-			it('should reject the job without a request', async () => {
+			const setup = () => {
 				const { job, signal } = setupJob('https://www.taskcards.de/#/dashboard');
+
+				return { job, signal };
+			};
+
+			it('should reject the job without a request', async () => {
+				const { job, signal } = setup();
 
 				const error = await readBoardError(job, signal);
 
@@ -182,9 +208,15 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the visitor answer contains no id', () => {
-			it('should throw an error that permits a new attempt', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();
 				mockResponses({ status: 200, body: '{"data":{"createVisitor":null}}' });
+
+				return { job, signal };
+			};
+
+			it('should throw an error that permits a new attempt', async () => {
+				const { job, signal } = setup();
 
 				const error = await readBoardError(job, signal);
 
@@ -193,19 +225,26 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the board is not readable for the visitor and the link has no token', () => {
-			it('should reject the job after one board query', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();
 				mockResponses({ status: 200, body: visitorBody }, { status: 200, body: notReadableBody });
+				const requestCount = 2;
+
+				return { job, signal, requestCount };
+			};
+
+			it('should reject the job after one board query', async () => {
+				const { job, signal, requestCount } = setup();
 
 				const error = await readBoardError(job, signal);
 
 				expectNotReadable(error);
-				expect(httpClient.request).toHaveBeenCalledTimes(2);
+				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
 
 		describe('when the board query fails first after the access call', () => {
-			it('should try the board query again and return the board', async () => {
+			const setup = () => {
 				jest.useFakeTimers();
 				const { job, signal } = setupJobWithToken();
 				mockResponses(
@@ -215,18 +254,26 @@ describe(BoardImportTaskcardsService.name, () => {
 					{ status: 200, body: notReadableBody },
 					{ status: 200, body: boardBody }
 				);
+				const retryDelaysInMs = 300 + 800;
+				const requestCount = 5;
+
+				return { job, signal, retryDelaysInMs, requestCount };
+			};
+
+			it('should try the board query again and return the board', async () => {
+				const { job, signal, retryDelaysInMs, requestCount } = setup();
 
 				const promise = service.readBoard(job, signal);
-				await jest.advanceTimersByTimeAsync(300 + 800);
+				await jest.advanceTimersByTimeAsync(retryDelaysInMs);
 				const result = await promise;
 
 				expect(result).toBe(boardBody);
-				expect(httpClient.request).toHaveBeenCalledTimes(5);
+				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
 
 		describe('when the board stays not readable after the access call', () => {
-			it('should reject the job after three board queries', async () => {
+			const setup = () => {
 				jest.useFakeTimers();
 				const { job, signal } = setupJobWithToken();
 				mockResponses(
@@ -236,35 +283,56 @@ describe(BoardImportTaskcardsService.name, () => {
 					{ status: 200, body: notReadableBody },
 					{ status: 200, body: notReadableBody }
 				);
+				const retryDelaysInMs = 300 + 800;
+				const requestCount = 5;
+
+				return { job, signal, retryDelaysInMs, requestCount };
+			};
+
+			it('should reject the job after three board queries', async () => {
+				const { job, signal, retryDelaysInMs, requestCount } = setup();
 
 				const promise = readBoardError(job, signal);
-				await jest.advanceTimersByTimeAsync(300 + 800);
+				await jest.advanceTimersByTimeAsync(retryDelaysInMs);
 				const error = await promise;
 
 				expectNotReadable(error);
-				expect(httpClient.request).toHaveBeenCalledTimes(5);
+				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
 
 		describe('when the board query gives another GraphQL error', () => {
-			it('should reject the job without a second board query', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithToken();
 				const body = JSON.stringify({
 					errors: [{ message: 'Syntax Error', extensions: { code: 'GRAPHQL_PARSE_FAILED' } }],
 				});
 				mockResponses({ status: 200, body: visitorBody }, { status: 201, body: '' }, { status: 200, body });
+				const requestCount = 3;
+
+				return { job, signal, requestCount };
+			};
+
+			it('should reject the job without a second board query', async () => {
+				const { job, signal, requestCount } = setup();
 
 				const error = await readBoardError(job, signal);
 
 				expectNotReadable(error);
-				expect(httpClient.request).toHaveBeenCalledTimes(3);
+				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
 
 		describe('when the board query gives no board and no error', () => {
-			it('should reject the job', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();
 				mockResponses({ status: 200, body: visitorBody }, { status: 200, body: '{"data":{"board":null}}' });
+
+				return { job, signal };
+			};
+
+			it('should reject the job', async () => {
+				const { job, signal } = setup();
 
 				const error = await readBoardError(job, signal);
 
@@ -273,11 +341,17 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the client fails with an error that permits a new attempt', () => {
-			it('should pass the error', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithToken();
 				const clientError = new Error('Request to the source failed');
 				mockResponses({ status: 200, body: visitorBody });
 				httpClient.request.mockRejectedValueOnce(clientError);
+
+				return { job, signal, clientError };
+			};
+
+			it('should pass the error', async () => {
+				const { job, signal, clientError } = setup();
 
 				const error = await readBoardError(job, signal);
 
@@ -286,9 +360,15 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the board query answers with status 400', () => {
-			it('should reject the job', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();
 				mockResponses({ status: 200, body: visitorBody }, { status: 400, body: '{}' });
+
+				return { job, signal };
+			};
+
+			it('should reject the job', async () => {
+				const { job, signal } = setup();
 
 				const error = await readBoardError(job, signal);
 
@@ -297,9 +377,15 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when an answer with status 200 is not JSON', () => {
-			it('should throw an error that permits a new attempt', async () => {
+			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();
 				mockResponses({ status: 200, body: visitorBody }, { status: 200, body: '<html>blocked</html>' });
+
+				return { job, signal };
+			};
+
+			it('should throw an error that permits a new attempt', async () => {
+				const { job, signal } = setup();
 
 				const error = await readBoardError(job, signal);
 
@@ -308,9 +394,15 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when an answer with status 200 is JSON but not an object', () => {
-			it('should throw an error that permits a new attempt', async () => {
+			const setup = (body: string) => {
 				const { job, signal } = setupJobWithoutToken();
-				mockResponses({ status: 200, body: visitorBody }, { status: 200, body: 'null' });
+				mockResponses({ status: 200, body: visitorBody }, { status: 200, body });
+
+				return { job, signal };
+			};
+
+			it.each(['null', '[]'])('should throw an error that permits a new attempt for %s', async (body: string) => {
+				const { job, signal } = setup(body);
 
 				const error = await readBoardError(job, signal);
 
@@ -319,12 +411,18 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the signal is aborted', () => {
-			it('should throw before the first request', async () => {
+			const setup = () => {
 				const abortController = new AbortController();
 				const { job } = setupJobWithToken();
 				abortController.abort();
 
-				await expect(service.readBoard(job, abortController.signal)).rejects.toThrow();
+				return { job, signal: abortController.signal };
+			};
+
+			it('should throw before the first request', async () => {
+				const { job, signal } = setup();
+
+				await expect(service.readBoard(job, signal)).rejects.toThrow();
 
 				expect(httpClient.request).not.toHaveBeenCalled();
 			});

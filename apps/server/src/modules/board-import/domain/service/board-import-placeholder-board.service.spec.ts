@@ -314,7 +314,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 		});
 
 		describe('when the answer of the source is written into the second card', () => {
-			const setup = (response: string) => {
+			const setup = (response: string, expectedText: string) => {
 				const { token, session } = setupSession();
 				const { boardId, columnId, cardId, elementId } = setupIds();
 				const job = boardImportJobFactory.build();
@@ -326,44 +326,44 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<CardControllerCreateElement201Response>({ id: elementId })
 				);
 				const { sourceElementId } = mockSourceCard();
-				const getElementParams = (text: string) => {
-					return { data: { type: 'richText', content: { text, inputFormat: 'richTextCk5' } } };
+				const elementParams = {
+					data: { type: 'richText', content: { text: expectedText, inputFormat: 'richTextCk5' } },
 				};
 
-				return { job, session, token, response, sourceElementId, getElementParams };
+				return { job, session, token, response, sourceElementId, elementParams };
 			};
 
 			it('should write the answer as escaped text', async () => {
-				const { job, session, token, response, sourceElementId, getElementParams } = setup(
-					'{"description":"<script>alert(1)</script> & more"}'
+				const { job, session, token, response, sourceElementId, elementParams } = setup(
+					'{"description":"<script>alert(1)</script> & more"}',
+					'<p>{&quot;description&quot;:&quot;&lt;script&gt;alert(1)&lt;/script&gt; &amp; more&quot;}</p>'
 				);
-				const text = '<p>{&quot;description&quot;:&quot;&lt;script&gt;alert(1)&lt;/script&gt; &amp; more&quot;}</p>';
 
 				await service.write(job, session, response);
 
-				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, getElementParams(text));
+				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, elementParams);
 			});
 
 			it('should cut a long answer to 2000 characters before the escape', async () => {
-				const { job, session, token, response, sourceElementId, getElementParams } = setup(
-					`${'a'.repeat(1999)}<${'b'.repeat(100)}`
+				const { job, session, token, response, sourceElementId, elementParams } = setup(
+					`${'a'.repeat(1999)}<${'b'.repeat(100)}`,
+					`<p>${'a'.repeat(1999)}&lt;</p>`
 				);
-				const text = `<p>${'a'.repeat(1999)}&lt;</p>`;
 
 				await service.write(job, session, response);
 
-				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, getElementParams(text));
+				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, elementParams);
 			});
 
 			it('should not cut between the two parts of one character', async () => {
-				const { job, session, token, response, sourceElementId, getElementParams } = setup(
-					`${'a'.repeat(1999)}\u{1F600}b`
+				const { job, session, token, response, sourceElementId, elementParams } = setup(
+					`${'a'.repeat(1999)}\u{1F600}b`,
+					`<p>${'a'.repeat(1999)}</p>`
 				);
-				const text = `<p>${'a'.repeat(1999)}</p>`;
 
 				await service.write(job, session, response);
 
-				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, getElementParams(text));
+				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, elementParams);
 			});
 		});
 

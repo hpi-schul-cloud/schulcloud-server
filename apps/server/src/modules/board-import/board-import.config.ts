@@ -86,6 +86,8 @@ export class BoardImportSourceConfig {
 	public taskcardsBoardHosts: string[] = ['taskcards.de', '*.taskcards.de', 'taskcards.app', '*.taskcards.app'];
 }
 
+const MAX_TIMER_DELAY_IN_SECONDS = MAX_TIMER_DELAY_IN_MINUTES * 60;
+
 // The limits for one request to a source. See ADR 0013.
 @Configuration()
 export class BoardImportSourceRequestConfig {
@@ -93,6 +95,7 @@ export class BoardImportSourceRequestConfig {
 	@StringToNumber()
 	@IsInt()
 	@Min(1)
+	@Max(MAX_TIMER_DELAY_IN_SECONDS)
 	public requestTimeoutInSeconds = 30;
 
 	@ConfigProperty('BOARD_IMPORT_SOURCE_MAX_RESPONSE_SIZE_IN_BYTES')

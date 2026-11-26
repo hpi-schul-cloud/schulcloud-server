@@ -722,11 +722,9 @@ describe('Board Import Worker (import as the user)', () => {
 	const mockSource = (boardFixture: string): void => {
 		const visitorBody = readTaskcardsFixture('create-visitor.json');
 		const boardBody = readTaskcardsFixture(boardFixture);
-		sourceHttpClient.request.mockImplementation(({ body }) => {
-			const response = { status: 200, body: body?.includes('createVisitor') ? visitorBody : boardBody };
-
-			return Promise.resolve(response);
-		});
+		sourceHttpClient.request
+			.mockResolvedValueOnce({ status: 200, body: visitorBody })
+			.mockResolvedValueOnce({ status: 200, body: boardBody });
 	};
 
 	beforeAll(async () => {
@@ -781,16 +779,12 @@ describe('Board Import Worker (import as the user)', () => {
 			boardsClient.createBoardColumn.mockResolvedValueOnce(
 				createMock<ColumnResponse>({ id: new ObjectId().toHexString(), cards: [] })
 			);
-			columnClient.createCard.mockImplementation(() => {
-				const card = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
-
-				return Promise.resolve(card);
-			});
-			cardClient.createCardElement.mockImplementation(() => {
-				const element = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
-
-				return Promise.resolve(element);
-			});
+			const linkCard = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
+			const sourceCard = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
+			const linkElement = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
+			const sourceElement = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
+			columnClient.createCard.mockResolvedValueOnce(linkCard).mockResolvedValueOnce(sourceCard);
+			cardClient.createCardElement.mockResolvedValueOnce(linkElement).mockResolvedValueOnce(sourceElement);
 			mockSource('board-pinboard.json');
 
 			return { id: entity.id, boardId, expectedClaims };

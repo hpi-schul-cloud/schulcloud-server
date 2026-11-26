@@ -12,4 +12,5 @@ export enum BoardImportJobLogReason {
 	SOURCE_LINK_REJECTED = 'source-link-rejected',
 	SOURCE_NOT_READABLE = 'source-not-readable',
 	SOURCE_RESPONSE_TOO_LARGE = 'source-response-too-large',
+	SOURCE_TOO_MANY_REDIRECTS = 'source-too-many-redirects',
 }
