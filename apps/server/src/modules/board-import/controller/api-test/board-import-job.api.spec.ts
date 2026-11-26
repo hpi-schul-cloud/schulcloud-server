@@ -249,10 +249,12 @@ describe('Board Import Controller (API)', () => {
 			it('should not store a job', async () => {
 				const { loggedInClient, body } = await setup();
 
+				const countBefore = await em.count(BoardImportJobEntity);
+
 				await loggedInClient.post('', body);
 
-				const count = await em.count(BoardImportJobEntity, { link });
-				expect(count).toEqual(0);
+				const countAfter = await em.count(BoardImportJobEntity);
+				expect(countAfter).toEqual(countBefore);
 			});
 
 			it('should not send a message to the import job queue', async () => {
@@ -269,12 +271,11 @@ describe('Board Import Controller (API)', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
 				const { source, target } = boardImportJobFactory.build();
-				const { link } = source;
-				const body = { link, targetType: target.type, targetId: target.id };
+				const body = { link: source.link, targetType: target.type, targetId: target.id };
 				const type = 'BOARD_IMPORT_SOURCE_DISABLED';
 				await setSourceSwitch(source.type, false);
 
-				return { loggedInClient, link, body, type };
+				return { loggedInClient, body, type };
 			};
 
 			it('should return status 403 with the type of the error', async () => {
@@ -287,12 +288,14 @@ describe('Board Import Controller (API)', () => {
 			});
 
 			it('should not store a job', async () => {
-				const { loggedInClient, link, body } = await setup();
+				const { loggedInClient, body } = await setup();
+
+				const countBefore = await em.count(BoardImportJobEntity);
 
 				await loggedInClient.post('', body);
 
-				const count = await em.count(BoardImportJobEntity, { link });
-				expect(count).toEqual(0);
+				const countAfter = await em.count(BoardImportJobEntity);
+				expect(countAfter).toEqual(countBefore);
 			});
 
 			it('should not send a message to the import job queue', async () => {
@@ -311,16 +314,18 @@ describe('Board Import Controller (API)', () => {
 				const { source, target } = boardImportJobFactory.build();
 				const body = { link: source.link, targetType: target.type, targetId: target.id };
 				await setSourceSwitch(source.type, false);
+				const rejectedResponse = await loggedInClient.post('', body);
 				await setSourceSwitch(source.type, true);
 
-				return { loggedInClient, body };
+				return { loggedInClient, body, rejectedResponse };
 			};
 
-			it('should return status 201', async () => {
-				const { loggedInClient, body } = await setup();
+			it('should reject the start while the source is off and accept it after', async () => {
+				const { loggedInClient, body, rejectedResponse } = await setup();
 
 				const response = await loggedInClient.post('', body);
 
+				expect(rejectedResponse.status).toEqual(403);
 				expect(response.status).toEqual(201);
 			});
 		});
@@ -345,18 +350,21 @@ describe('Board Import Controller (API)', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
 				const { target } = boardImportJobFactory.build();
-				const link = 'http://example.com/board';
+				const link = 'http://www.taskcards.de/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
-				return { loggedInClient, body };
+				const type = 'API_VALIDATION_ERROR';
+
+				return { loggedInClient, body, type };
 			};
 
-			it('should return status 400', async () => {
-				const { loggedInClient, body } = await setup();
+			it('should return status 400 with the type of the error', async () => {
+				const { loggedInClient, body, type } = await setup();
 
 				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(400);
+				expect(response.body).toEqual(expect.objectContaining({ type }));
 			});
 		});
 
@@ -364,18 +372,21 @@ describe('Board Import Controller (API)', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
 				const { target } = boardImportJobFactory.build();
-				const link = 'example.com/board';
+				const link = 'www.taskcards.de/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
-				return { loggedInClient, body };
+				const type = 'API_VALIDATION_ERROR';
+
+				return { loggedInClient, body, type };
 			};
 
-			it('should return status 400', async () => {
-				const { loggedInClient, body } = await setup();
+			it('should return status 400 with the type of the error', async () => {
+				const { loggedInClient, body, type } = await setup();
 
 				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(400);
+				expect(response.body).toEqual(expect.objectContaining({ type }));
 			});
 		});
 
@@ -383,18 +394,21 @@ describe('Board Import Controller (API)', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
 				const { target } = boardImportJobFactory.build();
-				const link = 'https://user:password@example.com/board';
+				const link = 'https://user:password@www.taskcards.de/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
-				return { loggedInClient, body };
+				const type = 'API_VALIDATION_ERROR';
+
+				return { loggedInClient, body, type };
 			};
 
-			it('should return status 400', async () => {
-				const { loggedInClient, body } = await setup();
+			it('should return status 400 with the type of the error', async () => {
+				const { loggedInClient, body, type } = await setup();
 
 				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(400);
+				expect(response.body).toEqual(expect.objectContaining({ type }));
 			});
 		});
 

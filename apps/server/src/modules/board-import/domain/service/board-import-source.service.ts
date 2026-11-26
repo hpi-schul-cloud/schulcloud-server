@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { isIP } from 'node:net';
 import { BOARD_IMPORT_SOURCE_CONFIG_TOKEN, BoardImportSourceConfig } from '../../board-import.config';
 import { BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException } from '../error';
 import { type BoardImportSource, BoardImportSourceType } from '../type';
 
 const SUBDOMAIN_PREFIX = '*.';
+// Labels are not empty and the last label starts with a letter. Thus IP addresses, empty labels and a dot at the end
+// do not match.
+const HOST_NAME_PATTERN = /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]([a-z0-9-]*[a-z0-9])?$/;
 
 @Injectable()
 export class BoardImportSourceService {
@@ -37,11 +39,10 @@ export class BoardImportSourceService {
 		// The URL parser makes the host lowercase and converts each numeric form of an IPv4 address to the dotted form.
 		const url = new URL(link);
 		const host = url.hostname;
-		const hasTrailingDot = host.endsWith('.');
 		const hasCredentials = url.username !== '' || url.password !== '';
-		const isIpAddress = host.startsWith('[') || isIP(host) !== 0;
+		const isHostName = HOST_NAME_PATTERN.test(host);
 
-		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || isIpAddress || hasTrailingDot) {
+		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || !isHostName) {
 			throw new BoardImportLinkInvalidLoggableException();
 		}
 

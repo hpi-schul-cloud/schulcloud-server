@@ -86,6 +86,11 @@ describe(BoardImportSourceService.name, () => {
 				'https://0x7f.0.0.1/',
 				'https://[::1]/',
 				'https://[2001:db8::1]/',
+				'https:///path',
+				'https://.taskcards.de/',
+				'https://x..taskcards.de/',
+				'https://-x.taskcards.de/',
+				'https://x_y.taskcards.de/',
 			])('should throw a link invalid exception for "%s"', (link: string) => {
 				expect(() => service.resolveSource(link)).toThrow(BoardImportLinkInvalidLoggableException);
 			});
@@ -94,7 +99,6 @@ describe(BoardImportSourceService.name, () => {
 		describe('when the host of the link is not in the list of a source', () => {
 			it.each([
 				'https://example.com/board',
-				'https:///path',
 				'https://www.edumaps.de/84762/371448/x/y',
 				'https://padlet.com/user/wall',
 				'https://taskcards.de.evil.example/',
