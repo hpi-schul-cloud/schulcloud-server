@@ -35,7 +35,7 @@ describe(BoardImportTaskcardsSourceService.name, () => {
 		it('should register itself as the source TaskCards', () => {
 			const result = registry.findByType(BOARD_IMPORT_TASKCARDS_SOURCE_TYPE);
 
-			expect(result).toBe(service);
+			expect(result).toEqual({ type: service.type, boardHosts: service.boardHosts, switchKey: service.switchKey });
 		});
 
 		it('should have the switch key of TaskCards', () => {

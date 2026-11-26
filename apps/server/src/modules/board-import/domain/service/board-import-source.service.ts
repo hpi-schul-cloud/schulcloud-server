@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException } from '../error';
 import { type BoardImportSource } from '../type';
+import { isHostName, SUBDOMAIN_PREFIX } from './board-import-host-name';
 import { BoardImportSourceRegistryService } from './board-import-source-registry.service';
-
-const SUBDOMAIN_PREFIX = '*.';
-// Labels are not empty and the last label starts with a letter. Thus IP addresses, empty labels and a dot at the end
-// do not match.
-const HOST_NAME_PATTERN = /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]([a-z0-9-]*[a-z0-9])?$/;
 
 @Injectable()
 export class BoardImportSourceService {
@@ -63,9 +59,8 @@ export class BoardImportSourceService {
 		const url = new URL(link);
 		const host = url.hostname;
 		const hasCredentials = url.username !== '' || url.password !== '';
-		const isHostName = HOST_NAME_PATTERN.test(host);
 
-		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || !isHostName) {
+		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || !isHostName(host)) {
 			return undefined;
 		}
 

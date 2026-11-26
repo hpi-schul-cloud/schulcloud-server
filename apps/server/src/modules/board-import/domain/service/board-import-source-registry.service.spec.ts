@@ -26,7 +26,7 @@ describe(BoardImportSourceRegistryService.name, () => {
 
 				const result = registry.findByType(definition.type);
 
-				expect(result).toBe(definition);
+				expect(result).toEqual(definition);
 			});
 		});
 
@@ -87,6 +87,18 @@ describe(BoardImportSourceRegistryService.name, () => {
 					`"${entry}"`
 				);
 				expect(registry.findByType(definition.type)).toBeUndefined();
+			});
+		});
+
+		describe('when the source changes its board hosts after the registration', () => {
+			it('should keep the registered board hosts', () => {
+				const { registry, definition } = setup();
+				const boardHosts = ['source.example'];
+				registry.registerSource({ ...definition, boardHosts });
+
+				boardHosts.push('localhost');
+
+				expect(registry.findByType(definition.type)?.boardHosts).toEqual(['source.example']);
 			});
 		});
 
