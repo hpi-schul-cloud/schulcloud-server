@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { boardImportJobFactory, readTaskcardsFixture } from '../../testing';
 import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
+import { BoardImportJobLogReason } from '../type';
 import { BoardImportSourceHttpClientService } from './board-import-source-http-client.service';
 import { BoardImportTaskcardsService } from './board-import-taskcards.service';
 
@@ -42,7 +42,7 @@ describe(BoardImportTaskcardsService.name, () => {
 	});
 
 	const setupJob = (link: string) => {
-		const job = boardImportJobFactory.build({ source: { type: BoardImportSourceType.TASKCARDS, link } });
+		const job = boardImportJobFactory.build({ source: { type: 'taskcards', link } });
 		const { signal } = new AbortController();
 
 		return { job, signal };
@@ -100,7 +100,7 @@ describe(BoardImportTaskcardsService.name, () => {
 					url: graphqlUrl,
 					headers: { 'Content-Type': 'application/json' },
 					body: expect.stringContaining('createVisitor'),
-					sourceType: BoardImportSourceType.TASKCARDS,
+					sourceType: 'taskcards',
 					signal,
 				});
 				expect(httpClient.request).toHaveBeenNthCalledWith(2, {
@@ -108,7 +108,7 @@ describe(BoardImportTaskcardsService.name, () => {
 					url: accessUrl,
 					headers: { 'Content-Type': 'application/json', 'x-token': visitorId },
 					body: JSON.stringify({ password: '' }),
-					sourceType: BoardImportSourceType.TASKCARDS,
+					sourceType: 'taskcards',
 					signal,
 				});
 				expect(httpClient.request).toHaveBeenNthCalledWith(3, {
@@ -116,7 +116,7 @@ describe(BoardImportTaskcardsService.name, () => {
 					url: graphqlUrl,
 					headers: { 'Content-Type': 'application/json', 'x-token': visitorId },
 					body: expect.stringContaining(`"variables":{"id":"${boardId}"}`),
-					sourceType: BoardImportSourceType.TASKCARDS,
+					sourceType: 'taskcards',
 					signal,
 				});
 			});

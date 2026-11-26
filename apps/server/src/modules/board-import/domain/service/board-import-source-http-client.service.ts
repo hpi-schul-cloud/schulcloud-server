@@ -4,7 +4,7 @@ import { type AxiosResponse, isAxiosError } from 'axios';
 import { RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN, BoardImportSourceRequestConfig } from '../../board-import.config';
 import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason, type BoardImportSourceType } from '../type';
+import { BoardImportJobLogReason } from '../type';
 import { BoardImportSourceService } from './board-import-source.service';
 
 type Method = 'GET' | 'POST';
@@ -14,7 +14,7 @@ export interface BoardImportSourceRequest {
 	url: string;
 	headers?: Record<string, string>;
 	body?: string;
-	sourceType: BoardImportSourceType;
+	sourceType: string;
 	signal: AbortSignal;
 }
 

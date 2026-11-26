@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { setTimeout as wait } from 'node:timers/promises';
 import { type BoardImportJob } from '../do';
 import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
+import { BoardImportJobLogReason } from '../type';
 import { BoardImportSourceHttpClientService } from './board-import-source-http-client.service';
 import { parseTaskcardsLink, type TaskcardsLink } from './board-import-taskcards-link';
 
@@ -156,7 +156,7 @@ export class BoardImportTaskcardsService {
 			url,
 			headers,
 			body: JSON.stringify(payload),
-			sourceType: BoardImportSourceType.TASKCARDS,
+			sourceType: 'taskcards',
 			signal,
 		});
 

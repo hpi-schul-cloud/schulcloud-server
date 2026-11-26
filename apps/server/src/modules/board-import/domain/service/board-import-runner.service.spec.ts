@@ -44,7 +44,9 @@ describe(BoardImportRunnerService.name, () => {
 
 	describe('run', () => {
 		const setupRun = () => {
-			const job = boardImportJobFactory.build();
+			const job = boardImportJobFactory.build({
+				source: { type: 'taskcards', link: 'https://source.example/board/1' },
+			});
 			const { signal } = new AbortController();
 			const token = 'token';
 			const sourceResponse = '{"data":{"board":{}}}';
@@ -119,7 +121,9 @@ describe(BoardImportRunnerService.name, () => {
 
 		describe('when the source is not readable', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build();
+				const job = boardImportJobFactory.build({
+					source: { type: 'taskcards', link: 'https://source.example/board/1' },
+				});
 				const { signal } = new AbortController();
 				const error = new BoardImportJobRejectedError(BoardImportJobLogReason.SOURCE_NOT_READABLE);
 
@@ -146,7 +150,9 @@ describe(BoardImportRunnerService.name, () => {
 
 		describe('when the read of the source fails with a temporary error', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build();
+				const job = boardImportJobFactory.build({
+					source: { type: 'taskcards', link: 'https://source.example/board/1' },
+				});
 				const { signal } = new AbortController();
 				const error = new Error('TaskCards request failed');
 				taskcardsService.readBoard.mockRejectedValueOnce(error);

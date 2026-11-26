@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { BOARD_IMPORT_SOURCE_CONFIG_TOKEN, BoardImportSourceConfig } from '../../board-import.config';
+import { Injectable } from '@nestjs/common';
 import { BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException } from '../error';
-import { type BoardImportSource, BoardImportSourceType } from '../type';
+import { type BoardImportSource } from '../type';
+import { BoardImportSourceRegistryService } from './board-import-source-registry.service';
 
 const SUBDOMAIN_PREFIX = '*.';
 // Labels are not empty and the last label starts with a letter. Thus IP addresses, empty labels and a dot at the end
@@ -10,7 +10,7 @@ const HOST_NAME_PATTERN = /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]([a-z0-9-]*[a
 
 @Injectable()
 export class BoardImportSourceService {
-	constructor(@Inject(BOARD_IMPORT_SOURCE_CONFIG_TOKEN) private readonly config: BoardImportSourceConfig) {}
+	constructor(private readonly boardImportSourceRegistryService: BoardImportSourceRegistryService) {}
 
 	public resolveSource(link: string): BoardImportSource {
 		const parsedLink = this.parseLink(link);
@@ -30,23 +30,28 @@ export class BoardImportSourceService {
 	}
 
 	// Applies the same rules as resolveSource, for a URL that the worker gets from a source, for example a redirect.
-	public isLinkOfSource(link: string, sourceType: BoardImportSourceType): boolean {
+	public isLinkOfSource(link: string, sourceType: string): boolean {
 		const parsedLink = this.parseLink(link);
 		const isLinkOfSource = parsedLink !== undefined && this.findSourceType(parsedLink.host) === sourceType;
 
 		return isLinkOfSource;
 	}
 
-	private findSourceType(host: string): BoardImportSourceType | undefined {
-		const boardHostsBySourceType: Record<BoardImportSourceType, string[]> = {
-			[BoardImportSourceType.TASKCARDS]: this.config.taskcardsBoardHosts,
-		};
+	public getSwitchKey(sourceType: string): string {
+		const definition = this.boardImportSourceRegistryService.findByType(sourceType);
+		if (!definition) {
+			throw new BoardImportSourceUnknownLoggableException();
+		}
 
-		const sourceType = Object.values(BoardImportSourceType).find((type) =>
-			boardHostsBySourceType[type].some((entry) => this.isHostInEntry(host, entry))
-		);
+		return definition.switchKey;
+	}
 
-		return sourceType;
+	private findSourceType(host: string): string | undefined {
+		const definition = this.boardImportSourceRegistryService
+			.getAll()
+			.find((source) => source.boardHosts.some((entry) => this.isHostInEntry(host, entry)));
+
+		return definition?.type;
 	}
 
 	private parseLink(link: string): { host: string; normalizedLink: string } | undefined {

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { type BoardImportJob } from '../do';
-import { BoardImportSourceType } from '../type';
 import { BoardImportPlaceholderBoardService } from './board-import-placeholder-board.service';
 import { BoardImportTaskcardsService } from './board-import-taskcards.service';
 import { BoardImportTokenService } from './board-import-token.service';
@@ -28,8 +27,8 @@ export class BoardImportRunnerService {
 	}
 
 	private async readSource(job: BoardImportJob, signal: AbortSignal): Promise<string> {
-		const readers: Record<BoardImportSourceType, () => Promise<string>> = {
-			[BoardImportSourceType.TASKCARDS]: () => this.boardImportTaskcardsService.readBoard(job, signal),
+		const readers: Record<string, () => Promise<string>> = {
+			taskcards: () => this.boardImportTaskcardsService.readBoard(job, signal),
 		};
 
 		const sourceResponse = await readers[job.source.type]();
