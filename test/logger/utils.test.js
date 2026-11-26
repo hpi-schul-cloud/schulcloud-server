@@ -17,8 +17,10 @@ describe('[logger] masking in the feathers logger', () => {
 	let savedSecrets;
 
 	beforeEach(() => {
-		// Other tests in the same mocha process may have registered secrets, they are restored afterwards.
+		// Other tests in the same mocha process may have registered secrets (e.g. S3_KEY of config/test.json when
+		// the Nest configuration was loaded). Each test starts with only its own secret; the others are restored afterwards.
 		savedSecrets = [...SecretRegistry.getSecrets()];
+		SecretRegistry.clear();
 		SecretRegistry.register(SECRET);
 	});
 
