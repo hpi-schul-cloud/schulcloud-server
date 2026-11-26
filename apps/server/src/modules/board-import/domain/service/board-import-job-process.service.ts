@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { type BoardImportJob } from '../do';
-import { BoardImportJobUnreadableError } from '../error';
+import { BoardImportJobRejectedError, BoardImportJobUnreadableError } from '../error';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportRunnerService } from './board-import-runner.service';
@@ -80,6 +80,11 @@ export class BoardImportJobProcessService {
 		try {
 			isInTime = await this.runWithTimeLimit(job, remainingTimeInMs);
 		} catch (error) {
+			if (error instanceof BoardImportJobRejectedError) {
+				await this.fail(job, error.reason);
+
+				return;
+			}
 			if (this.hasAttemptsLeft(job)) {
 				throw error;
 			}
@@ -123,8 +128,7 @@ export class BoardImportJobProcessService {
 
 	private getRemainingTimeInMs(job: BoardImportJob, now: Date): number {
 		const maxDurationInMs = this.config.jobMaxDurationInMinutes * MILLISECONDS_PER_MINUTE;
-		const startedAt = job.startedAt ?? now;
-		const remainingTimeInMs = startedAt.getTime() + maxDurationInMs - now.getTime();
+		const remainingTimeInMs = job.getDeadline(maxDurationInMs, now).getTime() - now.getTime();
 
 		return remainingTimeInMs;
 	}
@@ -143,7 +147,7 @@ export class BoardImportJobProcessService {
 			return isInTime;
 		} finally {
 			clearTimeout(timer);
-			// Stops the steps that still run after a timeout or after another step failed.
+			// The steps that still run after a timeout or after another step failed stop before and after their next request.
 			abortController.abort();
 		}
 	}
@@ -165,6 +169,11 @@ export class BoardImportJobProcessService {
 
 			return;
 		}
-		this.logger.warning('Board import job failed', { jobId: job.id, reason, attempts: job.attempts });
+		this.logger.warning('Board import job failed', {
+			jobId: job.id,
+			userId: job.userId,
+			reason,
+			attempts: job.attempts,
+		});
 	}
 }

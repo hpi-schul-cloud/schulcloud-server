@@ -1,7 +1,21 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { CoreModule } from '@core/core.module';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
+import {
+	AuthGuardModule,
+	AuthGuardOptions,
+	JWT_AUTH_GUARD_CONFIG_TOKEN,
+	JwtAuthGuardConfig,
+	JwtPayloadVo,
+} from '@infra/auth-guard';
+import {
+	BoardsClientAdapter,
+	CardClientAdapter,
+	type CardControllerCreateElement201Response,
+	type CardResponse,
+	ColumnClientAdapter,
+	type ColumnResponse,
+} from '@infra/common-cartridge-clients';
 import { ConfigurationModule } from '@infra/configuration';
 import { User } from '@modules/user';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
@@ -21,7 +35,8 @@ import {
 	type BoardImportPublicApiConfig,
 } from '../../board-import.config';
 import { ENTITIES } from '../../board-import.entity.imports';
-import { BoardImportJobStatus, BoardImportRunnerService } from '../../domain';
+import { BoardImportJobStatus } from '../../domain';
+import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
 import { BoardImportJobEntity } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
@@ -377,7 +392,29 @@ describe('Board Import Controller (API)', () => {
 	});
 });
 
-// The worker test is in this file, because the two tests use the same queue and must not run at the same time.
+const publishJob = async (amqpConnection: AmqpConnection, jobId: string): Promise<void> => {
+	await amqpConnection.publish('board-import', BoardImportEvents.IMPORT_JOB, { jobId });
+};
+
+const waitForStatus = async (
+	em: EntityManager,
+	id: string,
+	status: BoardImportJobStatus
+): Promise<BoardImportJobEntity> => {
+	for (let i = 0; i < 100; i += 1) {
+		const entity = await em.fork().findOneOrFail(BoardImportJobEntity, { id });
+		if (entity.status === status) {
+			return entity;
+		}
+		await new Promise((resolve) => {
+			setTimeout(resolve, 50);
+		});
+	}
+
+	throw new Error(`The job did not get the status ${status}`);
+};
+
+// The worker tests are in this file, because all tests use the same queue and must not run at the same time.
 describe('Board Import Worker (queue)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -419,25 +456,9 @@ describe('Board Import Worker (queue)', () => {
 		await em.persist(entity).flush();
 		em.clear();
 
-		const publishJob = async (): Promise<void> => {
-			await amqpConnection.publish('board-import', BoardImportEvents.IMPORT_JOB, { jobId: entity.id });
-		};
+		const publishQueuedJob = (): Promise<void> => publishJob(amqpConnection, entity.id);
 
-		return { id: entity.id, publishJob };
-	};
-
-	const waitForStatus = async (id: string, status: BoardImportJobStatus): Promise<BoardImportJobEntity> => {
-		for (let i = 0; i < 100; i += 1) {
-			const entity = await em.fork().findOneOrFail(BoardImportJobEntity, { id });
-			if (entity.status === status) {
-				return entity;
-			}
-			await new Promise((resolve) => {
-				setTimeout(resolve, 50);
-			});
-		}
-
-		throw new Error(`The job did not get the status ${status}`);
+		return { id: entity.id, publishJob: publishQueuedJob };
 	};
 
 	describe('when a job is in the queue', () => {
@@ -461,13 +482,13 @@ describe('Board Import Worker (queue)', () => {
 
 			await publishJob();
 
-			const runningJob = await waitForStatus(id, BoardImportJobStatus.RUNNING);
+			const runningJob = await waitForStatus(em, id, BoardImportJobStatus.RUNNING);
 			expect(runningJob.attempts).toEqual(attempts);
 			expect(runningJob.startedAt).toEqual(expect.any(Date));
 
 			finishImport();
 
-			const finishedJob = await waitForStatus(id, BoardImportJobStatus.FINISHED);
+			const finishedJob = await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
 			expect(finishedJob.attempts).toEqual(attempts);
 		});
 	});
@@ -489,7 +510,7 @@ describe('Board Import Worker (queue)', () => {
 
 			await publishJob();
 
-			const failedJob = await waitForStatus(id, BoardImportJobStatus.FAILED);
+			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
 			expect(failedJob.attempts).toEqual(maxAttempts);
 			expect(runner.run).toHaveBeenCalledTimes(maxAttempts);
 		});
@@ -512,8 +533,112 @@ describe('Board Import Worker (queue)', () => {
 
 			await publishJob();
 
-			const finishedJob = await waitForStatus(id, BoardImportJobStatus.FINISHED);
+			const finishedJob = await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
 			expect(finishedJob.attempts).toEqual(attempts);
+		});
+	});
+});
+
+describe('Board Import Worker (import as the user)', () => {
+	let app: INestApplication;
+	let em: EntityManager;
+	let amqpConnection: AmqpConnection;
+	let boardsClient: DeepMocked<BoardsClientAdapter>;
+	let columnClient: DeepMocked<ColumnClientAdapter>;
+	let cardClient: DeepMocked<CardClientAdapter>;
+
+	beforeAll(async () => {
+		const module = await Test.createTestingModule({
+			imports: [BoardImportWorkerTestModule],
+		})
+			.overrideProvider(BoardsClientAdapter)
+			.useValue(createMock<BoardsClientAdapter>())
+			.overrideProvider(ColumnClientAdapter)
+			.useValue(createMock<ColumnClientAdapter>())
+			.overrideProvider(CardClientAdapter)
+			.useValue(createMock<CardClientAdapter>())
+			.compile();
+
+		app = module.createNestApplication();
+		await app.init();
+		em = module.get(EntityManager);
+		amqpConnection = module.get(AmqpConnection);
+		boardsClient = module.get(BoardsClientAdapter);
+		columnClient = module.get(ColumnClientAdapter);
+		cardClient = module.get(CardClientAdapter);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
+		await app.close();
+	});
+
+	describe('when the job of a user with an account is in the queue', () => {
+		const setup = async () => {
+			const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
+			const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id) });
+			await em.persist([teacherUser, teacherAccount, entity]).flush();
+			em.clear();
+
+			const boardId = new ObjectId().toHexString();
+			const expectedClaims = {
+				userId: teacherUser.id,
+				accountId: teacherAccount.id,
+				support: false,
+				isServiceAccount: false,
+			};
+
+			boardsClient.createBoard.mockResolvedValueOnce({ id: boardId });
+			boardsClient.createBoardColumn.mockResolvedValueOnce(
+				createMock<ColumnResponse>({ id: new ObjectId().toHexString(), cards: [] })
+			);
+			columnClient.createCard.mockResolvedValueOnce(
+				createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] })
+			);
+			cardClient.createCardElement.mockResolvedValueOnce(
+				createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() })
+			);
+			cardClient.updateCardElement.mockResolvedValueOnce(createMock());
+
+			return { id: entity.id, boardId, expectedClaims };
+		};
+
+		it('should create the board with a token of the user and store the board in the job', async () => {
+			const { id, boardId, expectedClaims } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			const finishedJob = await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
+			const token = boardsClient.createBoard.mock.calls[0][0];
+			const claims = JwtPayloadVo.fromJwtToken(token);
+			expect(claims).toMatchObject(expectedClaims);
+			expect(finishedJob.boardId?.toHexString()).toEqual(boardId);
+		});
+	});
+
+	describe('when the user of the job does not exist', () => {
+		const setup = async () => {
+			const entity = boardImportJobEntityFactory.build();
+			await em.persist(entity).flush();
+			em.clear();
+
+			const attempts = 1;
+
+			return { id: entity.id, attempts };
+		};
+
+		it('should set the job to failed on the first attempt and create no board', async () => {
+			const { id, attempts } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
+			expect(failedJob.attempts).toEqual(attempts);
+			expect(boardsClient.createBoard).not.toHaveBeenCalled();
 		});
 	});
 });

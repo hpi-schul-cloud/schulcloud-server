@@ -16,6 +16,8 @@ export interface BoardImportJobProps extends AuthorizableObject {
 	attempts: number;
 
 	startedAt?: Date;
+
+	boardId?: EntityId;
 }
 
 export class BoardImportJob extends DomainObject<BoardImportJobProps> {
@@ -45,6 +47,18 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 	get startedAt(): Date | undefined {
 		return this.props.startedAt;
+	}
+
+	get boardId(): EntityId | undefined {
+		return this.props.boardId;
+	}
+
+	// The maximum duration counts from the first start. A job that did not start yet counts from now.
+	public getDeadline(maxDurationInMs: number, now: Date): Date {
+		const startedAt = this.props.startedAt ?? now;
+		const deadline = new Date(startedAt.getTime() + maxDurationInMs);
+
+		return deadline;
 	}
 
 	public isClosed(): boolean {
