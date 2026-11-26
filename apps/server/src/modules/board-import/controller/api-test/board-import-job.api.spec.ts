@@ -266,18 +266,19 @@ describe('Board Import Controller (API)', () => {
 				const { source, target } = boardImportJobFactory.build();
 				const { link } = source;
 				const body = { link, targetType: target.type, targetId: target.id };
+				const type = 'BOARD_IMPORT_SOURCE_DISABLED';
 				await setSourceSwitch(source.type, false);
 
-				return { loggedInClient, link, body };
+				return { loggedInClient, link, body, type };
 			};
 
 			it('should return status 403 with the type of the error', async () => {
-				const { loggedInClient, body } = await setup();
+				const { loggedInClient, body, type } = await setup();
 
 				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(403);
-				expect(response.body).toEqual(expect.objectContaining({ type: 'BOARD_IMPORT_SOURCE_DISABLED' }));
+				expect(response.body).toEqual(expect.objectContaining({ type }));
 			});
 
 			it('should not store a job', async () => {
@@ -316,6 +317,22 @@ describe('Board Import Controller (API)', () => {
 				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(201);
+			});
+		});
+
+		describe('when the switches of all sources are read', () => {
+			const setup = () => {
+				const switchKeys = Object.values(BOARD_IMPORT_SOURCE_SWITCH_KEYS);
+
+				return { switchKeys };
+			};
+
+			it('should find a boolean key in the runtime config for each source', async () => {
+				const { switchKeys } = setup();
+
+				const values = await Promise.all(switchKeys.map((key) => runtimeConfigService.getBoolean(key)));
+
+				expect(values.map((value) => typeof value)).toEqual(switchKeys.map(() => 'boolean'));
 			});
 		});
 
