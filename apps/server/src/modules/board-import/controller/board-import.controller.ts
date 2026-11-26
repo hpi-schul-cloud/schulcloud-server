@@ -24,9 +24,12 @@ export class BoardImportController {
 	@Post()
 	@ApiOperation({ summary: 'Start the import of a board from a share link.' })
 	@ApiCreatedResponse({ type: BoardImportJobResponse })
-	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiBadRequestResponse({
+		type: ApiValidationError,
+		description: 'The request is not valid, or the link does not point to a supported source.',
+	})
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
-	@ApiForbiddenResponse({ description: 'The board import is disabled.' })
+	@ApiForbiddenResponse({ description: 'The board import or the source of the link is disabled.' })
 	public async startImport(
 		@Body() bodyParams: CreateBoardImportJobBodyParams,
 		@CurrentUser() currentUser: ICurrentUser

@@ -17,6 +17,8 @@ import {
 	type ColumnResponse,
 } from '@infra/common-cartridge-clients';
 import { ConfigurationModule } from '@infra/configuration';
+import { RuntimeConfigService } from '@infra/runtime-config';
+import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 import { User } from '@modules/user';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type INestApplication } from '@nestjs/common';
@@ -34,8 +36,8 @@ import {
 	BoardImportConfig,
 	type BoardImportPublicApiConfig,
 } from '../../board-import.config';
-import { ENTITIES } from '../../board-import.entity.imports';
-import { BoardImportJobStatus } from '../../domain';
+import { API_ENTITIES } from '../../board-import-api.entity.imports';
+import { BOARD_IMPORT_SOURCE_SWITCH_KEYS, BoardImportJobStatus, type BoardImportSourceType } from '../../domain';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
 import { BoardImportJobEntity } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
@@ -49,6 +51,7 @@ describe('Board Import Controller (API)', () => {
 	let em: EntityManager;
 	let amqpConnection: AmqpConnection;
 	let config: BoardImportPublicApiConfig;
+	let runtimeConfigService: RuntimeConfigService;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -62,7 +65,7 @@ describe('Board Import Controller (API)', () => {
 					},
 				]),
 				BoardImportApiModule,
-				MongoMemoryDatabaseModule.forRoot({ entities: [User, ...ENTITIES] }),
+				MongoMemoryDatabaseModule.forRoot({ entities: [User, ...API_ENTITIES] }),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
 		}).compile();
@@ -73,6 +76,7 @@ describe('Board Import Controller (API)', () => {
 		em = module.get(EntityManager);
 		amqpConnection = module.get(AmqpConnection);
 		config = module.get(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN);
+		runtimeConfigService = module.get(RuntimeConfigService);
 		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
 	});
 
@@ -82,11 +86,19 @@ describe('Board Import Controller (API)', () => {
 
 	afterEach(async () => {
 		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
+		await em.nativeDelete(RuntimeConfigEntity, {});
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
+
+	const setSourceSwitch = async (sourceType: BoardImportSourceType, isEnabled: boolean) => {
+		const value = await runtimeConfigService.getByKey(BOARD_IMPORT_SOURCE_SWITCH_KEYS[sourceType]);
+		value.setValue(isEnabled);
+		await runtimeConfigService.save(value);
+		em.clear();
+	};
 
 	const setupLoggedInClient = async () => {
 		const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
@@ -146,7 +158,7 @@ describe('Board Import Controller (API)', () => {
 			});
 		});
 
-		describe('when the link is a valid https link', () => {
+		describe('when the link is a TaskCards link and no value of the switch is stored', () => {
 			const setup = async () => {
 				const { loggedInClient, teacherUser } = await setupLoggedInClient();
 				const { source, target } = boardImportJobFactory.build();
@@ -154,7 +166,7 @@ describe('Board Import Controller (API)', () => {
 				const body = { link, targetType: target.type, targetId: target.id };
 				const status = BoardImportJobStatus.WAITING;
 
-				return { loggedInClient, teacherUser, link, target, body, status };
+				return { loggedInClient, teacherUser, link, source, target, body, status };
 			};
 
 			it('should return status 201 with the id and the status of the job', async () => {
@@ -167,7 +179,7 @@ describe('Board Import Controller (API)', () => {
 			});
 
 			it('should store the job', async () => {
-				const { loggedInClient, teacherUser, link, target, body, status } = await setup();
+				const { loggedInClient, teacherUser, link, source, target, body, status } = await setup();
 
 				const response = await loggedInClient.post('', body);
 
@@ -175,6 +187,7 @@ describe('Board Import Controller (API)', () => {
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(entity).toMatchObject({
 					link,
+					sourceType: source.type,
 					targetType: target.type,
 					targetId: new ObjectId(target.id),
 					status,
@@ -191,6 +204,118 @@ describe('Board Import Controller (API)', () => {
 				const { id } = response.body as BoardImportJobResponse;
 				const message = await amqpConnection.channel.get(BoardImportEvents.IMPORT_JOB, { noAck: true });
 				expect(message && JSON.parse(message.content.toString())).toEqual({ jobId: id });
+			});
+		});
+
+		describe.each([
+			{ name: 'has an IP address as host', link: 'https://127.0.0.1/board', type: 'BOARD_IMPORT_LINK_INVALID' },
+			{ name: 'has a port', link: 'https://www.taskcards.de:8443/board', type: 'BOARD_IMPORT_LINK_INVALID' },
+			{
+				name: 'does not point to a known source',
+				link: 'https://example.com/board',
+				type: 'BOARD_IMPORT_SOURCE_UNKNOWN',
+			},
+		])('when the link $name', ({ link, type }) => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const { target } = boardImportJobFactory.build();
+				const body = { link, targetType: target.type, targetId: target.id };
+
+				return { loggedInClient, body };
+			};
+
+			it('should return status 400 with the type of the error', async () => {
+				const { loggedInClient, body } = await setup();
+
+				const response = await loggedInClient.post('', body);
+
+				expect(response.status).toEqual(400);
+				expect(response.body).toEqual(expect.objectContaining({ type }));
+			});
+
+			it('should not show the link in the response', async () => {
+				const { loggedInClient, body } = await setup();
+
+				const response = await loggedInClient.post('', body);
+
+				expect(response.text).not.toContain(link);
+			});
+
+			it('should not store a job', async () => {
+				const { loggedInClient, body } = await setup();
+
+				await loggedInClient.post('', body);
+
+				const count = await em.count(BoardImportJobEntity, { link });
+				expect(count).toEqual(0);
+			});
+
+			it('should not send a message to the import job queue', async () => {
+				const { loggedInClient, body } = await setup();
+
+				await loggedInClient.post('', body);
+
+				const message = await amqpConnection.channel.get(BoardImportEvents.IMPORT_JOB, { noAck: true });
+				expect(message).toBe(false);
+			});
+		});
+
+		describe('when the source is switched off', () => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const { source, target } = boardImportJobFactory.build();
+				const { link } = source;
+				const body = { link, targetType: target.type, targetId: target.id };
+				await setSourceSwitch(source.type, false);
+
+				return { loggedInClient, link, body };
+			};
+
+			it('should return status 403 with the type of the error', async () => {
+				const { loggedInClient, body } = await setup();
+
+				const response = await loggedInClient.post('', body);
+
+				expect(response.status).toEqual(403);
+				expect(response.body).toEqual(expect.objectContaining({ type: 'BOARD_IMPORT_SOURCE_DISABLED' }));
+			});
+
+			it('should not store a job', async () => {
+				const { loggedInClient, link, body } = await setup();
+
+				await loggedInClient.post('', body);
+
+				const count = await em.count(BoardImportJobEntity, { link });
+				expect(count).toEqual(0);
+			});
+
+			it('should not send a message to the import job queue', async () => {
+				const { loggedInClient, body } = await setup();
+
+				await loggedInClient.post('', body);
+
+				const message = await amqpConnection.channel.get(BoardImportEvents.IMPORT_JOB, { noAck: true });
+				expect(message).toBe(false);
+			});
+		});
+
+		describe('when the source is switched on again', () => {
+			const setup = async () => {
+				const { loggedInClient } = await setupLoggedInClient();
+				const { source, target } = boardImportJobFactory.build();
+				const body = { link: source.link, targetType: target.type, targetId: target.id };
+				await setSourceSwitch(source.type, false);
+				await setSourceSwitch(source.type, true);
+
+				return { loggedInClient, body };
+			};
+
+			it('should return status 201', async () => {
+				const { loggedInClient, body } = await setup();
+
+				const response = await loggedInClient.post('', body);
+
+				expect(response.status).toEqual(201);
 			});
 		});
 

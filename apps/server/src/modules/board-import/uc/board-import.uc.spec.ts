@@ -3,7 +3,15 @@ import { NotFoundException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '../board-import.config';
-import { BoardImportJobService, BoardImportSourceService } from '../domain';
+import { RuntimeConfigService } from '@infra/runtime-config';
+import {
+	BOARD_IMPORT_SOURCE_SWITCH_KEYS,
+	BoardImportJobService,
+	BoardImportLinkInvalidLoggableException,
+	BoardImportSourceDisabledLoggableException,
+	BoardImportSourceService,
+	BoardImportSourceUnknownLoggableException,
+} from '../domain';
 import { boardImportJobFactory } from '../testing';
 import { BoardImportUc } from './board-import.uc';
 
@@ -12,6 +20,7 @@ describe(BoardImportUc.name, () => {
 	let uc: BoardImportUc;
 	let boardImportJobService: DeepMocked<BoardImportJobService>;
 	let boardImportSourceService: DeepMocked<BoardImportSourceService>;
+	let runtimeConfigService: DeepMocked<RuntimeConfigService>;
 	let config: BoardImportPublicApiConfig;
 
 	beforeAll(async () => {
@@ -27,6 +36,10 @@ describe(BoardImportUc.name, () => {
 					useValue: createMock<BoardImportSourceService>(),
 				},
 				{
+					provide: RuntimeConfigService,
+					useValue: createMock<RuntimeConfigService>(),
+				},
+				{
 					provide: BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN,
 					useValue: new BoardImportPublicApiConfig(),
 				},
@@ -36,6 +49,7 @@ describe(BoardImportUc.name, () => {
 		uc = module.get(BoardImportUc);
 		boardImportJobService = module.get(BoardImportJobService);
 		boardImportSourceService = module.get(BoardImportSourceService);
+		runtimeConfigService = module.get(RuntimeConfigService);
 		config = module.get(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN);
 	});
 
@@ -64,6 +78,68 @@ describe(BoardImportUc.name, () => {
 				);
 			});
 
+			it('should not check the link, read the switch or create a job', async () => {
+				const { job } = setup();
+
+				await expect(uc.startImport(job.userId, job.source.link, job.target)).rejects.toThrow();
+
+				expect(boardImportSourceService.resolveSource).not.toHaveBeenCalled();
+				expect(runtimeConfigService.getBoolean).not.toHaveBeenCalled();
+				expect(boardImportJobService.create).not.toHaveBeenCalled();
+			});
+		});
+
+		describe.each([BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException])(
+			'when the check of the link throws %p',
+			(Exception) => {
+				const setup = () => {
+					const job = boardImportJobFactory.build();
+					const error = new Exception();
+					config.featureBoardImportEnabled = true;
+
+					boardImportSourceService.resolveSource.mockImplementationOnce(() => {
+						throw error;
+					});
+
+					return { job, error };
+				};
+
+				it('should throw the same exception', async () => {
+					const { job, error } = setup();
+
+					await expect(uc.startImport(job.userId, job.source.link, job.target)).rejects.toBe(error);
+				});
+
+				it('should not read the switch or create a job', async () => {
+					const { job } = setup();
+
+					await expect(uc.startImport(job.userId, job.source.link, job.target)).rejects.toThrow();
+
+					expect(runtimeConfigService.getBoolean).not.toHaveBeenCalled();
+					expect(boardImportJobService.create).not.toHaveBeenCalled();
+				});
+			}
+		);
+
+		describe('when the source is switched off', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				config.featureBoardImportEnabled = true;
+
+				boardImportSourceService.resolveSource.mockReturnValueOnce(job.source);
+				runtimeConfigService.getBoolean.mockResolvedValueOnce(false);
+
+				return { job };
+			};
+
+			it('should throw a source disabled exception', async () => {
+				const { job } = setup();
+
+				await expect(uc.startImport(job.userId, job.source.link, job.target)).rejects.toThrow(
+					BoardImportSourceDisabledLoggableException
+				);
+			});
+
 			it('should not create a job', async () => {
 				const { job } = setup();
 
@@ -73,18 +149,57 @@ describe(BoardImportUc.name, () => {
 			});
 		});
 
-		describe('when the service creates a job', () => {
+		describe('when the switch cannot be read', () => {
 			const setup = () => {
 				const job = boardImportJobFactory.build();
+				const error = new Error('database not available');
 				config.featureBoardImportEnabled = true;
 
 				boardImportSourceService.resolveSource.mockReturnValueOnce(job.source);
-				boardImportJobService.create.mockResolvedValueOnce(job);
+				runtimeConfigService.getBoolean.mockRejectedValueOnce(error);
 
-				return { job };
+				return { job, error };
 			};
 
-			it('should create the job for the user, the link and the target', async () => {
+			it('should throw the error and not create a job', async () => {
+				const { job, error } = setup();
+
+				await expect(uc.startImport(job.userId, job.source.link, job.target)).rejects.toBe(error);
+
+				expect(boardImportJobService.create).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the source is switched on', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				const switchKey = BOARD_IMPORT_SOURCE_SWITCH_KEYS[job.source.type];
+				config.featureBoardImportEnabled = true;
+
+				boardImportSourceService.resolveSource.mockReturnValueOnce(job.source);
+				runtimeConfigService.getBoolean.mockResolvedValueOnce(true);
+				boardImportJobService.create.mockResolvedValueOnce(job);
+
+				return { job, switchKey };
+			};
+
+			it('should check the link', async () => {
+				const { job } = setup();
+
+				await uc.startImport(job.userId, job.source.link, job.target);
+
+				expect(boardImportSourceService.resolveSource).toHaveBeenCalledWith(job.source.link);
+			});
+
+			it('should read the switch of the source', async () => {
+				const { job, switchKey } = setup();
+
+				await uc.startImport(job.userId, job.source.link, job.target);
+
+				expect(runtimeConfigService.getBoolean).toHaveBeenCalledWith(switchKey);
+			});
+
+			it('should create the job for the user, the source and the target', async () => {
 				const { job } = setup();
 
 				await uc.startImport(job.userId, job.source.link, job.target);
@@ -99,6 +214,53 @@ describe(BoardImportUc.name, () => {
 
 				expect(result).toBe(job);
 			});
+		});
+
+		describe('when two imports start one after the other', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				config.featureBoardImportEnabled = true;
+
+				boardImportSourceService.resolveSource.mockReturnValueOnce(job.source).mockReturnValueOnce(job.source);
+				runtimeConfigService.getBoolean.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+				boardImportJobService.create.mockResolvedValueOnce(job);
+
+				return { job };
+			};
+
+			it('should read the switch for each start', async () => {
+				const { job } = setup();
+
+				await uc.startImport(job.userId, job.source.link, job.target);
+				await expect(uc.startImport(job.userId, job.source.link, job.target)).rejects.toThrow(
+					BoardImportSourceDisabledLoggableException
+				);
+
+				expect(runtimeConfigService.getBoolean).toHaveBeenCalledTimes(2);
+			});
+		});
+	});
+
+	describe(BoardImportSourceDisabledLoggableException.name, () => {
+		const setup = () => {
+			const { source } = boardImportJobFactory.build();
+			const exception = new BoardImportSourceDisabledLoggableException(source.type);
+
+			return { source, exception };
+		};
+
+		it('should have the status 403', () => {
+			const { exception } = setup();
+
+			expect(exception.getStatus()).toEqual(403);
+		});
+
+		it('should log the type of the source and not the link', () => {
+			const { source, exception } = setup();
+
+			const result = exception.getLogMessage();
+
+			expect(result).toEqual({ type: exception.type, stack: exception.stack, data: { sourceType: source.type } });
 		});
 	});
 

@@ -2,6 +2,13 @@ import { type RuntimeConfigDefault } from '@infra/runtime-config';
 
 const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 	{
+		key: 'BOARD_IMPORT_TASKCARDS_ENABLED',
+		type: 'boolean',
+		value: true,
+		description:
+			'Erlaubt ("AN") oder sperrt ("AUS") den Start neuer Board-Importe aus TaskCards. Laufende Importe enden normal.',
+	},
+	{
 		key: 'DASHBOARD_ANNOUNCEMENT_ENABLED',
 		type: 'boolean',
 		value: false,
