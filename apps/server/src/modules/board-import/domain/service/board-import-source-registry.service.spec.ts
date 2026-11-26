@@ -57,6 +57,37 @@ describe(BoardImportSourceRegistryService.name, () => {
 	});
 
 	describe('registerSource', () => {
+		describe('when the board hosts are host names and subdomain patterns', () => {
+			it('should register the source', () => {
+				const { registry, definition } = setup();
+				const boardHosts = ['a.example', '*.b.example', 'x-1.sub.c.example'];
+
+				registry.registerSource({ ...definition, boardHosts });
+
+				expect(registry.findByType(definition.type)?.boardHosts).toEqual(boardHosts);
+			});
+		});
+
+		describe('when a board host is not a host name or a subdomain pattern', () => {
+			it.each([
+				'',
+				'https://source.example',
+				'source.example/path',
+				'*source.example',
+				'foo.*.example',
+				'*.*.source.example',
+				'Source.example',
+				'source.example.',
+				'127.0.0.1',
+				'localhost',
+			])('should throw an error for "%s"', (entry: string) => {
+				const { registry, definition } = setup();
+
+				expect(() => registry.registerSource({ ...definition, boardHosts: ['source.example', entry] })).toThrow(Error);
+				expect(registry.findByType(definition.type)).toBeUndefined();
+			});
+		});
+
 		describe('when a source with the same type is registered already', () => {
 			it('should throw an error', () => {
 				const { registry, definition } = setup();

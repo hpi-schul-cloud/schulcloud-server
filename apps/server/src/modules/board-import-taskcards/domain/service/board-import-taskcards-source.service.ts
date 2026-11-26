@@ -12,14 +12,13 @@ export class BoardImportTaskcardsSourceService implements BoardImportSourceDefin
 
 	public readonly switchKey = BOARD_IMPORT_TASKCARDS_SWITCH_KEY;
 
+	public readonly boardHosts: string[];
+
 	constructor(
-		@Inject(BOARD_IMPORT_TASKCARDS_CONFIG_TOKEN) private readonly config: BoardImportTaskcardsConfig,
+		@Inject(BOARD_IMPORT_TASKCARDS_CONFIG_TOKEN) config: BoardImportTaskcardsConfig,
 		boardImportSourceRegistryService: BoardImportSourceRegistryService
 	) {
+		this.boardHosts = config.boardHosts;
 		boardImportSourceRegistryService.registerSource(this);
-	}
-
-	get boardHosts(): string[] {
-		return this.config.boardHosts;
 	}
 }

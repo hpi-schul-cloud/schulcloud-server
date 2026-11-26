@@ -59,10 +59,6 @@ export class BoardImportConfig {
 	public jobRetryDelayInSeconds = 10;
 }
 
-// A host name in lowercase, or "*." plus a domain for all its subdomains. The last label starts with a letter,
-// so an IPv4 address does not match.
-export const BOARD_IMPORT_HOST_ENTRY_PATTERN = /^(\*\.)?([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]([a-z0-9-]*[a-z0-9])?$/;
-
 const MAX_TIMER_DELAY_IN_SECONDS = MAX_TIMER_DELAY_IN_MINUTES * 60;
 
 // The limits for one request to a source. See ADR 0013.

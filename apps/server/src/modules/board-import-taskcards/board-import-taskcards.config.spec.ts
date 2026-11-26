@@ -43,27 +43,5 @@ describe(BoardImportTaskcardsConfig.name, () => {
 				expect(errors[0].constraints).toHaveProperty('arrayNotEmpty');
 			});
 		});
-
-		describe('when an entry is not a host name or a subdomain pattern', () => {
-			it.each([
-				'',
-				'https://taskcards.de',
-				'taskcards.de/path',
-				'*taskcards.de',
-				'foo.*.de',
-				'*.*.taskcards.de',
-				'TaskCards.de',
-				'taskcards.de.',
-				'127.0.0.1',
-				'localhost',
-			])('should be invalid for "%s"', (entry: string) => {
-				const { config } = setup(['taskcards.de', entry]);
-
-				const errors = validateSync(config);
-
-				expect(errors).toHaveLength(1);
-				expect(errors[0].constraints).toHaveProperty('matches');
-			});
-		});
 	});
 });

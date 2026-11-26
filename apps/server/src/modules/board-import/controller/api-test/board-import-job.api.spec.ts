@@ -29,10 +29,14 @@ import {
 	BoardImportConfig,
 	type BoardImportPublicApiConfig,
 } from '../../board-import.config';
-import { type BoardImportJob, BoardImportJobStatus, type BoardImportSource } from '../../domain';
+import {
+	type BoardImportJob,
+	BoardImportJobStatus,
+	type BoardImportSource,
+	BoardImportSourceRegistryService,
+	BoardImportSourceService,
+} from '../../domain';
 import { BoardImportSourceReaderRegistryService } from '../../domain/service/board-import-source-reader-registry.service';
-import { BoardImportSourceRegistryService } from '../../domain/service/board-import-source-registry.service';
-import { BoardImportSourceService } from '../../domain/service/board-import-source.service';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
 import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
 import { BoardImportJobEntity } from '../../repo/entity';

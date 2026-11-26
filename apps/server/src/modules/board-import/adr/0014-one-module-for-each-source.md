@@ -24,6 +24,7 @@ Rejected alternatives:
   - A source definition: the type, the hosts of the boards and the key of the switch.
   - A source reader: it reads the board of a job.
 - `board-import` has one registry for the definitions and one registry for the readers. A source puts its definition and its reader into the registries when the app starts. The authorization rules of the server use the same pattern.
+- The registry of the definitions checks the format of the hosts. Thus no source can register a host that the link check does not expect.
 - The shared logic finds a source only through the registries. It contains no name of a source.
 - A source has two Nest modules. The first one registers the definition, for the import API and the worker. The second one registers the reader, for the worker only.
 - Each import app imports the Nest modules of the sources in its app module.
