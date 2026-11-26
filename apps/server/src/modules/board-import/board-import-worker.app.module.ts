@@ -6,7 +6,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { WORKER_ENTITIES } from './board-import-worker.entity.imports';
 import { BoardImportWorkerModule } from './board-import-worker.module';
 
-const imports = [CoreModule, HealthApiModule, BoardImportWorkerModule];
+const imports = [CoreModule, HealthApiModule.registerWithSessionStorage(), BoardImportWorkerModule];
 const entities = [...WORKER_ENTITIES, ...HealthEntities];
 
 @Module({
