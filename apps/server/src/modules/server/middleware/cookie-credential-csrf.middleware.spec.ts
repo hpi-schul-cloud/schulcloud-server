@@ -22,6 +22,7 @@ import {
 	cookieCredentialCsrfMiddleware,
 	CookieCredentialCsrfMiddleware,
 } from './cookie-credential-csrf.middleware';
+import { cookieCredentialCsrfMiddleware as exportedCookieCredentialCsrfMiddleware } from '../index';
 
 interface RequestOptions {
 	method: string;
@@ -74,6 +75,12 @@ class ModuleConfiguredApp implements NestModule {
 
 @Module({ controllers: [ItemsController, ProtectedGetController] })
 class ExpressConfiguredApp {}
+
+describe('server module barrel', () => {
+	it('exports the cookie CSRF middleware', () => {
+		expect(exportedCookieCredentialCsrfMiddleware).toBe(cookieCredentialCsrfMiddleware);
+	});
+});
 
 describe('cookieCredentialCsrfMiddleware', () => {
 	const next = jest.fn() as jest.MockedFunction<NextFunction>;
@@ -250,6 +257,10 @@ describe('cookieCredentialCsrfMiddleware', () => {
 
 		it('allows an ordinary cookie GET', () => {
 			allow(createRequest({ method: 'GET', path: '/pseudonyms/username/opaque', headers: { cookie } }));
+		});
+
+		it('allows a cookie GET for the root path', () => {
+			allow(createRequest({ method: 'GET', path: '/', headers: { cookie } }));
 		});
 
 		it('ignores safe methods other than the listed GETs and their HEAD', () => {
