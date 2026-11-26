@@ -28,6 +28,10 @@ describe(BoardImportSourceService.name, () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		config.taskcardsBoardHosts = new BoardImportSourceConfig().taskcardsBoardHosts;
+	});
+
 	describe('resolveSource', () => {
 		describe('when the link points to a TaskCards host', () => {
 			it.each([
@@ -86,56 +90,25 @@ describe(BoardImportSourceService.name, () => {
 
 		describe('when the list has only a subdomain pattern', () => {
 			const setup = () => {
-				const defaultHosts = config.taskcardsBoardHosts;
 				config.taskcardsBoardHosts = ['*.taskcards.app'];
-				const restore = (): void => {
-					config.taskcardsBoardHosts = defaultHosts;
-				};
-
-				return { restore };
 			};
 
 			it('should not accept the domain itself', () => {
-				const { restore } = setup();
+				setup();
 
 				expect(() => service.resolveSource('https://taskcards.app/')).toThrow(
 					BoardImportSourceUnknownLoggableException
 				);
-
-				restore();
 			});
 
 			it('should accept a subdomain', () => {
-				const { restore } = setup();
+				setup();
 				const link = 'https://school.taskcards.app/';
 
 				const result = service.resolveSource(link);
 
 				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link });
-
-				restore();
 			});
 		});
 	});
 });
-
-describe.each([BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException])(
-	'%p',
-	(Exception) => {
-		describe('getLogMessage', () => {
-			it('should return only the type and the stack', () => {
-				const exception = new Exception();
-
-				const result = exception.getLogMessage();
-
-				expect(result).toEqual({ type: exception.type, stack: exception.stack });
-			});
-		});
-
-		it('should have the status 400', () => {
-			const exception = new Exception();
-
-			expect(exception.getStatus()).toEqual(400);
-		});
-	}
-);

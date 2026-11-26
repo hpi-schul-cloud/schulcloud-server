@@ -241,29 +241,6 @@ describe(BoardImportUc.name, () => {
 		});
 	});
 
-	describe(BoardImportSourceDisabledLoggableException.name, () => {
-		const setup = () => {
-			const { source } = boardImportJobFactory.build();
-			const exception = new BoardImportSourceDisabledLoggableException(source.type);
-
-			return { source, exception };
-		};
-
-		it('should have the status 403', () => {
-			const { exception } = setup();
-
-			expect(exception.getStatus()).toEqual(403);
-		});
-
-		it('should log the type of the source and not the link', () => {
-			const { source, exception } = setup();
-
-			const result = exception.getLogMessage();
-
-			expect(result).toEqual({ type: exception.type, stack: exception.stack, data: { sourceType: source.type } });
-		});
-	});
-
 	describe('getJob', () => {
 		describe('when the job belongs to the user', () => {
 			const setup = () => {

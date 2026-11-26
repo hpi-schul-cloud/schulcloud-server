@@ -39,7 +39,7 @@ export class BoardImportSourceService {
 		const hasCredentials = url.username !== '' || url.password !== '';
 		const isIpAddress = host.startsWith('[') || isIP(host) !== 0;
 
-		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || host === '' || isIpAddress) {
+		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || isIpAddress) {
 			throw new BoardImportLinkInvalidLoggableException();
 		}
 
@@ -48,7 +48,7 @@ export class BoardImportSourceService {
 
 	private isHostInEntry(host: string, entry: string): boolean {
 		if (entry.startsWith(SUBDOMAIN_PREFIX)) {
-			const domainSuffix = entry.slice(SUBDOMAIN_PREFIX.length - 1);
+			const domainSuffix = entry.slice(1);
 			const isSubdomain = host.endsWith(domainSuffix);
 
 			return isSubdomain;

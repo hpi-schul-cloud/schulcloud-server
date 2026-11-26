@@ -8,7 +8,7 @@ export class BoardImportSourceUnknownLoggableException extends BusinessError imp
 			{
 				type: 'BOARD_IMPORT_SOURCE_UNKNOWN',
 				title: 'Board Import Source Unknown',
-				defaultMessage: 'The link does not point to a supported source. Supported: TaskCards.',
+				defaultMessage: 'The link does not point to a supported source.',
 			},
 			HttpStatus.BAD_REQUEST
 		);
