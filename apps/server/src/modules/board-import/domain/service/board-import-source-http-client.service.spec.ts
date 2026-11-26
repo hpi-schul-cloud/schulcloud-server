@@ -3,21 +3,22 @@ import { HttpService } from '@nestjs/axios';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosError, AxiosHeaders, type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { Agent } from 'node:https';
+import { createServer, type Server } from 'node:http';
+import { RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN, BoardImportSourceRequestConfig } from '../../board-import.config';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
-import { BoardImportLinkCheckService } from './board-import-link-check.service';
 import {
 	type BoardImportSourceRequest,
 	BoardImportSourceHttpClientService,
 } from './board-import-source-http-client.service';
+import { BoardImportSourceService } from './board-import-source.service';
 
 describe(BoardImportSourceHttpClientService.name, () => {
 	let module: TestingModule;
 	let service: BoardImportSourceHttpClientService;
 	let axiosInstance: DeepMocked<AxiosInstance>;
-	let linkCheckService: DeepMocked<BoardImportLinkCheckService>;
+	let sourceService: DeepMocked<BoardImportSourceService>;
 	let config: BoardImportSourceRequestConfig;
 
 	beforeAll(async () => {
@@ -26,13 +27,13 @@ describe(BoardImportSourceHttpClientService.name, () => {
 			providers: [
 				BoardImportSourceHttpClientService,
 				{ provide: HttpService, useValue: createMock<HttpService>({ axiosRef: axiosInstance }) },
-				{ provide: BoardImportLinkCheckService, useValue: createMock<BoardImportLinkCheckService>() },
+				{ provide: BoardImportSourceService, useValue: createMock<BoardImportSourceService>() },
 				{ provide: BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN, useValue: new BoardImportSourceRequestConfig() },
 			],
 		}).compile();
 
 		service = module.get(BoardImportSourceHttpClientService);
-		linkCheckService = module.get(BoardImportLinkCheckService);
+		sourceService = module.get(BoardImportSourceService);
 		config = module.get(BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN);
 	});
 
@@ -45,7 +46,6 @@ describe(BoardImportSourceHttpClientService.name, () => {
 	});
 
 	const setupRequest = (props: Partial<BoardImportSourceRequest> = {}) => {
-		const checkedAddress = { address: '93.184.216.34', family: 4 as const };
 		const request: BoardImportSourceRequest = {
 			method: 'POST',
 			url: 'https://www.taskcards.de/graphql',
@@ -55,9 +55,9 @@ describe(BoardImportSourceHttpClientService.name, () => {
 			signal: new AbortController().signal,
 			...props,
 		};
-		linkCheckService.check.mockResolvedValue(checkedAddress);
+		sourceService.isLinkOfSource.mockReturnValue(true);
 
-		return { request, checkedAddress };
+		return { request };
 	};
 
 	const mockResponse = (status: number, data = '', location?: string): void => {
@@ -81,11 +81,11 @@ describe(BoardImportSourceHttpClientService.name, () => {
 	describe('request', () => {
 		describe('when the source answers with status 200', () => {
 			const setup = () => {
-				const { request, checkedAddress } = setupRequest();
+				const { request } = setupRequest();
 				const body = '{"data":{}}';
 				mockResponse(200, body);
 
-				return { request, checkedAddress, body };
+				return { request, body };
 			};
 
 			it('should return the status and the body', async () => {
@@ -101,7 +101,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 
 				await service.request(request);
 
-				expect(linkCheckService.check).toHaveBeenCalledWith(new URL(request.url), request.sourceType);
+				expect(sourceService.isLinkOfSource).toHaveBeenCalledWith(request.url, request.sourceType);
 			});
 
 			it('should send the request with the limits and without automatic redirects or a proxy', async () => {
@@ -125,18 +125,12 @@ describe(BoardImportSourceHttpClientService.name, () => {
 				);
 			});
 
-			it('should connect to the checked address', async () => {
-				const { request, checkedAddress } = setup();
-				const callback = jest.fn();
+			it('should use the agent that rejects addresses that are not public', async () => {
+				const { request } = setup();
 
 				await service.request(request);
 
-				const agent: unknown = getSentConfig(0).httpsAgent;
-				expect(agent).toBeInstanceOf(Agent);
-				if (agent instanceof Agent) {
-					agent.options.lookup?.('www.taskcards.de', { all: true }, callback);
-				}
-				expect(callback).toHaveBeenCalledWith(null, [checkedAddress]);
+				expect(getSentConfig(0).httpsAgent).toBeInstanceOf(RequestFilteringHttpsAgent);
 			});
 
 			it('should accept each status', async () => {
@@ -149,8 +143,20 @@ describe(BoardImportSourceHttpClientService.name, () => {
 			});
 		});
 
-		describe('when the source answers with an error status', () => {
-			it.each([409, 404, 500])('should return the status %s and not throw', async (status: number) => {
+		describe('when the source answers with a status for a temporary error', () => {
+			it.each([408, 429, 500, 503])('should throw an error that permits a new attempt for %s', async (status) => {
+				const { request } = setupRequest();
+				mockResponse(status, 'error');
+
+				const error = await service.request(request).catch((e: unknown) => e);
+
+				expect(error).toBeInstanceOf(Error);
+				expect(error).not.toBeInstanceOf(BoardImportJobRejectedError);
+			});
+		});
+
+		describe('when the source answers with another error status', () => {
+			it.each([409, 404, 403])('should return the status %s and not throw', async (status: number) => {
 				const { request } = setupRequest();
 				mockResponse(status, 'error');
 
@@ -182,9 +188,9 @@ describe(BoardImportSourceHttpClientService.name, () => {
 
 				await service.request(request);
 
-				expect(linkCheckService.check).toHaveBeenCalledTimes(2);
-				expect(linkCheckService.check).toHaveBeenLastCalledWith(
-					new URL('https://www.taskcards.de/other'),
+				expect(sourceService.isLinkOfSource).toHaveBeenCalledTimes(2);
+				expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(
+					'https://www.taskcards.de/other',
 					request.sourceType
 				);
 			});
@@ -241,24 +247,47 @@ describe(BoardImportSourceHttpClientService.name, () => {
 			});
 		});
 
-		describe('when the check rejects the redirect target', () => {
+		describe('when the URL of the request is not a link of the source', () => {
+			it('should reject the request and send nothing', async () => {
+				const { request } = setupRequest();
+				sourceService.isLinkOfSource.mockReset();
+				sourceService.isLinkOfSource.mockReturnValueOnce(false);
+
+				await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
+
+				expect(axiosInstance.request).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the redirect target is not a link of the source', () => {
 			it.each(['https://169.254.169.254/', 'http://www.taskcards.de/', 'https://evil.example/', 'https://api-svc/'])(
 				'should reject the redirect to "%s" and send no second request',
 				async (location: string) => {
-					const { request, checkedAddress } = setupRequest();
-					linkCheckService.check.mockReset();
-					linkCheckService.check.mockResolvedValueOnce(checkedAddress);
-					linkCheckService.check.mockRejectedValueOnce(
-						new BoardImportJobRejectedError(BoardImportJobLogReason.SOURCE_LINK_REJECTED)
-					);
+					const { request } = setupRequest();
+					sourceService.isLinkOfSource.mockReset();
+					sourceService.isLinkOfSource.mockReturnValueOnce(true);
+					sourceService.isLinkOfSource.mockReturnValueOnce(false);
 					mockResponse(302, '', location);
 
 					await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
 
-					expect(linkCheckService.check).toHaveBeenLastCalledWith(new URL(location), request.sourceType);
+					expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(location, request.sourceType);
 					expect(axiosInstance.request).toHaveBeenCalledTimes(1);
 				}
 			);
+		});
+
+		describe('when the agent rejects an address of the host', () => {
+			it('should reject the request', async () => {
+				const { request } = setupRequest();
+				axiosInstance.request.mockRejectedValueOnce(
+					new AxiosError(
+						'DNS lookup 10.0.0.5(family:4, host:www.taskcards.de) is not allowed. Because, It is private IP address.'
+					)
+				);
+
+				await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
+			});
 		});
 
 		describe('when the redirect target is not a URL', () => {
@@ -333,9 +362,110 @@ describe(BoardImportSourceHttpClientService.name, () => {
 
 				await expect(service.request(request)).rejects.toThrow();
 
-				expect(linkCheckService.check).not.toHaveBeenCalled();
+				expect(sourceService.isLinkOfSource).not.toHaveBeenCalled();
 				expect(axiosInstance.request).not.toHaveBeenCalled();
 			});
+		});
+	});
+});
+
+describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => {
+	let module: TestingModule;
+	let service: BoardImportSourceHttpClientService;
+	let sourceService: DeepMocked<BoardImportSourceService>;
+	let config: BoardImportSourceRequestConfig;
+	let server: Server;
+	let serverUrl: string;
+
+	const largeBody = 'a'.repeat(100000);
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				BoardImportSourceHttpClientService,
+				{ provide: HttpService, useValue: new HttpService() },
+				{ provide: BoardImportSourceService, useValue: createMock<BoardImportSourceService>() },
+				{ provide: BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN, useValue: new BoardImportSourceRequestConfig() },
+			],
+		}).compile();
+
+		service = module.get(BoardImportSourceHttpClientService);
+		sourceService = module.get(BoardImportSourceService);
+		config = module.get(BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN);
+
+		server = createServer((request, response) => {
+			if (request.url === '/redirect') {
+				response.writeHead(302, { location: '/final' }).end();
+			} else if (request.url === '/large') {
+				response.writeHead(200).end(largeBody);
+			} else {
+				response.writeHead(200).end(`${request.method ?? ''} ${request.url ?? ''}`);
+			}
+		});
+		await new Promise<void>((resolve) => {
+			server.listen(0, '127.0.0.1', resolve);
+		});
+		const address = server.address();
+		const port = typeof address === 'object' && address !== null ? address.port : 0;
+		serverUrl = `http://127.0.0.1:${port}`;
+	});
+
+	afterAll(async () => {
+		await new Promise((resolve) => {
+			server.close(resolve);
+		});
+		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+		config.maxResponseSizeInBytes = new BoardImportSourceRequestConfig().maxResponseSizeInBytes;
+	});
+
+	const setup = (url: string) => {
+		const request: BoardImportSourceRequest = {
+			method: 'POST',
+			url,
+			body: '{}',
+			sourceType: BoardImportSourceType.TASKCARDS,
+			signal: new AbortController().signal,
+		};
+		sourceService.isLinkOfSource.mockReturnValue(true);
+
+		return { request };
+	};
+
+	describe('when the host of an https URL resolves to an address that is not public', () => {
+		it('should reject the request', async () => {
+			const { request } = setup('https://localhost/graphql');
+
+			const error = await service.request(request).catch((e: unknown) => e);
+
+			expect(error).toBeInstanceOf(BoardImportJobRejectedError);
+			expect(error).toHaveProperty('reason', BoardImportJobLogReason.SOURCE_LINK_REJECTED);
+		});
+	});
+
+	describe('when the answer is larger than the limit', () => {
+		it('should reject the request', async () => {
+			const { request } = setup(`${serverUrl}/large`);
+			config.maxResponseSizeInBytes = 1000;
+
+			const error = await service.request(request).catch((e: unknown) => e);
+
+			expect(error).toBeInstanceOf(BoardImportJobRejectedError);
+			expect(error).toHaveProperty('reason', BoardImportJobLogReason.SOURCE_RESPONSE_TOO_LARGE);
+		});
+	});
+
+	describe('when the server redirects', () => {
+		it('should follow the redirect itself and return the answer of the target', async () => {
+			const { request } = setup(`${serverUrl}/redirect`);
+
+			const result = await service.request(request);
+
+			expect(result).toEqual({ status: 200, body: 'GET /final' });
+			expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(`${serverUrl}/final`, request.sourceType);
 		});
 	});
 });

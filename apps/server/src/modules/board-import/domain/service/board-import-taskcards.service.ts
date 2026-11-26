@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { type BoardImportJob } from '../do';
 import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason } from '../type';
+import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
 import { BoardImportSourceHttpClientService } from './board-import-source-http-client.service';
 import { parseTaskcardsLink, type TaskcardsLink } from './board-import-taskcards-link';
 
@@ -23,8 +23,6 @@ const STATUS_OK: number = HttpStatus.OK;
 const FIRST_REDIRECT_STATUS: number = HttpStatus.AMBIGUOUS;
 // The source answers with a conflict when the visitor has the access already.
 const ACCESS_EXISTS_STATUS: number = HttpStatus.CONFLICT;
-const TEMPORARY_ERROR_STATUSES: number[] = [HttpStatus.REQUEST_TIMEOUT, HttpStatus.TOO_MANY_REQUESTS];
-const FIRST_SERVER_ERROR_STATUS: number = HttpStatus.INTERNAL_SERVER_ERROR;
 // Directly after the access call, the board query can still answer that the visitor has no access.
 const BOARD_QUERY_RETRY_DELAYS_IN_MS = [300, 800];
 
@@ -45,17 +43,17 @@ export class BoardImportTaskcardsService {
 			throw this.notReadable();
 		}
 
-		const visitorId = await this.createVisitor(job, link, signal);
+		const visitorId = await this.createVisitor(link, signal);
 		if (link.token !== undefined) {
-			await this.unlockAccess(job, link, link.token, visitorId, signal);
+			await this.unlockAccess(link, link.token, visitorId, signal);
 		}
-		const board = await this.queryBoard(job, link, visitorId, signal);
+		const board = await this.queryBoard(link, visitorId, signal);
 
 		return board;
 	}
 
-	private async createVisitor(job: BoardImportJob, link: TaskcardsLink, signal: AbortSignal): Promise<string> {
-		const body = await this.postGraphql(job, link, { query: VISITOR_QUERY }, undefined, signal);
+	private async createVisitor(link: TaskcardsLink, signal: AbortSignal): Promise<string> {
+		const body = await this.postGraphql(link, { query: VISITOR_QUERY }, undefined, signal);
 		const { data } = this.parseJson(body);
 		const visitor = isJsonObject(data) ? data.createVisitor : undefined;
 		const visitorId = isJsonObject(visitor) ? visitor.id : undefined;
@@ -68,31 +66,26 @@ export class BoardImportTaskcardsService {
 	}
 
 	private async unlockAccess(
-		job: BoardImportJob,
 		link: TaskcardsLink,
 		token: string,
 		visitorId: string,
 		signal: AbortSignal
 	): Promise<void> {
 		const path = `/api/boards/${encodeURIComponent(link.boardId)}/permissions/${encodeURIComponent(token)}/accesses`;
-		const { status } = await this.post(job, `${link.baseUrl}${path}`, { password: '' }, visitorId, signal);
+		const { status } = await this.post(`${link.baseUrl}${path}`, { password: '' }, visitorId, signal);
 
-		if (!this.isSuccess(status) && status !== ACCESS_EXISTS_STATUS) {
-			throw this.getStatusError(status);
+		const isSuccess = status >= STATUS_OK && status < FIRST_REDIRECT_STATUS;
+		if (!isSuccess && status !== ACCESS_EXISTS_STATUS) {
+			throw this.notReadable();
 		}
 	}
 
-	private async queryBoard(
-		job: BoardImportJob,
-		link: TaskcardsLink,
-		visitorId: string,
-		signal: AbortSignal
-	): Promise<string> {
+	private async queryBoard(link: TaskcardsLink, visitorId: string, signal: AbortSignal): Promise<string> {
 		const query = { operationName: null, variables: { id: link.boardId }, query: BOARD_QUERY };
 		const retryDelaysInMs = link.token === undefined ? [] : BOARD_QUERY_RETRY_DELAYS_IN_MS;
 
 		for (let attempt = 0; ; attempt += 1) {
-			const body = await this.postGraphql(job, link, query, visitorId, signal);
+			const body = await this.postGraphql(link, query, visitorId, signal);
 			const answer = this.parseJson(body);
 
 			if (this.hasBoard(answer)) {
@@ -128,23 +121,21 @@ export class BoardImportTaskcardsService {
 	}
 
 	private async postGraphql(
-		job: BoardImportJob,
 		link: TaskcardsLink,
 		payload: JsonObject,
 		visitorId: string | undefined,
 		signal: AbortSignal
 	): Promise<string> {
-		const { status, body } = await this.post(job, `${link.baseUrl}/graphql`, payload, visitorId, signal);
+		const { status, body } = await this.post(`${link.baseUrl}/graphql`, payload, visitorId, signal);
 
 		if (status !== STATUS_OK) {
-			throw this.getStatusError(status);
+			throw this.notReadable();
 		}
 
 		return body;
 	}
 
 	private async post(
-		job: BoardImportJob,
 		url: string,
 		payload: JsonObject,
 		visitorId: string | undefined,
@@ -158,7 +149,7 @@ export class BoardImportTaskcardsService {
 			url,
 			headers,
 			body: JSON.stringify(payload),
-			sourceType: job.source.type,
+			sourceType: BoardImportSourceType.TASKCARDS,
 			signal,
 		});
 
@@ -178,19 +169,6 @@ export class BoardImportTaskcardsService {
 		}
 
 		return value;
-	}
-
-	private isSuccess(status: number): boolean {
-		const isSuccess = status >= STATUS_OK && status < FIRST_REDIRECT_STATUS;
-
-		return isSuccess;
-	}
-
-	private getStatusError(status: number): Error {
-		const isTemporary = TEMPORARY_ERROR_STATUSES.includes(status) || status >= FIRST_SERVER_ERROR_STATUS;
-		const error = isTemporary ? this.temporaryError() : this.notReadable();
-
-		return error;
 	}
 
 	private notReadable(): BoardImportJobRejectedError {

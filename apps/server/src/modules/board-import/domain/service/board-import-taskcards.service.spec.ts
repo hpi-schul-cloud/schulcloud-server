@@ -1,18 +1,10 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { boardImportJobFactory } from '../../testing';
+import { boardImportJobFactory, readTaskcardsFixture } from '../../testing';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
 import { BoardImportSourceHttpClientService } from './board-import-source-http-client.service';
 import { BoardImportTaskcardsService } from './board-import-taskcards.service';
-
-const readFixture = (name: string): string => {
-	const fixture = readFileSync(join(__dirname, '../../testing/fixtures/taskcards', name), 'utf8');
-
-	return fixture;
-};
 
 describe(BoardImportTaskcardsService.name, () => {
 	let module: TestingModule;
@@ -22,9 +14,9 @@ describe(BoardImportTaskcardsService.name, () => {
 	const boardId = '793bed21-a8ac-4a26-910e-2c3305ac6c0d';
 	const token = '0599256f-0bd0-498b-b231-1899dd79a644';
 	const visitorId = '00000000-0000-4000-8000-000000000000';
-	const visitorBody = readFixture('create-visitor.json');
-	const boardBody = readFixture('board-pinboard.json');
-	const notReadableBody = readFixture('board-not-readable.json');
+	const visitorBody = readTaskcardsFixture('create-visitor.json');
+	const boardBody = readTaskcardsFixture('board-pinboard.json');
+	const notReadableBody = readTaskcardsFixture('board-not-readable.json');
 	const graphqlUrl = 'https://www.taskcards.de/graphql';
 	const accessUrl = `https://www.taskcards.de/api/boards/${boardId}/permissions/${token}/accesses`;
 
@@ -280,35 +272,16 @@ describe(BoardImportTaskcardsService.name, () => {
 			});
 		});
 
-		describe('when the source answers with a temporary error status', () => {
-			it.each([408, 429, 500, 503])(
-				'should permit a new attempt for the status %s on the visitor call',
-				async (status) => {
-					const { job, signal } = setupJobWithToken();
-					mockResponses({ status, body: '' });
-
-					const error = await readBoardError(job, signal);
-
-					expectTemporaryError(error);
-				}
-			);
-
-			it.each([429, 500, 503])('should permit a new attempt for the status %s on the access call', async (status) => {
+		describe('when the client fails with an error that permits a new attempt', () => {
+			it('should pass the error', async () => {
 				const { job, signal } = setupJobWithToken();
-				mockResponses({ status: 200, body: visitorBody }, { status, body: '' });
+				const clientError = new Error('Request to the source failed');
+				mockResponses({ status: 200, body: visitorBody });
+				httpClient.request.mockRejectedValueOnce(clientError);
 
 				const error = await readBoardError(job, signal);
 
-				expectTemporaryError(error);
-			});
-
-			it.each([429, 500, 503])('should permit a new attempt for the status %s on the board query', async (status) => {
-				const { job, signal } = setupJobWithToken();
-				mockResponses({ status: 200, body: visitorBody }, { status: 201, body: '' }, { status, body: '' });
-
-				const error = await readBoardError(job, signal);
-
-				expectTemporaryError(error);
+				expect(error).toBe(clientError);
 			});
 		});
 
@@ -331,21 +304,6 @@ describe(BoardImportTaskcardsService.name, () => {
 				const error = await readBoardError(job, signal);
 
 				expectTemporaryError(error);
-			});
-		});
-
-		describe('when a request fails', () => {
-			it('should throw an error without the link, the token and the answer', async () => {
-				const { job, signal } = setupJobWithToken();
-				mockResponses({ status: 200, body: visitorBody }, { status: 201, body: '' }, { status: 500, body: boardBody });
-
-				const error = await readBoardError(job, signal);
-
-				expect(error).toEqual(
-					expect.objectContaining({
-						message: expect.not.stringMatching(new RegExp(`${boardId}|${token}|${visitorId}|taskcards\\.de`)),
-					})
-				);
 			});
 		});
 

@@ -23,8 +23,6 @@ import { User } from '@modules/user';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
@@ -44,7 +42,7 @@ import { BoardImportRunnerService } from '../../domain/service/board-import-runn
 import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
 import { BoardImportJobEntity } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
-import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
+import { boardImportJobEntityFactory, boardImportJobFactory, readTaskcardsFixture } from '../../testing';
 
 const baseRouteName = 'board-import/jobs';
 
@@ -721,14 +719,9 @@ describe('Board Import Worker (import as the user)', () => {
 	let sourceHttpClient: DeepMocked<BoardImportSourceHttpClientService>;
 
 	const link = 'https://www.taskcards.de/#/board/793bed21-a8ac-4a26-910e-2c3305ac6c0d';
-	const readFixture = (name: string): string => {
-		const fixture = readFileSync(join(__dirname, '../../testing/fixtures/taskcards', name), 'utf8');
-
-		return fixture;
-	};
 	const mockSource = (boardFixture: string): void => {
-		const visitorBody = readFixture('create-visitor.json');
-		const boardBody = readFixture(boardFixture);
+		const visitorBody = readTaskcardsFixture('create-visitor.json');
+		const boardBody = readTaskcardsFixture(boardFixture);
 		sourceHttpClient.request.mockImplementation(({ body }) => {
 			const response = { status: 200, body: body?.includes('createVisitor') ? visitorBody : boardBody };
 

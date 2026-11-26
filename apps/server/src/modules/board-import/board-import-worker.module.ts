@@ -20,7 +20,6 @@ import {
 } from './board-import.config';
 import { BOARD_IMPORT_JOB_REPO } from './domain';
 import { BoardImportJobProcessService } from './domain/service/board-import-job-process.service';
-import { BoardImportLinkCheckService } from './domain/service/board-import-link-check.service';
 import { BoardImportPlaceholderBoardService } from './domain/service/board-import-placeholder-board.service';
 import { BoardImportRunnerService } from './domain/service/board-import-runner.service';
 import { BoardImportSourceHttpClientService } from './domain/service/board-import-source-http-client.service';
@@ -52,7 +51,6 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		BoardImportTokenService,
 		BoardImportPlaceholderBoardService,
 		BoardImportSourceService,
-		BoardImportLinkCheckService,
 		BoardImportSourceHttpClientService,
 		BoardImportTaskcardsService,
 		BoardImportJobConsumer,

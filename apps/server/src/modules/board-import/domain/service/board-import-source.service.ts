@@ -13,7 +13,31 @@ export class BoardImportSourceService {
 	constructor(@Inject(BOARD_IMPORT_SOURCE_CONFIG_TOKEN) private readonly config: BoardImportSourceConfig) {}
 
 	public resolveSource(link: string): BoardImportSource {
-		const { host, normalizedLink } = this.parseLink(link);
+		const parsedLink = this.parseLink(link);
+		if (!parsedLink) {
+			throw new BoardImportLinkInvalidLoggableException();
+		}
+
+		const sourceType = this.findSourceType(parsedLink.host);
+		if (!sourceType) {
+			throw new BoardImportSourceUnknownLoggableException();
+		}
+
+		// The normalized link has only one reading, so a later request cannot go to another host than the checked one.
+		const source: BoardImportSource = { type: sourceType, link: parsedLink.normalizedLink };
+
+		return source;
+	}
+
+	// Applies the same rules as resolveSource, for a URL that the worker gets from a source, for example a redirect.
+	public isLinkOfSource(link: string, sourceType: BoardImportSourceType): boolean {
+		const parsedLink = this.parseLink(link);
+		const isLinkOfSource = parsedLink !== undefined && this.findSourceType(parsedLink.host) === sourceType;
+
+		return isLinkOfSource;
+	}
+
+	private findSourceType(host: string): BoardImportSourceType | undefined {
 		const boardHostsBySourceType: Record<BoardImportSourceType, string[]> = {
 			[BoardImportSourceType.TASKCARDS]: this.config.taskcardsBoardHosts,
 		};
@@ -21,19 +45,13 @@ export class BoardImportSourceService {
 		const sourceType = Object.values(BoardImportSourceType).find((type) =>
 			boardHostsBySourceType[type].some((entry) => this.isHostInEntry(host, entry))
 		);
-		if (!sourceType) {
-			throw new BoardImportSourceUnknownLoggableException();
-		}
 
-		// The normalized link has only one reading, so a later request cannot go to another host than the checked one.
-		const source: BoardImportSource = { type: sourceType, link: normalizedLink };
-
-		return source;
+		return sourceType;
 	}
 
-	private parseLink(link: string): { host: string; normalizedLink: string } {
+	private parseLink(link: string): { host: string; normalizedLink: string } | undefined {
 		if (!URL.canParse(link)) {
-			throw new BoardImportLinkInvalidLoggableException();
+			return undefined;
 		}
 
 		// The URL parser makes the host lowercase and converts each numeric form of an IPv4 address to the dotted form.
@@ -43,7 +61,7 @@ export class BoardImportSourceService {
 		const isHostName = HOST_NAME_PATTERN.test(host);
 
 		if (url.protocol !== 'https:' || hasCredentials || url.port !== '' || !isHostName) {
-			throw new BoardImportLinkInvalidLoggableException();
+			return undefined;
 		}
 
 		const result = { host, normalizedLink: url.href };
