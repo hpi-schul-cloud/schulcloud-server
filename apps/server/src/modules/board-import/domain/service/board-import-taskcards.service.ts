@@ -19,6 +19,12 @@ const BOARD_QUERY =
 const VISITOR_HEADER = 'x-token';
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 const BOARD_ERROR_CODE = 'BOARD_ERROR';
+const STATUS_OK: number = HttpStatus.OK;
+const FIRST_REDIRECT_STATUS: number = HttpStatus.AMBIGUOUS;
+// The source answers with a conflict when the visitor has the access already.
+const ACCESS_EXISTS_STATUS: number = HttpStatus.CONFLICT;
+const TEMPORARY_ERROR_STATUSES: number[] = [HttpStatus.REQUEST_TIMEOUT, HttpStatus.TOO_MANY_REQUESTS];
+const FIRST_SERVER_ERROR_STATUS: number = HttpStatus.INTERNAL_SERVER_ERROR;
 // Directly after the access call, the board query can still answer that the visitor has no access.
 const BOARD_QUERY_RETRY_DELAYS_IN_MS = [300, 800];
 
@@ -50,7 +56,7 @@ export class BoardImportTaskcardsService {
 
 	private async createVisitor(job: BoardImportJob, link: TaskcardsLink, signal: AbortSignal): Promise<string> {
 		const body = await this.postGraphql(job, link, { query: VISITOR_QUERY }, undefined, signal);
-		const data = this.parseJson(body).data;
+		const { data } = this.parseJson(body);
 		const visitor = isJsonObject(data) ? data.createVisitor : undefined;
 		const visitorId = isJsonObject(visitor) ? visitor.id : undefined;
 
@@ -71,8 +77,7 @@ export class BoardImportTaskcardsService {
 		const path = `/api/boards/${encodeURIComponent(link.boardId)}/permissions/${encodeURIComponent(token)}/accesses`;
 		const { status } = await this.post(job, `${link.baseUrl}${path}`, { password: '' }, visitorId, signal);
 
-		// The source answers with a conflict when the visitor has the access already.
-		if (!this.isSuccess(status) && status !== HttpStatus.CONFLICT) {
+		if (!this.isSuccess(status) && status !== ACCESS_EXISTS_STATUS) {
 			throw this.getStatusError(status);
 		}
 	}
@@ -87,7 +92,6 @@ export class BoardImportTaskcardsService {
 		const retryDelaysInMs = link.token === undefined ? [] : BOARD_QUERY_RETRY_DELAYS_IN_MS;
 
 		for (let attempt = 0; ; attempt += 1) {
-			// eslint-disable-next-line no-await-in-loop
 			const body = await this.postGraphql(job, link, query, visitorId, signal);
 			const answer = this.parseJson(body);
 
@@ -99,7 +103,6 @@ export class BoardImportTaskcardsService {
 			if (retryDelayInMs === undefined || !this.isBoardError(answer)) {
 				throw this.notReadable();
 			}
-			// eslint-disable-next-line no-await-in-loop
 			await this.wait(retryDelayInMs);
 		}
 	}
@@ -133,7 +136,7 @@ export class BoardImportTaskcardsService {
 	): Promise<string> {
 		const { status, body } = await this.post(job, `${link.baseUrl}/graphql`, payload, visitorId, signal);
 
-		if (status !== HttpStatus.OK) {
+		if (status !== STATUS_OK) {
 			throw this.getStatusError(status);
 		}
 
@@ -178,16 +181,13 @@ export class BoardImportTaskcardsService {
 	}
 
 	private isSuccess(status: number): boolean {
-		const isSuccess = status >= HttpStatus.OK && status < HttpStatus.AMBIGUOUS;
+		const isSuccess = status >= STATUS_OK && status < FIRST_REDIRECT_STATUS;
 
 		return isSuccess;
 	}
 
 	private getStatusError(status: number): Error {
-		const isTemporary =
-			status === HttpStatus.REQUEST_TIMEOUT ||
-			status === HttpStatus.TOO_MANY_REQUESTS ||
-			status >= HttpStatus.INTERNAL_SERVER_ERROR;
+		const isTemporary = TEMPORARY_ERROR_STATUSES.includes(status) || status >= FIRST_SERVER_ERROR_STATUS;
 		const error = isTemporary ? this.temporaryError() : this.notReadable();
 
 		return error;

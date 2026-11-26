@@ -23,6 +23,8 @@ import { User } from '@modules/user';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
@@ -39,6 +41,7 @@ import {
 import { API_ENTITIES } from '../../board-import-api.entity.imports';
 import { BOARD_IMPORT_SOURCE_SWITCH_KEYS, BoardImportJobStatus, type BoardImportSourceType } from '../../domain';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
+import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
 import { BoardImportJobEntity } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
@@ -715,6 +718,23 @@ describe('Board Import Worker (import as the user)', () => {
 	let boardsClient: DeepMocked<BoardsClientAdapter>;
 	let columnClient: DeepMocked<ColumnClientAdapter>;
 	let cardClient: DeepMocked<CardClientAdapter>;
+	let sourceHttpClient: DeepMocked<BoardImportSourceHttpClientService>;
+
+	const link = 'https://www.taskcards.de/#/board/793bed21-a8ac-4a26-910e-2c3305ac6c0d';
+	const readFixture = (name: string): string => {
+		const fixture = readFileSync(join(__dirname, '../../testing/fixtures/taskcards', name), 'utf8');
+
+		return fixture;
+	};
+	const mockSource = (boardFixture: string): void => {
+		const visitorBody = readFixture('create-visitor.json');
+		const boardBody = readFixture(boardFixture);
+		sourceHttpClient.request.mockImplementation(({ body }) => {
+			const response = { status: 200, body: body?.includes('createVisitor') ? visitorBody : boardBody };
+
+			return Promise.resolve(response);
+		});
+	};
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -726,6 +746,8 @@ describe('Board Import Worker (import as the user)', () => {
 			.useValue(createMock<ColumnClientAdapter>())
 			.overrideProvider(CardClientAdapter)
 			.useValue(createMock<CardClientAdapter>())
+			.overrideProvider(BoardImportSourceHttpClientService)
+			.useValue(createMock<BoardImportSourceHttpClientService>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -735,6 +757,7 @@ describe('Board Import Worker (import as the user)', () => {
 		boardsClient = module.get(BoardsClientAdapter);
 		columnClient = module.get(ColumnClientAdapter);
 		cardClient = module.get(CardClientAdapter);
+		sourceHttpClient = module.get(BoardImportSourceHttpClientService);
 	});
 
 	afterEach(() => {
@@ -749,7 +772,7 @@ describe('Board Import Worker (import as the user)', () => {
 	describe('when the job of a user with an account is in the queue', () => {
 		const setup = async () => {
 			const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
-			const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id) });
+			const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id), link });
 			await em.persist([teacherUser, teacherAccount, entity]).flush();
 			em.clear();
 
@@ -765,13 +788,17 @@ describe('Board Import Worker (import as the user)', () => {
 			boardsClient.createBoardColumn.mockResolvedValueOnce(
 				createMock<ColumnResponse>({ id: new ObjectId().toHexString(), cards: [] })
 			);
-			columnClient.createCard.mockResolvedValueOnce(
-				createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] })
-			);
-			cardClient.createCardElement.mockResolvedValueOnce(
-				createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() })
-			);
-			cardClient.updateCardElement.mockResolvedValueOnce(createMock());
+			columnClient.createCard.mockImplementation(() => {
+				const card = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
+
+				return Promise.resolve(card);
+			});
+			cardClient.createCardElement.mockImplementation(() => {
+				const element = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
+
+				return Promise.resolve(element);
+			});
+			mockSource('board-pinboard.json');
 
 			return { id: entity.id, boardId, expectedClaims };
 		};
@@ -787,13 +814,57 @@ describe('Board Import Worker (import as the user)', () => {
 			expect(claims).toMatchObject(expectedClaims);
 			expect(finishedJob.boardId?.toHexString()).toEqual(boardId);
 		});
+
+		it('should write the start of the answer of the source into the second card', async () => {
+			const { id } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
+			expect(columnClient.createCard).toHaveBeenCalledTimes(2);
+			expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(
+				expect.anything(),
+				expect.anything(),
+				expect.objectContaining({
+					data: expect.objectContaining({
+						content: expect.objectContaining({ text: expect.stringContaining('<p>{\n\t&quot;data&quot;') }),
+					}),
+				})
+			);
+		});
+	});
+
+	describe('when the source of the job is not readable', () => {
+		const setup = async () => {
+			const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
+			const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id), link });
+			await em.persist([teacherUser, teacherAccount, entity]).flush();
+			em.clear();
+			mockSource('board-not-readable.json');
+
+			const attempts = 1;
+
+			return { id: entity.id, attempts };
+		};
+
+		it('should set the job to failed on the first attempt and create no board', async () => {
+			const { id, attempts } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
+			expect(failedJob.attempts).toEqual(attempts);
+			expect(failedJob.boardId).toBeUndefined();
+			expect(boardsClient.createBoard).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when the user of the job does not exist', () => {
 		const setup = async () => {
-			const entity = boardImportJobEntityFactory.build();
+			const entity = boardImportJobEntityFactory.build({ link });
 			await em.persist(entity).flush();
 			em.clear();
+			mockSource('board-pinboard.json');
 
 			const attempts = 1;
 

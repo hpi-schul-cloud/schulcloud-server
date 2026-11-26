@@ -131,9 +131,11 @@ describe(BoardImportSourceHttpClientService.name, () => {
 
 				await service.request(request);
 
-				const { httpsAgent } = getSentConfig(0);
-				expect(httpsAgent).toBeInstanceOf(Agent);
-				httpsAgent.options.lookup('www.taskcards.de', { all: true }, callback);
+				const agent: unknown = getSentConfig(0).httpsAgent;
+				expect(agent).toBeInstanceOf(Agent);
+				if (agent instanceof Agent) {
+					agent.options.lookup?.('www.taskcards.de', { all: true }, callback);
+				}
 				expect(callback).toHaveBeenCalledWith(null, [checkedAddress]);
 			});
 

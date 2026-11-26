@@ -166,7 +166,10 @@ describe(BoardImportTaskcardsService.name, () => {
 		describe('when the source rejects the token of the link', () => {
 			it.each([403, 404])('should reject the job for the status %s', async (status: number) => {
 				const { job, signal } = setupJobWithToken();
-				mockResponses({ status: 200, body: visitorBody }, { status, body: '{"message":"Permission is not available"}' });
+				mockResponses(
+					{ status: 200, body: visitorBody },
+					{ status, body: '{"message":"Permission is not available"}' }
+				);
 
 				const error = await readBoardError(job, signal);
 
@@ -254,7 +257,9 @@ describe(BoardImportTaskcardsService.name, () => {
 		describe('when the board query gives another GraphQL error', () => {
 			it('should reject the job without a second board query', async () => {
 				const { job, signal } = setupJobWithToken();
-				const body = JSON.stringify({ errors: [{ message: 'Syntax Error', extensions: { code: 'GRAPHQL_PARSE_FAILED' } }] });
+				const body = JSON.stringify({
+					errors: [{ message: 'Syntax Error', extensions: { code: 'GRAPHQL_PARSE_FAILED' } }],
+				});
 				mockResponses({ status: 200, body: visitorBody }, { status: 201, body: '' }, { status: 200, body });
 
 				const error = await readBoardError(job, signal);
@@ -276,14 +281,17 @@ describe(BoardImportTaskcardsService.name, () => {
 		});
 
 		describe('when the source answers with a temporary error status', () => {
-			it.each([408, 429, 500, 503])('should permit a new attempt for the status %s on the visitor call', async (status) => {
-				const { job, signal } = setupJobWithToken();
-				mockResponses({ status, body: '' });
+			it.each([408, 429, 500, 503])(
+				'should permit a new attempt for the status %s on the visitor call',
+				async (status) => {
+					const { job, signal } = setupJobWithToken();
+					mockResponses({ status, body: '' });
 
-				const error = await readBoardError(job, signal);
+					const error = await readBoardError(job, signal);
 
-				expectTemporaryError(error);
-			});
+					expectTemporaryError(error);
+				}
+			);
 
 			it.each([429, 500, 503])('should permit a new attempt for the status %s on the access call', async (status) => {
 				const { job, signal } = setupJobWithToken();

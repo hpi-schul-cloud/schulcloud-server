@@ -63,9 +63,7 @@ export class BoardImportSourceHttpClientService {
 
 		for (let redirects = 0; ; redirects += 1) {
 			request.signal.throwIfAborted();
-			// eslint-disable-next-line no-await-in-loop
 			const address = await this.boardImportLinkCheckService.check(hop.url, request.sourceType);
-			// eslint-disable-next-line no-await-in-loop
 			const response = await this.send(hop, address, request.signal);
 			const location = this.getRedirectLocation(response);
 
@@ -81,7 +79,11 @@ export class BoardImportSourceHttpClientService {
 		}
 	}
 
-	private async send(hop: Hop, address: BoardImportCheckedAddress, signal: AbortSignal): Promise<AxiosResponse<string>> {
+	private async send(
+		hop: Hop,
+		address: BoardImportCheckedAddress,
+		signal: AbortSignal
+	): Promise<AxiosResponse<string>> {
 		const httpsAgent = new Agent({ lookup: createPinnedLookup(address) });
 
 		try {
@@ -128,7 +130,7 @@ export class BoardImportSourceHttpClientService {
 			return undefined;
 		}
 
-		const location: unknown = response.headers.location;
+		const { location } = response.headers;
 		const redirectLocation = typeof location === 'string' && location !== '' ? location : undefined;
 
 		return redirectLocation;
