@@ -33,7 +33,8 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig),
 		ConfigurationModule.register(BOARD_IMPORT_SOURCE_CONFIG_TOKEN, BoardImportSourceConfig),
 		ConfigurationModule.register(BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN, BoardImportSourceRequestConfig),
-		HttpModule,
+		// An own axios instance, so that an interceptor of another module cannot add a header to a request to a source.
+		HttpModule.register({}),
 		BoardImportAmqpModule,
 		LoggerModule,
 		UserModule,

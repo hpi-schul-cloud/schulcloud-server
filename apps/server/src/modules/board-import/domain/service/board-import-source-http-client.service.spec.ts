@@ -120,7 +120,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 						responseType: 'text',
 						timeout: config.requestTimeoutInSeconds * 1000,
 						maxContentLength: config.maxResponseSizeInBytes,
-						signal: request.signal,
+						signal: expect.any(AbortSignal),
 					})
 				);
 			});
@@ -396,6 +396,10 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 		server = createServer((request, response) => {
 			if (request.url === '/redirect') {
 				response.writeHead(302, { location: '/final' }).end();
+			} else if (request.url === '/slow') {
+				response.writeHead(200);
+				const interval = setInterval(() => response.write('a'), 100);
+				response.on('close', () => clearInterval(interval));
 			} else if (request.url === '/large') {
 				response.writeHead(200).end(largeBody);
 			} else {
@@ -420,6 +424,7 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 	afterEach(() => {
 		jest.resetAllMocks();
 		config.maxResponseSizeInBytes = new BoardImportSourceRequestConfig().maxResponseSizeInBytes;
+		config.requestTimeoutInSeconds = new BoardImportSourceRequestConfig().requestTimeoutInSeconds;
 	});
 
 	const setup = (url: string) => {
@@ -455,6 +460,18 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 
 			expect(error).toBeInstanceOf(BoardImportJobRejectedError);
 			expect(error).toHaveProperty('reason', BoardImportJobLogReason.SOURCE_RESPONSE_TOO_LARGE);
+		});
+	});
+
+	describe('when the server sends the answer slowly and without end', () => {
+		it('should stop the request at the time limit with an error that permits a new attempt', async () => {
+			const { request } = setup(`${serverUrl}/slow`);
+			config.requestTimeoutInSeconds = 1;
+
+			const error = await service.request(request).catch((e: unknown) => e);
+
+			expect(error).toBeInstanceOf(Error);
+			expect(error).not.toBeInstanceOf(BoardImportJobRejectedError);
 		});
 	});
 

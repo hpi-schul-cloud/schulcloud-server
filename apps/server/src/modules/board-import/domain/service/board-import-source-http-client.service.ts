@@ -93,6 +93,10 @@ export class BoardImportSourceHttpClientService {
 	}
 
 	private async send(hop: Hop, signal: AbortSignal): Promise<AxiosResponse<string>> {
+		const timeoutInMs = this.config.requestTimeoutInSeconds * MILLISECONDS_PER_SECOND;
+		// The timeout of axios ends only a request that gets no data. This signal also ends an answer that never ends.
+		const signalWithTimeLimit = AbortSignal.any([signal, AbortSignal.timeout(timeoutInMs)]);
+
 		try {
 			const response = await this.httpService.axiosRef.request<string>({
 				method: hop.method,
@@ -106,9 +110,9 @@ export class BoardImportSourceHttpClientService {
 				responseType: 'text',
 				transformResponse: [(data: string): string => data],
 				validateStatus: () => true,
-				timeout: this.config.requestTimeoutInSeconds * MILLISECONDS_PER_SECOND,
+				timeout: timeoutInMs,
 				maxContentLength: this.config.maxResponseSizeInBytes,
-				signal,
+				signal: signalWithTimeLimit,
 			});
 
 			return response;
