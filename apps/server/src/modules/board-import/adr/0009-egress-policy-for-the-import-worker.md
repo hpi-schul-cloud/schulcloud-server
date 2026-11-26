@@ -17,7 +17,7 @@ The pods of the import worker have their own egress network policy. It permits o
 - DNS
 - MongoDB (port 27017 to all addresses)
 - RabbitMQ in the same namespace
-- the server API and the file storage API in the same namespace. The worker will create the imported content through these two services. It does not call them yet.
+- the server API and the file storage API in the same namespace. The worker creates the imported content through these two services.
 - port 443 to public addresses. The private, the shared (`100.64.0.0/10`) and the link-local address ranges are excluded.
 
 Port 80 is not permitted. The worker has no access to the session Valkey, because it does not check a JWT.

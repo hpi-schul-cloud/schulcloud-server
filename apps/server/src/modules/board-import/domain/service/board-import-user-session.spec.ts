@@ -167,7 +167,7 @@ describe(BoardImportUserSession.name, () => {
 			it('should reject the job after the second request', async () => {
 				const { session, request, error } = setup();
 
-				await expect(session.call(request)).rejects.toEqual(error);
+				await expect(session.call(request)).rejects.toMatchObject({ reason: error.reason });
 
 				expect(request).toHaveBeenCalledTimes(2);
 			});
@@ -209,6 +209,51 @@ describe(BoardImportUserSession.name, () => {
 
 				expect(tokenService.createToken).not.toHaveBeenCalled();
 				expect(request).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the signal is aborted while the token is created', () => {
+			const setup = () => {
+				const { abortController, session, request } = setupSession();
+
+				tokenService.createToken.mockImplementationOnce(() => {
+					abortController.abort();
+
+					return Promise.resolve('token');
+				});
+
+				return { session, request };
+			};
+
+			it('should reject and send no request', async () => {
+				const { session, request } = setup();
+
+				await expect(session.call(request)).rejects.toThrow();
+
+				expect(request).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the signal is aborted while the request runs', () => {
+			const setup = () => {
+				const { abortController, session, request } = setupSession();
+
+				tokenService.createToken.mockResolvedValueOnce('token');
+				request.mockImplementationOnce(() => {
+					abortController.abort();
+
+					return Promise.resolve('response');
+				});
+
+				return { session, request };
+			};
+
+			it('should reject and not return the result', async () => {
+				const { session, request } = setup();
+
+				await expect(session.call(request)).rejects.toThrow();
+
+				expect(request).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

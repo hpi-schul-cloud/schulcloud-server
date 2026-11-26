@@ -147,7 +147,7 @@ export class BoardImportJobProcessService {
 			return isInTime;
 		} finally {
 			clearTimeout(timer);
-			// Stops the steps that still run after a timeout or after another step failed.
+			// The steps that still run after a timeout or after another step failed stop before and after their next request.
 			abortController.abort();
 		}
 	}

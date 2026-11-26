@@ -52,8 +52,11 @@ export class BoardImportUserSession {
 	private async send<T>(request: (token: string) => Promise<T>): Promise<T> {
 		this.signal.throwIfAborted();
 		this.token ??= await this.boardImportTokenService.createToken(this.job);
+		this.signal.throwIfAborted();
 
 		const result = await request(this.token);
+		// The job can already be failed by the time limit. Then the caller must not continue with the result.
+		this.signal.throwIfAborted();
 
 		return result;
 	}

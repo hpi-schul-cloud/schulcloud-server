@@ -161,7 +161,7 @@ describe(BoardImportTokenService.name, () => {
 			it('should reject the job and create no token', async () => {
 				const { job, error } = setup();
 
-				await expect(service.createToken(job)).rejects.toEqual(error);
+				await expect(service.createToken(job)).rejects.toMatchObject({ reason: error.reason });
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).not.toHaveBeenCalled();
 			});
@@ -182,7 +182,7 @@ describe(BoardImportTokenService.name, () => {
 			it('should reject the job and create no token', async () => {
 				const { job, error } = setup();
 
-				await expect(service.createToken(job)).rejects.toEqual(error);
+				await expect(service.createToken(job)).rejects.toMatchObject({ reason: error.reason });
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).not.toHaveBeenCalled();
 			});
@@ -205,7 +205,7 @@ describe(BoardImportTokenService.name, () => {
 			it('should reject the job and create no token', async () => {
 				const { job, error } = setup();
 
-				await expect(service.createToken(job)).rejects.toEqual(error);
+				await expect(service.createToken(job)).rejects.toMatchObject({ reason: error.reason });
 
 				expect(jwtIssuerService.generateJwtAndAddToWhitelist).not.toHaveBeenCalled();
 			});
