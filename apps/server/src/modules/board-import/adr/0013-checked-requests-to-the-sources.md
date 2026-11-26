@@ -26,7 +26,7 @@ Rejected alternatives:
   - All addresses that the host name resolves to must be public. If one address is private, loopback, link-local, shared or another special address, the URL is rejected.
 - The check of the addresses uses the HTTPS agent of `request-filtering-agent`. The agent checks the addresses in the DNS lookup of the connection itself, before the connection opens. Thus no second lookup can give an address that is not checked.
 - The HTTP library does not follow redirects and does not use a proxy from the environment. The client follows a redirect itself, and the redirect target goes through the same check. The headers of the caller go only to the host of the first request.
-- Each request has a time limit and a maximum size of the answer. Each call has a maximum number of redirects. The limits are environment variables: `BOARD_IMPORT_SOURCE_REQUEST_TIMEOUT_IN_SECONDS` (default 30), `BOARD_IMPORT_SOURCE_MAX_RESPONSE_SIZE_IN_BYTES` (default 10485760) and `BOARD_IMPORT_SOURCE_MAX_REDIRECTS` (default 3).
+- Each request has a time limit and a maximum size of the answer. Each call has a maximum number of redirects. The limits are part of the configuration of the worker.
 - The worker sends no token and no key of the SchulCloud to a source. It sends only what the source gives to a visitor.
 - The worker reads the source before it creates the board.
 - The rule for the host is one function of the module. The import API and the worker both use it.
