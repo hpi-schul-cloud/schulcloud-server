@@ -17,7 +17,7 @@ import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { boardImportJobFactory } from '../../testing';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
-import { BoardImportTargetType } from '../type';
+import { BoardImportSourceType, BoardImportTargetType } from '../type';
 import { BoardImportPlaceholderBoardService } from './board-import-placeholder-board.service';
 import { type BoardImportUserSession } from './board-import-user-session';
 
@@ -78,7 +78,10 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 				const { token, session } = setupSession();
 				const { boardId, columnId, cardId, elementId } = setupIds();
 				const target = { type: BoardImportTargetType.COURSE, id: new ObjectId().toHexString() };
-				const job = boardImportJobFactory.build({ link: 'https://example.com/board?a=1&b=<2>', target });
+				const job = boardImportJobFactory.build({
+					source: { type: BoardImportSourceType.TASKCARDS, link: 'https://example.com/board?a=1&b=<2>' },
+					target,
+				});
 				const boardParams = { title: 'Import', parentId: target.id, parentType: target.type, layout: 'columns' };
 				const text = '<p>https://example.com/board?a=1&amp;b=&lt;2&gt;</p>';
 				const cardParams = {};

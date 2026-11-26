@@ -100,7 +100,8 @@ describe('Board Import Controller (API)', () => {
 	describe('[POST] board-import/jobs', () => {
 		describe('when the user is not authenticated', () => {
 			const setup = () => {
-				const { link, target } = boardImportJobFactory.build();
+				const { source, target } = boardImportJobFactory.build();
+				const { link } = source;
 				const body = { link, targetType: target.type, targetId: target.id };
 
 				return { body };
@@ -118,7 +119,8 @@ describe('Board Import Controller (API)', () => {
 		describe('when the feature is disabled', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link, target } = boardImportJobFactory.build();
+				const { source, target } = boardImportJobFactory.build();
+				const { link } = source;
 				const body = { link, targetType: target.type, targetId: target.id };
 				const jobCount = 0;
 				config.featureBoardImportEnabled = false;
@@ -147,7 +149,8 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link is a valid https link', () => {
 			const setup = async () => {
 				const { loggedInClient, teacherUser } = await setupLoggedInClient();
-				const { link, target } = boardImportJobFactory.build();
+				const { source, target } = boardImportJobFactory.build();
+				const { link } = source;
 				const body = { link, targetType: target.type, targetId: target.id };
 				const status = BoardImportJobStatus.WAITING;
 
@@ -194,7 +197,8 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link has no https scheme', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link, target } = boardImportJobFactory.build({ link: 'http://example.com/board' });
+				const { target } = boardImportJobFactory.build();
+				const link = 'http://example.com/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
 				return { loggedInClient, body };
@@ -212,7 +216,8 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link has no scheme', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link, target } = boardImportJobFactory.build({ link: 'example.com/board' });
+				const { target } = boardImportJobFactory.build();
+				const link = 'example.com/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
 				return { loggedInClient, body };
@@ -230,7 +235,8 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link contains credentials', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link, target } = boardImportJobFactory.build({ link: 'https://user:password@example.com/board' });
+				const { target } = boardImportJobFactory.build();
+				const link = 'https://user:password@example.com/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
 				return { loggedInClient, body };
@@ -266,7 +272,8 @@ describe('Board Import Controller (API)', () => {
 		describe('when the target type is not valid', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link, target } = boardImportJobFactory.build();
+				const { source, target } = boardImportJobFactory.build();
+				const { link } = source;
 				const body = { link, targetType: 'user', targetId: target.id };
 
 				return { loggedInClient, body };
@@ -284,7 +291,8 @@ describe('Board Import Controller (API)', () => {
 		describe('when the target id is not a valid id', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { link, target } = boardImportJobFactory.build();
+				const { source, target } = boardImportJobFactory.build();
+				const { link } = source;
 				const body = { link, targetType: target.type, targetId: 'invalid-id' };
 
 				return { loggedInClient, body };

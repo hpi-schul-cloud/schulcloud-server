@@ -2,12 +2,18 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '../board-import.config';
-import { type BoardImportJob, BoardImportJobService, type BoardImportTarget } from '../domain';
+import {
+	type BoardImportJob,
+	BoardImportJobService,
+	BoardImportSourceService,
+	type BoardImportTarget,
+} from '../domain';
 
 @Injectable()
 export class BoardImportUc {
 	constructor(
 		private readonly boardImportJobService: BoardImportJobService,
+		private readonly boardImportSourceService: BoardImportSourceService,
 		@Inject(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN) private readonly config: BoardImportPublicApiConfig
 	) {}
 
@@ -16,7 +22,8 @@ export class BoardImportUc {
 			throw new FeatureDisabledLoggableException('FEATURE_BOARD_IMPORT_ENABLED');
 		}
 
-		const job = await this.boardImportJobService.create(userId, link, target);
+		const source = this.boardImportSourceService.resolveSource(link);
+		const job = await this.boardImportJobService.create(userId, source, target);
 
 		return job;
 	}
