@@ -1,14 +1,19 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { boardImportJobFactory, readTaskcardsFixture } from '../../testing';
-import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason } from '../type';
-import { BoardImportSourceHttpClientService } from './board-import-source-http-client.service';
-import { BoardImportTaskcardsService } from './board-import-taskcards.service';
+import {
+	BoardImportJobLogReason,
+	BoardImportJobRejectedError,
+	BoardImportSourceHttpClientService,
+	BoardImportSourceReaderRegistryService,
+} from '@modules/board-import';
+import { boardImportJobFactory } from '@modules/board-import/testing';
+import { BOARD_IMPORT_TASKCARDS_SOURCE_TYPE } from '../../board-import-taskcards.constants';
+import { readTaskcardsFixture } from '../../testing';
+import { BoardImportTaskcardsReaderService } from './board-import-taskcards-reader.service';
 
-describe(BoardImportTaskcardsService.name, () => {
+describe(BoardImportTaskcardsReaderService.name, () => {
 	let module: TestingModule;
-	let service: BoardImportTaskcardsService;
+	let service: BoardImportTaskcardsReaderService;
 	let httpClient: DeepMocked<BoardImportSourceHttpClientService>;
 
 	const boardId = '793bed21-a8ac-4a26-910e-2c3305ac6c0d';
@@ -23,12 +28,13 @@ describe(BoardImportTaskcardsService.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				BoardImportTaskcardsService,
+				BoardImportTaskcardsReaderService,
+				BoardImportSourceReaderRegistryService,
 				{ provide: BoardImportSourceHttpClientService, useValue: createMock<BoardImportSourceHttpClientService>() },
 			],
 		}).compile();
 
-		service = module.get(BoardImportTaskcardsService);
+		service = module.get(BoardImportTaskcardsReaderService);
 		httpClient = module.get(BoardImportSourceHttpClientService);
 	});
 
@@ -41,8 +47,18 @@ describe(BoardImportTaskcardsService.name, () => {
 		jest.useRealTimers();
 	});
 
+	describe('when the service is created', () => {
+		it('should register itself as the reader of TaskCards', () => {
+			const registry = module.get(BoardImportSourceReaderRegistryService);
+
+			const result = registry.findByType(BOARD_IMPORT_TASKCARDS_SOURCE_TYPE);
+
+			expect(result).toBe(service);
+		});
+	});
+
 	const setupJob = (link: string) => {
-		const job = boardImportJobFactory.build({ source: { type: 'taskcards', link } });
+		const job = boardImportJobFactory.build({ source: { type: BOARD_IMPORT_TASKCARDS_SOURCE_TYPE, link } });
 		const { signal } = new AbortController();
 
 		return { job, signal };
@@ -56,7 +72,9 @@ describe(BoardImportTaskcardsService.name, () => {
 		responses.forEach((response) => httpClient.request.mockResolvedValueOnce(response));
 	};
 
-	const readBoardError = async (...args: Parameters<BoardImportTaskcardsService['readBoard']>): Promise<unknown> => {
+	const readBoardError = async (
+		...args: Parameters<BoardImportTaskcardsReaderService['readBoard']>
+	): Promise<unknown> => {
 		const error: unknown = await service.readBoard(...args).catch((e: unknown) => e);
 
 		return error;
@@ -100,7 +118,7 @@ describe(BoardImportTaskcardsService.name, () => {
 					url: graphqlUrl,
 					headers: { 'Content-Type': 'application/json' },
 					body: expect.stringContaining('createVisitor'),
-					sourceType: 'taskcards',
+					sourceType: BOARD_IMPORT_TASKCARDS_SOURCE_TYPE,
 					signal,
 				});
 				expect(httpClient.request).toHaveBeenNthCalledWith(2, {
@@ -108,7 +126,7 @@ describe(BoardImportTaskcardsService.name, () => {
 					url: accessUrl,
 					headers: { 'Content-Type': 'application/json', 'x-token': visitorId },
 					body: JSON.stringify({ password: '' }),
-					sourceType: 'taskcards',
+					sourceType: BOARD_IMPORT_TASKCARDS_SOURCE_TYPE,
 					signal,
 				});
 				expect(httpClient.request).toHaveBeenNthCalledWith(3, {
@@ -116,7 +134,7 @@ describe(BoardImportTaskcardsService.name, () => {
 					url: graphqlUrl,
 					headers: { 'Content-Type': 'application/json', 'x-token': visitorId },
 					body: expect.stringContaining(`"variables":{"id":"${boardId}"}`),
-					sourceType: 'taskcards',
+					sourceType: BOARD_IMPORT_TASKCARDS_SOURCE_TYPE,
 					signal,
 				});
 			});

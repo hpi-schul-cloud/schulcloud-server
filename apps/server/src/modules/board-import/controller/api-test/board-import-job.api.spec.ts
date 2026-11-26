@@ -13,6 +13,7 @@ import { ConfigurationModule } from '@infra/configuration';
 import { RuntimeConfigService } from '@infra/runtime-config';
 import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 import { BOARD_IMPORT_TASKCARDS_SOURCE_TYPE } from '@modules/board-import-taskcards';
+import { readTaskcardsFixture } from '@modules/board-import-taskcards/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -29,13 +30,14 @@ import {
 	type BoardImportPublicApiConfig,
 } from '../../board-import.config';
 import { type BoardImportJob, BoardImportJobStatus, type BoardImportSource } from '../../domain';
+import { BoardImportSourceReaderRegistryService } from '../../domain/service/board-import-source-reader-registry.service';
 import { BoardImportSourceRegistryService } from '../../domain/service/board-import-source-registry.service';
 import { BoardImportSourceService } from '../../domain/service/board-import-source.service';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
 import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
 import { BoardImportJobEntity } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
-import { boardImportJobEntityFactory, boardImportJobFactory, readTaskcardsFixture } from '../../testing';
+import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 
 const baseRouteName = 'board-import/jobs';
 
@@ -101,6 +103,12 @@ describe('Board Import Controller (API)', () => {
 
 		return { loggedInClient, teacherUser };
 	};
+
+	describe('when the app is created', () => {
+		it('should not contain the registry of the readers', () => {
+			expect(() => app.get(BoardImportSourceReaderRegistryService, { strict: false })).toThrow();
+		});
+	});
 
 	describe('[POST] board-import/jobs', () => {
 		describe('when the user is not authenticated', () => {
@@ -835,6 +843,36 @@ describe('Board Import Worker (import as the user)', () => {
 			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
 			expect(failedJob.attempts).toEqual(attempts);
 			expect(failedJob.boardId).toBeUndefined();
+			expect(boardsClient.createBoard).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when the app is created', () => {
+		it('should contain the reader of TaskCards', () => {
+			const reader = app.get(BoardImportSourceReaderRegistryService).findByType(sourceType);
+
+			expect(reader).toBeDefined();
+		});
+	});
+
+	describe('when no reader is registered for the source of the job', () => {
+		const setup = async () => {
+			const entity = boardImportJobEntityFactory.build({ sourceType: 'removed-source' });
+			await em.persist(entity).flush();
+			em.clear();
+
+			const attempts = 1;
+
+			return { id: entity.id, attempts };
+		};
+
+		it('should set the job to failed on the first attempt and create no board', async () => {
+			const { id, attempts } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
+			expect(failedJob.attempts).toEqual(attempts);
 			expect(boardsClient.createBoard).not.toHaveBeenCalled();
 		});
 	});

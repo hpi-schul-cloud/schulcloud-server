@@ -12,4 +12,18 @@ export {
 	BoardImportPublicApiConfig,
 } from './board-import.config';
 export { BoardImportModule } from './board-import.module';
-export { BoardImportSourceDefinition, BoardImportSourceRegistryService } from './domain';
+export { BoardImportSourceReaderModule } from './board-import-source-reader.module';
+export {
+	BoardImportJob,
+	BoardImportJobLogReason,
+	BoardImportJobRejectedError,
+	BoardImportSourceDefinition,
+	BoardImportSourceReader,
+	BoardImportSourceRegistryService,
+} from './domain';
+export {
+	BoardImportSourceHttpClientService,
+	BoardImportSourceRequest,
+	BoardImportSourceResponse,
+} from './domain/service/board-import-source-http-client.service';
+export { BoardImportSourceReaderRegistryService } from './domain/service/board-import-source-reader-registry.service';

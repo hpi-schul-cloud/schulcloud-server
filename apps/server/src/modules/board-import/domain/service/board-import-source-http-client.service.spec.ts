@@ -450,7 +450,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 					expect(error).toBeInstanceOf(Error);
 					expect(error).not.toBeInstanceOf(BoardImportJobRejectedError);
 					expect(error).not.toBeInstanceOf(AxiosError);
-					expect(error).toEqual(expect.objectContaining({ message: expect.not.stringContaining('taskcards') }));
+					expect(error).toEqual(expect.objectContaining({ message: expect.not.stringContaining('source.example') }));
 					expect(error).not.toHaveProperty('cause');
 				}
 			);

@@ -5,7 +5,8 @@ import { BoardImportPlaceholderBoardService } from './board-import-placeholder-b
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason } from '../type';
 import { BoardImportRunnerService } from './board-import-runner.service';
-import { BoardImportTaskcardsService } from './board-import-taskcards.service';
+import { type BoardImportSourceReader } from '../interface';
+import { BoardImportSourceReaderRegistryService } from './board-import-source-reader-registry.service';
 import { BoardImportTokenService } from './board-import-token.service';
 
 describe(BoardImportRunnerService.name, () => {
@@ -13,7 +14,7 @@ describe(BoardImportRunnerService.name, () => {
 	let service: BoardImportRunnerService;
 	let tokenService: DeepMocked<BoardImportTokenService>;
 	let placeholderBoardService: DeepMocked<BoardImportPlaceholderBoardService>;
-	let taskcardsService: DeepMocked<BoardImportTaskcardsService>;
+	let readerRegistry: DeepMocked<BoardImportSourceReaderRegistryService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,14 +25,17 @@ describe(BoardImportRunnerService.name, () => {
 					provide: BoardImportPlaceholderBoardService,
 					useValue: createMock<BoardImportPlaceholderBoardService>(),
 				},
-				{ provide: BoardImportTaskcardsService, useValue: createMock<BoardImportTaskcardsService>() },
+				{
+					provide: BoardImportSourceReaderRegistryService,
+					useValue: createMock<BoardImportSourceReaderRegistryService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(BoardImportRunnerService);
 		tokenService = module.get(BoardImportTokenService);
 		placeholderBoardService = module.get(BoardImportPlaceholderBoardService);
-		taskcardsService = module.get(BoardImportTaskcardsService);
+		readerRegistry = module.get(BoardImportSourceReaderRegistryService);
 	});
 
 	afterAll(async () => {
@@ -44,28 +48,29 @@ describe(BoardImportRunnerService.name, () => {
 
 	describe('run', () => {
 		const setupRun = () => {
-			const job = boardImportJobFactory.build({
-				source: { type: 'taskcards', link: 'https://source.example/board/1' },
-			});
+			const job = boardImportJobFactory.build();
 			const { signal } = new AbortController();
 			const token = 'token';
 			const sourceResponse = '{"data":{"board":{}}}';
 
-			tokenService.createToken.mockResolvedValueOnce(token);
-			taskcardsService.readBoard.mockResolvedValueOnce(sourceResponse);
+			const reader = createMock<BoardImportSourceReader>();
 
-			return { job, signal, token, sourceResponse };
+			tokenService.createToken.mockResolvedValueOnce(token);
+			readerRegistry.findByType.mockReturnValueOnce(reader);
+			reader.readBoard.mockResolvedValueOnce(sourceResponse);
+
+			return { job, signal, token, sourceResponse, reader };
 		};
 
 		describe('when the board is written', () => {
 			const setup = () => {
-				const { job, signal, token, sourceResponse } = setupRun();
+				const { job, signal, token, sourceResponse, reader } = setupRun();
 
 				placeholderBoardService.write.mockImplementationOnce(async (_job, session) => {
 					await session.call(() => Promise.resolve());
 				});
 
-				return { job, signal, token, sourceResponse };
+				return { job, signal, token, sourceResponse, reader };
 			};
 
 			it('should write the board of the job with a token for the job', async () => {
@@ -78,13 +83,14 @@ describe(BoardImportRunnerService.name, () => {
 			});
 
 			it('should read the source before it writes the board with the answer of the source', async () => {
-				const { job, signal, sourceResponse } = setup();
+				const { job, signal, sourceResponse, reader } = setup();
 
 				await service.run(job, signal);
 
-				expect(taskcardsService.readBoard).toHaveBeenCalledWith(job, signal);
+				expect(readerRegistry.findByType).toHaveBeenCalledWith(job.source.type);
+				expect(reader.readBoard).toHaveBeenCalledWith(job, signal);
 				expect(placeholderBoardService.write).toHaveBeenCalledWith(job, expect.anything(), sourceResponse);
-				expect(taskcardsService.readBoard.mock.invocationCallOrder[0]).toBeLessThan(
+				expect(reader.readBoard.mock.invocationCallOrder[0]).toBeLessThan(
 					placeholderBoardService.write.mock.invocationCallOrder[0]
 				);
 			});
@@ -121,13 +127,13 @@ describe(BoardImportRunnerService.name, () => {
 
 		describe('when the source is not readable', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build({
-					source: { type: 'taskcards', link: 'https://source.example/board/1' },
-				});
+				const job = boardImportJobFactory.build();
 				const { signal } = new AbortController();
 				const error = new BoardImportJobRejectedError(BoardImportJobLogReason.SOURCE_NOT_READABLE);
+				const reader = createMock<BoardImportSourceReader>();
 
-				taskcardsService.readBoard.mockRejectedValueOnce(error);
+				readerRegistry.findByType.mockReturnValueOnce(reader);
+				reader.readBoard.mockRejectedValueOnce(error);
 
 				return { job, signal, error };
 			};
@@ -150,12 +156,13 @@ describe(BoardImportRunnerService.name, () => {
 
 		describe('when the read of the source fails with a temporary error', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build({
-					source: { type: 'taskcards', link: 'https://source.example/board/1' },
-				});
+				const job = boardImportJobFactory.build();
 				const { signal } = new AbortController();
-				const error = new Error('TaskCards request failed');
-				taskcardsService.readBoard.mockRejectedValueOnce(error);
+				const error = new Error('request to the source failed');
+				const reader = createMock<BoardImportSourceReader>();
+
+				readerRegistry.findByType.mockReturnValueOnce(reader);
+				reader.readBoard.mockRejectedValueOnce(error);
 
 				return { job, signal, error };
 			};
@@ -166,6 +173,35 @@ describe(BoardImportRunnerService.name, () => {
 				await expect(service.run(job, signal)).rejects.toBe(error);
 
 				expect(placeholderBoardService.write).not.toHaveBeenCalled();
+			});
+		});
+		describe('when no reader is registered for the source of the job', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				const { signal } = new AbortController();
+				const reason = BoardImportJobLogReason.SOURCE_UNKNOWN;
+
+				readerRegistry.findByType.mockReturnValueOnce(undefined);
+
+				return { job, signal, reason };
+			};
+
+			it('should reject the job with the reason that the source is unknown', async () => {
+				const { job, signal, reason } = setup();
+
+				const error: unknown = await service.run(job, signal).catch((e: unknown) => e);
+
+				expect(error).toBeInstanceOf(BoardImportJobRejectedError);
+				expect(error).toMatchObject({ reason });
+			});
+
+			it('should write no board and create no token', async () => {
+				const { job, signal } = setup();
+
+				await service.run(job, signal).catch(() => undefined);
+
+				expect(placeholderBoardService.write).not.toHaveBeenCalled();
+				expect(tokenService.createToken).not.toHaveBeenCalled();
 			});
 		});
 	});

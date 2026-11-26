@@ -6,7 +6,12 @@ export {
 	BoardImportSourceDisabledLoggableException,
 	BoardImportSourceUnknownLoggableException,
 } from './error';
-export { BOARD_IMPORT_JOB_REPO, BoardImportJobRepo, BoardImportSourceDefinition } from './interface';
+export {
+	BOARD_IMPORT_JOB_REPO,
+	BoardImportJobRepo,
+	BoardImportSourceDefinition,
+	BoardImportSourceReader,
+} from './interface';
 export { BoardImportJobService, BoardImportSourceRegistryService, BoardImportSourceService } from './service';
 export {
 	BoardImportJobLogReason,
