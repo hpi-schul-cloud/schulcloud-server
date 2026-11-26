@@ -25,6 +25,7 @@ import { BoardImportPlaceholderBoardService } from './domain/service/board-impor
 import { BoardImportRunnerService } from './domain/service/board-import-runner.service';
 import { BoardImportSourceHttpClientService } from './domain/service/board-import-source-http-client.service';
 import { BoardImportSourceService } from './domain/service/board-import-source.service';
+import { BoardImportTaskcardsService } from './domain/service/board-import-taskcards.service';
 import { BoardImportTokenService } from './domain/service/board-import-token.service';
 import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 
@@ -53,6 +54,7 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		BoardImportSourceService,
 		BoardImportLinkCheckService,
 		BoardImportSourceHttpClientService,
+		BoardImportTaskcardsService,
 		BoardImportJobConsumer,
 	],
 })
