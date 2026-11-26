@@ -10,19 +10,24 @@ import { BoardImportAmqpModule } from './board-import-amqp.module';
 import {
 	BOARD_IMPORT_CONFIG_TOKEN,
 	BOARD_IMPORT_SERVER_API_CONFIG_TOKEN,
+	BOARD_IMPORT_SOURCE_CONFIG_TOKEN,
 	BoardImportConfig,
 	BoardImportServerApiConfig,
+	BoardImportSourceConfig,
 } from './board-import.config';
 import { BOARD_IMPORT_JOB_REPO } from './domain';
 import { BoardImportJobProcessService } from './domain/service/board-import-job-process.service';
+import { BoardImportLinkCheckService } from './domain/service/board-import-link-check.service';
 import { BoardImportPlaceholderBoardService } from './domain/service/board-import-placeholder-board.service';
 import { BoardImportRunnerService } from './domain/service/board-import-runner.service';
+import { BoardImportSourceService } from './domain/service/board-import-source.service';
 import { BoardImportTokenService } from './domain/service/board-import-token.service';
 import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 
 @Module({
 	imports: [
 		ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig),
+		ConfigurationModule.register(BOARD_IMPORT_SOURCE_CONFIG_TOKEN, BoardImportSourceConfig),
 		BoardImportAmqpModule,
 		LoggerModule,
 		UserModule,
@@ -39,6 +44,8 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		BoardImportRunnerService,
 		BoardImportTokenService,
 		BoardImportPlaceholderBoardService,
+		BoardImportSourceService,
+		BoardImportLinkCheckService,
 		BoardImportJobConsumer,
 	],
 })
