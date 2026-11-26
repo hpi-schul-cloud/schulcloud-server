@@ -110,9 +110,6 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_SHARE: boolean;
 
 	@ApiProperty()
-	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
-
-	@ApiProperty()
 	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: boolean;
 
 	@ApiProperty()
@@ -314,7 +311,6 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.featureColumnBoardLinkElementEnabled;
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.featureColumnBoardExternalToolsEnabled;
 		this.FEATURE_COLUMN_BOARD_SHARE = config.featureColumnBoardShare;
-		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.featureColumnBoardSocketEnabled;
 		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.featureColumnBoardVideoconferenceEnabled;
 		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.featureColumnBoardFileFolderEnabled;
 		this.FEATURE_COURSE_SHARE = config.featureCourseShare;
