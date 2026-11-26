@@ -39,4 +39,4 @@ Rejected alternatives:
 - If two sources have the same type, the app does not start. `board-import` does not check if the hosts of two sources overlap.
 - A missing import is not visible at compile time. Tests of the apps check that each source is registered.
 - `board-import` and a source module depend on each other: the source module uses the contract, and the app modules of `board-import` import the source module. Only the app modules have this dependency.
-- The import API loads the file of the checked client through the facade of `board-import`, but does not create the client.
+- The import API and the server load the file of the checked client through the facade of `board-import`, but do not create the client.

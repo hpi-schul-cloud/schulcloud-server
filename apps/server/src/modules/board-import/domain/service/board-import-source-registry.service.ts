@@ -15,8 +15,9 @@ export class BoardImportSourceRegistryService {
 			throw new Error(`The import source "${definition.type}" is registered already`);
 		}
 		// The check is here, so that no source can register a host list that is not checked.
-		if (!definition.boardHosts.every((entry) => HOST_ENTRY_PATTERN.test(entry))) {
-			throw new Error(`The import source "${definition.type}" has a board host that is not valid`);
+		const invalidHost = definition.boardHosts.find((entry) => !HOST_ENTRY_PATTERN.test(entry));
+		if (invalidHost !== undefined) {
+			throw new Error(`The import source "${definition.type}" has the board host "${invalidHost}", which is not valid`);
 		}
 
 		this.definitions.set(definition.type, definition);

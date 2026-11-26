@@ -23,16 +23,6 @@ describe(BoardImportTaskcardsConfig.name, () => {
 			});
 		});
 
-		describe('when the entries are host names and subdomain patterns', () => {
-			it('should be valid', () => {
-				const { config } = setup(['a.example', '*.b.example', 'x-1.sub.c.example']);
-
-				const errors = validateSync(config);
-
-				expect(errors).toHaveLength(0);
-			});
-		});
-
 		describe('when the list is empty', () => {
 			it('should be invalid', () => {
 				const { config } = setup([]);

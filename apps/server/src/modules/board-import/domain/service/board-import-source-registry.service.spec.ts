@@ -83,7 +83,9 @@ describe(BoardImportSourceRegistryService.name, () => {
 			])('should throw an error for "%s"', (entry: string) => {
 				const { registry, definition } = setup();
 
-				expect(() => registry.registerSource({ ...definition, boardHosts: ['source.example', entry] })).toThrow(Error);
+				expect(() => registry.registerSource({ ...definition, boardHosts: ['source.example', entry] })).toThrow(
+					`"${entry}"`
+				);
 				expect(registry.findByType(definition.type)).toBeUndefined();
 			});
 		});
