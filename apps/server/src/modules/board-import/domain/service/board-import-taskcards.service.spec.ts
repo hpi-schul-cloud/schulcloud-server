@@ -307,6 +307,17 @@ describe(BoardImportTaskcardsService.name, () => {
 			});
 		});
 
+		describe('when an answer with status 200 is JSON but not an object', () => {
+			it('should throw an error that permits a new attempt', async () => {
+				const { job, signal } = setupJobWithoutToken();
+				mockResponses({ status: 200, body: visitorBody }, { status: 200, body: 'null' });
+
+				const error = await readBoardError(job, signal);
+
+				expectTemporaryError(error);
+			});
+		});
+
 		describe('when the signal is aborted', () => {
 			it('should throw before the first request', async () => {
 				const abortController = new AbortController();

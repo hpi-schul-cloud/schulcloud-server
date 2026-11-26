@@ -31,15 +31,18 @@ interface Hop {
 }
 
 const MILLISECONDS_PER_SECOND = 1000;
-const REDIRECT_STATUSES: number[] = [
+const REDIRECT_STATUSES = new Set<number>([
 	HttpStatus.MOVED_PERMANENTLY,
 	HttpStatus.FOUND,
 	HttpStatus.SEE_OTHER,
 	HttpStatus.TEMPORARY_REDIRECT,
 	HttpStatus.PERMANENT_REDIRECT,
-];
-const METHOD_KEEPING_REDIRECT_STATUSES: number[] = [HttpStatus.TEMPORARY_REDIRECT, HttpStatus.PERMANENT_REDIRECT];
-const TEMPORARY_ERROR_STATUSES: number[] = [HttpStatus.REQUEST_TIMEOUT, HttpStatus.TOO_MANY_REQUESTS];
+]);
+const METHOD_KEEPING_REDIRECT_STATUSES = new Set<number>([
+	HttpStatus.TEMPORARY_REDIRECT,
+	HttpStatus.PERMANENT_REDIRECT,
+]);
+const TEMPORARY_ERROR_STATUSES = new Set<number>([HttpStatus.REQUEST_TIMEOUT, HttpStatus.TOO_MANY_REQUESTS]);
 const FIRST_SERVER_ERROR_STATUS: number = HttpStatus.INTERNAL_SERVER_ERROR;
 // The texts of the errors of axios and of the filtering agent. Both give no error code for these cases.
 const RESPONSE_TOO_LARGE_MESSAGE_PART = 'maxContentLength';
@@ -134,7 +137,7 @@ export class BoardImportSourceHttpClientService {
 	}
 
 	private isTemporaryError(status: number): boolean {
-		const isTemporaryError = TEMPORARY_ERROR_STATUSES.includes(status) || status >= FIRST_SERVER_ERROR_STATUS;
+		const isTemporaryError = TEMPORARY_ERROR_STATUSES.has(status) || status >= FIRST_SERVER_ERROR_STATUS;
 
 		return isTemporaryError;
 	}
@@ -147,7 +150,7 @@ export class BoardImportSourceHttpClientService {
 	}
 
 	private getRedirectLocation(response: AxiosResponse<string>): string | undefined {
-		if (!REDIRECT_STATUSES.includes(response.status)) {
+		if (!REDIRECT_STATUSES.has(response.status)) {
 			return undefined;
 		}
 
@@ -159,7 +162,7 @@ export class BoardImportSourceHttpClientService {
 
 	private getRedirectHop(hop: Hop, status: number, location: string): Hop {
 		const url = this.parseUrl(location, hop.url);
-		const keepsMethod = METHOD_KEEPING_REDIRECT_STATUSES.includes(status);
+		const keepsMethod = METHOD_KEEPING_REDIRECT_STATUSES.has(status);
 		// A header of the caller can be a secret for one host, for example the visitor token.
 		const headers = url.host === hop.url.host ? hop.headers : {};
 		const redirectHop: Hop = {

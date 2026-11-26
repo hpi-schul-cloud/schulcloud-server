@@ -80,24 +80,23 @@ export class BoardImportTaskcardsService {
 		}
 	}
 
-	private async queryBoard(link: TaskcardsLink, visitorId: string, signal: AbortSignal): Promise<string> {
+	private async queryBoard(link: TaskcardsLink, visitorId: string, signal: AbortSignal, attempt = 0): Promise<string> {
 		const query = { operationName: null, variables: { id: link.boardId }, query: BOARD_QUERY };
-		const retryDelaysInMs = link.token === undefined ? [] : BOARD_QUERY_RETRY_DELAYS_IN_MS;
+		const body = await this.postGraphql(link, query, visitorId, signal);
+		const answer = this.parseJson(body);
 
-		for (let attempt = 0; ; attempt += 1) {
-			const body = await this.postGraphql(link, query, visitorId, signal);
-			const answer = this.parseJson(body);
-
-			if (this.hasBoard(answer)) {
-				return body;
-			}
-
-			const retryDelayInMs = retryDelaysInMs.at(attempt);
-			if (retryDelayInMs === undefined || !this.isBoardError(answer)) {
-				throw this.notReadable();
-			}
-			await this.wait(retryDelayInMs);
+		if (this.hasBoard(answer)) {
+			return body;
 		}
+
+		const retryDelayInMs = link.token === undefined ? undefined : BOARD_QUERY_RETRY_DELAYS_IN_MS.at(attempt);
+		if (retryDelayInMs === undefined || !this.isBoardError(answer)) {
+			throw this.notReadable();
+		}
+		await this.wait(retryDelayInMs);
+		const bodyOfNextAttempt = await this.queryBoard(link, visitorId, signal, attempt + 1);
+
+		return bodyOfNextAttempt;
 	}
 
 	private hasBoard(answer: JsonObject): boolean {
