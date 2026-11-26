@@ -18,6 +18,7 @@ export const BOARD_IMPORT_CONFIG_TOKEN = 'BOARD_IMPORT_CONFIG_TOKEN';
 export const BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN = 'BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN';
 export const BOARD_IMPORT_SERVER_API_CONFIG_TOKEN = 'BOARD_IMPORT_SERVER_API_CONFIG_TOKEN';
 export const BOARD_IMPORT_SOURCE_CONFIG_TOKEN = 'BOARD_IMPORT_SOURCE_CONFIG_TOKEN';
+export const BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN = 'BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN';
 
 @Configuration()
 export class BoardImportPublicApiConfig {
@@ -83,4 +84,26 @@ export class BoardImportSourceConfig {
 	@ArrayNotEmpty()
 	@Matches(HOST_ENTRY_PATTERN, { each: true })
 	public taskcardsBoardHosts: string[] = ['taskcards.de', '*.taskcards.de', 'taskcards.app', '*.taskcards.app'];
+}
+
+// The limits for one request to a source. See ADR 0013.
+@Configuration()
+export class BoardImportSourceRequestConfig {
+	@ConfigProperty('BOARD_IMPORT_SOURCE_REQUEST_TIMEOUT_IN_SECONDS')
+	@StringToNumber()
+	@IsInt()
+	@Min(1)
+	public requestTimeoutInSeconds = 30;
+
+	@ConfigProperty('BOARD_IMPORT_SOURCE_MAX_RESPONSE_SIZE_IN_BYTES')
+	@StringToNumber()
+	@IsInt()
+	@Min(1)
+	public maxResponseSizeInBytes = 10485760;
+
+	@ConfigProperty('BOARD_IMPORT_SOURCE_MAX_REDIRECTS')
+	@StringToNumber()
+	@IsInt()
+	@Min(0)
+	public maxRedirects = 3;
 }
