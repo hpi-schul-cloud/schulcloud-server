@@ -1,0 +1,141 @@
+import { Test, type TestingModule } from '@nestjs/testing';
+import { BOARD_IMPORT_SOURCE_CONFIG_TOKEN, BoardImportSourceConfig } from '../../board-import.config';
+import { BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException } from '../error';
+import { BoardImportSourceType } from '../type';
+import { BoardImportSourceService } from './board-import-source.service';
+
+describe(BoardImportSourceService.name, () => {
+	let module: TestingModule;
+	let service: BoardImportSourceService;
+	let config: BoardImportSourceConfig;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				BoardImportSourceService,
+				{
+					provide: BOARD_IMPORT_SOURCE_CONFIG_TOKEN,
+					useValue: new BoardImportSourceConfig(),
+				},
+			],
+		}).compile();
+
+		service = module.get(BoardImportSourceService);
+		config = module.get(BOARD_IMPORT_SOURCE_CONFIG_TOKEN);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	describe('resolveSource', () => {
+		describe('when the link points to a TaskCards host', () => {
+			it.each([
+				'https://www.taskcards.de/#/board/793bed21-a8ac-4a26-910e-2c3305ac6c0d?token=0599256f',
+				'https://taskcards.de/board/1',
+				'https://taskcards.app/#/board/1',
+				'https://bra.taskcards.app/#/board/1',
+				'https://a.b.taskcards.app/#/board/1',
+				'https://WWW.TaskCards.de./#/board/1',
+				'https://www.taskcards.de:443/#/board/1',
+			])('should return the TaskCards source with the unchanged link for "%s"', (link: string) => {
+				const result = service.resolveSource(link);
+
+				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link });
+			});
+		});
+
+		describe('when the link is not a valid https link to a host name', () => {
+			it.each([
+				'http://www.taskcards.de/#/board/1',
+				'ftp://www.taskcards.de/',
+				'file:///etc/passwd',
+				'javascript:alert(1)',
+				'not a link',
+				'',
+				'https://',
+				'https://user:pw@www.taskcards.de/',
+				'https://taskcards.de@evil.example/',
+				'https://www.taskcards.de:8443/',
+				'https://127.0.0.1/',
+				'https://10.0.0.5/',
+				'https://169.254.169.254/',
+				'https://8.8.8.8/',
+				'https://2130706433/',
+				'https://0x7f.0.0.1/',
+				'https://[::1]/',
+				'https://[2001:db8::1]/',
+			])('should throw a link invalid exception for "%s"', (link: string) => {
+				expect(() => service.resolveSource(link)).toThrow(BoardImportLinkInvalidLoggableException);
+			});
+		});
+
+		describe('when the host of the link is not in the list of a source', () => {
+			it.each([
+				'https://example.com/board',
+				'https:///path',
+				'https://www.edumaps.de/84762/371448/x/y',
+				'https://padlet.com/user/wall',
+				'https://taskcards.de.evil.example/',
+				'https://eviltaskcards.de/',
+				'https://taskcards.com/',
+			])('should throw a source unknown exception for "%s"', (link: string) => {
+				expect(() => service.resolveSource(link)).toThrow(BoardImportSourceUnknownLoggableException);
+			});
+		});
+
+		describe('when the list has only a subdomain pattern', () => {
+			const setup = () => {
+				const defaultHosts = config.taskcardsBoardHosts;
+				config.taskcardsBoardHosts = ['*.taskcards.app'];
+				const restore = (): void => {
+					config.taskcardsBoardHosts = defaultHosts;
+				};
+
+				return { restore };
+			};
+
+			it('should not accept the domain itself', () => {
+				const { restore } = setup();
+
+				expect(() => service.resolveSource('https://taskcards.app/')).toThrow(
+					BoardImportSourceUnknownLoggableException
+				);
+
+				restore();
+			});
+
+			it('should accept a subdomain', () => {
+				const { restore } = setup();
+				const link = 'https://school.taskcards.app/';
+
+				const result = service.resolveSource(link);
+
+				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link });
+
+				restore();
+			});
+		});
+	});
+});
+
+describe.each([BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException])(
+	'%p',
+	(Exception) => {
+		describe('getLogMessage', () => {
+			it('should return only the type and the stack', () => {
+				const exception = new Exception();
+
+				const result = exception.getLogMessage();
+
+				expect(result).toEqual({ type: exception.type, stack: exception.stack });
+			});
+		});
+
+		it('should have the status 400', () => {
+			const exception = new Exception();
+
+			expect(exception.getStatus()).toEqual(400);
+		});
+	}
+);
