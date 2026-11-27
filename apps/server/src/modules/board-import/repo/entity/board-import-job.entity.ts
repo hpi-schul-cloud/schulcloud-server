@@ -2,7 +2,7 @@ import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { type EntityId } from '@shared/domain/types';
-import { BoardImportJobStatus, BoardImportSourceType, BoardImportTargetType } from '../../domain';
+import { BoardImportJobStatus, BoardImportTargetType } from '../../domain';
 
 export interface BoardImportJobEntityProps {
 	id?: EntityId;
@@ -13,7 +13,7 @@ export interface BoardImportJobEntityProps {
 
 	link: string;
 
-	sourceType: BoardImportSourceType;
+	sourceType: string;
 
 	targetType: BoardImportTargetType;
 
@@ -39,8 +39,8 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 	@Property()
 	link: string;
 
-	@Enum(() => BoardImportSourceType)
-	sourceType: BoardImportSourceType;
+	@Property()
+	sourceType: string;
 
 	@Enum(() => BoardImportTargetType)
 	targetType: BoardImportTargetType;

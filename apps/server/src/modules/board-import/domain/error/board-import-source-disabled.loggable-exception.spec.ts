@@ -1,9 +1,8 @@
-import { BoardImportSourceType } from '../type';
 import { BoardImportSourceDisabledLoggableException } from './board-import-source-disabled.loggable-exception';
 
 describe(BoardImportSourceDisabledLoggableException.name, () => {
 	const setup = () => {
-		const sourceType = BoardImportSourceType.TASKCARDS;
+		const sourceType = 'test-source';
 		const exception = new BoardImportSourceDisabledLoggableException(sourceType);
 
 		return { exception, sourceType };

@@ -1,0 +1,219 @@
+{
+	"data": {
+		"board": {
+			"id": "793bed21-a8ac-4a26-910e-2c3305ac6c0d",
+			"name": "Test Pinboard",
+			"description": "E2E Test Board for import to SVS",
+			"type": 0,
+			"lists": [
+				{
+					"id": "21a3baf6-3975-4f52-bb84-adf02a71450b",
+					"name": "Red",
+					"position": 2,
+					"color": "#981b1b"
+				},
+				{
+					"id": "25b56b9a-b549-429c-9cd4-5dc7511460c3",
+					"name": "No color",
+					"position": 3,
+					"color": "#ffffff"
+				},
+				{
+					"id": "340b28b9-b3ae-4bb9-a57d-d16ffd91ff15",
+					"name": "Yellow",
+					"position": 1,
+					"color": "#dddd3c"
+				},
+				{
+					"id": "c30c6b0d-f7a7-4131-95c3-146025e5c55a",
+					"name": "Green",
+					"position": 0,
+					"color": "#3cdd3c"
+				}
+			],
+			"cards": [
+				{
+					"id": "0564f67b-befe-45dc-a4d6-e5ce6cf4fc9a",
+					"title": "",
+					"description": "",
+					"link": "",
+					"videoConference": "None",
+					"color": "#93ec93",
+					"enableContract": false,
+					"enableThumbnails": true,
+					"mode": 0,
+					"created": "1794998759187",
+					"modified": "1795687480056",
+					"attachments": [
+						{
+							"id": "f8fbf52f-24fe-47fe-a998-e1f5ced69832",
+							"filename": "img1.jpg",
+							"length": "133462",
+							"mimetype": "image/jpeg",
+							"downloadLink": "https://taskcards.s3.hidrive.strato.com/attachments/6ea14b97-3630-49ed-a923-3c70e36ea2c8",
+							"previewLink": null
+						}
+					],
+					"chalkBoardPosition": null,
+					"kanbanPosition": {
+						"listId": "c30c6b0d-f7a7-4131-95c3-146025e5c55a",
+						"position": 0
+					},
+					"timeLinePosition": null,
+					"storyPosition": null,
+					"worldMapPosition": null
+				},
+				{
+					"id": "1c166938-8c25-451c-8049-f13e03392285",
+					"title": "FWU",
+					"description": "",
+					"link": "https://fwu.de",
+					"videoConference": "None",
+					"color": "#ecec93",
+					"enableContract": false,
+					"enableThumbnails": true,
+					"mode": 0,
+					"created": "1794998773629",
+					"modified": "1795687483904",
+					"attachments": [],
+					"chalkBoardPosition": null,
+					"kanbanPosition": {
+						"listId": "340b28b9-b3ae-4bb9-a57d-d16ffd91ff15",
+						"position": 0
+					},
+					"timeLinePosition": null,
+					"storyPosition": null,
+					"worldMapPosition": null
+				},
+				{
+					"id": "5971660f-0950-4afc-88dc-0a4a14634b90",
+					"title": "Rich text",
+					"description": "Left<div style=\"text-align:right\">Right</div><div style=\"text-align:center\">Middle</div><div style=\"text-align:left\"><b>Fat </b><b style=\"font-style:italic\">Italic </b><strike style=\"font-style:italic;font-weight:bold\">ST</strike><b style=\"font-style:italic\"> </b><u style=\"font-style:italic;font-weight:bold\">Underline</u> <sub>sub</sub><sup>sup</sup> </div><div style=\"text-align:left\"><br /></div><div style=\"text-align:left\"><a href=\"https://\" target=\"_blank\" rel=\"noopener\">Link (but where?)</a></div><div style=\"text-align:left\"><br /></div><h1 style=\"text-align:left\">H1</h1><h2>H2</h2><h3>H3</h3><h6>H6</h6><h6><ul><li>ul1</li><li>ul2</li></ul><div><ol><li>ol1</li><li>ol2</li></ol><blockquote>A succeeding E2E test is what we want – Confuzius</blockquote></div></h6><pre>Code code code<br />Still code<br /><br /><div><font size=\"7\" face=\"Comic Sans MS\">very huge and comic</font></div><div><font size=\"7\" face=\"Times New Roman\">very small and Times</font></div></pre>",
+					"link": "",
+					"videoConference": "None",
+					"color": "#ecec93",
+					"enableContract": false,
+					"enableThumbnails": true,
+					"mode": 0,
+					"created": "1794911540385",
+					"modified": "1795687572491",
+					"attachments": [],
+					"chalkBoardPosition": null,
+					"kanbanPosition": {
+						"listId": "340b28b9-b3ae-4bb9-a57d-d16ffd91ff15",
+						"position": 1
+					},
+					"timeLinePosition": null,
+					"storyPosition": null,
+					"worldMapPosition": null
+				},
+				{
+					"id": "7d4cae06-b7f2-4123-a5bf-f68e7ea2c937",
+					"title": "PDF",
+					"description": "",
+					"link": "",
+					"videoConference": "None",
+					"color": "#ffffff",
+					"enableContract": false,
+					"enableThumbnails": true,
+					"mode": 0,
+					"created": "1794999099704",
+					"modified": "1794999167227",
+					"attachments": [
+						{
+							"id": "d284ab3b-c665-493f-bac2-b04446212daa",
+							"filename": "FWU Katalog.pdf",
+							"length": "10288802",
+							"mimetype": "application/pdf",
+							"downloadLink": "https://taskcards.s3.hidrive.strato.com/attachments/b49a53ac-2a25-46b7-8925-19c365f3dff8",
+							"previewLink": "https://taskcards.s3.hidrive.strato.com/attachments/a049325b-f82d-41f5-b11d-232b1267b5e5"
+						}
+					],
+					"chalkBoardPosition": null,
+					"kanbanPosition": {
+						"listId": "25b56b9a-b549-429c-9cd4-5dc7511460c3",
+						"position": 1
+					},
+					"timeLinePosition": null,
+					"storyPosition": null,
+					"worldMapPosition": null
+				},
+				{
+					"id": "b0ffd3e5-fb98-4a72-b62f-833bd76094f4",
+					"title": "Video call",
+					"description": "",
+					"link": "",
+					"videoConference": "Moderator",
+					"color": "#ffffff",
+					"enableContract": false,
+					"enableThumbnails": true,
+					"mode": 0,
+					"created": "1794999072551",
+					"modified": "1794999094688",
+					"attachments": [],
+					"chalkBoardPosition": null,
+					"kanbanPosition": {
+						"listId": "25b56b9a-b549-429c-9cd4-5dc7511460c3",
+						"position": 0
+					},
+					"timeLinePosition": null,
+					"storyPosition": null,
+					"worldMapPosition": null
+				},
+				{
+					"id": "deda5545-80b9-4f53-acc6-15c67ed54eec",
+					"title": "Foobar",
+					"description": "",
+					"link": "",
+					"videoConference": "None",
+					"color": "#ffffff",
+					"enableContract": false,
+					"enableThumbnails": true,
+					"mode": 0,
+					"created": "1794911536061",
+					"modified": "1794911539574",
+					"attachments": [],
+					"chalkBoardPosition": null,
+					"kanbanPosition": {
+						"listId": "21a3baf6-3975-4f52-bb84-adf02a71450b",
+						"position": 0
+					},
+					"timeLinePosition": null,
+					"storyPosition": null,
+					"worldMapPosition": null
+				},
+				{
+					"id": "e0b8f51c-83dc-4964-93c2-5314333cd680",
+					"title": "Collapsed ugly card",
+					"description": "Picture + colors changed",
+					"link": "",
+					"videoConference": "None",
+					"color": "#dd3c3c",
+					"enableContract": false,
+					"enableThumbnails": true,
+					"mode": 2,
+					"created": "1794998993396",
+					"modified": "1794999060830",
+					"attachments": [
+						{
+							"id": "28ea4e22-f7de-4ecf-9608-46ea4fdbb601",
+							"filename": "img1.jpg",
+							"length": "133462",
+							"mimetype": "image/jpeg",
+							"downloadLink": "https://taskcards.s3.hidrive.strato.com/attachments/1b0bf8d0-3cad-4957-b031-dcf8d7d01594",
+							"previewLink": null
+						}
+					],
+					"chalkBoardPosition": null,
+					"kanbanPosition": {
+						"listId": "21a3baf6-3975-4f52-bb84-adf02a71450b",
+						"position": 1
+					},
+					"timeLinePosition": null,
+					"storyPosition": null,
+					"worldMapPosition": null
+				}
+			]
+		}
+	}
+}

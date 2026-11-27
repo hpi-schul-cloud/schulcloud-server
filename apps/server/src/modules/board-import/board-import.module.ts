@@ -1,20 +1,16 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { Module } from '@nestjs/common';
 import { BoardImportAmqpModule } from './board-import-amqp.module';
-import {
-	BOARD_IMPORT_CONFIG_TOKEN,
-	BOARD_IMPORT_SOURCE_CONFIG_TOKEN,
-	BoardImportConfig,
-	BoardImportSourceConfig,
-} from './board-import.config';
-import { BOARD_IMPORT_JOB_REPO, BoardImportJobService, BoardImportSourceService } from './domain';
+import { BoardImportSourceModule } from './board-import-source.module';
+import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from './board-import.config';
+import { BOARD_IMPORT_JOB_REPO, BoardImportJobService } from './domain';
 import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 
 @Module({
 	imports: [
 		ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig),
-		ConfigurationModule.register(BOARD_IMPORT_SOURCE_CONFIG_TOKEN, BoardImportSourceConfig),
 		BoardImportAmqpModule,
+		BoardImportSourceModule,
 	],
 	providers: [
 		{
@@ -22,8 +18,7 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 			useClass: BoardImportJobMikroOrmRepo,
 		},
 		BoardImportJobService,
-		BoardImportSourceService,
 	],
-	exports: [BoardImportJobService, BoardImportSourceService],
+	exports: [BoardImportJobService, BoardImportSourceModule],
 })
 export class BoardImportModule {}

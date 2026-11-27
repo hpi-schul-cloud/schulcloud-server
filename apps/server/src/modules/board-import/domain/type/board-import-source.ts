@@ -1,8 +1,4 @@
-export enum BoardImportSourceType {
-	TASKCARDS = 'taskcards',
-}
-
 export interface BoardImportSource {
-	type: BoardImportSourceType;
+	type: string;
 	link: string;
 }

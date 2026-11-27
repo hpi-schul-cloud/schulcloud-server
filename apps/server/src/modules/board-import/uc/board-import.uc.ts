@@ -4,7 +4,6 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '../board-import.config';
 import {
-	BOARD_IMPORT_SOURCE_SWITCH_KEYS,
 	type BoardImportJob,
 	BoardImportJobService,
 	BoardImportSourceDisabledLoggableException,
@@ -28,7 +27,7 @@ export class BoardImportUc {
 
 		const source = this.boardImportSourceService.resolveSource(link);
 
-		const switchKey = BOARD_IMPORT_SOURCE_SWITCH_KEYS[source.type];
+		const switchKey = this.boardImportSourceService.getSwitchKey(source.type);
 		const isSourceEnabled = await this.runtimeConfigService.getBoolean(switchKey);
 		if (!isSourceEnabled) {
 			throw new BoardImportSourceDisabledLoggableException(source.type);

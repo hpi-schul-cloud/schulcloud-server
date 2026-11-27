@@ -1,0 +1,21 @@
+{
+	"errors": [
+		{
+			"message": "",
+			"locations": [
+				{
+					"line": 1,
+					"column": 24
+				}
+			],
+			"path": [
+				"board"
+			],
+			"extensions": {
+				"type": 2,
+				"code": "BOARD_ERROR"
+			}
+		}
+	],
+	"data": null
+}

@@ -7,6 +7,7 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { BoardImportJobConsumer } from './amqp/board-import-job.consumer';
 import { BoardImportAmqpModule } from './board-import-amqp.module';
+import { BoardImportSourceReaderModule } from './board-import-source-reader.module';
 import {
 	BOARD_IMPORT_CONFIG_TOKEN,
 	BOARD_IMPORT_SERVER_API_CONFIG_TOKEN,
@@ -23,6 +24,7 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 @Module({
 	imports: [
 		ConfigurationModule.register(BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig),
+		BoardImportSourceReaderModule,
 		BoardImportAmqpModule,
 		LoggerModule,
 		UserModule,
