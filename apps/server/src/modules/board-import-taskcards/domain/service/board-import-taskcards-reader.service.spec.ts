@@ -1,10 +1,12 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
 import {
+	type BoardImportJob,
 	BoardImportJobLogReason,
 	BoardImportJobRejectedError,
 	BoardImportSourceHttpClientService,
 	BoardImportSourceReaderRegistryService,
+	type IntermediateBoard,
 } from '@modules/board-import';
 import { boardImportJobFactory } from '@modules/board-import/testing';
 import { BOARD_IMPORT_TASKCARDS_SOURCE_TYPE } from '../../board-import-taskcards.constants';
@@ -17,6 +19,7 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 	let httpClient: DeepMocked<BoardImportSourceHttpClientService>;
 
 	const boardId = '793bed21-a8ac-4a26-910e-2c3305ac6c0d';
+	const boardTitle = 'Test Pinboard';
 	const token = '0599256f-0bd0-498b-b231-1899dd79a644';
 	const visitorId = '00000000-0000-4000-8000-000000000000';
 	const visitorBody = readTaskcardsFixture('create-visitor.json');
@@ -80,6 +83,10 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 		return error;
 	};
 
+	const expectBoardOfFixture = (board: IntermediateBoard, job: BoardImportJob): void => {
+		expect(board).toEqual(expect.objectContaining({ source: job.source, title: boardTitle }));
+	};
+
 	const expectNotReadable = (error: unknown): void => {
 		expect(error).toBeInstanceOf(BoardImportJobRejectedError);
 		expect(error).toHaveProperty('reason', BoardImportJobLogReason.SOURCE_NOT_READABLE);
@@ -99,12 +106,12 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 				return { job, signal };
 			};
 
-			it('should return the raw answer of the board query', async () => {
+			it('should return the board as intermediate model', async () => {
 				const { job, signal } = setup();
 
 				const result = await service.readBoard(job, signal);
 
-				expect(result).toBe(boardBody);
+				expectBoardOfFixture(result, job);
 			});
 
 			it('should create a visitor, unlock the access and then read the board', async () => {
@@ -164,7 +171,7 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 
 				const result = await service.readBoard(job, signal);
 
-				expect(result).toBe(boardBody);
+				expectBoardOfFixture(result, job);
 				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
@@ -182,7 +189,7 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 
 				const result = await service.readBoard(job, signal);
 
-				expect(result).toBe(boardBody);
+				expectBoardOfFixture(result, job);
 			});
 		});
 
@@ -285,7 +292,7 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 				await jest.advanceTimersByTimeAsync(retryDelaysInMs);
 				const result = await promise;
 
-				expect(result).toBe(boardBody);
+				expectBoardOfFixture(result, job);
 				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
 			});
 		});
@@ -367,19 +374,38 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 				const { job, signal } = setupJobWithoutToken();
 				const body = JSON.stringify({
 					errors: [{ message: 'Link failed', path: ['board', 'cards', 0, 'attachments', 0, 'downloadLink'] }],
-					data: { board: { id: boardId, cards: [] } },
+					data: { board: { id: boardId, name: boardTitle, type: 0, cards: [] } },
 				});
 				mockResponses({ status: 200, body: visitorBody }, { status: 200, body });
 
-				return { job, signal, body };
+				return { job, signal };
 			};
 
-			it('should return the raw answer', async () => {
-				const { job, signal, body } = setup();
+			it('should return the board', async () => {
+				const { job, signal } = setup();
 
 				const result = await service.readBoard(job, signal);
 
-				expect(result).toBe(body);
+				expectBoardOfFixture(result, job);
+			});
+		});
+
+		describe('when the board is not a pinboard', () => {
+			const setup = () => {
+				const { job, signal } = setupJobWithoutToken();
+				const body = JSON.stringify({ data: { board: { id: boardId, name: boardTitle, type: 1, cards: [] } } });
+				mockResponses({ status: 200, body: visitorBody }, { status: 200, body });
+
+				return { job, signal };
+			};
+
+			it('should reject the job with the reason that the board type is not supported', async () => {
+				const { job, signal } = setup();
+
+				const error = await readBoardError(job, signal);
+
+				expect(error).toBeInstanceOf(BoardImportJobRejectedError);
+				expect(error).toHaveProperty('reason', BoardImportJobLogReason.SOURCE_BOARD_TYPE_NOT_SUPPORTED);
 			});
 		});
 

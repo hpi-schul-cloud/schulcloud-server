@@ -17,12 +17,12 @@ import { type BoardImportUserSession } from './board-import-user-session';
 
 const BOARD_TITLE = 'Import';
 
-// Only the start of the answer is shown, as a proof that the worker did read the source.
-const SOURCE_RESPONSE_MAX_LENGTH = 2000;
+// Only the start of the model is shown, as a proof that the worker did read and map the source.
+const MODEL_MAX_LENGTH = 2000;
 const HIGH_SURROGATE_AT_END = /[\uD800-\uDBFF]$/;
 
 // Placeholder for the import steps: one board with one column and two cards. The first card shows the link of the job,
-// the second card shows the start of the answer of the source.
+// the second card shows the start of the intermediate model as JSON.
 @Injectable()
 export class BoardImportPlaceholderBoardService {
 	constructor(
@@ -33,13 +33,13 @@ export class BoardImportPlaceholderBoardService {
 	) {}
 
 	// Each part is created only if it does not exist, so a new attempt continues the board of the attempt before.
-	public async write(job: BoardImportJob, session: BoardImportUserSession, sourceResponse: string): Promise<void> {
+	public async write(job: BoardImportJob, session: BoardImportUserSession, modelJson: string): Promise<void> {
 		const { boardId, columns } = await this.findOrCreateBoard(job, session);
 		const column = columns[0] ?? (await session.call((token) => this.boardsClient.createBoardColumn(token, boardId)));
-		const sourceResponseStart = sourceResponse.slice(0, SOURCE_RESPONSE_MAX_LENGTH).replace(HIGH_SURROGATE_AT_END, '');
+		const modelJsonStart = modelJson.slice(0, MODEL_MAX_LENGTH).replace(HIGH_SURROGATE_AT_END, '');
 
 		await this.writeTextCard(column, 0, job.source.link, session);
-		await this.writeTextCard(column, 1, sourceResponseStart, session);
+		await this.writeTextCard(column, 1, modelJsonStart, session);
 	}
 
 	// The text is escaped, so the server stores it as plain text and its sanitizer does not change it.

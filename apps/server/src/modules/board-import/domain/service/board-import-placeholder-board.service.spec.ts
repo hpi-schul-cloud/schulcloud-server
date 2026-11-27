@@ -63,7 +63,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 		return { token, session };
 	};
 
-	const sourceResponse = '{"data":{"board":{"id":"1"}}}';
+	const modelJson = '{"data":{"board":{"id":"1"}}}';
 
 	const mockSourceCard = () => {
 		const sourceCardId = new ObjectId().toHexString();
@@ -129,7 +129,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create the board in the target as the user', async () => {
 				const { job, session, token, boardParams } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.createBoard).toHaveBeenCalledWith(token, boardParams);
 			});
@@ -137,7 +137,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should store the board in the job', async () => {
 				const { job, session, boardId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, boardId);
 			});
@@ -145,7 +145,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create a column, a card and a text element as the user', async () => {
 				const { job, session, token, boardId, columnId, cardId, cardParams, createElementParams } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.createBoardColumn).toHaveBeenCalledWith(token, boardId);
 				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, cardParams);
@@ -155,7 +155,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should write the link of the job as text into the element', async () => {
 				const { job, session, token, elementId, elementParams } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, elementParams);
 			});
@@ -163,7 +163,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should not read the new board', async () => {
 				const { job, session } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.getBoardSkeletonById).not.toHaveBeenCalled();
 				expect(cardClient.getAllBoardCardsByIds).not.toHaveBeenCalled();
@@ -191,7 +191,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create no second board and add the missing parts', async () => {
 				const { job, session, token, boardId, elementId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.createBoard).not.toHaveBeenCalled();
 				expect(boardsClient.createBoardColumn).toHaveBeenCalledWith(token, boardId);
@@ -221,7 +221,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should read the board of the job', async () => {
 				const { job, session, token, boardId, cardId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.getBoardSkeletonById).toHaveBeenCalledWith(token, boardId);
 				expect(cardClient.getAllBoardCardsByIds).toHaveBeenCalledWith(token, [cardId]);
@@ -230,7 +230,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create no second board and no second column', async () => {
 				const { job, session } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.createBoard).not.toHaveBeenCalled();
 				expect(repo.setBoardId).not.toHaveBeenCalled();
@@ -240,7 +240,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create only the second card', async () => {
 				const { job, session, token, columnId, sourceCardId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(columnClient.createCard).toHaveBeenCalledTimes(1);
 				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, {});
@@ -251,7 +251,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should write the texts into the existing element and the new element', async () => {
 				const { job, session, token, elementId, sourceElementId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, sourceElementId, expect.anything());
@@ -286,7 +286,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should read both cards', async () => {
 				const { job, session, token, sourceCardId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(cardClient.getAllBoardCardsByIds).toHaveBeenLastCalledWith(token, [sourceCardId]);
 			});
@@ -294,7 +294,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create no second part', async () => {
 				const { job, session } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.createBoard).not.toHaveBeenCalled();
 				expect(boardsClient.createBoardColumn).not.toHaveBeenCalled();
@@ -305,7 +305,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should write the texts into the existing elements', async () => {
 				const { job, session, token, elementId, sourceElementId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledTimes(2);
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
@@ -313,7 +313,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			});
 		});
 
-		describe('when the answer of the source is written into the second card', () => {
+		describe('when the model is written into the second card', () => {
 			const setup = (response: string, expectedText: string) => {
 				const { token, session } = setupSession();
 				const { boardId, columnId, cardId, elementId } = setupIds();
@@ -333,7 +333,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 				return { job, session, token, response, sourceElementId, elementParams };
 			};
 
-			it('should write the answer as escaped text', async () => {
+			it('should write the model as escaped text', async () => {
 				const { job, session, token, response, sourceElementId, elementParams } = setup(
 					'{"description":"<script>alert(1)</script> & more"}',
 					'<p>{&quot;description&quot;:&quot;&lt;script&gt;alert(1)&lt;/script&gt; &amp; more&quot;}</p>'
@@ -344,7 +344,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, elementParams);
 			});
 
-			it('should cut a long answer to 2000 characters before the escape', async () => {
+			it('should cut a long model to 2000 characters before the escape', async () => {
 				const { job, session, token, response, sourceElementId, elementParams } = setup(
 					`${'a'.repeat(1999)}<${'b'.repeat(100)}`,
 					`<p>${'a'.repeat(1999)}&lt;</p>`
@@ -391,7 +391,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create a new card and write the text into its element', async () => {
 				const { job, session, token, columnId, newCardId, elementId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, {});
 				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, newCardId, expect.anything());
@@ -426,7 +426,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create a text element and write the text into it', async () => {
 				const { job, session, token, cardId, elementId, otherElementId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, cardId, expect.anything());
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
@@ -460,7 +460,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should remove the board from the job', async () => {
 				const { job, session } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(repo.removeBoardId).toHaveBeenCalledWith(job.id);
 			});
@@ -468,7 +468,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create and store a new board', async () => {
 				const { job, session, token, newBoardId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(boardsClient.createBoard).toHaveBeenCalledWith(token, expect.anything());
 				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, newBoardId);
@@ -478,7 +478,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should write the text into the new element', async () => {
 				const { job, session, token, elementId } = setup();
 
-				await service.write(job, session, sourceResponse);
+				await service.write(job, session, modelJson);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
 			});
@@ -500,7 +500,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should pass the error and keep the board in the job', async () => {
 				const { job, session, error } = setup();
 
-				await expect(service.write(job, session, sourceResponse)).rejects.toBe(error);
+				await expect(service.write(job, session, modelJson)).rejects.toBe(error);
 
 				expect(repo.removeBoardId).not.toHaveBeenCalled();
 				expect(boardsClient.createBoard).not.toHaveBeenCalled();
@@ -521,7 +521,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should pass the error and store no board', async () => {
 				const { job, session, error } = setup();
 
-				await expect(service.write(job, session, sourceResponse)).rejects.toBe(error);
+				await expect(service.write(job, session, modelJson)).rejects.toBe(error);
 
 				expect(repo.setBoardId).not.toHaveBeenCalled();
 			});
