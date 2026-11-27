@@ -1,83 +1,96 @@
 import { Test, type TestingModule } from '@nestjs/testing';
-import { BOARD_IMPORT_SOURCE_CONFIG_TOKEN, BoardImportSourceConfig } from '../../board-import.config';
 import { BoardImportLinkInvalidLoggableException, BoardImportSourceUnknownLoggableException } from '../error';
-import { BoardImportSourceType } from '../type';
+import { type BoardImportSourceDefinition } from '../interface';
+import { BoardImportSourceRegistryService } from './board-import-source-registry.service';
 import { BoardImportSourceService } from './board-import-source.service';
 
 describe(BoardImportSourceService.name, () => {
 	let module: TestingModule;
 	let service: BoardImportSourceService;
-	let config: BoardImportSourceConfig;
+
+	const definition: BoardImportSourceDefinition = {
+		type: 'test-source',
+		boardHosts: ['source.example', '*.source.example', 'source.test', '*.source.test'],
+		switchKey: 'TEST_SOURCE_ENABLED',
+	};
+	const otherDefinition: BoardImportSourceDefinition = {
+		type: 'other-source',
+		boardHosts: ['other.example'],
+		switchKey: 'OTHER_SOURCE_ENABLED',
+	};
+	const subdomainDefinition: BoardImportSourceDefinition = {
+		type: 'subdomain-source',
+		boardHosts: ['*.subdomains.example'],
+		switchKey: 'SUBDOMAIN_SOURCE_ENABLED',
+	};
+	const overlappingDefinition: BoardImportSourceDefinition = {
+		type: 'overlapping-source',
+		boardHosts: ['boards.source.example'],
+		switchKey: 'OVERLAPPING_SOURCE_ENABLED',
+	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				BoardImportSourceService,
-				{
-					provide: BOARD_IMPORT_SOURCE_CONFIG_TOKEN,
-					useValue: new BoardImportSourceConfig(),
-				},
-			],
+			providers: [BoardImportSourceService, BoardImportSourceRegistryService],
 		}).compile();
 
 		service = module.get(BoardImportSourceService);
-		config = module.get(BOARD_IMPORT_SOURCE_CONFIG_TOKEN);
+		const registry = module.get(BoardImportSourceRegistryService);
+		[definition, otherDefinition, subdomainDefinition, overlappingDefinition].forEach((source) =>
+			registry.registerSource(source)
+		);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	afterEach(() => {
-		config.taskcardsBoardHosts = new BoardImportSourceConfig().taskcardsBoardHosts;
-	});
-
 	describe('resolveSource', () => {
-		describe('when the link points to a TaskCards host', () => {
+		describe('when the link points to a host of a source', () => {
 			it.each([
-				'https://www.taskcards.de/#/board/793bed21-a8ac-4a26-910e-2c3305ac6c0d?token=0599256f',
-				'https://taskcards.de/board/1',
-				'https://taskcards.app/#/board/1',
-				'https://bra.taskcards.app/#/board/1',
-				'https://a.b.taskcards.app/#/board/1',
-			])('should return the TaskCards source with the link "%s"', (link: string) => {
+				'https://www.source.example/#/board/793bed21-a8ac-4a26-910e-2c3305ac6c0d?token=0599256f',
+				'https://source.example/board/1',
+				'https://source.test/#/board/1',
+				'https://bra.source.test/#/board/1',
+				'https://a.b.source.test/#/board/1',
+			])('should return the source with the link "%s"', (link: string) => {
 				const result = service.resolveSource(link);
 
-				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link });
+				expect(result).toEqual({ type: definition.type, link });
 			});
 		});
 
-		describe('when the link to a TaskCards host is not in the normalized form', () => {
+		describe('when the link to a host of a source is not in the normalized form', () => {
 			it.each([
-				{ link: 'https://WWW.TaskCards.de/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
-				{ link: 'https://www.taskcards.de:443/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
-				{ link: 'https:www.taskcards.de/#/board/1', normalizedLink: 'https://www.taskcards.de/#/board/1' },
-				{ link: 'https://taskcards.de\\@evil.example/', normalizedLink: 'https://taskcards.de/@evil.example/' },
-				{ link: 'https://taskcards%2ede/board', normalizedLink: 'https://taskcards.de/board' },
-				{ link: 'https://www.task\ncards.de/board', normalizedLink: 'https://www.taskcards.de/board' },
-				{ link: 'https://school\u00AD.taskcards.app/', normalizedLink: 'https://school.taskcards.app/' },
+				{ link: 'https://WWW.Source.example/#/board/1', normalizedLink: 'https://www.source.example/#/board/1' },
+				{ link: 'https://www.source.example:443/#/board/1', normalizedLink: 'https://www.source.example/#/board/1' },
+				{ link: 'https:www.source.example/#/board/1', normalizedLink: 'https://www.source.example/#/board/1' },
+				{ link: 'https://source.example\\@evil.example/', normalizedLink: 'https://source.example/@evil.example/' },
+				{ link: 'https://source%2eexample/board', normalizedLink: 'https://source.example/board' },
+				{ link: 'https://www.sour\nce.example/board', normalizedLink: 'https://www.source.example/board' },
+				{ link: 'https://school\u00AD.source.test/', normalizedLink: 'https://school.source.test/' },
 			])('should return the normalized link for "$link"', ({ link, normalizedLink }) => {
 				const result = service.resolveSource(link);
 
-				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link: normalizedLink });
+				expect(result).toEqual({ type: definition.type, link: normalizedLink });
 			});
 		});
 
 		describe('when the link is not a valid https link to a host name', () => {
 			it.each([
-				'http://www.taskcards.de/#/board/1',
-				'ftp://www.taskcards.de/',
+				'http://www.source.example/#/board/1',
+				'ftp://www.source.example/',
 				'file:///etc/passwd',
 				'javascript:alert(1)',
 				'not a link',
 				'',
 				'https://',
-				'https://user:pw@www.taskcards.de/',
-				'https://taskcards.de@evil.example/',
-				'https://www.taskcards.de:8443/',
-				'https://www.taskcards.de./#/board/1',
-				'https://www.taskcards.de\u3002/#/board/1',
-				'https://www.taskcards.de\uFF61/#/board/1',
+				'https://user:pw@www.source.example/',
+				'https://source.example@evil.example/',
+				'https://www.source.example:8443/',
+				'https://www.source.example./#/board/1',
+				'https://www.source.example\u3002/#/board/1',
+				'https://www.source.example\uFF61/#/board/1',
 				'https://127.0.0.1/',
 				'https://10.0.0.5/',
 				'https://169.254.169.254/',
@@ -87,10 +100,10 @@ describe(BoardImportSourceService.name, () => {
 				'https://[::1]/',
 				'https://[2001:db8::1]/',
 				'https:///path',
-				'https://.taskcards.de/',
-				'https://x..taskcards.de/',
-				'https://-x.taskcards.de/',
-				'https://x_y.taskcards.de/',
+				'https://.source.example/',
+				'https://x..source.example/',
+				'https://-x.source.example/',
+				'https://x_y.source.example/',
 			])('should throw a link invalid exception for "%s"', (link: string) => {
 				expect(() => service.resolveSource(link)).toThrow(BoardImportLinkInvalidLoggableException);
 			});
@@ -101,34 +114,108 @@ describe(BoardImportSourceService.name, () => {
 				'https://example.com/board',
 				'https://www.edumaps.de/84762/371448/x/y',
 				'https://padlet.com/user/wall',
-				'https://taskcards.de.evil.example/',
-				'https://eviltaskcards.de/',
-				'https://taskcards.com/',
+				'https://source.example.evil.example/',
+				'https://evilsource.example/',
+				'https://source.com/',
 			])('should throw a source unknown exception for "%s"', (link: string) => {
 				expect(() => service.resolveSource(link)).toThrow(BoardImportSourceUnknownLoggableException);
 			});
 		});
 
-		describe('when the list has only a subdomain pattern', () => {
-			const setup = () => {
-				config.taskcardsBoardHosts = ['*.taskcards.app'];
-			};
-
+		describe('when the list of a source has only a subdomain pattern', () => {
 			it('should not accept the domain itself', () => {
-				setup();
-
-				expect(() => service.resolveSource('https://taskcards.app/')).toThrow(
+				expect(() => service.resolveSource('https://subdomains.example/')).toThrow(
 					BoardImportSourceUnknownLoggableException
 				);
 			});
 
 			it('should accept a subdomain', () => {
-				setup();
-				const link = 'https://school.taskcards.app/';
+				const link = 'https://school.subdomains.example/';
 
 				const result = service.resolveSource(link);
 
-				expect(result).toEqual({ type: BoardImportSourceType.TASKCARDS, link });
+				expect(result).toEqual({ type: subdomainDefinition.type, link });
+			});
+		});
+
+		describe('when the link points to a host of the second source', () => {
+			it('should return the second source', () => {
+				const link = 'https://other.example/board/1';
+
+				const result = service.resolveSource(link);
+
+				expect(result).toEqual({ type: otherDefinition.type, link });
+			});
+		});
+	});
+
+	describe('isLinkOfSource', () => {
+		describe('when the link is a valid link to a host of the source', () => {
+			it.each(['https://www.source.example/graphql', 'https://bra.source.test/api/boards'])(
+				'should return true for "%s"',
+				(link: string) => {
+					const result = service.isLinkOfSource(link, definition.type);
+
+					expect(result).toBe(true);
+				}
+			);
+		});
+
+		describe('when the link is not a valid link to a host of the source', () => {
+			it.each([
+				'http://www.source.example/graphql',
+				'https://evil.example/graphql',
+				'https://source.example.evil.example/',
+				'https://127.0.0.1/',
+				'https://[::1]/',
+				'https://169.254.169.254/',
+				'https://api-svc/',
+				'https://user:pw@www.source.example/',
+				'https://www.source.example:8443/',
+				'not a link',
+			])('should return false for "%s"', (link: string) => {
+				const result = service.isLinkOfSource(link, definition.type);
+
+				expect(result).toBe(false);
+			});
+		});
+		describe('when the link is a valid link to a host of another source', () => {
+			it('should return false', () => {
+				const result = service.isLinkOfSource('https://other.example/graphql', definition.type);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when the host is also a host of a source that was registered before', () => {
+			it('should return true', () => {
+				const result = service.isLinkOfSource('https://boards.source.example/graphql', overlappingDefinition.type);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when no source with the type is registered', () => {
+			it('should return false', () => {
+				const result = service.isLinkOfSource('https://www.source.example/graphql', 'removed-source');
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('getSwitchKey', () => {
+		describe('when a source with the type is registered', () => {
+			it('should return the switch key of the source', () => {
+				const result = service.getSwitchKey(otherDefinition.type);
+
+				expect(result).toEqual(otherDefinition.switchKey);
+			});
+		});
+
+		describe('when no source with the type is registered', () => {
+			it('should throw a source unknown exception', () => {
+				expect(() => service.getSwitchKey('removed-source')).toThrow(BoardImportSourceUnknownLoggableException);
 			});
 		});
 	});

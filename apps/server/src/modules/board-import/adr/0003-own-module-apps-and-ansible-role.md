@@ -6,6 +6,8 @@ Accepted (2026-11-18)
 
 The worker gets its own secret, see [0011](0011-worker-creates-a-short-lived-jwt-for-the-user.md) (2026-11-25).
 
+The code of each source is in a separate module, see [0014](0014-one-module-for-each-source.md) (2026-11-26).
+
 ## Context
 
 The board import is a temporary function: the licenses of the source tools end in 2027. It calls external tools and accepts links from users. It must be possible to deploy, scale, limit and switch off the import without an effect on the other parts of the SchulCloud.

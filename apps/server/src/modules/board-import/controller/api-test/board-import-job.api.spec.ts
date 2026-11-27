@@ -1,13 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { CoreModule } from '@core/core.module';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import {
-	AuthGuardModule,
-	AuthGuardOptions,
-	JWT_AUTH_GUARD_CONFIG_TOKEN,
-	JwtAuthGuardConfig,
-	JwtPayloadVo,
-} from '@infra/auth-guard';
+import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardsClientAdapter,
 	CardClientAdapter,
@@ -19,16 +12,16 @@ import {
 import { ConfigurationModule } from '@infra/configuration';
 import { RuntimeConfigService } from '@infra/runtime-config';
 import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
-import { User } from '@modules/user';
+import { BOARD_IMPORT_TASKCARDS_SOURCE_TYPE } from '@modules/board-import-taskcards';
+import { readTaskcardsFixture } from '@modules/board-import-taskcards/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { BoardImportEvents } from '../../amqp';
-import { BoardImportApiModule } from '../../board-import-api.module';
+import { BoardImportApiTestModule } from '../../board-import-api.app.module';
 import { BoardImportWorkerTestModule } from '../../board-import-worker.app.module';
 import {
 	BOARD_IMPORT_CONFIG_TOKEN,
@@ -36,14 +29,27 @@ import {
 	BoardImportConfig,
 	type BoardImportPublicApiConfig,
 } from '../../board-import.config';
-import { API_ENTITIES } from '../../board-import-api.entity.imports';
-import { BOARD_IMPORT_SOURCE_SWITCH_KEYS, BoardImportJobStatus, type BoardImportSourceType } from '../../domain';
+import {
+	type BoardImportJob,
+	BoardImportJobStatus,
+	type BoardImportSource,
+	BoardImportSourceRegistryService,
+	BoardImportSourceService,
+} from '../../domain';
+import { BoardImportSourceReaderRegistryService } from '../../domain/service/board-import-source-reader-registry.service';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
+import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
 import { BoardImportJobEntity } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 
 const baseRouteName = 'board-import/jobs';
+
+const taskcardsSource: BoardImportSource = {
+	type: BOARD_IMPORT_TASKCARDS_SOURCE_TYPE,
+	link: 'https://www.taskcards.de/#/board/793bed21-a8ac-4a26-910e-2c3305ac6c0d',
+};
+const buildTaskcardsJob = (): BoardImportJob => boardImportJobFactory.build({ source: taskcardsSource });
 
 describe('Board Import Controller (API)', () => {
 	let app: INestApplication;
@@ -52,22 +58,12 @@ describe('Board Import Controller (API)', () => {
 	let amqpConnection: AmqpConnection;
 	let config: BoardImportPublicApiConfig;
 	let runtimeConfigService: RuntimeConfigService;
+	let sourceRegistry: BoardImportSourceRegistryService;
+	let sourceService: BoardImportSourceService;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
-			imports: [
-				CoreModule,
-				AuthGuardModule.register([
-					{
-						option: AuthGuardOptions.JWT,
-						configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
-						configConstructor: JwtAuthGuardConfig,
-					},
-				]),
-				BoardImportApiModule,
-				MongoMemoryDatabaseModule.forRoot({ entities: [User, ...API_ENTITIES] }),
-				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
-			],
+			imports: [BoardImportApiTestModule, ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig)],
 		}).compile();
 
 		app = module.createNestApplication();
@@ -77,6 +73,8 @@ describe('Board Import Controller (API)', () => {
 		amqpConnection = module.get(AmqpConnection);
 		config = module.get(BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN);
 		runtimeConfigService = module.get(RuntimeConfigService);
+		sourceRegistry = module.get(BoardImportSourceRegistryService);
+		sourceService = module.get(BoardImportSourceService);
 		await amqpConnection.channel.purgeQueue(BoardImportEvents.IMPORT_JOB);
 	});
 
@@ -93,8 +91,9 @@ describe('Board Import Controller (API)', () => {
 		await app.close();
 	});
 
-	const setSourceSwitch = async (sourceType: BoardImportSourceType, isEnabled: boolean) => {
-		const value = await runtimeConfigService.getByKey(BOARD_IMPORT_SOURCE_SWITCH_KEYS[sourceType]);
+	const setSourceSwitch = async (sourceType: string, isEnabled: boolean) => {
+		const switchKey = sourceService.getSwitchKey(sourceType);
+		const value = await runtimeConfigService.getByKey(switchKey);
 		value.setValue(isEnabled);
 		await runtimeConfigService.save(value);
 		em.clear();
@@ -109,10 +108,16 @@ describe('Board Import Controller (API)', () => {
 		return { loggedInClient, teacherUser };
 	};
 
+	describe('when the app is created', () => {
+		it('should not contain the registry of the readers', () => {
+			expect(() => app.get(BoardImportSourceReaderRegistryService, { strict: false })).toThrow();
+		});
+	});
+
 	describe('[POST] board-import/jobs', () => {
 		describe('when the user is not authenticated', () => {
 			const setup = () => {
-				const { source, target } = boardImportJobFactory.build();
+				const { source, target } = buildTaskcardsJob();
 				const { link } = source;
 				const body = { link, targetType: target.type, targetId: target.id };
 
@@ -131,7 +136,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the feature is disabled', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { source, target } = boardImportJobFactory.build();
+				const { source, target } = buildTaskcardsJob();
 				const { link } = source;
 				const body = { link, targetType: target.type, targetId: target.id };
 				const jobCount = 0;
@@ -161,7 +166,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link is a TaskCards link and no value of the switch is stored', () => {
 			const setup = async () => {
 				const { loggedInClient, teacherUser } = await setupLoggedInClient();
-				const { source, target } = boardImportJobFactory.build();
+				const { source, target } = buildTaskcardsJob();
 				const { link } = source;
 				const body = { link, targetType: target.type, targetId: target.id };
 				const status = BoardImportJobStatus.WAITING;
@@ -223,7 +228,7 @@ describe('Board Import Controller (API)', () => {
 		])('when the link $name', ({ link, type }) => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { target } = boardImportJobFactory.build();
+				const { target } = buildTaskcardsJob();
 				const body = { link, targetType: target.type, targetId: target.id };
 
 				return { loggedInClient, body };
@@ -270,7 +275,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the source is switched off', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { source, target } = boardImportJobFactory.build();
+				const { source, target } = buildTaskcardsJob();
 				const body = { link: source.link, targetType: target.type, targetId: target.id };
 				const type = 'BOARD_IMPORT_SOURCE_DISABLED';
 				await setSourceSwitch(source.type, false);
@@ -311,7 +316,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the source is switched on again', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { source, target } = boardImportJobFactory.build();
+				const { source, target } = buildTaskcardsJob();
 				const body = { link: source.link, targetType: target.type, targetId: target.id };
 				await setSourceSwitch(source.type, false);
 				const rejectedResponse = await loggedInClient.post('', body);
@@ -330,9 +335,23 @@ describe('Board Import Controller (API)', () => {
 			});
 		});
 
+		describe('when the registered sources are read', () => {
+			const setup = () => {
+				const sourceTypes = sourceRegistry.getAll().map((definition) => definition.type);
+
+				return { sourceTypes };
+			};
+
+			it('should contain the TaskCards source', () => {
+				const { sourceTypes } = setup();
+
+				expect(sourceTypes).toContain(BOARD_IMPORT_TASKCARDS_SOURCE_TYPE);
+			});
+		});
+
 		describe('when the switches of all sources are read', () => {
 			const setup = () => {
-				const switchKeys = Object.values(BOARD_IMPORT_SOURCE_SWITCH_KEYS);
+				const switchKeys = sourceRegistry.getAll().map((definition) => definition.switchKey);
 
 				return { switchKeys };
 			};
@@ -342,6 +361,7 @@ describe('Board Import Controller (API)', () => {
 
 				const values = await Promise.all(switchKeys.map((key) => runtimeConfigService.getBoolean(key)));
 
+				expect(switchKeys.length).toBeGreaterThan(0);
 				expect(values.map((value) => typeof value)).toEqual(switchKeys.map(() => 'boolean'));
 			});
 		});
@@ -349,7 +369,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link has no https scheme', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { target } = boardImportJobFactory.build();
+				const { target } = buildTaskcardsJob();
 				const link = 'http://www.taskcards.de/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
@@ -371,7 +391,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link has no scheme', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { target } = boardImportJobFactory.build();
+				const { target } = buildTaskcardsJob();
 				const link = 'www.taskcards.de/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
@@ -393,7 +413,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link contains credentials', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { target } = boardImportJobFactory.build();
+				const { target } = buildTaskcardsJob();
 				const link = 'https://user:password@www.taskcards.de/board';
 				const body = { link, targetType: target.type, targetId: target.id };
 
@@ -415,7 +435,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the link is missing', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { target } = boardImportJobFactory.build();
+				const { target } = buildTaskcardsJob();
 				const body = { targetType: target.type, targetId: target.id };
 
 				return { loggedInClient, body };
@@ -433,7 +453,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the target type is not valid', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { source, target } = boardImportJobFactory.build();
+				const { source, target } = buildTaskcardsJob();
 				const { link } = source;
 				const body = { link, targetType: 'user', targetId: target.id };
 
@@ -452,7 +472,7 @@ describe('Board Import Controller (API)', () => {
 		describe('when the target id is not a valid id', () => {
 			const setup = async () => {
 				const { loggedInClient } = await setupLoggedInClient();
-				const { source, target } = boardImportJobFactory.build();
+				const { source, target } = buildTaskcardsJob();
 				const { link } = source;
 				const body = { link, targetType: target.type, targetId: 'invalid-id' };
 
@@ -715,6 +735,16 @@ describe('Board Import Worker (import as the user)', () => {
 	let boardsClient: DeepMocked<BoardsClientAdapter>;
 	let columnClient: DeepMocked<ColumnClientAdapter>;
 	let cardClient: DeepMocked<CardClientAdapter>;
+	let sourceHttpClient: DeepMocked<BoardImportSourceHttpClientService>;
+
+	const { link, type: sourceType } = taskcardsSource;
+	const mockSource = (boardFixture: string): void => {
+		const visitorBody = readTaskcardsFixture('create-visitor.json');
+		const boardBody = readTaskcardsFixture(boardFixture);
+		sourceHttpClient.request
+			.mockResolvedValueOnce({ status: 200, body: visitorBody })
+			.mockResolvedValueOnce({ status: 200, body: boardBody });
+	};
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -726,6 +756,8 @@ describe('Board Import Worker (import as the user)', () => {
 			.useValue(createMock<ColumnClientAdapter>())
 			.overrideProvider(CardClientAdapter)
 			.useValue(createMock<CardClientAdapter>())
+			.overrideProvider(BoardImportSourceHttpClientService)
+			.useValue(createMock<BoardImportSourceHttpClientService>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -735,6 +767,7 @@ describe('Board Import Worker (import as the user)', () => {
 		boardsClient = module.get(BoardsClientAdapter);
 		columnClient = module.get(ColumnClientAdapter);
 		cardClient = module.get(CardClientAdapter);
+		sourceHttpClient = module.get(BoardImportSourceHttpClientService);
 	});
 
 	afterEach(() => {
@@ -749,7 +782,7 @@ describe('Board Import Worker (import as the user)', () => {
 	describe('when the job of a user with an account is in the queue', () => {
 		const setup = async () => {
 			const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
-			const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id) });
+			const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id), link, sourceType });
 			await em.persist([teacherUser, teacherAccount, entity]).flush();
 			em.clear();
 
@@ -765,13 +798,13 @@ describe('Board Import Worker (import as the user)', () => {
 			boardsClient.createBoardColumn.mockResolvedValueOnce(
 				createMock<ColumnResponse>({ id: new ObjectId().toHexString(), cards: [] })
 			);
-			columnClient.createCard.mockResolvedValueOnce(
-				createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] })
-			);
-			cardClient.createCardElement.mockResolvedValueOnce(
-				createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() })
-			);
-			cardClient.updateCardElement.mockResolvedValueOnce(createMock());
+			const linkCard = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
+			const sourceCard = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
+			const linkElement = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
+			const sourceElement = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
+			columnClient.createCard.mockResolvedValueOnce(linkCard).mockResolvedValueOnce(sourceCard);
+			cardClient.createCardElement.mockResolvedValueOnce(linkElement).mockResolvedValueOnce(sourceElement);
+			mockSource('board-pinboard.json');
 
 			return { id: entity.id, boardId, expectedClaims };
 		};
@@ -787,13 +820,87 @@ describe('Board Import Worker (import as the user)', () => {
 			expect(claims).toMatchObject(expectedClaims);
 			expect(finishedJob.boardId?.toHexString()).toEqual(boardId);
 		});
+
+		it('should write the start of the answer of the source into the second card', async () => {
+			const { id } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
+			expect(columnClient.createCard).toHaveBeenCalledTimes(2);
+			expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(
+				expect.anything(),
+				expect.anything(),
+				expect.objectContaining({
+					data: expect.objectContaining({
+						content: expect.objectContaining({ text: expect.stringContaining('<p>{\n\t&quot;data&quot;') }),
+					}),
+				})
+			);
+		});
+	});
+
+	describe('when the source of the job is not readable', () => {
+		const setup = async () => {
+			const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
+			const entity = boardImportJobEntityFactory.build({ userId: new ObjectId(teacherUser.id), link, sourceType });
+			await em.persist([teacherUser, teacherAccount, entity]).flush();
+			em.clear();
+			mockSource('board-not-readable.json');
+
+			const attempts = 1;
+
+			return { id: entity.id, attempts };
+		};
+
+		it('should set the job to failed on the first attempt and create no board', async () => {
+			const { id, attempts } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
+			expect(failedJob.attempts).toEqual(attempts);
+			expect(failedJob.boardId).toBeUndefined();
+			expect(boardsClient.createBoard).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when the app is created', () => {
+		it('should contain the reader of TaskCards', () => {
+			const reader = app.get(BoardImportSourceReaderRegistryService).findByType(sourceType);
+
+			expect(reader).toBeDefined();
+		});
+	});
+
+	describe('when no reader is registered for the source of the job', () => {
+		const setup = async () => {
+			const entity = boardImportJobEntityFactory.build({ sourceType: 'removed-source' });
+			await em.persist(entity).flush();
+			em.clear();
+
+			const attempts = 1;
+
+			return { id: entity.id, attempts };
+		};
+
+		it('should set the job to failed on the first attempt and create no board', async () => {
+			const { id, attempts } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
+			expect(failedJob.attempts).toEqual(attempts);
+			expect(boardsClient.createBoard).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when the user of the job does not exist', () => {
 		const setup = async () => {
-			const entity = boardImportJobEntityFactory.build();
+			const entity = boardImportJobEntityFactory.build({ link, sourceType });
 			await em.persist(entity).flush();
 			em.clear();
+			mockSource('board-pinboard.json');
 
 			const attempts = 1;
 
