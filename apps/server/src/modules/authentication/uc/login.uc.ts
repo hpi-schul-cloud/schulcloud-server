@@ -1,4 +1,5 @@
 import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
+import { JwtIssuerService } from '@infra/jwt-issuer';
 import { AuditLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { UserService } from '@modules/user';
@@ -13,6 +14,7 @@ import { AuthenticationService } from '../services';
 export class LoginUc {
 	constructor(
 		private readonly authService: AuthenticationService,
+		private readonly jwtIssuerService: JwtIssuerService,
 		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig,
 		private readonly auditLogger: AuditLogger,
 		private readonly authorizationService: AuthorizationService,
@@ -22,7 +24,7 @@ export class LoginUc {
 	public async getLoginData(currentUser: ICurrentUser): Promise<string> {
 		this.checkIfNotServiceAccount(currentUser);
 		const jwtPayload = new JwtPayloadBuilder(currentUser).build();
-		const accessToken = await this.authService.generateJwtAndAddToWhitelist(jwtPayload, this.config.expiresIn);
+		const accessToken = await this.jwtIssuerService.generateJwtAndAddToWhitelist(jwtPayload, this.config.expiresIn);
 		await this.authService.updateLastLogin(currentUser.accountId);
 
 		return accessToken;
@@ -31,7 +33,7 @@ export class LoginUc {
 	public async getLoginDataForServiceAccount(currentUser: ICurrentUser): Promise<string> {
 		this.checkIfServiceAccount(currentUser);
 		const jwtPayload = new JwtPayloadBuilder(currentUser).asServiceAccount().build();
-		const accessToken = await this.authService.generateJwtAndAddToWhitelist(
+		const accessToken = await this.jwtIssuerService.generateJwtAndAddToWhitelist(
 			jwtPayload,
 			this.config.jwtLifetimeServiceAccountSeconds
 		);

@@ -1,13 +1,19 @@
 import { CoreModule } from '@core/core.module';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+import { BoardImportTaskcardsReaderModule } from '@modules/board-import-taskcards/board-import-taskcards-reader.module';
 import { HealthApiModule, HealthEntities } from '@modules/health';
 import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { WORKER_ENTITIES } from './board-import-worker.entity.imports';
 import { BoardImportWorkerModule } from './board-import-worker.module';
-import { ENTITIES } from './board-import.entity.imports';
 
-const imports = [CoreModule, HealthApiModule, BoardImportWorkerModule];
-const entities = [...ENTITIES, ...HealthEntities];
+const imports = [
+	CoreModule,
+	HealthApiModule.registerWithSessionStorage(),
+	BoardImportWorkerModule,
+	BoardImportTaskcardsReaderModule,
+];
+const entities = [...WORKER_ENTITIES, ...HealthEntities];
 
 @Module({
 	imports: [

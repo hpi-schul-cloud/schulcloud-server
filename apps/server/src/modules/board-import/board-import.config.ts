@@ -1,8 +1,26 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToNumber } from '@shared/controller/transformer';
-import { IsInt, IsNumber, IsPositive, Max, Min } from 'class-validator';
+import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
+import { IsBoolean, IsInt, IsNumber, IsPositive, IsUrl, Max, Min } from 'class-validator';
 
 export const BOARD_IMPORT_CONFIG_TOKEN = 'BOARD_IMPORT_CONFIG_TOKEN';
+export const BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN = 'BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN';
+export const BOARD_IMPORT_SERVER_API_CONFIG_TOKEN = 'BOARD_IMPORT_SERVER_API_CONFIG_TOKEN';
+export const BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN = 'BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN';
+
+@Configuration()
+export class BoardImportPublicApiConfig {
+	@ConfigProperty('FEATURE_BOARD_IMPORT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureBoardImportEnabled = false;
+}
+
+@Configuration()
+export class BoardImportServerApiConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	public basePath!: string;
+}
 
 // A timer with a delay above 2^31 - 1 milliseconds fires at once.
 const MAX_TIMER_DELAY_IN_MINUTES = 35791;
@@ -39,4 +57,29 @@ export class BoardImportConfig {
 	@Min(0)
 	@Max(MAX_RETRY_DELAY_IN_SECONDS)
 	public jobRetryDelayInSeconds = 10;
+}
+
+const MAX_TIMER_DELAY_IN_SECONDS = MAX_TIMER_DELAY_IN_MINUTES * 60;
+
+// The limits for one request to a source. See ADR 0013.
+@Configuration()
+export class BoardImportSourceRequestConfig {
+	@ConfigProperty('BOARD_IMPORT_SOURCE_REQUEST_TIMEOUT_IN_SECONDS')
+	@StringToNumber()
+	@IsInt()
+	@Min(1)
+	@Max(MAX_TIMER_DELAY_IN_SECONDS)
+	public requestTimeoutInSeconds = 30;
+
+	@ConfigProperty('BOARD_IMPORT_SOURCE_MAX_RESPONSE_SIZE_IN_BYTES')
+	@StringToNumber()
+	@IsInt()
+	@Min(1)
+	public maxResponseSizeInBytes = 10485760;
+
+	@ConfigProperty('BOARD_IMPORT_SOURCE_MAX_REDIRECTS')
+	@StringToNumber()
+	@IsInt()
+	@Min(0)
+	public maxRedirects = 3;
 }

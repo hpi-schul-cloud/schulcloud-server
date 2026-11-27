@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { BoardImportJobStatus } from '../../domain';
+import { BoardImportJobStatus, BoardImportJobUnreadableError } from '../../domain';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 import { BoardImportJobEntity } from '../entity';
 import { BoardImportJobMikroOrmRepo } from './board-import-job.repo';
@@ -33,13 +33,14 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 	describe('save', () => {
 		describe('when the job is new', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build({ attempts: 2, startedAt: new Date() });
+				const boardId = new ObjectId().toHexString();
+				const job = boardImportJobFactory.build({ attempts: 2, startedAt: new Date(), boardId });
 
-				return { job };
+				return { job, boardId };
 			};
 
 			it('should store the job', async () => {
-				const { job } = setup();
+				const { job, boardId } = setup();
 
 				await repo.save(job);
 				em.clear();
@@ -49,10 +50,14 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					id: job.id,
 					status: job.status,
 					userId: new ObjectId(job.userId),
-					link: job.link,
+					link: job.source.link,
+					sourceType: job.source.type,
+					targetType: job.target.type,
+					targetId: new ObjectId(job.target.id),
 					expiresAt: job.expiresAt,
 					attempts: job.attempts,
 					startedAt: job.startedAt,
+					boardId: new ObjectId(boardId),
 				});
 			});
 		});
@@ -61,7 +66,8 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 	describe('findById', () => {
 		describe('when the job exists', () => {
 			const setup = async () => {
-				const entity = boardImportJobEntityFactory.build({ attempts: 2, startedAt: new Date() });
+				const boardId = new ObjectId();
+				const entity = boardImportJobEntityFactory.build({ attempts: 2, startedAt: new Date(), boardId });
 				await em.persist(entity).flush();
 				em.clear();
 
@@ -69,10 +75,12 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					id: entity.id,
 					status: entity.status,
 					userId: entity.userId.toHexString(),
-					link: entity.link,
+					source: { type: entity.sourceType, link: entity.link },
+					target: { type: entity.targetType, id: entity.targetId.toHexString() },
 					expiresAt: entity.expiresAt,
 					attempts: entity.attempts,
 					startedAt: entity.startedAt,
+					boardId: boardId.toHexString(),
 				};
 
 				return { expectedProps };
@@ -106,6 +114,25 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const job = await repo.findById(id);
 
 				expect(job?.attempts).toEqual(attempts);
+			});
+		});
+
+		describe('when the stored job has no target', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build();
+				await em.persist(entity).flush();
+				await em
+					.getCollection(BoardImportJobEntity)
+					.updateOne({ _id: new ObjectId(entity.id) }, { $unset: { targetType: '', targetId: '' } });
+				em.clear();
+
+				return { id: entity.id };
+			};
+
+			it('should throw an unreadable error', async () => {
+				const { id } = await setup();
+
+				await expect(repo.findById(id)).rejects.toThrow(BoardImportJobUnreadableError);
 			});
 		});
 
@@ -380,6 +407,95 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(result).toEqual(false);
 				expect(entity.status).toEqual(status);
+			});
+		});
+	});
+
+	describe('failIfOpen', () => {
+		describe.each([BoardImportJobStatus.WAITING, BoardImportJobStatus.RUNNING])('when the job is %s', (status) => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ status });
+				await em.persist(entity).flush();
+				await em
+					.getCollection(BoardImportJobEntity)
+					.updateOne({ _id: new ObjectId(entity.id) }, { $unset: { targetType: '', targetId: '' } });
+				em.clear();
+				const expectedStatus = BoardImportJobStatus.FAILED;
+
+				return { id: entity.id, expectedStatus };
+			};
+
+			it('should set the job to failed without reading it and return true', async () => {
+				const { id, expectedStatus } = await setup();
+
+				const result = await repo.failIfOpen(id);
+
+				const document = await em.getCollection(BoardImportJobEntity).findOne({ _id: new ObjectId(id) });
+				expect(result).toEqual(true);
+				expect(document?.status).toEqual(expectedStatus);
+			});
+		});
+
+		describe.each([BoardImportJobStatus.FINISHED, BoardImportJobStatus.FAILED])('when the job is %s', (status) => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ status });
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { id: entity.id, status };
+			};
+
+			it('should not change the job and return false', async () => {
+				const { id, status } = await setup();
+
+				const result = await repo.failIfOpen(id);
+
+				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
+				expect(result).toEqual(false);
+				expect(entity.status).toEqual(status);
+			});
+		});
+	});
+
+	describe('setBoardId', () => {
+		describe('when the job exists', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build();
+				await em.persist(entity).flush();
+				em.clear();
+				const boardId = new ObjectId().toHexString();
+
+				return { id: entity.id, boardId };
+			};
+
+			it('should store the board', async () => {
+				const { id, boardId } = await setup();
+
+				await repo.setBoardId(id, boardId);
+
+				const job = await repo.findById(id);
+				expect(job?.boardId).toEqual(boardId);
+			});
+		});
+	});
+
+	describe('removeBoardId', () => {
+		describe('when the job has a board', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ boardId: new ObjectId() });
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { id: entity.id };
+			};
+
+			it('should remove the board from the job', async () => {
+				const { id } = await setup();
+
+				await repo.removeBoardId(id);
+
+				const job = await repo.findById(id);
+				expect(job?.boardId).toBeUndefined();
 			});
 		});
 	});

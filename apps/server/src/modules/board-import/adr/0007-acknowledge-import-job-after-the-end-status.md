@@ -16,7 +16,7 @@ The helper `registerAmqpSubscriber` of the provisioning module catches each erro
 - The handler resolves only after the end status of the job is in the database. The RabbitMQ library sends the acknowledgement at that moment.
 - When the work fails, the handler returns `Nack(true)`. The broker puts the message back into the queue.
 - The handler does not throw. The RabbitMQ library logs each error that a handler throws, and an error can contain contents or links of the source.
-- A message without a job ID, a missing job and a job with the status `finished` or `failed` get an acknowledgement and no work. A job with the status `running` is a job that the broker delivers again, and the worker processes it again (see [0008](0008-retry-import-jobs-through-redelivery.md)).
+- A message without a job ID, a missing job and a job with the status `finished` or `failed` get an acknowledgement and no work. A job that cannot be read gets the status `failed` and an acknowledgement. A job with the status `running` is a job that the broker delivers again, and the worker processes it again (see [0008](0008-retry-import-jobs-through-redelivery.md)).
 - The board import has its own RabbitMQ configuration. `BOARD_IMPORT_PREFETCH_COUNT` is the number of jobs that one worker processes at the same time. The default is 1.
 
 ## Consequences

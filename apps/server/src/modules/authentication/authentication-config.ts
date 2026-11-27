@@ -8,7 +8,6 @@ const dayInSeconds = 24 * hourInSeconds;
 export const AUTHENTICATION_CONFIG_TOKEN = 'AUTHENTICATION_CONFIG_TOKEN';
 @Configuration()
 export class AuthenticationConfig {
-	// Also used in JwtModuleConfig.
 	@ConfigProperty('JWT_LIFETIME')
 	@IsString()
 	public expiresIn = '30d';

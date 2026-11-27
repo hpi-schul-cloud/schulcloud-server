@@ -4,6 +4,10 @@
 
 Accepted (2026-11-24)
 
+[0011](0011-worker-creates-a-short-lived-jwt-for-the-user.md) adds errors that set a job to `failed` in each attempt (2026-11-25).
+
+[0013](0013-checked-requests-to-the-sources.md) adds errors of the source requests that set a job to `failed` in each attempt (2026-11-27).
+
 ## Context
 
 A job that the broker delivers again must not run without end. The import uses no delayed queues and no dead-letter queues (see [0002](0002-asynchronous-import-through-rabbitmq.md)).

@@ -1,19 +1,23 @@
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { type EntityId } from '@shared/domain/types';
-import { BoardImportJobStatus } from '../type';
+import { BoardImportJobStatus, type BoardImportSource, type BoardImportTarget } from '../type';
 
 export interface BoardImportJobProps extends AuthorizableObject {
 	status: BoardImportJobStatus;
 
 	userId: EntityId;
 
-	link: string;
+	source: BoardImportSource;
+
+	target: BoardImportTarget;
 
 	expiresAt: Date;
 
 	attempts: number;
 
 	startedAt?: Date;
+
+	boardId?: EntityId;
 }
 
 export class BoardImportJob extends DomainObject<BoardImportJobProps> {
@@ -25,8 +29,12 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 		return this.props.userId;
 	}
 
-	get link(): string {
-		return this.props.link;
+	get source(): BoardImportSource {
+		return this.props.source;
+	}
+
+	get target(): BoardImportTarget {
+		return this.props.target;
 	}
 
 	get expiresAt(): Date {
@@ -39,6 +47,18 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 	get startedAt(): Date | undefined {
 		return this.props.startedAt;
+	}
+
+	get boardId(): EntityId | undefined {
+		return this.props.boardId;
+	}
+
+	// The maximum duration counts from the first start. A job that did not start yet counts from now.
+	public getDeadline(maxDurationInMs: number, now: Date): Date {
+		const startedAt = this.props.startedAt ?? now;
+		const deadline = new Date(startedAt.getTime() + maxDurationInMs);
+
+		return deadline;
 	}
 
 	public isClosed(): boolean {

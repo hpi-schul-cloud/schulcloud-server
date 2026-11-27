@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
+import { JwtIssuerService } from '@infra/jwt-issuer';
 import { AuditLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { User, UserService } from '@modules/user';
@@ -18,6 +19,7 @@ describe('LoginUc', () => {
 	let loginUc: LoginUc;
 
 	let authenticationService: DeepMocked<AuthenticationService>;
+	let jwtIssuerService: DeepMocked<JwtIssuerService>;
 	let authenticationConfig: AuthenticationConfig;
 	let auditLogger: DeepMocked<AuditLogger>;
 	let authorizationService: DeepMocked<AuthorizationService>;
@@ -36,6 +38,10 @@ describe('LoginUc', () => {
 				{
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
+				},
+				{
+					provide: JwtIssuerService,
+					useValue: createMock<JwtIssuerService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -57,6 +63,7 @@ describe('LoginUc', () => {
 
 		loginUc = module.get(LoginUc);
 		authenticationService = module.get(AuthenticationService);
+		jwtIssuerService = module.get(JwtIssuerService);
 		authenticationConfig = module.get(AUTHENTICATION_CONFIG_TOKEN);
 		auditLogger = module.get(AuditLogger);
 		authorizationService = module.get(AuthorizationService);
@@ -78,7 +85,7 @@ describe('LoginUc', () => {
 				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).build();
 				const accessToken = 'accessToken';
 
-				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
+				jwtIssuerService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
 
 				return {
 					currentUser,
@@ -92,7 +99,7 @@ describe('LoginUc', () => {
 
 				await loginUc.getLoginData(currentUser);
 
-				expect(authenticationService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
+				expect(jwtIssuerService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
 					expectedJwtPayload,
 					authenticationConfig.expiresIn
 				);
@@ -139,7 +146,7 @@ describe('LoginUc', () => {
 				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).asServiceAccount().build();
 				const accessToken = 'isServiceAccountAccessToken';
 
-				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
+				jwtIssuerService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
 
 				return {
 					currentUser,
@@ -153,7 +160,7 @@ describe('LoginUc', () => {
 
 				await loginUc.getLoginDataForServiceAccount(currentUser);
 
-				expect(authenticationService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
+				expect(jwtIssuerService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
 					expectedJwtPayload,
 					authenticationConfig.jwtLifetimeServiceAccountSeconds
 				);

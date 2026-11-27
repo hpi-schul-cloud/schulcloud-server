@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { type EntityId } from '@shared/domain/types';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../../board-import.config';
 import { type BoardImportJob } from '../do';
+import { BoardImportJobRejectedError, BoardImportJobUnreadableError } from '../error';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportRunnerService } from './board-import-runner.service';
@@ -20,7 +21,18 @@ export class BoardImportJobProcessService {
 
 	// Resolves when the job has an end status or needs no work. Rejects when the job must be delivered again.
 	public async process(jobId: EntityId): Promise<void> {
-		const job = await this.boardImportJobRepo.findById(jobId);
+		let job: BoardImportJob | null;
+		try {
+			job = await this.boardImportJobRepo.findById(jobId);
+		} catch (error) {
+			if (error instanceof BoardImportJobUnreadableError) {
+				// A redelivery cannot repair the stored job, so it fails at once and the queue goes on.
+				await this.failUnreadable(jobId);
+
+				return;
+			}
+			throw error;
+		}
 
 		if (!job) {
 			this.logger.warning('Board import job skipped', { jobId, reason: BoardImportJobLogReason.JOB_NOT_FOUND });
@@ -68,6 +80,11 @@ export class BoardImportJobProcessService {
 		try {
 			isInTime = await this.runWithTimeLimit(job, remainingTimeInMs);
 		} catch (error) {
+			if (error instanceof BoardImportJobRejectedError) {
+				await this.fail(job, error.reason);
+
+				return;
+			}
 			if (this.hasAttemptsLeft(job)) {
 				throw error;
 			}
@@ -111,8 +128,7 @@ export class BoardImportJobProcessService {
 
 	private getRemainingTimeInMs(job: BoardImportJob, now: Date): number {
 		const maxDurationInMs = this.config.jobMaxDurationInMinutes * MILLISECONDS_PER_MINUTE;
-		const startedAt = job.startedAt ?? now;
-		const remainingTimeInMs = startedAt.getTime() + maxDurationInMs - now.getTime();
+		const remainingTimeInMs = job.getDeadline(maxDurationInMs, now).getTime() - now.getTime();
 
 		return remainingTimeInMs;
 	}
@@ -131,9 +147,19 @@ export class BoardImportJobProcessService {
 			return isInTime;
 		} finally {
 			clearTimeout(timer);
-			// Stops the steps that still run after a timeout or after another step failed.
+			// The steps that still run after a timeout or after another step failed stop before and after their next request.
 			abortController.abort();
 		}
+	}
+
+	private async failUnreadable(jobId: EntityId): Promise<void> {
+		const isFailed = await this.boardImportJobRepo.failIfOpen(jobId);
+		if (!isFailed) {
+			this.logSkippedClosedJob(jobId);
+
+			return;
+		}
+		this.logger.warning('Board import job failed', { jobId, reason: BoardImportJobLogReason.JOB_UNREADABLE });
 	}
 
 	private async fail(job: BoardImportJob, reason: BoardImportJobLogReason): Promise<void> {
@@ -143,6 +169,11 @@ export class BoardImportJobProcessService {
 
 			return;
 		}
-		this.logger.warning('Board import job failed', { jobId: job.id, reason, attempts: job.attempts });
+		this.logger.warning('Board import job failed', {
+			jobId: job.id,
+			userId: job.userId,
+			reason,
+			attempts: job.attempts,
+		});
 	}
 }

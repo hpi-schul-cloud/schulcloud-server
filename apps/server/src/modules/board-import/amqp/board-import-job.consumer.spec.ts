@@ -6,7 +6,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { type Channel, type ConsumeMessage } from 'amqplib';
 import { BOARD_IMPORT_EXCHANGE_CONFIG_TOKEN, BoardImportExchangeConfig } from '../board-import-exchange.config';
 import { BOARD_IMPORT_CONFIG_TOKEN, BoardImportConfig } from '../board-import.config';
-import { BoardImportJobProcessService } from '../domain';
+import { BoardImportJobProcessService } from '../domain/service/board-import-job-process.service';
 import { BoardImportJobEntity } from '../repo/entity';
 import { boardImportJobFactory } from '../testing';
 import { BoardImportJobConsumer } from './board-import-job.consumer';

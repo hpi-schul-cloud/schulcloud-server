@@ -1,4 +1,22 @@
 export { BoardImportJob, BoardImportJobProps } from './do';
-export { BOARD_IMPORT_JOB_REPO, BoardImportJobRepo } from './interface';
-export { BoardImportJobProcessService, BoardImportJobService, BoardImportRunnerService } from './service';
-export { BoardImportJobLogReason, BoardImportJobStatus } from './type';
+export {
+	BoardImportJobRejectedError,
+	BoardImportJobUnreadableError,
+	BoardImportLinkInvalidLoggableException,
+	BoardImportSourceDisabledLoggableException,
+	BoardImportSourceUnknownLoggableException,
+} from './error';
+export {
+	BOARD_IMPORT_JOB_REPO,
+	BoardImportJobRepo,
+	BoardImportSourceDefinition,
+	BoardImportSourceReader,
+} from './interface';
+export { BoardImportJobService, BoardImportSourceRegistryService, BoardImportSourceService } from './service';
+export {
+	BoardImportJobLogReason,
+	BoardImportJobStatus,
+	BoardImportSource,
+	BoardImportTarget,
+	BoardImportTargetType,
+} from './type';

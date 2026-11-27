@@ -1,8 +1,10 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { ErrorResponse } from '@infra/error';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiCreatedResponse,
+	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -23,13 +25,22 @@ export class BoardImportController {
 	@Post()
 	@ApiOperation({ summary: 'Start the import of a board from a share link.' })
 	@ApiCreatedResponse({ type: BoardImportJobResponse })
-	@ApiBadRequestResponse({ type: ApiValidationError })
+	@ApiBadRequestResponse({
+		type: ErrorResponse,
+		description:
+			'API_VALIDATION_ERROR: the request is not valid. BOARD_IMPORT_LINK_INVALID: the link is not a valid https link to a host name. BOARD_IMPORT_SOURCE_UNKNOWN: the link does not point to a supported source.',
+	})
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
+	@ApiForbiddenResponse({
+		type: ErrorResponse,
+		description: 'The board import is disabled, or BOARD_IMPORT_SOURCE_DISABLED: the source of the link is disabled.',
+	})
 	public async startImport(
 		@Body() bodyParams: CreateBoardImportJobBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardImportJobResponse> {
-		const job = await this.boardImportUc.startImport(currentUser.userId, bodyParams.link);
+		const target = { type: bodyParams.targetType, id: bodyParams.targetId };
+		const job = await this.boardImportUc.startImport(currentUser.userId, bodyParams.link, target);
 		const response = BoardImportJobResponseMapper.mapToResponse(job);
 
 		return response;

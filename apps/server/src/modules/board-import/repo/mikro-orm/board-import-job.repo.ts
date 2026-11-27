@@ -2,7 +2,12 @@ import { type EntityData, type EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { type EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { type BoardImportJob, type BoardImportJobRepo, BoardImportJobStatus } from '../../domain';
+import {
+	type BoardImportJob,
+	type BoardImportJobRepo,
+	BoardImportJobStatus,
+	BoardImportJobUnreadableError,
+} from '../../domain';
 import { BoardImportJobEntity } from '../entity';
 import { BoardImportJobMapper } from '../mapper';
 
@@ -28,7 +33,7 @@ export class BoardImportJobMikroOrmRepo
 			return null;
 		}
 
-		const domainObject = BoardImportJobMapper.mapEntityToDO(entity);
+		const domainObject = this.mapEntityToDO(entity);
 
 		return domainObject;
 	}
@@ -57,7 +62,7 @@ export class BoardImportJobMikroOrmRepo
 		}
 
 		const entity = this.em.map(BoardImportJobEntity, document);
-		const domainObject = BoardImportJobMapper.mapEntityToDO(entity);
+		const domainObject = this.mapEntityToDO(entity);
 
 		return domainObject;
 	}
@@ -86,5 +91,36 @@ export class BoardImportJobMikroOrmRepo
 		const isFailed = updatedCount > 0;
 
 		return isFailed;
+	}
+
+	public async failIfOpen(id: EntityId): Promise<boolean> {
+		const updatedCount = await this.em.nativeUpdate(
+			BoardImportJobEntity,
+			{ id, status: { $in: [BoardImportJobStatus.WAITING, BoardImportJobStatus.RUNNING] } },
+			{ status: BoardImportJobStatus.FAILED, updatedAt: new Date() }
+		);
+		const isFailed = updatedCount > 0;
+
+		return isFailed;
+	}
+
+	public async setBoardId(id: EntityId, boardId: EntityId): Promise<void> {
+		await this.em.nativeUpdate(BoardImportJobEntity, { id }, { boardId: new ObjectId(boardId), updatedAt: new Date() });
+	}
+
+	public async removeBoardId(id: EntityId): Promise<void> {
+		await this.em
+			.getCollection(BoardImportJobEntity)
+			.updateOne({ _id: new ObjectId(id) }, { $unset: { boardId: '' }, $set: { updatedAt: new Date() } });
+	}
+
+	private mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {
+		try {
+			const domainObject = BoardImportJobMapper.mapEntityToDO(entity);
+
+			return domainObject;
+		} catch (error) {
+			throw new BoardImportJobUnreadableError(error);
+		}
 	}
 }
