@@ -174,7 +174,7 @@ export class FeathersRosterService {
 
 		const schoolExternalTool = schoolExternalTools[0];
 
-		const [courses] = await this.courseService.findAllByUserId(userId, schoolId, { onlyActiveCourses: true });
+		const [courses] = await this.courseService.findAllByUserId(userId, schoolId, { onlyActiveCourses: false });
 		const coursesUserGroups = (
 			await Promise.all(
 				courses.map(async (course) => {

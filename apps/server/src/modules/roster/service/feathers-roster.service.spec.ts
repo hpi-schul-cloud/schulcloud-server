@@ -353,6 +353,74 @@ describe('FeathersRosterService', () => {
 			});
 		});
 
+		describe('when the tool is active in an archived course', () => {
+			const setup = () => {
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
+				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
+				const archivedCourse = courseEntityFactory.isFinished().buildWithId();
+
+				const clientId = 'testClientId';
+				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const pseudonym = pseudonymFactory.build({ userId: user.id, toolId: externalTool.id });
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+					schoolId: school.id,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
+					.buildWithId({
+						contextRef: new ContextRef({
+							id: archivedCourse.id,
+							type: ToolContextType.COURSE,
+						}),
+					});
+
+				config.featureColumnBoardExternalToolsEnabled = false;
+
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
+				userService.findById.mockResolvedValueOnce(user);
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
+				courseService.findAllByUserId.mockResolvedValue([[archivedCourse], 1]);
+				contextExternalToolService.findContextExternalTools.mockResolvedValueOnce([contextExternalTool]);
+
+				return {
+					pseudonym,
+					clientId,
+					user,
+					archivedCourse,
+				};
+			};
+
+			it('should not filter out archived courses when loading the courses of the user', async () => {
+				const { pseudonym, clientId, user } = setup();
+
+				await service.getUserGroups(pseudonym.pseudonym, clientId);
+
+				expect(courseService.findAllByUserId).toHaveBeenCalledWith(user.id, user.schoolId, {
+					onlyActiveCourses: false,
+				});
+			});
+
+			it('should return a group for the archived course', async () => {
+				const { pseudonym, clientId, archivedCourse } = setup();
+
+				const result = await service.getUserGroups(pseudonym.pseudonym, clientId);
+
+				expect(result).toEqual({
+					data: {
+						groups: [
+							{
+								group_id: archivedCourse.id,
+								name: archivedCourse.name,
+								student_count: archivedCourse.students.count(),
+							},
+						],
+					},
+				});
+			});
+		});
+
 		describe('when the tool is active in a column board of a course', () => {
 			const setup = (
 				membership: 'student' | 'teacher' | 'substitutionTeacher' | 'none' = 'student',
