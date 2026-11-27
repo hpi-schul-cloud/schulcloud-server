@@ -15,7 +15,7 @@ import { HttpStatus } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { boardImportJobFactory } from '../../testing';
+import { boardImportJobFactory, intermediateBoardFactory } from '../../testing';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BoardImportTargetType } from '../type';
 import { BoardImportPlaceholderBoardService } from './board-import-placeholder-board.service';
@@ -63,7 +63,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 		return { token, session };
 	};
 
-	const modelJson = '{"data":{"board":{"id":"1"}}}';
+	const modelJson = JSON.stringify(intermediateBoardFactory.build());
 
 	const mockSourceCard = () => {
 		const sourceCardId = new ObjectId().toHexString();

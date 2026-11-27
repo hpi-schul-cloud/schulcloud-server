@@ -57,10 +57,8 @@ export interface IntermediateSection {
 	cards: IntermediateCard[];
 }
 
-// The content of a source board, without the limits and rules of the target board. The order of the sections,
-// cards and elements is the order of the source.
+// See ADR 0015. The order of the sections and cards is the order of the source.
 export interface IntermediateBoard {
-	// The source states the version that it builds. Another version of the model is another type.
 	version: 1;
 	source: BoardImportSource;
 	title: string;

@@ -19,10 +19,11 @@ export class BoardImportRunnerService {
 	public async run(job: BoardImportJob, signal: AbortSignal): Promise<void> {
 		// The source is read first, so a job with a source that is not readable creates no board.
 		const board = await this.readSource(job, signal);
+		const modelJson = JSON.stringify(board);
 		const session = new BoardImportUserSession(job, signal, this.boardImportTokenService);
 
 		try {
-			await this.boardImportPlaceholderBoardService.write(job, session, JSON.stringify(board));
+			await this.boardImportPlaceholderBoardService.write(job, session, modelJson);
 		} finally {
 			await session.close();
 		}

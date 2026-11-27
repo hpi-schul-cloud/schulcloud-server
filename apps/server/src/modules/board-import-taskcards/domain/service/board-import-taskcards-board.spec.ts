@@ -4,6 +4,7 @@ import {
 	type BoardImportSource,
 	type IntermediateElement,
 	IntermediateElementType,
+	type IntermediateSection,
 } from '@modules/board-import';
 import { BOARD_IMPORT_TASKCARDS_SOURCE_TYPE } from '../../board-import-taskcards.constants';
 import { readTaskcardsFixture } from '../../testing';
@@ -319,19 +320,110 @@ describe('mapTaskcardsBoard', () => {
 		});
 	});
 
-	describe('when the board has no lists and no cards', () => {
-		it('should return a board without sections', () => {
-			const result = mapTaskcardsBoard({ type: 0 }, source);
+	describe('when lists have no id or the same id', () => {
+		const setup = () => {
+			const board = {
+				type: 0,
+				lists: [
+					{ name: 'No id', position: 0 },
+					{ id: 'list', name: 'First', position: 1 },
+					{ id: 'list', name: 'Second', position: 2 },
+				],
+				cards: [
+					{ title: 'No position', kanbanPosition: null },
+					{ title: 'In list', kanbanPosition: { listId: 'list', position: 0 } },
+				],
+			};
+			const expectedSections = [
+				{ title: 'No id', color: undefined, cards: [] },
+				{ title: 'First', color: undefined, cards: [{ title: 'In list', color: undefined, elements: [] }] },
+				{ title: 'Second', color: undefined, cards: [] },
+				{
+					title: TASKCARDS_SECTION_TITLE_FOR_CARDS_WITHOUT_LIST,
+					cards: [{ title: 'No position', color: undefined, elements: [] }],
+				},
+			];
 
-			expect(result.sections).toEqual([]);
+			return { board, expectedSections };
+		};
+
+		it('should put each card into only one section', () => {
+			const { board, expectedSections } = setup();
+
+			const result = mapTaskcardsBoard(board, source);
+
+			expect(result.sections).toEqual(expectedSections);
+		});
+	});
+
+	describe('when an attachment has a size that is not a whole number of bytes', () => {
+		const setup = () => {
+			const lengths = [' ', '-1', '1.5', '0x10', '1e3'];
+			const board = {
+				type: 0,
+				lists: [{ id: 'list', name: 'List', position: 0 }],
+				cards: [
+					{
+						title: 'Card',
+						attachments: lengths.map((length) => {
+							return { filename: 'a.pdf', length };
+						}),
+						kanbanPosition: { listId: 'list', position: 0 },
+					},
+				],
+			};
+			const expectedElements = lengths.map(() => {
+				return {
+					type: IntermediateElementType.FILE,
+					name: 'a.pdf',
+					url: undefined,
+					mimeType: undefined,
+					sizeInBytes: undefined,
+				};
+			});
+
+			return { board, expectedElements };
+		};
+
+		it('should return the files without a size', () => {
+			const { board, expectedElements } = setup();
+
+			const result = mapTaskcardsBoard(board, source);
+
+			expect(result.sections[0].cards[0].elements).toEqual(expectedElements);
+		});
+	});
+
+	describe('when the board has no lists and no cards', () => {
+		const setup = () => {
+			const board = { type: 0 };
+			const expectedSections: IntermediateSection[] = [];
+
+			return { board, expectedSections };
+		};
+
+		it('should return a board without sections', () => {
+			const { board, expectedSections } = setup();
+
+			const result = mapTaskcardsBoard(board, source);
+
+			expect(result.sections).toEqual(expectedSections);
 		});
 	});
 
 	describe.each([1, 2, 3, 4, null, undefined, '0'])('when the board has the type %p', (type) => {
+		const setup = () => {
+			const board = { type };
+
+			return { board };
+		};
+
 		it('should reject the job with the reason that the board type is not supported', () => {
+			const { board } = setup();
+
 			let error: unknown;
 			try {
-				mapTaskcardsBoard({ type }, source);
+				mapTaskcardsBoard(board, source);
 			} catch (thrownError: unknown) {
 				error = thrownError;
 			}

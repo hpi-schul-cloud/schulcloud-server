@@ -12,6 +12,7 @@ import { isJsonObject, type JsonObject } from './taskcards-json';
 
 const PINBOARD_TYPE = 0;
 const NO_VIDEO_CONFERENCE = 'None';
+const SIZE_PATTERN = /^\d+$/;
 export const TASKCARDS_SECTION_TITLE_FOR_CARDS_WITHOUT_LIST = 'Ohne Spalte';
 
 export const TASKCARDS_NOT_SUPPORTED_KIND_CONTACT = 'contact';
@@ -29,9 +30,9 @@ const byPosition = <T extends { position: number }>(a: T, b: T): number => a.pos
 
 // The source gives the size as text.
 const toSize = (value: unknown): number | undefined => {
-	const size = typeof value === 'string' && value !== '' ? Number(value) : NaN;
+	const size = typeof value === 'string' && SIZE_PATTERN.test(value) ? Number(value) : undefined;
 
-	return Number.isFinite(size) ? size : undefined;
+	return size;
 };
 
 const mapAttachment = (attachment: JsonObject): IntermediateElement => {
@@ -50,7 +51,7 @@ const mapElements = (card: JsonObject): IntermediateElement[] => {
 	const elements: IntermediateElement[] = [];
 	const videoConference = toText(card.videoConference);
 	const description = toText(card.description);
-	const link = toText(card.link);
+	const link = toText(card.link).trim();
 
 	if (videoConference !== '' && videoConference !== NO_VIDEO_CONFERENCE) {
 		elements.push({ type: IntermediateElementType.VIDEO_CONFERENCE });
@@ -58,7 +59,7 @@ const mapElements = (card: JsonObject): IntermediateElement[] => {
 	if (description.trim() !== '') {
 		elements.push({ type: IntermediateElementType.TEXT, html: description });
 	}
-	if (link.trim() !== '') {
+	if (link !== '') {
 		elements.push({ type: IntermediateElementType.LINK, url: link });
 	}
 	elements.push(...toObjects(card.attachments).map(mapAttachment));
@@ -93,20 +94,26 @@ const mapSections = (board: JsonObject): IntermediateSection[] => {
 		})
 		.sort(byPosition);
 
-	const listIds = new Set(lists.map(({ id }) => id));
 	const cardsByListId = new Map<string, IntermediateCard[]>();
+	for (const { id } of lists) {
+		if (id !== '') {
+			cardsByListId.set(id, []);
+		}
+	}
 	const cardsWithoutList: IntermediateCard[] = [];
 	for (const { listId, card } of cards) {
-		const cardsOfList = listIds.has(listId) ? (cardsByListId.get(listId) ?? []) : cardsWithoutList;
+		const cardsOfList = cardsByListId.get(listId) ?? cardsWithoutList;
 		cardsOfList.push(mapCard(card));
-		cardsByListId.set(listId, cardsOfList);
 	}
 
+	// The delete gives the cards of a list id that is used twice only to the first list.
 	const sections = lists.map(({ id, list }): IntermediateSection => {
+		const cardsOfList = cardsByListId.get(id) ?? [];
+		cardsByListId.delete(id);
 		const section: IntermediateSection = {
 			title: toText(list.name),
 			color: toOptionalText(list.color),
-			cards: cardsByListId.get(id) ?? [],
+			cards: cardsOfList,
 		};
 
 		return section;
@@ -118,8 +125,7 @@ const mapSections = (board: JsonObject): IntermediateSection[] => {
 	return sections;
 };
 
-// Maps the board of the board query to the intermediate model. It applies no limit and no rule of the target board.
-// Rejects with BoardImportJobRejectedError when the board is not a pinboard.
+// Rejects with BoardImportJobRejectedError when the board is not a pinboard. ADR 0015 says what a source maps.
 export const mapTaskcardsBoard = (board: JsonObject, source: BoardImportSource): IntermediateBoard => {
 	if (board.type !== PINBOARD_TYPE) {
 		throw new BoardImportJobRejectedError(BoardImportJobLogReason.SOURCE_BOARD_TYPE_NOT_SUPPORTED);
