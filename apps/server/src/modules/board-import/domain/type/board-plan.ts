@@ -3,6 +3,7 @@ export const BOARD_PLAN_VERSION = 1;
 
 export enum PlannedElementType {
 	TEXT = 'text',
+	LINK = 'link',
 }
 
 interface PlannedTextElement {
@@ -11,7 +12,13 @@ interface PlannedTextElement {
 	html: string;
 }
 
-export type PlannedElement = PlannedTextElement;
+interface PlannedLinkElement {
+	type: PlannedElementType.LINK;
+	// The board API accepts each URL that is parseable. The planner permits only the safe protocols.
+	url: string;
+}
+
+export type PlannedElement = PlannedTextElement | PlannedLinkElement;
 
 export interface PlannedCard {
 	title: string;

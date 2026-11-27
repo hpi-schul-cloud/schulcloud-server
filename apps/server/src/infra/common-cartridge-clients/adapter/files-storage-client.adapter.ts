@@ -11,7 +11,7 @@ import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	InternalFilesStorageClientConfig,
 } from '../common-cartridge-clients.configs';
-import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from '../fs-generated';
+import { FileApi, FileRecordParentType, FileRecordResponse, FileUrlParams, StorageLocation } from '../fs-generated';
 import { GenericFileStorageLoggable } from '../loggables';
 import { AdapterUtils } from './adapter.utils';
 
@@ -188,6 +188,26 @@ export class FilesStorageClientAdapter {
 
 			return null;
 		}
+	}
+
+	public async uploadFromUrl(
+		jwt: string,
+		storageLocationId: string,
+		storageLocation: StorageLocation,
+		parentId: string,
+		parentType: FileRecordParentType,
+		fileUrlParams: FileUrlParams
+	): Promise<FileRecordResponse> {
+		const response = await this.fileApi.uploadFromUrl(
+			storageLocationId,
+			storageLocation,
+			parentId,
+			parentType,
+			fileUrlParams,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
+		);
+
+		return response.data;
 	}
 
 	public async deleteFile(jwt: string, fileRecordId: string): Promise<void> {

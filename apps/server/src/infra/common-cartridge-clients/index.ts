@@ -14,7 +14,14 @@ export {
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
 } from './adapter';
-export { FileRecordParentType, FileRecordResponse, FileRecordScanStatus, StorageLocation } from './fs-generated/models';
+export {
+	FileRecordParentType,
+	FileRecordResponse,
+	FileRecordScanStatus,
+	FileUrlParams,
+	PreviewStatus,
+	StorageLocation,
+} from './fs-generated/models';
 export {
 	BoardColumnBoardResponse,
 	BoardElementResponseType,

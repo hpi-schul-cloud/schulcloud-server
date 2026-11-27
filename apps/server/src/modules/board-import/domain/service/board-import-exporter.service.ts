@@ -10,8 +10,21 @@ import { type EntityId, InputFormat } from '@shared/domain/types';
 import { isAxiosError } from 'axios';
 import { type BoardImportJob } from '../do';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
-import { type BoardImportCheckpoint, type BoardPlan, type PlannedCard, type PlannedColumn } from '../type';
+import {
+	type BoardImportCheckpoint,
+	type BoardPlan,
+	type PlannedCard,
+	type PlannedColumn,
+	type PlannedElement,
+	PlannedElementType,
+} from '../type';
+import { BoardImportLinkPreviewService } from './board-import-link-preview.service';
 import { type BoardImportUserSession } from './board-import-user-session';
+
+const CONTENT_ELEMENT_TYPES: Record<PlannedElementType, ContentElementType> = {
+	[PlannedElementType.TEXT]: ContentElementType.RICH_TEXT,
+	[PlannedElementType.LINK]: ContentElementType.LINK,
+};
 
 // Creates the board of a board plan through the API of the board, and continues it from the checkpoints of the job.
 // See ADR 0015 and ADR 0016.
@@ -21,7 +34,8 @@ export class BoardImportExporterService {
 		@Inject(BOARD_IMPORT_JOB_REPO) private readonly boardImportJobRepo: BoardImportJobRepo,
 		private readonly boardsClient: BoardsClientAdapter,
 		private readonly columnClient: ColumnClientAdapter,
-		private readonly cardClient: CardClientAdapter
+		private readonly cardClient: CardClientAdapter,
+		private readonly linkPreviewService: BoardImportLinkPreviewService
 	) {}
 
 	public async export(job: BoardImportJob, session: BoardImportUserSession, plan: BoardPlan): Promise<void> {
@@ -56,8 +70,7 @@ export class BoardImportExporterService {
 		return column.id;
 	}
 
-	// The card is created with its empty elements, so each element needs only one more request.
-	// All elements of the plan are text elements.
+	// The card is created with its empty elements, so each element needs no request to create it.
 	private async createCard(
 		job: BoardImportJob,
 		columnIndex: number,
@@ -65,7 +78,7 @@ export class BoardImportExporterService {
 		plannedCard: PlannedCard,
 		session: BoardImportUserSession
 	): Promise<void> {
-		const requiredEmptyElements = plannedCard.elements.map(() => ContentElementType.RICH_TEXT);
+		const requiredEmptyElements = plannedCard.elements.map((element) => CONTENT_ELEMENT_TYPES[element.type]);
 		const card = await session.call((token) =>
 			this.columnClient.createCard(token, columnId, { requiredEmptyElements })
 		);
@@ -74,27 +87,42 @@ export class BoardImportExporterService {
 		}
 
 		for (const [index, plannedElement] of plannedCard.elements.entries()) {
-			const elementId = card.elements.at(index)?.id ?? (await this.createTextElement(card.id, session));
+			const elementId =
+				card.elements.at(index)?.id ?? (await this.createElement(card.id, requiredEmptyElements[index], session));
 
-			await session.call((token) =>
-				this.cardClient.updateCardElement(token, elementId, {
-					data: {
-						type: ContentElementType.RICH_TEXT,
-						content: { text: plannedElement.html, inputFormat: InputFormat.RICH_TEXT_CK5 },
-					},
-				})
-			);
+			await this.writeElement(elementId, plannedElement, session);
 		}
 
 		await this.boardImportJobRepo.addCardCheckpoint(job.id, job.attempts, columnIndex, card.id);
 	}
 
-	private async createTextElement(cardId: EntityId, session: BoardImportUserSession): Promise<EntityId> {
-		const element = await session.call((token) =>
-			this.cardClient.createCardElement(token, cardId, { type: ContentElementType.RICH_TEXT })
-		);
+	private async createElement(
+		cardId: EntityId,
+		type: ContentElementType,
+		session: BoardImportUserSession
+	): Promise<EntityId> {
+		const element = await session.call((token) => this.cardClient.createCardElement(token, cardId, { type }));
 
 		return element.id;
+	}
+
+	private async writeElement(
+		elementId: EntityId,
+		plannedElement: PlannedElement,
+		session: BoardImportUserSession
+	): Promise<void> {
+		const data =
+			plannedElement.type === PlannedElementType.LINK
+				? {
+						type: ContentElementType.LINK,
+						content: await this.linkPreviewService.buildLinkContent(elementId, plannedElement.url, session),
+					}
+				: {
+						type: ContentElementType.RICH_TEXT,
+						content: { text: plannedElement.html, inputFormat: InputFormat.RICH_TEXT_CK5 },
+					};
+
+		await session.call((token) => this.cardClient.updateCardElement(token, elementId, { data }));
 	}
 
 	private async findOrCreateBoard(

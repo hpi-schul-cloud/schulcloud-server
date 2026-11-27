@@ -6,6 +6,7 @@ import { BOARD_PLAN_VERSION, BoardImportJobLogReason, type BoardImportNote, Boar
 import { BoardImportExporterService } from './board-import-exporter.service';
 import { BoardImportPlannerService } from './board-import-planner.service';
 import { BoardImportRunnerService } from './board-import-runner.service';
+import { BoardImportServerClientService } from './board-import-server-client.service';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo, type BoardImportSourceReader } from '../interface';
 import { BoardImportSourceReaderRegistryService } from './board-import-source-reader-registry.service';
 import { BoardImportTokenService } from './board-import-token.service';
@@ -18,6 +19,7 @@ describe(BoardImportRunnerService.name, () => {
 	let plannerService: DeepMocked<BoardImportPlannerService>;
 	let exporterService: DeepMocked<BoardImportExporterService>;
 	let readerRegistry: DeepMocked<BoardImportSourceReaderRegistryService>;
+	let serverClient: DeepMocked<BoardImportServerClientService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,6 +29,7 @@ describe(BoardImportRunnerService.name, () => {
 				{ provide: BOARD_IMPORT_JOB_REPO, useValue: createMock<BoardImportJobRepo>() },
 				{ provide: BoardImportPlannerService, useValue: createMock<BoardImportPlannerService>() },
 				{ provide: BoardImportExporterService, useValue: createMock<BoardImportExporterService>() },
+				{ provide: BoardImportServerClientService, useValue: createMock<BoardImportServerClientService>() },
 				{
 					provide: BoardImportSourceReaderRegistryService,
 					useValue: createMock<BoardImportSourceReaderRegistryService>(),
@@ -40,6 +43,7 @@ describe(BoardImportRunnerService.name, () => {
 		plannerService = module.get(BoardImportPlannerService);
 		exporterService = module.get(BoardImportExporterService);
 		readerRegistry = module.get(BoardImportSourceReaderRegistryService);
+		serverClient = module.get(BoardImportServerClientService);
 	});
 
 	afterAll(async () => {
@@ -61,24 +65,26 @@ describe(BoardImportRunnerService.name, () => {
 			const notes: BoardImportNote[] = [{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT }];
 
 			const reader = createMock<BoardImportSourceReader>();
+			const features = { linkElementEnabled: false };
 
 			tokenService.createToken.mockResolvedValueOnce(token);
+			serverClient.getInstanceFeatures.mockResolvedValueOnce(features);
 			readerRegistry.findByType.mockReturnValueOnce(reader);
 			reader.readBoard.mockResolvedValueOnce(board);
 			plannerService.plan.mockReturnValueOnce({ plan, notes });
 
-			return { job, signal, token, board, plan, notes, reader };
+			return { job, signal, token, board, plan, notes, reader, features };
 		};
 
 		describe('when the board is created', () => {
 			const setup = () => {
-				const { job, signal, token, board, plan, notes, reader } = setupRun();
+				const data = setupRun();
 
 				exporterService.export.mockImplementationOnce(async (_job, session) => {
 					await session.call(() => Promise.resolve());
 				});
 
-				return { job, signal, token, board, plan, notes, reader };
+				return data;
 			};
 
 			it('should create the board of the plan with a token for the job', async () => {
@@ -91,13 +97,13 @@ describe(BoardImportRunnerService.name, () => {
 			});
 
 			it('should read the source and plan the board before it creates the board', async () => {
-				const { job, signal, board, reader } = setup();
+				const { job, signal, board, reader, features } = setup();
 
 				await service.run(job, signal);
 
 				expect(readerRegistry.findByType).toHaveBeenCalledWith(job.source.type);
 				expect(reader.readBoard).toHaveBeenCalledWith(job, signal);
-				expect(plannerService.plan).toHaveBeenCalledWith(board);
+				expect(plannerService.plan).toHaveBeenCalledWith(board, features);
 				expect(reader.readBoard.mock.invocationCallOrder[0]).toBeLessThan(
 					exporterService.export.mock.invocationCallOrder[0]
 				);
@@ -248,6 +254,29 @@ describe(BoardImportRunnerService.name, () => {
 
 				await expect(service.run(job, signal)).rejects.toBe(error);
 
+				expect(exporterService.export).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the features of the instance cannot be read', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+				const { signal } = new AbortController();
+				const error = new Error('config not available');
+
+				serverClient.getInstanceFeatures.mockRejectedValueOnce(error);
+
+				return { job, signal, error };
+			};
+
+			it('should pass the error, store no plan and create no board', async () => {
+				const { job, signal, error } = setup();
+
+				await expect(service.run(job, signal)).rejects.toBe(error);
+
+				expect(readerRegistry.findByType).not.toHaveBeenCalled();
+				expect(plannerService.plan).not.toHaveBeenCalled();
+				expect(repo.setPlan).not.toHaveBeenCalled();
 				expect(exporterService.export).not.toHaveBeenCalled();
 			});
 		});

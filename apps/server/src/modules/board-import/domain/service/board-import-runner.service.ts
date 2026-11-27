@@ -5,6 +5,7 @@ import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { BOARD_PLAN_VERSION, BoardImportJobLogReason, type BoardPlan, type IntermediateBoard } from '../type';
 import { BoardImportExporterService } from './board-import-exporter.service';
 import { BoardImportPlannerService } from './board-import-planner.service';
+import { BoardImportServerClientService } from './board-import-server-client.service';
 import { BoardImportSourceReaderRegistryService } from './board-import-source-reader-registry.service';
 import { BoardImportTokenService } from './board-import-token.service';
 import { BoardImportUserSession } from './board-import-user-session';
@@ -16,6 +17,7 @@ export class BoardImportRunnerService {
 		private readonly boardImportTokenService: BoardImportTokenService,
 		private readonly boardImportPlannerService: BoardImportPlannerService,
 		private readonly boardImportExporterService: BoardImportExporterService,
+		private readonly boardImportServerClientService: BoardImportServerClientService,
 		private readonly boardImportSourceReaderRegistryService: BoardImportSourceReaderRegistryService
 	) {}
 
@@ -39,8 +41,9 @@ export class BoardImportRunnerService {
 	// The source is read before the board is created, so a job with a source that is not readable creates no board.
 	// The plan is stored, so a later attempt continues with the same plan and does not read the source again.
 	private async createPlan(job: BoardImportJob, signal: AbortSignal): Promise<BoardPlan> {
+		const features = await this.boardImportServerClientService.getInstanceFeatures();
 		const board = await this.readSource(job, signal);
-		const { plan, notes } = this.boardImportPlannerService.plan(board);
+		const { plan, notes } = this.boardImportPlannerService.plan(board, features);
 		await this.boardImportJobRepo.setPlan(job.id, job.attempts, plan, notes);
 
 		return plan;
