@@ -15,6 +15,7 @@ import {
 	BoardImportServerApiConfig,
 } from './board-import.config';
 import { BOARD_IMPORT_JOB_REPO } from './domain';
+import { BoardImportLinkPreviewService } from './domain/service/board-import-link-preview.service';
 import { BoardImportJobProcessService } from './domain/service/board-import-job-process.service';
 import { BoardImportExporterService } from './domain/service/board-import-exporter.service';
 import { BoardImportPlannerService } from './domain/service/board-import-planner.service';
@@ -43,6 +44,7 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		BoardImportTokenService,
 		BoardImportPlannerService,
 		BoardImportExporterService,
+		BoardImportLinkPreviewService,
 		BoardImportJobConsumer,
 	],
 })

@@ -8,6 +8,9 @@ import {
 	ColumnClientAdapter,
 	type ColumnResponse,
 	ContentElementType,
+	FilesStorageClientAdapter,
+	MetaDataEntityType,
+	MetaTagsClientAdapter,
 } from '@infra/common-cartridge-clients';
 import { ConfigurationModule } from '@infra/configuration';
 import { RuntimeConfigService } from '@infra/runtime-config';
@@ -832,6 +835,7 @@ describe('Board Import Worker (import as the user)', () => {
 	let columnClient: DeepMocked<ColumnClientAdapter>;
 	let cardClient: DeepMocked<CardClientAdapter>;
 	let sourceHttpClient: DeepMocked<BoardImportSourceHttpClientService>;
+	let metaTagsClient: DeepMocked<MetaTagsClientAdapter>;
 
 	const { link, type: sourceType } = taskcardsSource;
 	const mockSource = (boardFixture: string): void => {
@@ -854,6 +858,10 @@ describe('Board Import Worker (import as the user)', () => {
 			.useValue(createMock<CardClientAdapter>())
 			.overrideProvider(BoardImportSourceHttpClientService)
 			.useValue(createMock<BoardImportSourceHttpClientService>())
+			.overrideProvider(MetaTagsClientAdapter)
+			.useValue(createMock<MetaTagsClientAdapter>())
+			.overrideProvider(FilesStorageClientAdapter)
+			.useValue(createMock<FilesStorageClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -864,6 +872,7 @@ describe('Board Import Worker (import as the user)', () => {
 		columnClient = module.get(ColumnClientAdapter);
 		cardClient = module.get(CardClientAdapter);
 		sourceHttpClient = module.get(BoardImportSourceHttpClientService);
+		metaTagsClient = module.get(MetaTagsClientAdapter);
 	});
 
 	afterEach(() => {
@@ -895,17 +904,22 @@ describe('Board Import Worker (import as the user)', () => {
 				Promise.resolve(createMock<ColumnResponse>({ id: new ObjectId().toHexString(), title: '', cards: [] }))
 			);
 			columnClient.createCard.mockImplementation((_token, _columnId, params) => {
-				const elements = (params.requiredEmptyElements ?? []).map(() =>
-					createMock<CardResponse['elements'][number]>({
-						id: new ObjectId().toHexString(),
-						type: ContentElementType.RICH_TEXT,
-					})
+				const elements = (params.requiredEmptyElements ?? []).map((type) =>
+					createMock<CardResponse['elements'][number]>({ id: new ObjectId().toHexString(), type })
 				);
 				const card = createMock<CardResponse>({ id: new ObjectId().toHexString(), title: undefined, elements });
 
 				return Promise.resolve(card);
 			});
 			mockSource('board-pinboard.json');
+			const linkTitle = 'FWU';
+			const linkUrl = 'https://fwu.de/';
+			metaTagsClient.getMetaTags.mockResolvedValueOnce({
+				url: linkUrl,
+				title: linkTitle,
+				description: '',
+				type: MetaDataEntityType.EXTERNAL,
+			});
 
 			const expectedBoardTitle = 'Test Pinboard';
 			const expectedColumnTitles = ['Green', 'Yellow', 'Red', 'No color'];
@@ -913,8 +927,9 @@ describe('Board Import Worker (import as the user)', () => {
 			const expectedLastText = 'Picture + colors changed';
 			const expectedNoteTypes = [
 				BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT,
-				...Array<BoardImportNoteType>(5).fill(BoardImportNoteType.ELEMENT_LEFT_OUT),
+				...Array<BoardImportNoteType>(4).fill(BoardImportNoteType.ELEMENT_LEFT_OUT),
 			];
+			const expectedLink = { url: linkUrl, title: linkTitle };
 
 			return {
 				id: entity.id,
@@ -925,6 +940,7 @@ describe('Board Import Worker (import as the user)', () => {
 				expectedCardTitles,
 				expectedLastText,
 				expectedNoteTypes,
+				expectedLink,
 			};
 		};
 
@@ -952,12 +968,27 @@ describe('Board Import Worker (import as the user)', () => {
 			);
 			expect(columnClient.updateBoardColumnTitle.mock.calls.map((call) => call[2].title)).toEqual(expectedColumnTitles);
 			expect(cardClient.updateCardTitle.mock.calls.map((call) => call[2].title)).toEqual(expectedCardTitles);
-			expect(cardClient.updateCardElement).toHaveBeenCalledTimes(2);
+			expect(cardClient.updateCardElement).toHaveBeenCalledTimes(3);
 			expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(
 				expect.anything(),
 				expect.anything(),
 				expect.objectContaining({
 					data: expect.objectContaining({ content: expect.objectContaining({ text: expectedLastText }) }),
+				})
+			);
+		});
+
+		it('should create the link of a card as a link element with its preview', async () => {
+			const { id, expectedLink } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
+			expect(cardClient.updateCardElement).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.anything(),
+				expect.objectContaining({
+					data: { type: ContentElementType.LINK, content: expect.objectContaining(expectedLink) },
 				})
 			);
 		});

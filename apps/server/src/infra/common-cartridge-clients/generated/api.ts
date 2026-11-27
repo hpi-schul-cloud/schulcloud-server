@@ -21,4 +21,5 @@ export * from './api/board-element-api';
 export * from './api/course-rooms-api';
 export * from './api/courses-api';
 export * from './api/lesson-api';
+export * from './api/meta-tag-extractor-api';
 

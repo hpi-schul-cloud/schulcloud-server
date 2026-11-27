@@ -516,6 +516,47 @@ describe(FilesStorageClientAdapter.name, () => {
 		});
 	});
 
+	describe('uploadFromUrl', () => {
+		describe('when the file storage loads the file', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = StorageLocation.SCHOOL;
+				const parentId = faker.string.uuid();
+				const parentType = FileRecordParentType.BOARDNODES;
+				const fileUrlParams = { url: faker.internet.url(), fileName: faker.system.fileName() };
+
+				const fileRecord = fileRecordResponseFactory.build();
+				fileApiMock.uploadFromUrl.mockResolvedValueOnce(axiosResponseFactory.build({ data: fileRecord }));
+
+				return { jwt, storageLocationId, storageLocation, parentId, parentType, fileUrlParams, fileRecord };
+			};
+
+			it('should delegate to FileApi', async () => {
+				const { jwt, storageLocationId, storageLocation, parentId, parentType, fileUrlParams, fileRecord } = setup();
+
+				const result = await filesStorageClientAdapter.uploadFromUrl(
+					jwt,
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					fileUrlParams
+				);
+
+				expect(fileApiMock.uploadFromUrl).toHaveBeenCalledWith(
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					fileUrlParams,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
+				expect(result).toStrictEqual(fileRecord);
+			});
+		});
+	});
+
 	describe('deleteFile', () => {
 		describe('when deleting a file', () => {
 			const setup = () => {

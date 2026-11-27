@@ -5,6 +5,7 @@ import {
 	BoardImportNoteType,
 	type BoardPlan,
 	type IntermediateCard,
+	type IntermediateElement,
 	IntermediateElementType,
 	PlannedElementType,
 } from '../type';
@@ -244,7 +245,7 @@ describe(BoardImportPlannerService.name, () => {
 			});
 		});
 
-		describe('when cards have elements that are not text', () => {
+		describe('when cards have elements that the board cannot get', () => {
 			const setup = () => {
 				const html = '<p>Text</p>';
 				const board = intermediateBoardFactory.build({
@@ -257,12 +258,11 @@ describe(BoardImportPlannerService.name, () => {
 									elements: [
 										{ type: IntermediateElementType.VIDEO_CONFERENCE },
 										{ type: IntermediateElementType.TEXT, html },
-										{ type: IntermediateElementType.LINK, url: 'https://example.com' },
 										{ type: IntermediateElementType.FILE, name: 'file.pdf' },
 										{ type: IntermediateElementType.NOT_SUPPORTED, kind: 'contact' },
 									],
 								},
-								{ title: '', elements: [{ type: IntermediateElementType.LINK, url: 'https://example.com' }] },
+								{ title: '', elements: [{ type: IntermediateElementType.FILE, name: 'file.pdf' }] },
 							],
 						},
 					],
@@ -274,16 +274,15 @@ describe(BoardImportPlannerService.name, () => {
 				const type = BoardImportNoteType.ELEMENT_LEFT_OUT;
 				const expectedNotes: BoardImportNote[] = [
 					{ type, ...place, elementType: IntermediateElementType.VIDEO_CONFERENCE },
-					{ type, ...place, elementType: IntermediateElementType.LINK },
 					{ type, ...place, elementType: IntermediateElementType.FILE },
 					{ type, ...place, elementType: IntermediateElementType.NOT_SUPPORTED, elementKind: 'contact' },
-					{ type, sectionTitle: 'Section', cardTitle: '', elementType: IntermediateElementType.LINK },
+					{ type, sectionTitle: 'Section', cardTitle: '', elementType: IntermediateElementType.FILE },
 				];
 
 				return { board, expectedColumns, expectedNotes };
 			};
 
-			it('should plan only the text elements and leave out a card that has nothing left', () => {
+			it('should plan only the other elements and leave out a card that has nothing left', () => {
 				const { board, expectedColumns } = setup();
 
 				const result = service.plan(board);
@@ -297,6 +296,97 @@ describe(BoardImportPlannerService.name, () => {
 				const result = service.plan(board);
 
 				expect(result.notes).toEqual(expectedNotes);
+			});
+		});
+
+		describe('when cards have links', () => {
+			const setupBoard = (urls: string[]) => {
+				const html = '<p>Text</p>';
+				const linkElements: IntermediateElement[] = urls.map((url) => {
+					return { type: IntermediateElementType.LINK, url };
+				});
+				const board = intermediateBoardFactory.build({
+					sections: [
+						{
+							title: 'Section',
+							cards: [{ title: 'Card', elements: [{ type: IntermediateElementType.TEXT, html }, ...linkElements] }],
+						},
+					],
+				});
+				const textElement = { type: PlannedElementType.TEXT, html };
+				const place = { sectionTitle: 'Section', cardTitle: 'Card' };
+
+				return { board, textElement, place };
+			};
+
+			describe('when the links have a permitted protocol', () => {
+				const setup = () => {
+					const { board, textElement } = setupBoard([
+						'https://example.com/page?a=1&b=2',
+						'http://example.com',
+						'mailto:teacher@example.com',
+						' www.example.com/page ',
+						'example.com/redirect?to=https://example.org',
+					]);
+					const expectedElements = [
+						textElement,
+						{ type: PlannedElementType.LINK, url: 'https://example.com/page?a=1&b=2' },
+						{ type: PlannedElementType.LINK, url: 'http://example.com/' },
+						{ type: PlannedElementType.LINK, url: 'mailto:teacher@example.com' },
+						{ type: PlannedElementType.LINK, url: 'https://www.example.com/page' },
+						{ type: PlannedElementType.LINK, url: 'https://example.com/redirect?to=https://example.org' },
+					];
+
+					return { board, expectedElements };
+				};
+
+				it('should plan a link element at the position of the source', () => {
+					const { board, expectedElements } = setup();
+
+					const result = service.plan(board);
+
+					expect(result.plan.columns[0].cards[0].elements).toEqual(expectedElements);
+				});
+
+				it('should write no notes', () => {
+					const { board } = setup();
+
+					const result = service.plan(board);
+
+					expect(result.notes).toEqual([]);
+				});
+			});
+
+			describe('when the links have another protocol or are not parseable', () => {
+				const setup = () => {
+					const urls = ['javascript:alert(1)', 'ftp://example.com/file', 'data:text/html,page', 'https://', ''];
+					const { board, textElement, place } = setupBoard(urls);
+					const expectedNotes: BoardImportNote[] = urls.map(() => {
+						return {
+							type: BoardImportNoteType.ELEMENT_LEFT_OUT,
+							...place,
+							elementType: IntermediateElementType.LINK,
+						};
+					});
+
+					return { board, textElement, expectedNotes };
+				};
+
+				it('should leave out the links', () => {
+					const { board, textElement } = setup();
+
+					const result = service.plan(board);
+
+					expect(result.plan.columns[0].cards[0].elements).toEqual([textElement]);
+				});
+
+				it('should write a note with the place for each link', () => {
+					const { board, expectedNotes } = setup();
+
+					const result = service.plan(board);
+
+					expect(result.notes).toEqual(expectedNotes);
+				});
 			});
 		});
 

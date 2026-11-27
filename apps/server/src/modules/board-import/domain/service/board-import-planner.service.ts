@@ -21,6 +21,8 @@ export const BOARD_TITLE_MAX_LENGTH = 100;
 export const BOARD_TITLE_FALLBACK = 'Import';
 
 const LINE_BREAKS = /\s*[\r\n]+\s*/g;
+const LINK_PROTOCOLS = new Set(['http:', 'https:', 'mailto:']);
+const LEADING_PROTOCOL = /^([a-z][a-z\d+.-]*:\/\/|mailto:)/i;
 
 export interface BoardImportPlanResult {
 	plan: BoardPlan;
@@ -89,6 +91,12 @@ export class BoardImportPlannerService {
 			return [{ type: PlannedElementType.TEXT, html: element.html }];
 		}
 
+		// The switch of the instance for the link element is not checked. The client shows no link element when it is off.
+		const url = element.type === IntermediateElementType.LINK ? this.toLinkUrl(element.url) : undefined;
+		if (url !== undefined) {
+			return [{ type: PlannedElementType.LINK, url }];
+		}
+
 		const note: BoardImportNote = { type: BoardImportNoteType.ELEMENT_LEFT_OUT, ...place, elementType: element.type };
 		if (element.type === IntermediateElementType.NOT_SUPPORTED) {
 			note.elementKind = element.kind;
@@ -96,6 +104,24 @@ export class BoardImportPlannerService {
 		notes.push(note);
 
 		return [];
+	}
+
+	// Gives the normalized URL, or undefined when the board must not get the link.
+	// An address without a protocol gets https, as in the link element of the client.
+	private toLinkUrl(sourceUrl: string): string | undefined {
+		const trimmedUrl = sourceUrl.trim();
+		const hasProtocol = LEADING_PROTOCOL.test(trimmedUrl);
+		const completeUrl = hasProtocol ? trimmedUrl : `https://${trimmedUrl}`;
+		if (!URL.canParse(completeUrl)) {
+			return undefined;
+		}
+
+		const url = new URL(completeUrl);
+		if (!LINK_PROTOCOLS.has(url.protocol)) {
+			return undefined;
+		}
+
+		return url.toString();
 	}
 
 	private toSingleLine(text: string): string {

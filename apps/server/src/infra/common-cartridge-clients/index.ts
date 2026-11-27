@@ -13,8 +13,16 @@ export {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
+	MetaTagsClientAdapter,
 } from './adapter';
-export { FileRecordParentType, FileRecordResponse, FileRecordScanStatus, StorageLocation } from './fs-generated/models';
+export {
+	FileRecordParentType,
+	FileRecordResponse,
+	FileRecordScanStatus,
+	FileUrlParams,
+	PreviewStatus,
+	StorageLocation,
+} from './fs-generated/models';
 export {
 	BoardColumnBoardResponse,
 	BoardElementResponseType,
@@ -49,6 +57,8 @@ export {
 	LinkElementContent,
 	LinkElementContentBody,
 	LinkElementResponse,
+	MetaDataEntityType,
+	MetaTagExtractorResponse,
 	RichTextElementContent,
 	RichTextElementContentBody,
 	RichTextElementResponse,
