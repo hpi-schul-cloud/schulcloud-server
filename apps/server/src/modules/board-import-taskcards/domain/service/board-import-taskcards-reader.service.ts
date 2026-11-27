@@ -30,6 +30,9 @@ const JSON_HEADERS = { 'Content-Type': 'application/json' };
 const BOARD_ERROR_CODE = 'BOARD_ERROR';
 // The source rejects the query itself. A new attempt sends the same query.
 const REQUEST_ERROR_CODES = new Set(['GRAPHQL_PARSE_FAILED', 'GRAPHQL_VALIDATION_FAILED', 'BAD_USER_INPUT']);
+// The source builds a download link for each attachment. When it fails for one attachment, the board is complete
+// without that link.
+const ATTACHMENT_LINK_FIELDS = new Set(['downloadLink', 'previewLink']);
 const STATUS_OK: number = HttpStatus.OK;
 const FIRST_REDIRECT_STATUS: number = HttpStatus.AMBIGUOUS;
 // The source answers with a conflict when the visitor has the access already.
@@ -107,6 +110,10 @@ export class BoardImportTaskcardsReaderService implements BoardImportSourceReade
 
 		const board = this.findBoard(answer);
 		if (board) {
+			if (!this.hasOnlyAttachmentLinkErrors(answer)) {
+				throw this.temporaryError();
+			}
+
 			return board;
 		}
 
@@ -126,11 +133,35 @@ export class BoardImportTaskcardsReaderService implements BoardImportSourceReade
 		return boardOfNextAttempt;
 	}
 
-	// An error in a nested field gives the board and an error entry for that field.
+	// An error in a nested field gives the board, with null in that field, and an error entry for that field.
 	private findBoard(answer: JsonObject): JsonObject | undefined {
 		const board = isJsonObject(answer.data) && isJsonObject(answer.data.board) ? answer.data.board : undefined;
 
 		return board;
+	}
+
+	private hasOnlyAttachmentLinkErrors(answer: JsonObject): boolean {
+		const errors: unknown[] = Array.isArray(answer.errors) ? answer.errors : [];
+		const hasOnlyAttachmentLinkErrors = errors.every(
+			(error) => isJsonObject(error) && Array.isArray(error.path) && this.isAttachmentLinkPath(error.path)
+		);
+
+		return hasOnlyAttachmentLinkErrors;
+	}
+
+	private isAttachmentLinkPath(path: unknown[]): boolean {
+		const [board, cards, cardIndex, attachments, attachmentIndex, field] = path;
+		const isAttachmentLinkPath =
+			path.length === 6 &&
+			board === 'board' &&
+			cards === 'cards' &&
+			typeof cardIndex === 'number' &&
+			attachments === 'attachments' &&
+			typeof attachmentIndex === 'number' &&
+			typeof field === 'string' &&
+			ATTACHMENT_LINK_FIELDS.has(field);
+
+		return isAttachmentLinkPath;
 	}
 
 	private getErrorCodes(answer: JsonObject): string[] {

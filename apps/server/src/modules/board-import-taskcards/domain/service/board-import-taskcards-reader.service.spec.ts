@@ -390,6 +390,52 @@ describe(BoardImportTaskcardsReaderService.name, () => {
 			});
 		});
 
+		describe.each([
+			['the lists', ['board', 'lists']],
+			['the board type', ['board', 'type']],
+			['a field of an attachment that is not a link', ['board', 'cards', 0, 'attachments', 0, 'filename']],
+		])('when the board query gives the board and an error of %s', (_, path) => {
+			const setup = () => {
+				const { job, signal } = setupJobWithoutToken();
+				const body = JSON.stringify({
+					errors: [{ message: 'Field failed', path }],
+					data: { board: { id: boardId, name: boardTitle, type: null, lists: null, cards: [] } },
+				});
+				mockResponses({ status: 200, body: visitorBody }, { status: 200, body });
+
+				return { job, signal };
+			};
+
+			it('should throw an error that permits a new attempt', async () => {
+				const { job, signal } = setup();
+
+				const error = await readBoardError(job, signal);
+
+				expectTemporaryError(error);
+			});
+		});
+
+		describe('when the board query gives the board and an error without a path', () => {
+			const setup = () => {
+				const { job, signal } = setupJobWithoutToken();
+				const body = JSON.stringify({
+					errors: [{ message: 'Internal error' }],
+					data: { board: { id: boardId, name: boardTitle, type: 0, cards: [] } },
+				});
+				mockResponses({ status: 200, body: visitorBody }, { status: 200, body });
+
+				return { job, signal };
+			};
+
+			it('should throw an error that permits a new attempt', async () => {
+				const { job, signal } = setup();
+
+				const error = await readBoardError(job, signal);
+
+				expectTemporaryError(error);
+			});
+		});
+
 		describe('when the board is not a pinboard', () => {
 			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();

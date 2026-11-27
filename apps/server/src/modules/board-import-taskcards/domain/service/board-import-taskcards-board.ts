@@ -13,6 +13,8 @@ import { isJsonObject, type JsonObject } from './taskcards-json';
 const PINBOARD_TYPE = 0;
 const NO_VIDEO_CONFERENCE = 'None';
 const SIZE_PATTERN = /^\d+$/;
+// TaskCards gives white to lists and cards that have no colour, so white is no colour.
+const DEFAULT_COLOR = '#ffffff';
 export const TASKCARDS_SECTION_TITLE_FOR_CARDS_WITHOUT_LIST = 'Ohne Spalte';
 
 export const TASKCARDS_NOT_SUPPORTED_KIND_CONTACT = 'contact';
@@ -21,6 +23,13 @@ const toText = (value: unknown): string => (typeof value === 'string' ? value : 
 
 const toOptionalText = (value: unknown): string | undefined =>
 	typeof value === 'string' && value !== '' ? value : undefined;
+
+const toColor = (value: unknown): string | undefined => {
+	const color = toOptionalText(value);
+	const colorOrNone = color?.toLowerCase() === DEFAULT_COLOR ? undefined : color;
+
+	return colorOrNone;
+};
 
 const toPosition = (value: unknown): number => (typeof value === 'number' ? value : 0);
 
@@ -63,6 +72,7 @@ const mapElements = (card: JsonObject): IntermediateElement[] => {
 		elements.push({ type: IntermediateElementType.LINK, url: link });
 	}
 	elements.push(...toObjects(card.attachments).map(mapAttachment));
+	// TaskCards names the contact function enableContract.
 	if (card.enableContract === true) {
 		elements.push({ type: IntermediateElementType.NOT_SUPPORTED, kind: TASKCARDS_NOT_SUPPORTED_KIND_CONTACT });
 	}
@@ -73,7 +83,7 @@ const mapElements = (card: JsonObject): IntermediateElement[] => {
 const mapCard = (card: JsonObject): IntermediateCard => {
 	const mappedCard: IntermediateCard = {
 		title: toText(card.title),
-		color: toOptionalText(card.color),
+		color: toColor(card.color),
 		elements: mapElements(card),
 	};
 
@@ -112,7 +122,7 @@ const mapSections = (board: JsonObject): IntermediateSection[] => {
 		cardsByListId.delete(id);
 		const section: IntermediateSection = {
 			title: toText(list.name),
-			color: toOptionalText(list.color),
+			color: toColor(list.color),
 			cards: cardsOfList,
 		};
 

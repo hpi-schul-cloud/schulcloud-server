@@ -84,7 +84,7 @@ describe('mapTaskcardsBoard', () => {
 					title: 'Red',
 					color: '#981b1b',
 					cards: [
-						{ title: 'Foobar', color: '#ffffff', elements: [] },
+						{ title: 'Foobar', color: undefined, elements: [] },
 						{
 							title: 'Collapsed ugly card',
 							color: '#dd3c3c',
@@ -97,16 +97,16 @@ describe('mapTaskcardsBoard', () => {
 				},
 				{
 					title: 'No color',
-					color: '#ffffff',
+					color: undefined,
 					cards: [
 						{
 							title: 'Video call',
-							color: '#ffffff',
+							color: undefined,
 							elements: [{ type: IntermediateElementType.VIDEO_CONFERENCE }],
 						},
 						{
 							title: 'PDF',
-							color: '#ffffff',
+							color: undefined,
 							elements: [file('FWU Katalog.pdf', 'application/pdf', 10288802, 'b49a53ac-2a25-46b7-8925-19c365f3dff8')],
 						},
 					],
@@ -285,6 +285,29 @@ describe('mapTaskcardsBoard', () => {
 
 			expect(result.sections.map((section) => section.title)).toEqual(expectedSectionTitles);
 			expect(result.sections[0].cards.map((card) => card.title)).toEqual(expectedCardTitles);
+		});
+	});
+
+	describe('when a list or a card is white', () => {
+		const setup = () => {
+			const board = {
+				type: 0,
+				lists: [{ id: 'list', name: 'List', position: 0, color: '#FFFFFF' }],
+				cards: [{ title: 'Card', color: '#ffffff', kanbanPosition: { listId: 'list', position: 0 } }],
+			};
+			const expectedSections = [
+				{ title: 'List', color: undefined, cards: [{ title: 'Card', color: undefined, elements: [] }] },
+			];
+
+			return { board, expectedSections };
+		};
+
+		it('should map white to no colour', () => {
+			const { board, expectedSections } = setup();
+
+			const result = mapTaskcardsBoard(board, source);
+
+			expect(result.sections).toEqual(expectedSections);
 		});
 	});
 
