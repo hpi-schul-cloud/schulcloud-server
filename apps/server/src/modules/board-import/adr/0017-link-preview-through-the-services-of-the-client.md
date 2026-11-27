@@ -12,9 +12,10 @@ The worker has one HTTP client for requests to the internet, and that client per
 
 Rejected alternatives:
 
-- The worker reads the page of the link and loads the image itself: the worker holds the JWT private key ([0011](0011-worker-creates-a-short-lived-jwt-for-the-user.md)) and would send requests to hosts that a source board names.
-- No preview: an imported link element would show less than a link element that a user creates.
-- The worker loads the image and sends it to the regular upload of the file storage: this has the same problem as the first alternative.
+- The worker makes the preview itself: it reads the page of the link, or it loads the image and sends it to the regular upload of the file storage. Two reasons speak against this:
+  - Each request of the worker to the internet goes to a host from the host list of the source ([0013](0013-checked-requests-to-the-sources.md)). A link of a card can name each host, so the worker would need a second client without a host list. Then only the check of the address ranges protects a process that has write access to the database and holds the JWT private key ([0011](0011-worker-creates-a-short-lived-jwt-for-the-user.md)).
+  - The server already has the code that reads a page and checks the image: only `https`, no IP address as host, a size limit, only raster images. A second implementation in the worker must follow each change of these checks, and an imported link could get another preview than a link that a user creates.
+- No preview: an imported link element would show only the address, and the user would have to create each link again to get the preview.
 
 ## Decision
 
