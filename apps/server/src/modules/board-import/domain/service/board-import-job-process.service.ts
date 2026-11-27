@@ -163,7 +163,12 @@ export class BoardImportJobProcessService {
 	}
 
 	private async fail(job: BoardImportJob, reason: BoardImportJobLogReason): Promise<void> {
-		const isClosed = await this.boardImportJobRepo.closeAttempt(job.id, job.attempts, BoardImportJobStatus.FAILED);
+		const isClosed = await this.boardImportJobRepo.closeAttempt(
+			job.id,
+			job.attempts,
+			BoardImportJobStatus.FAILED,
+			reason
+		);
 		if (!isClosed) {
 			this.logSkippedOutdatedAttempt(job);
 

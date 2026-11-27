@@ -3,6 +3,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import {
+	BoardImportJobLogReason,
 	BoardImportJobStatus,
 	BoardImportJobUnreadableError,
 	type BoardImportNote,
@@ -379,6 +380,26 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const entity = await em.findOneOrFail(BoardImportJobEntity, { id });
 				expect(result).toEqual(false);
 				expect(entity.status).toEqual(status);
+			});
+		});
+
+		describe('when the job fails with a reason', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({ status: BoardImportJobStatus.RUNNING, attempts: 1 });
+				await em.persist(entity).flush();
+				em.clear();
+				const reason = BoardImportJobLogReason.SOURCE_NOT_READABLE;
+
+				return { id: entity.id, attempts: entity.attempts, reason };
+			};
+
+			it('should store the reason', async () => {
+				const { id, attempts, reason } = await setup();
+
+				await repo.closeAttempt(id, attempts, BoardImportJobStatus.FAILED, reason);
+
+				const job = await repo.findById(id);
+				expect(job?.failureReason).toEqual(reason);
 			});
 		});
 	});

@@ -203,7 +203,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(repo.closeAttempt).toHaveBeenCalledWith(job.id, job.attempts, status);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(job.id, job.attempts, status, logEntry[1].reason);
 				expect(runner.run).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
@@ -233,7 +233,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(repo.closeAttempt).toHaveBeenCalledWith(job.id, job.attempts, status);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(job.id, job.attempts, status, logEntry[1].reason);
 				expect(runner.run).not.toHaveBeenCalled();
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
@@ -276,7 +276,12 @@ describe(BoardImportJobProcessService.name, () => {
 				await result;
 
 				expect(getSignal()?.aborted).toEqual(true);
-				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(
+					startedJob.id,
+					startedJob.attempts,
+					status,
+					BoardImportJobLogReason.MAX_DURATION
+				);
 			});
 		});
 
@@ -317,7 +322,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status, logEntry[1].reason);
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
 		});
@@ -351,7 +356,7 @@ describe(BoardImportJobProcessService.name, () => {
 
 				await service.process(job.id);
 
-				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status);
+				expect(repo.closeAttempt).toHaveBeenCalledWith(startedJob.id, startedJob.attempts, status, logEntry[1].reason);
 				expect(logger.warning).toHaveBeenCalledWith(...logEntry);
 			});
 		});

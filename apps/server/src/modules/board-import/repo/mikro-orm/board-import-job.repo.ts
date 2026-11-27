@@ -4,6 +4,7 @@ import { type EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import {
 	type BoardImportJob,
+	type BoardImportJobLogReason,
 	type BoardImportJobRepo,
 	type BoardImportNote,
 	BoardImportJobStatus,
@@ -71,12 +72,13 @@ export class BoardImportJobMikroOrmRepo
 	public async closeAttempt(
 		id: EntityId,
 		attempts: number,
-		status: BoardImportJobStatus.FINISHED | BoardImportJobStatus.FAILED
+		status: BoardImportJobStatus.FINISHED | BoardImportJobStatus.FAILED,
+		failureReason?: BoardImportJobLogReason
 	): Promise<boolean> {
 		const updatedCount = await this.em.nativeUpdate(
 			BoardImportJobEntity,
 			{ id, status: BoardImportJobStatus.RUNNING, attempts },
-			{ status, updatedAt: new Date() }
+			{ status, updatedAt: new Date(), ...(failureReason && { failureReason }) }
 		);
 		const isClosed = updatedCount > 0;
 

@@ -57,7 +57,7 @@ describe(BoardImportController.name, () => {
 
 				const response = await controller.startImport(bodyParams, currentUser);
 
-				expect(response).toEqual({ id: job.id, status: job.status });
+				expect(response).toEqual({ id: job.id, status: job.status, notes: [] });
 			});
 		});
 	});
@@ -85,7 +85,7 @@ describe(BoardImportController.name, () => {
 
 				const response = await controller.getJob({ jobId: job.id }, currentUser);
 
-				expect(response).toEqual({ id: job.id, status: job.status });
+				expect(response).toEqual({ id: job.id, status: job.status, notes: [] });
 			});
 		});
 	});
