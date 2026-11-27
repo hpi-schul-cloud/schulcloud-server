@@ -1,7 +1,7 @@
 import { type EntityData } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardImportJob } from '../../domain';
-import { type BoardImportJobEntity } from '../entity';
+import { BoardImportJob, type BoardImportNote } from '../../domain';
+import { type BoardImportJobEntity, BoardImportNoteEmbeddable } from '../entity';
 
 export class BoardImportJobMapper {
 	public static mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {
@@ -16,6 +16,7 @@ export class BoardImportJobMapper {
 			attempts: entity.attempts ?? 0,
 			startedAt: entity.startedAt,
 			boardId: entity.boardId?.toHexString(),
+			notes: (entity.notes ?? []).map((note) => BoardImportJobMapper.mapNoteToDO(note)),
 		});
 
 		return domainObject;
@@ -33,8 +34,21 @@ export class BoardImportJobMapper {
 			attempts: domainObject.attempts,
 			startedAt: domainObject.startedAt,
 			boardId: domainObject.boardId ? new ObjectId(domainObject.boardId) : undefined,
+			notes: domainObject.notes.map((note) => new BoardImportNoteEmbeddable(note)),
 		};
 
 		return props;
+	}
+
+	private static mapNoteToDO(note: BoardImportNoteEmbeddable): BoardImportNote {
+		const domainNote: BoardImportNote = {
+			type: note.type,
+			sectionTitle: note.sectionTitle,
+			cardTitle: note.cardTitle,
+			elementType: note.elementType,
+			elementKind: note.elementKind,
+		};
+
+		return domainNote;
 	}
 }

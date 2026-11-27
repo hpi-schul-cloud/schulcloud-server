@@ -27,6 +27,7 @@ export class BoardImportJobService {
 			target,
 			expiresAt,
 			attempts: 0,
+			notes: [],
 		});
 
 		const savedJob = await this.boardImportJobRepo.save(job);

@@ -4,7 +4,6 @@ import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardsClientAdapter,
 	CardClientAdapter,
-	type CardControllerCreateElement201Response,
 	type CardResponse,
 	ColumnClientAdapter,
 	type ColumnResponse,
@@ -32,6 +31,7 @@ import {
 import {
 	type BoardImportJob,
 	BoardImportJobStatus,
+	BoardImportNoteType,
 	type BoardImportSource,
 	BoardImportSourceRegistryService,
 	BoardImportSourceService,
@@ -795,18 +795,36 @@ describe('Board Import Worker (import as the user)', () => {
 			};
 
 			boardsClient.createBoard.mockResolvedValueOnce({ id: boardId });
-			boardsClient.createBoardColumn.mockResolvedValueOnce(
-				createMock<ColumnResponse>({ id: new ObjectId().toHexString(), cards: [] })
+			boardsClient.createBoardColumn.mockImplementation(() =>
+				Promise.resolve(createMock<ColumnResponse>({ id: new ObjectId().toHexString(), title: '', cards: [] }))
 			);
-			const linkCard = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
-			const sourceCard = createMock<CardResponse>({ id: new ObjectId().toHexString(), elements: [] });
-			const linkElement = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
-			const sourceElement = createMock<CardControllerCreateElement201Response>({ id: new ObjectId().toHexString() });
-			columnClient.createCard.mockResolvedValueOnce(linkCard).mockResolvedValueOnce(sourceCard);
-			cardClient.createCardElement.mockResolvedValueOnce(linkElement).mockResolvedValueOnce(sourceElement);
+			columnClient.createCard.mockImplementation((_token, _columnId, params) => {
+				const elements = (params.requiredEmptyElements ?? []).map(() =>
+					createMock<CardResponse['elements'][number]>({ id: new ObjectId().toHexString() })
+				);
+				const card = createMock<CardResponse>({ id: new ObjectId().toHexString(), title: undefined, elements });
+
+				return Promise.resolve(card);
+			});
 			mockSource('board-pinboard.json');
 
-			return { id: entity.id, boardId, expectedClaims };
+			const expectedColumnTitles = ['Green', 'Yellow', 'Red', 'No color'];
+			const expectedCardTitles = ['FWU', 'Rich text', 'Foobar', 'Collapsed ugly card', 'Video call', 'PDF'];
+			const expectedLastText = 'Picture + colors changed';
+			const expectedNoteTypes = [
+				BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT,
+				...Array<BoardImportNoteType>(5).fill(BoardImportNoteType.ELEMENT_LEFT_OUT),
+			];
+
+			return {
+				id: entity.id,
+				boardId,
+				expectedClaims,
+				expectedColumnTitles,
+				expectedCardTitles,
+				expectedLastText,
+				expectedNoteTypes,
+			};
 		};
 
 		it('should create the board with a token of the user and store the board in the job', async () => {
@@ -821,24 +839,35 @@ describe('Board Import Worker (import as the user)', () => {
 			expect(finishedJob.boardId?.toHexString()).toEqual(boardId);
 		});
 
-		it('should write the start of the intermediate model into the second card', async () => {
-			const { id } = await setup();
+		it('should create the columns, cards and texts of the source board', async () => {
+			const { id, expectedColumnTitles, expectedCardTitles, expectedLastText } = await setup();
 
 			await publishJob(amqpConnection, id);
 
 			await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
-			expect(columnClient.createCard).toHaveBeenCalledTimes(2);
+			expect(boardsClient.createBoard).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({ title: 'Test Pinboard' })
+			);
+			expect(columnClient.updateBoardColumnTitle.mock.calls.map((call) => call[2].title)).toEqual(expectedColumnTitles);
+			expect(cardClient.updateCardTitle.mock.calls.map((call) => call[2].title)).toEqual(expectedCardTitles);
+			expect(cardClient.updateCardElement).toHaveBeenCalledTimes(2);
 			expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(
 				expect.anything(),
 				expect.anything(),
 				expect.objectContaining({
-					data: expect.objectContaining({
-						content: expect.objectContaining({
-							text: expect.stringContaining('<p>{&quot;version&quot;:1,&quot;source&quot;'),
-						}),
-					}),
+					data: expect.objectContaining({ content: expect.objectContaining({ text: expectedLastText }) }),
 				})
 			);
+		});
+
+		it('should store the import notes in the job', async () => {
+			const { id, expectedNoteTypes } = await setup();
+
+			await publishJob(amqpConnection, id);
+
+			const finishedJob = await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
+			expect(finishedJob.notes?.map((note) => note.type)).toEqual(expectedNoteTypes);
 		});
 	});
 
