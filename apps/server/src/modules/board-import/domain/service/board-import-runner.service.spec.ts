@@ -2,7 +2,13 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { boardImportJobFactory, intermediateBoardFactory } from '../../testing';
 import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason, type BoardImportNote, BoardImportNoteType, type BoardPlan } from '../type';
+import {
+	BOARD_PLAN_VERSION,
+	BoardImportJobLogReason,
+	type BoardImportNote,
+	BoardImportNoteType,
+	type BoardPlan,
+} from '../type';
 import { BoardImportExporterService } from './board-import-exporter.service';
 import { BoardImportPlannerService } from './board-import-planner.service';
 import { BoardImportRunnerService } from './board-import-runner.service';
@@ -57,7 +63,7 @@ describe(BoardImportRunnerService.name, () => {
 			const token = 'token';
 			const board = intermediateBoardFactory.build();
 
-			const plan: BoardPlan = { title: board.title, columns: [] };
+			const plan: BoardPlan = { version: BOARD_PLAN_VERSION, title: board.title, columns: [] };
 			const notes: BoardImportNote[] = [{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT }];
 
 			const reader = createMock<BoardImportSourceReader>();
@@ -103,13 +109,13 @@ describe(BoardImportRunnerService.name, () => {
 				);
 			});
 
-			it('should store the notes of the planner in the job before it creates the board', async () => {
-				const { job, signal, notes } = setup();
+			it('should store the plan and the notes of the planner in the job before it creates the board', async () => {
+				const { job, signal, plan, notes } = setup();
 
 				await service.run(job, signal);
 
-				expect(repo.setNotes).toHaveBeenCalledWith(job.id, notes);
-				expect(repo.setNotes.mock.invocationCallOrder[0]).toBeLessThan(
+				expect(repo.setPlan).toHaveBeenCalledWith(job.id, plan, notes);
+				expect(repo.setPlan.mock.invocationCallOrder[0]).toBeLessThan(
 					exporterService.export.mock.invocationCallOrder[0]
 				);
 			});
@@ -120,6 +126,63 @@ describe(BoardImportRunnerService.name, () => {
 				await service.run(job, signal);
 
 				expect(tokenService.removeToken).toHaveBeenCalledWith(job, token);
+			});
+		});
+
+		describe('when the job has a plan from an attempt before', () => {
+			const setup = () => {
+				const plan: BoardPlan = { version: BOARD_PLAN_VERSION, title: 'Board', columns: [] };
+				const job = boardImportJobFactory.build({ plan });
+				const { signal } = new AbortController();
+
+				return { job, signal, plan };
+			};
+
+			it('should create the board of the stored plan', async () => {
+				const { job, signal, plan } = setup();
+
+				await service.run(job, signal);
+
+				expect(exporterService.export).toHaveBeenCalledWith(job, expect.anything(), plan);
+			});
+
+			it('should not read the source and not plan the board again', async () => {
+				const { job, signal } = setup();
+
+				await service.run(job, signal);
+
+				expect(readerRegistry.findByType).not.toHaveBeenCalled();
+				expect(plannerService.plan).not.toHaveBeenCalled();
+				expect(repo.setPlan).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the stored plan of the job has another version', () => {
+			const setup = () => {
+				const plan: BoardPlan = { version: BOARD_PLAN_VERSION + 1, title: 'Board', columns: [] };
+				const job = boardImportJobFactory.build({ plan });
+				const { signal } = new AbortController();
+				const reason = BoardImportJobLogReason.PLAN_VERSION_NOT_SUPPORTED;
+
+				return { job, signal, reason };
+			};
+
+			it('should reject the job with the reason that the version is not supported', async () => {
+				const { job, signal, reason } = setup();
+
+				const error: unknown = await service.run(job, signal).catch((e: unknown) => e);
+
+				expect(error).toBeInstanceOf(BoardImportJobRejectedError);
+				expect(error).toMatchObject({ reason });
+			});
+
+			it('should create no board and not read the source', async () => {
+				const { job, signal } = setup();
+
+				await service.run(job, signal).catch(() => undefined);
+
+				expect(exporterService.export).not.toHaveBeenCalled();
+				expect(readerRegistry.findByType).not.toHaveBeenCalled();
 			});
 		});
 

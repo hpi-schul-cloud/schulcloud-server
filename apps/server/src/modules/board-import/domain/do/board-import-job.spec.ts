@@ -1,5 +1,12 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { boardImportJobFactory } from '../../testing';
-import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
+import {
+	BOARD_PLAN_VERSION,
+	type BoardImportCheckpoint,
+	BoardImportJobLogReason,
+	BoardImportJobStatus,
+	type BoardPlan,
+} from '../type';
 import { BoardImportJob } from './board-import-job';
 
 describe(BoardImportJob.name, () => {
@@ -9,6 +16,8 @@ describe(BoardImportJob.name, () => {
 				const job = boardImportJobFactory.build({
 					startedAt: new Date(),
 					failureReason: BoardImportJobLogReason.MAX_ATTEMPTS,
+					plan: { version: BOARD_PLAN_VERSION, title: 'Board', columns: [] },
+					checkpoints: [{ columnId: new ObjectId().toHexString(), cardIds: [] }],
 				});
 				const props = job.getProps();
 
@@ -29,6 +38,8 @@ describe(BoardImportJob.name, () => {
 					startedAt: job.startedAt,
 					notes: job.notes,
 					failureReason: job.failureReason,
+					plan: job.plan,
+					checkpoints: job.checkpoints,
 				};
 
 				expect(result).toEqual(props);
@@ -73,6 +84,96 @@ describe(BoardImportJob.name, () => {
 				const result = job.getDeadline(maxDurationInMs, now);
 
 				expect(result).toEqual(expected);
+			});
+		});
+	});
+
+	describe('getProgress', () => {
+		const newId = (): string => new ObjectId().toHexString();
+		const plan: BoardPlan = {
+			version: BOARD_PLAN_VERSION,
+			title: 'Board',
+			columns: [
+				{
+					title: 'First',
+					cards: [
+						{ title: 'Card 1', elements: [] },
+						{ title: 'Card 2', elements: [] },
+					],
+				},
+				{ title: 'Second', cards: [{ title: 'Card 3', elements: [] }] },
+				{ title: 'Third', cards: [] },
+			],
+		};
+
+		describe('when the job has no plan', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build();
+
+				return { job };
+			};
+
+			it('should return no progress', () => {
+				const { job } = setup();
+
+				const result = job.getProgress();
+
+				expect(result).toBeUndefined();
+			});
+		});
+
+		describe('when the job has a plan and no checkpoints', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build({ plan });
+				const total = 6;
+
+				return { job, total };
+			};
+
+			it('should count the columns and the cards of the plan as total', () => {
+				const { job, total } = setup();
+
+				const result = job.getProgress();
+
+				expect(result).toEqual({ total, imported: 0 });
+			});
+		});
+
+		describe('when the job has checkpoints', () => {
+			const setup = () => {
+				const checkpoints: BoardImportCheckpoint[] = [
+					{ columnId: newId(), cardIds: [newId(), newId()] },
+					{ columnId: newId(), cardIds: [] },
+				];
+				const job = boardImportJobFactory.build({ plan, checkpoints });
+				const total = 6;
+				const imported = 4;
+
+				return { job, total, imported };
+			};
+
+			it('should count the created columns and cards as imported', () => {
+				const { job, total, imported } = setup();
+
+				const result = job.getProgress();
+
+				expect(result).toEqual({ total, imported });
+			});
+		});
+
+		describe('when the plan of the job has another version', () => {
+			const setup = () => {
+				const job = boardImportJobFactory.build({ plan: { ...plan, version: BOARD_PLAN_VERSION + 1 } });
+
+				return { job };
+			};
+
+			it('should return no progress', () => {
+				const { job } = setup();
+
+				const result = job.getProgress();
+
+				expect(result).toBeUndefined();
 			});
 		});
 	});

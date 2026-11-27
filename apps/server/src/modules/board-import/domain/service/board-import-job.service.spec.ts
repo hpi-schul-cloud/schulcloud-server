@@ -80,6 +80,7 @@ describe(BoardImportJobService.name, () => {
 					expiresAt,
 					attempts,
 					notes: [],
+					checkpoints: [],
 				});
 			});
 

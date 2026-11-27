@@ -1,7 +1,7 @@
 import { type EntityData } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardImportJob, type BoardImportNote } from '../../domain';
-import { type BoardImportJobEntity, BoardImportNoteEmbeddable } from '../entity';
+import { type BoardImportCheckpoint, BoardImportJob, type BoardImportNote } from '../../domain';
+import { BoardImportCheckpointEmbeddable, type BoardImportJobEntity, BoardImportNoteEmbeddable } from '../entity';
 
 export class BoardImportJobMapper {
 	public static mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {
@@ -18,6 +18,8 @@ export class BoardImportJobMapper {
 			boardId: entity.boardId?.toHexString(),
 			notes: (entity.notes ?? []).map((note) => BoardImportJobMapper.mapNoteToDO(note)),
 			failureReason: entity.failureReason,
+			plan: entity.plan,
+			checkpoints: (entity.checkpoints ?? []).map((checkpoint) => BoardImportJobMapper.mapCheckpointToDO(checkpoint)),
 		});
 
 		return domainObject;
@@ -37,9 +39,31 @@ export class BoardImportJobMapper {
 			boardId: domainObject.boardId ? new ObjectId(domainObject.boardId) : undefined,
 			notes: domainObject.notes.map((note) => new BoardImportNoteEmbeddable(note)),
 			failureReason: domainObject.failureReason,
+			plan: domainObject.plan,
+			checkpoints: domainObject.checkpoints.map((checkpoint) =>
+				BoardImportJobMapper.mapCheckpointToEmbeddable(checkpoint)
+			),
 		};
 
 		return props;
+	}
+
+	public static mapCheckpointToEmbeddable(checkpoint: BoardImportCheckpoint): BoardImportCheckpointEmbeddable {
+		const embeddable = new BoardImportCheckpointEmbeddable({
+			columnId: new ObjectId(checkpoint.columnId),
+			cardIds: checkpoint.cardIds.map((cardId) => new ObjectId(cardId)),
+		});
+
+		return embeddable;
+	}
+
+	private static mapCheckpointToDO(checkpoint: BoardImportCheckpointEmbeddable): BoardImportCheckpoint {
+		const domainCheckpoint: BoardImportCheckpoint = {
+			columnId: checkpoint.columnId.toHexString(),
+			cardIds: checkpoint.cardIds.map((cardId) => cardId.toHexString()),
+		};
+
+		return domainCheckpoint;
 	}
 
 	private static mapNoteToDO(note: BoardImportNoteEmbeddable): BoardImportNote {

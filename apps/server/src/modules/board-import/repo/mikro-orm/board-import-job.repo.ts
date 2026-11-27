@@ -7,6 +7,7 @@ import {
 	type BoardImportJobLogReason,
 	type BoardImportJobRepo,
 	type BoardImportNote,
+	type BoardPlan,
 	BoardImportJobStatus,
 	BoardImportJobUnreadableError,
 } from '../../domain';
@@ -111,21 +112,41 @@ export class BoardImportJobMikroOrmRepo
 		await this.em.nativeUpdate(BoardImportJobEntity, { id }, { boardId: new ObjectId(boardId), updatedAt: new Date() });
 	}
 
-	public async removeBoardId(id: EntityId): Promise<void> {
+	public async resetBoard(id: EntityId): Promise<void> {
 		await this.em
 			.getCollection(BoardImportJobEntity)
-			.updateOne({ _id: new ObjectId(id) }, { $unset: { boardId: '' }, $set: { updatedAt: new Date() } });
+			.updateOne(
+				{ _id: new ObjectId(id) },
+				{ $unset: { boardId: '', checkpoints: '' }, $set: { updatedAt: new Date() } }
+			);
 	}
 
-	public async setNotes(id: EntityId, notes: BoardImportNote[]): Promise<void> {
+	public async setPlan(id: EntityId, plan: BoardPlan, notes: BoardImportNote[]): Promise<void> {
 		const storedNotes = notes.map((note) => new BoardImportNoteEmbeddable(note));
 
 		await this.em.getCollection(BoardImportJobEntity).updateOne(
 			{ _id: new ObjectId(id) },
-			{ $set: { notes: storedNotes, updatedAt: new Date() } },
+			{ $set: { plan, notes: storedNotes, updatedAt: new Date() } },
 			// Without this option, the driver stores the fields that a note does not have as null.
 			{ ignoreUndefined: true }
 		);
+	}
+
+	public async addColumnCheckpoint(id: EntityId, columnId: EntityId): Promise<void> {
+		const checkpoint = BoardImportJobMapper.mapCheckpointToEmbeddable({ columnId, cardIds: [] });
+
+		await this.em
+			.getCollection(BoardImportJobEntity)
+			.updateOne({ _id: new ObjectId(id) }, { $push: { checkpoints: checkpoint }, $set: { updatedAt: new Date() } });
+	}
+
+	public async addCardCheckpoint(id: EntityId, columnIndex: number, cardId: EntityId): Promise<void> {
+		await this.em
+			.getCollection(BoardImportJobEntity)
+			.updateOne(
+				{ _id: new ObjectId(id) },
+				{ $push: { [`checkpoints.${columnIndex}.cardIds`]: new ObjectId(cardId) }, $set: { updatedAt: new Date() } }
+			);
 	}
 
 	private mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {

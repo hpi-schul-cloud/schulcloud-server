@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller/transformer';
 import {
+	BOARD_PLAN_VERSION,
 	type BoardImportNote,
 	BoardImportNoteType,
 	type BoardPlan,
@@ -41,7 +42,7 @@ export class BoardImportPlannerService {
 			notes.push({ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT });
 		}
 		const columns = board.sections.map((section) => this.planColumn(section, notes));
-		const plan: BoardPlan = { title, columns };
+		const plan: BoardPlan = { version: BOARD_PLAN_VERSION, title, columns };
 
 		return { plan, notes };
 	}

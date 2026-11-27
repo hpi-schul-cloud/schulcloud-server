@@ -1,6 +1,6 @@
 import { type EntityId } from '@shared/domain/types';
 import { type BoardImportJob } from '../do';
-import { type BoardImportJobLogReason, type BoardImportJobStatus, type BoardImportNote } from '../type';
+import { type BoardImportJobLogReason, type BoardImportJobStatus, type BoardImportNote, type BoardPlan } from '../type';
 
 export interface BoardImportJobRepo {
 	save(job: BoardImportJob): Promise<BoardImportJob>;
@@ -30,9 +30,17 @@ export interface BoardImportJobRepo {
 
 	setBoardId(id: EntityId, boardId: EntityId): Promise<void>;
 
-	removeBoardId(id: EntityId): Promise<void>;
+	// Removes the board and its checkpoints from the job. The plan stays.
+	resetBoard(id: EntityId): Promise<void>;
 
-	setNotes(id: EntityId, notes: BoardImportNote[]): Promise<void>;
+	// Stores the plan and its notes in one database operation.
+	setPlan(id: EntityId, plan: BoardPlan, notes: BoardImportNote[]): Promise<void>;
+
+	// Adds the checkpoint of the next column of the plan.
+	addColumnCheckpoint(id: EntityId, columnId: EntityId): Promise<void>;
+
+	// Adds the next card to the checkpoint of the column at the given position.
+	addCardCheckpoint(id: EntityId, columnIndex: number, cardId: EntityId): Promise<void>;
 }
 
 export const BOARD_IMPORT_JOB_REPO = 'BOARD_IMPORT_JOB_REPO';
