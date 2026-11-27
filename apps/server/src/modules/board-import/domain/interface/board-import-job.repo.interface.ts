@@ -1,6 +1,6 @@
 import { type EntityId } from '@shared/domain/types';
 import { type BoardImportJob } from '../do';
-import { type BoardImportJobStatus } from '../type';
+import { type BoardImportJobStatus, type BoardImportNote } from '../type';
 
 export interface BoardImportJobRepo {
 	save(job: BoardImportJob): Promise<BoardImportJob>;
@@ -30,6 +30,8 @@ export interface BoardImportJobRepo {
 	setBoardId(id: EntityId, boardId: EntityId): Promise<void>;
 
 	removeBoardId(id: EntityId): Promise<void>;
+
+	setNotes(id: EntityId, notes: BoardImportNote[]): Promise<void>;
 }
 
 export const BOARD_IMPORT_JOB_REPO = 'BOARD_IMPORT_JOB_REPO';

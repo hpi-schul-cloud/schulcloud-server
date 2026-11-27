@@ -16,7 +16,8 @@ import {
 } from './board-import.config';
 import { BOARD_IMPORT_JOB_REPO } from './domain';
 import { BoardImportJobProcessService } from './domain/service/board-import-job-process.service';
-import { BoardImportPlaceholderBoardService } from './domain/service/board-import-placeholder-board.service';
+import { BoardImportExporterService } from './domain/service/board-import-exporter.service';
+import { BoardImportPlannerService } from './domain/service/board-import-planner.service';
 import { BoardImportRunnerService } from './domain/service/board-import-runner.service';
 import { BoardImportTokenService } from './domain/service/board-import-token.service';
 import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
@@ -40,7 +41,8 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		BoardImportJobProcessService,
 		BoardImportRunnerService,
 		BoardImportTokenService,
-		BoardImportPlaceholderBoardService,
+		BoardImportPlannerService,
+		BoardImportExporterService,
 		BoardImportJobConsumer,
 	],
 })

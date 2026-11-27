@@ -24,6 +24,7 @@ describe(BoardImportJob.name, () => {
 					expiresAt: job.expiresAt,
 					attempts: job.attempts,
 					startedAt: job.startedAt,
+					notes: job.notes,
 				};
 
 				expect(result).toEqual(props);

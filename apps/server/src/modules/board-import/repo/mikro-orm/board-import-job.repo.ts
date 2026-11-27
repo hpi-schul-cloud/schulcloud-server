@@ -5,10 +5,11 @@ import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import {
 	type BoardImportJob,
 	type BoardImportJobRepo,
+	type BoardImportNote,
 	BoardImportJobStatus,
 	BoardImportJobUnreadableError,
 } from '../../domain';
-import { BoardImportJobEntity } from '../entity';
+import { BoardImportJobEntity, BoardImportNoteEmbeddable } from '../entity';
 import { BoardImportJobMapper } from '../mapper';
 
 export class BoardImportJobMikroOrmRepo
@@ -112,6 +113,17 @@ export class BoardImportJobMikroOrmRepo
 		await this.em
 			.getCollection(BoardImportJobEntity)
 			.updateOne({ _id: new ObjectId(id) }, { $unset: { boardId: '' }, $set: { updatedAt: new Date() } });
+	}
+
+	public async setNotes(id: EntityId, notes: BoardImportNote[]): Promise<void> {
+		const storedNotes = notes.map((note) => new BoardImportNoteEmbeddable(note));
+
+		await this.em.getCollection(BoardImportJobEntity).updateOne(
+			{ _id: new ObjectId(id) },
+			{ $set: { notes: storedNotes, updatedAt: new Date() } },
+			// Without this option, the driver stores the fields that a note does not have as null.
+			{ ignoreUndefined: true }
+		);
 	}
 
 	private mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {

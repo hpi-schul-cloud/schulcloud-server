@@ -13,6 +13,7 @@ export const boardImportJobFactory = DomainObjectFactory.define<BoardImportJob, 
 			target: { type: BoardImportTargetType.ROOM, id: new ObjectId().toHexString() },
 			expiresAt: new Date(Date.now() + 60 * 60 * 1000),
 			attempts: 0,
+			notes: [],
 		};
 
 		return props;

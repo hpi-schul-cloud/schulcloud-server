@@ -16,6 +16,8 @@ export { BoardImportJobService, BoardImportSourceRegistryService, BoardImportSou
 export {
 	BoardImportJobLogReason,
 	BoardImportJobStatus,
+	BoardImportNote,
+	BoardImportNoteType,
 	BoardImportSource,
 	BoardImportTarget,
 	BoardImportTargetType,

@@ -1,8 +1,9 @@
-import { Entity, Enum, Index, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { type EntityId } from '@shared/domain/types';
 import { BoardImportJobStatus, BoardImportTargetType } from '../../domain';
+import { BoardImportNoteEmbeddable } from './board-import-note.embeddable';
 
 export interface BoardImportJobEntityProps {
 	id?: EntityId;
@@ -26,6 +27,8 @@ export interface BoardImportJobEntityProps {
 	startedAt?: Date;
 
 	boardId?: ObjectId;
+
+	notes?: BoardImportNoteEmbeddable[];
 }
 
 @Entity({ tableName: 'board-import-jobs' })
@@ -61,6 +64,9 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	boardId?: ObjectId;
 
+	@Embedded(() => BoardImportNoteEmbeddable, { array: true, nullable: true })
+	notes?: BoardImportNoteEmbeddable[];
+
 	constructor(props: BoardImportJobEntityProps) {
 		super();
 		if (props.id) {
@@ -76,5 +82,6 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 		this.attempts = props.attempts;
 		this.startedAt = props.startedAt;
 		this.boardId = props.boardId;
+		this.notes = props.notes;
 	}
 }

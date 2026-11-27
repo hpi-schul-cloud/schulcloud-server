@@ -2,7 +2,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { BoardImportJobStatus, BoardImportJobUnreadableError } from '../../domain';
+import {
+	BoardImportJobStatus,
+	BoardImportJobUnreadableError,
+	type BoardImportNote,
+	BoardImportNoteType,
+	IntermediateElementType,
+} from '../../domain';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 import { BoardImportJobEntity } from '../entity';
 import { BoardImportJobMikroOrmRepo } from './board-import-job.repo';
@@ -34,9 +40,19 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 		describe('when the job is new', () => {
 			const setup = () => {
 				const boardId = new ObjectId().toHexString();
-				const job = boardImportJobFactory.build({ attempts: 2, startedAt: new Date(), boardId });
+				const notes: BoardImportNote[] = [
+					{ type: BoardImportNoteType.BOARD_TITLE_SHORTENED },
+					{
+						type: BoardImportNoteType.ELEMENT_LEFT_OUT,
+						sectionTitle: 'Section',
+						cardTitle: 'Card',
+						elementType: IntermediateElementType.NOT_SUPPORTED,
+						elementKind: 'contact',
+					},
+				];
+				const job = boardImportJobFactory.build({ attempts: 2, startedAt: new Date(), boardId, notes });
 
-				return { job, boardId };
+				return { job, boardId, notes };
 			};
 
 			it('should store the job', async () => {
@@ -60,6 +76,16 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					boardId: new ObjectId(boardId),
 				});
 			});
+
+			it('should store the notes of the job', async () => {
+				const { job, notes } = setup();
+
+				await repo.save(job);
+				em.clear();
+
+				const storedJob = await repo.findById(job.id);
+				expect(storedJob?.notes).toEqual(notes);
+			});
 		});
 	});
 
@@ -81,6 +107,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 					attempts: entity.attempts,
 					startedAt: entity.startedAt,
 					boardId: boardId.toHexString(),
+					notes: [],
 				};
 
 				return { expectedProps };
@@ -496,6 +523,57 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 
 				const job = await repo.findById(id);
 				expect(job?.boardId).toBeUndefined();
+			});
+		});
+	});
+
+	describe('setNotes', () => {
+		describe('when the job has notes from an attempt before', () => {
+			const setup = async () => {
+				const entity = boardImportJobEntityFactory.build({
+					notes: [{ type: BoardImportNoteType.BOARD_TITLE_SHORTENED }],
+				});
+				await em.persist(entity).flush();
+				em.clear();
+				const notes: BoardImportNote[] = [
+					{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT },
+					{
+						type: BoardImportNoteType.ELEMENT_LEFT_OUT,
+						sectionTitle: 'Section',
+						cardTitle: '',
+						elementType: IntermediateElementType.LINK,
+					},
+				];
+
+				return { id: entity.id, notes };
+			};
+
+			it('should replace the notes of the job', async () => {
+				const { id, notes } = await setup();
+
+				await repo.setNotes(id, notes);
+				em.clear();
+
+				const job = await repo.findById(id);
+				expect(job?.notes).toEqual(notes);
+			});
+		});
+
+		describe('when the job does not exist', () => {
+			const setup = () => {
+				const id = new ObjectId().toHexString();
+				const notes: BoardImportNote[] = [{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT }];
+
+				return { id, notes };
+			};
+
+			it('should store nothing', async () => {
+				const { id, notes } = setup();
+
+				await repo.setNotes(id, notes);
+
+				const job = await repo.findById(id);
+				expect(job).toBeNull();
 			});
 		});
 	});
