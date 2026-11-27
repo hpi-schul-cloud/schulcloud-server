@@ -30,6 +30,7 @@ import {
 	type BoardImportPublicApiConfig,
 } from '../../board-import.config';
 import {
+	BOARD_PLAN_VERSION,
 	type BoardImportJob,
 	BoardImportJobLogReason,
 	BoardImportJobStatus,
@@ -37,6 +38,7 @@ import {
 	type BoardImportSource,
 	BoardImportSourceRegistryService,
 	BoardImportSourceService,
+	type BoardPlan,
 } from '../../domain';
 import { BoardImportSourceReaderRegistryService } from '../../domain/service/board-import-source-reader-registry.service';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
@@ -559,6 +561,43 @@ describe('Board Import Controller (API)', () => {
 
 				expect(response.status).toEqual(200);
 				expect(response.body).toEqual({ id: entity.id, status: entity.status, notes });
+			});
+		});
+
+		describe('when the job of the user is running with a plan and checkpoints', () => {
+			const setup = async () => {
+				const { loggedInClient, teacherUser } = await setupLoggedInClient();
+				const plan: BoardPlan = {
+					version: BOARD_PLAN_VERSION,
+					title: 'Board',
+					columns: [
+						{ title: 'First', cards: [{ title: 'Card', elements: [] }] },
+						{ title: 'Second', cards: [{ title: 'Card', elements: [] }] },
+					],
+				};
+				const entity = boardImportJobEntityFactory.build({
+					userId: new ObjectId(teacherUser.id),
+					status: BoardImportJobStatus.RUNNING,
+					plan,
+					checkpoints: [
+						{ columnId: new ObjectId(), cardIds: [new ObjectId()] },
+						{ columnId: new ObjectId(), cardIds: [] },
+					],
+				});
+				await em.persist(entity).flush();
+				em.clear();
+				const progress = { total: 4, imported: 3 };
+
+				return { loggedInClient, entity, progress };
+			};
+
+			it('should return the progress of the job and not the plan', async () => {
+				const { loggedInClient, entity, progress } = await setup();
+
+				const response = await loggedInClient.get(entity.id);
+
+				expect(response.status).toEqual(200);
+				expect(response.body).toEqual({ id: entity.id, status: entity.status, notes: [], progress });
 			});
 		});
 

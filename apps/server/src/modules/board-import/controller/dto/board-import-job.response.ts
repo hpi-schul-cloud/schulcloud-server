@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BoardImportJobLogReason, BoardImportJobStatus } from '../../domain';
 import { BoardImportNoteResponse } from './board-import-note.response';
+import { BoardImportProgressResponse } from './board-import-progress.response';
 
 export class BoardImportJobResponse {
 	@ApiProperty({ description: 'The id of the import job.' })
@@ -22,10 +23,17 @@ export class BoardImportJobResponse {
 	})
 	notes: BoardImportNoteResponse[];
 
+	@ApiPropertyOptional({
+		type: BoardImportProgressResponse,
+		description: 'The progress of the import. A job has no progress before the import has read the source.',
+	})
+	progress?: BoardImportProgressResponse;
+
 	constructor(props: BoardImportJobResponse) {
 		this.id = props.id;
 		this.status = props.status;
 		this.failureReason = props.failureReason;
 		this.notes = props.notes;
+		this.progress = props.progress;
 	}
 }
