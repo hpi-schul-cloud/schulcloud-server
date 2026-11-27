@@ -105,8 +105,39 @@ describe(BoardCollaborationGateway.name, () => {
 
 		em.clear();
 
-		return { columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes };
+		return { columnBoardNode, columnNode, columnNode2, cardNodes, elementNodes, teacherAuthJwt };
 	};
+
+	describe('origin validation', () => {
+		it('should reject a connection attempt from an unknown origin', async () => {
+			const { teacherAuthJwt } = await setup();
+
+			const maliciousClient = await getSocketApiClient(app, teacherAuthJwt, 'https://evil.example');
+
+			try {
+				const error = await waitForEvent(maliciousClient, 'connect_error');
+
+				expect(error).toBeDefined();
+			} finally {
+				maliciousClient.disconnect();
+			}
+		});
+
+		it('should accept a connection without an Origin header, as browsers omit it on same-origin GET request', async () => {
+			const { teacherAuthJwt } = await setup();
+
+			const sameOriginClient = await getSocketApiClient(app, teacherAuthJwt, null);
+
+			const connectedSocket = await new Promise<unknown>((resolve, reject) => {
+				sameOriginClient.on('connect', () => resolve(sameOriginClient));
+				sameOriginClient.on('connect_error', reject);
+			});
+
+			expect(connectedSocket).toBeDefined();
+
+			sameOriginClient.disconnect();
+		});
+	});
 
 	describe('connection metrics', () => {
 		it('should start tracking a socket when its authenticated user becomes available after connect', () => {

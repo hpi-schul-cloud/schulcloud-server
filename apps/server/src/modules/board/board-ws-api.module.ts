@@ -1,4 +1,5 @@
 import { ConfigurationModule } from '@infra/configuration';
+import { ErrorModule } from '@infra/error';
 import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardContextApiHelperModule } from '@modules/board-context';
@@ -19,6 +20,7 @@ import { BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
 		BoardModule,
 		CourseModule,
 		forwardRef(() => AuthorizationModule),
+		ErrorModule,
 		LoggerModule,
 		UserModule,
 		RoomMembershipModule,

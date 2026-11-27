@@ -1,7 +1,9 @@
 import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
+import { DomainErrorHandler } from '@infra/error';
 import { Socket, WsValidationPipe } from '@infra/socketio';
 import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { Inject, UsePipes } from '@nestjs/common';
+import { type CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -22,6 +24,7 @@ import {
 } from '../controller/mapper';
 import { MoveCardResponseMapper } from '../controller/mapper/move-card-response.mapper';
 import { AnyBoardNode, ColumnBoard } from '../domain';
+import { WebsocketOriginRejectedLoggableException } from '../loggable';
 import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
@@ -53,7 +56,7 @@ import {
 import { UpdateReadersCanEditMessageParams } from './dto/update-users-can-edit.message.param';
 
 // Using a variable here to access the exchange name in the decorator
-const websocketOptions = {
+const websocketOptions: { path: string; cors: CorsOptions } = {
 	path: '',
 	cors: {
 		origin: '',
@@ -72,7 +75,6 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 
 	private readonly connectedSchoolsBySocketId = new Map<string, string>();
 
-	// TODO: use loggables instead of legacy logger
 	constructor(
 		private readonly orm: MikroORM,
 		private readonly boardUc: BoardUc,
@@ -80,9 +82,19 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
 		private readonly metricsService: MetricsService,
+		private readonly domainErrorHandler: DomainErrorHandler,
 		@Inject(BOARD_CONFIG_TOKEN) private readonly boardConfig: BoardConfig
 	) {
-		websocketOptions.cors.origin = this.boardConfig.hostUrl;
+		websocketOptions.cors.origin = (requestOrigin, callback): void => {
+			// Allow missing header, as socket.io uses HTTP polling which doesn't send Origin headers on same-origin GET requests.
+			if (requestOrigin === undefined || requestOrigin === this.boardConfig.hostUrl) {
+				callback(null, true);
+			} else {
+				const exception = new WebsocketOriginRejectedLoggableException(requestOrigin, this.boardConfig.hostUrl);
+				this.domainErrorHandler.exec(exception);
+				callback(exception, false);
+			}
+		};
 		websocketOptions.path = this.boardConfig.basePath;
 	}
 
