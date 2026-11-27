@@ -1,7 +1,8 @@
 export { BoardImportNote, BoardImportNoteType } from './board-import-note';
 export { BoardImportJobLogReason } from './board-import-job-log-reason.enum';
 export { BoardImportJobStatus } from './board-import-job-status.enum';
-export { BoardImportCheckpoint, BoardImportProgress } from './board-import-checkpoint';
+export { BoardImportCheckpoint } from './board-import-checkpoint';
+export { BoardImportProgress } from './board-import-progress';
 export {
 	BOARD_PLAN_VERSION,
 	BoardPlan,

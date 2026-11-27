@@ -4,6 +4,7 @@ import {
 	type BoardResponse,
 	BoardsClientAdapter,
 	CardClientAdapter,
+	type CardControllerCreateElement201Response,
 	type CardResponse,
 	ColumnClientAdapter,
 	type ColumnResponse,
@@ -14,9 +15,9 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { boardImportJobFactory } from '../../testing';
+import { boardImportJobFactory, boardPlanFactory } from '../../testing';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
-import { BOARD_PLAN_VERSION, BoardImportTargetType, type BoardPlan, PlannedElementType } from '../type';
+import { BoardImportTargetType, PlannedElementType } from '../type';
 import { BoardImportExporterService } from './board-import-exporter.service';
 import { type BoardImportUserSession } from './board-import-user-session';
 
@@ -64,8 +65,8 @@ describe(BoardImportExporterService.name, () => {
 
 	const newId = (): string => new ObjectId().toHexString();
 
-	const buildColumn = (title: string): ColumnResponse => {
-		const column = createMock<ColumnResponse>({ id: newId(), title, cards: [] });
+	const buildColumn = (): ColumnResponse => {
+		const column = createMock<ColumnResponse>({ id: newId() });
 
 		return column;
 	};
@@ -85,9 +86,7 @@ describe(BoardImportExporterService.name, () => {
 		};
 	};
 
-	const plan: BoardPlan = {
-		version: BOARD_PLAN_VERSION,
-		title: 'Board',
+	const plan = boardPlanFactory.build({
 		columns: [
 			{
 				title: 'First',
@@ -107,7 +106,7 @@ describe(BoardImportExporterService.name, () => {
 				cards: [{ title: 'Card 3', elements: [{ type: PlannedElementType.TEXT, html: '<p>Text 3</p>' }] }],
 			},
 		],
-	};
+	});
 
 	const [firstPlannedColumn, secondPlannedColumn] = plan.columns;
 	const [plannedCard1, plannedCard2] = firstPlannedColumn.cards;
@@ -123,8 +122,8 @@ describe(BoardImportExporterService.name, () => {
 				const target = { type: BoardImportTargetType.COURSE, id: newId() };
 				const job = boardImportJobFactory.build({ target });
 				const boardParams = { title: plan.title, parentId: target.id, parentType: target.type, layout: 'columns' };
-				const firstColumn = buildColumn('');
-				const secondColumn = buildColumn('');
+				const firstColumn = buildColumn();
+				const secondColumn = buildColumn();
 				const card1 = buildCard(undefined, [newId(), newId()]);
 				const card2 = buildCard(undefined, []);
 				const card3 = buildCard(undefined, [newId()]);
@@ -149,7 +148,7 @@ describe(BoardImportExporterService.name, () => {
 
 				await service.export(job, session, plan);
 
-				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, boardId);
+				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, job.attempts, boardId);
 			});
 
 			it('should create one column for each column of the plan and set its title', async () => {
@@ -220,13 +219,13 @@ describe(BoardImportExporterService.name, () => {
 				await service.export(job, session, plan);
 
 				expect(repo.addColumnCheckpoint.mock.calls).toEqual([
-					[job.id, firstColumn.id],
-					[job.id, secondColumn.id],
+					[job.id, job.attempts, firstColumn.id],
+					[job.id, job.attempts, secondColumn.id],
 				]);
 				expect(repo.addCardCheckpoint.mock.calls).toEqual([
-					[job.id, 0, card1.id],
-					[job.id, 0, card2.id],
-					[job.id, 1, card3.id],
+					[job.id, job.attempts, 0, card1.id],
+					[job.id, job.attempts, 0, card2.id],
+					[job.id, job.attempts, 1, card3.id],
 				]);
 			});
 
@@ -245,16 +244,14 @@ describe(BoardImportExporterService.name, () => {
 			const setup = () => {
 				const { session } = setupSession();
 				const job = boardImportJobFactory.build();
-				const planWithoutTitles: BoardPlan = {
-					version: BOARD_PLAN_VERSION,
-					title: 'Board',
+				const planWithoutTitles = boardPlanFactory.build({
 					columns: [
 						{ title: '', cards: [{ title: '', elements: [{ type: PlannedElementType.TEXT, html: '<p>Text</p>' }] }] },
 					],
-				};
+				});
 
 				boardsClient.createBoard.mockResolvedValueOnce({ id: newId() });
-				boardsClient.createBoardColumn.mockResolvedValueOnce(buildColumn(''));
+				boardsClient.createBoardColumn.mockResolvedValueOnce(buildColumn());
 				columnClient.createCard.mockResolvedValueOnce(buildCard(undefined, [newId()]));
 
 				return { session, job, planWithoutTitles };
@@ -270,11 +267,43 @@ describe(BoardImportExporterService.name, () => {
 			});
 		});
 
+		describe('when the response for a new card has not all elements', () => {
+			const setup = () => {
+				const { token, session } = setupSession();
+				const job = boardImportJobFactory.build();
+				const card = buildCard(undefined, [newId()]);
+				const newElementId = newId();
+
+				boardsClient.createBoard.mockResolvedValueOnce({ id: newId() });
+				boardsClient.createBoardColumn.mockResolvedValueOnce(buildColumn()).mockResolvedValueOnce(buildColumn());
+				columnClient.createCard
+					.mockResolvedValueOnce(card)
+					.mockResolvedValueOnce(buildCard(undefined, []))
+					.mockResolvedValueOnce(buildCard(undefined, [newId()]));
+				cardClient.createCardElement.mockResolvedValueOnce(
+					createMock<CardControllerCreateElement201Response>({ id: newElementId })
+				);
+
+				return { token, session, job, card, newElementId };
+			};
+
+			it('should create the element that the card does not have and write the text into it', async () => {
+				const { token, session, job, card, newElementId } = setup();
+
+				await service.export(job, session, plan);
+
+				expect(cardClient.createCardElement.mock.calls).toEqual([
+					[token, card.id, { type: ContentElementType.RICH_TEXT }],
+				]);
+				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, newElementId, textParams(plannedText2.html));
+			});
+		});
+
 		describe('when the plan has no columns', () => {
 			const setup = () => {
 				const { session } = setupSession();
 				const job = boardImportJobFactory.build();
-				const emptyPlan: BoardPlan = { version: BOARD_PLAN_VERSION, title: 'Board', columns: [] };
+				const emptyPlan = boardPlanFactory.build();
 
 				boardsClient.createBoard.mockResolvedValueOnce({ id: newId() });
 
@@ -301,7 +330,7 @@ describe(BoardImportExporterService.name, () => {
 					checkpoints: [{ columnId: firstColumnId, cardIds: [newId()] }],
 				});
 				const card2 = buildCard(undefined, []);
-				const secondColumn = buildColumn('');
+				const secondColumn = buildColumn();
 				const card3 = buildCard(undefined, [newId()]);
 
 				boardsClient.getBoardSkeletonById.mockResolvedValueOnce(createMock<BoardResponse>());
@@ -357,10 +386,10 @@ describe(BoardImportExporterService.name, () => {
 				await service.export(job, session, plan);
 
 				expect(repo.addCardCheckpoint.mock.calls).toEqual([
-					[job.id, 0, card2.id],
-					[job.id, 1, card3.id],
+					[job.id, job.attempts, 0, card2.id],
+					[job.id, job.attempts, 1, card3.id],
 				]);
-				expect(repo.addColumnCheckpoint.mock.calls).toEqual([[job.id, secondColumn.id]]);
+				expect(repo.addColumnCheckpoint.mock.calls).toEqual([[job.id, job.attempts, secondColumn.id]]);
 			});
 		});
 
@@ -372,7 +401,7 @@ describe(BoardImportExporterService.name, () => {
 					boardId,
 					checkpoints: [{ columnId: newId(), cardIds: [newId(), newId()] }],
 				});
-				const secondColumn = buildColumn('');
+				const secondColumn = buildColumn();
 				const card3 = buildCard(undefined, [newId()]);
 
 				boardsClient.getBoardSkeletonById.mockResolvedValueOnce(createMock<BoardResponse>());
@@ -440,7 +469,7 @@ describe(BoardImportExporterService.name, () => {
 
 				boardsClient.getBoardSkeletonById.mockRejectedValueOnce(error);
 				boardsClient.createBoard.mockResolvedValueOnce({ id: boardId });
-				boardsClient.createBoardColumn.mockResolvedValueOnce(buildColumn('')).mockResolvedValueOnce(buildColumn(''));
+				boardsClient.createBoardColumn.mockResolvedValueOnce(buildColumn()).mockResolvedValueOnce(buildColumn());
 				columnClient.createCard
 					.mockResolvedValueOnce(buildCard(undefined, [newId(), newId()]))
 					.mockResolvedValueOnce(buildCard(undefined, []))
@@ -454,8 +483,8 @@ describe(BoardImportExporterService.name, () => {
 
 				await service.export(job, session, plan);
 
-				expect(repo.resetBoard).toHaveBeenCalledWith(job.id);
-				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, boardId);
+				expect(repo.resetBoard).toHaveBeenCalledWith(job.id, job.attempts);
+				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, job.attempts, boardId);
 				expect(repo.resetBoard.mock.invocationCallOrder[0]).toBeLessThan(
 					boardsClient.createBoard.mock.invocationCallOrder[0]
 				);
@@ -530,7 +559,7 @@ describe(BoardImportExporterService.name, () => {
 				const error = new Error('request failed');
 
 				boardsClient.createBoard.mockResolvedValueOnce({ id: newId() });
-				boardsClient.createBoardColumn.mockResolvedValueOnce(buildColumn(''));
+				boardsClient.createBoardColumn.mockResolvedValueOnce(buildColumn());
 				columnClient.createCard.mockResolvedValueOnce(buildCard(undefined, [newId(), newId()]));
 				cardClient.updateCardElement.mockRejectedValueOnce(error);
 

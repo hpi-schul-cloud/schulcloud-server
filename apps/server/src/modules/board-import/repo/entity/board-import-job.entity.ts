@@ -3,10 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { type EntityId } from '@shared/domain/types';
 import { BoardImportJobLogReason, BoardImportJobStatus, type BoardPlan, BoardImportTargetType } from '../../domain';
-import {
-	BoardImportCheckpointEmbeddable,
-	type BoardImportCheckpointEmbeddableProps,
-} from './board-import-checkpoint.embeddable';
+import { BoardImportCheckpointEmbeddable } from './board-import-checkpoint.embeddable';
 import { BoardImportNoteEmbeddable } from './board-import-note.embeddable';
 
 export interface BoardImportJobEntityProps {
@@ -38,7 +35,7 @@ export interface BoardImportJobEntityProps {
 
 	plan?: BoardPlan;
 
-	checkpoints?: BoardImportCheckpointEmbeddableProps[];
+	checkpoints?: BoardImportCheckpointEmbeddable[];
 }
 
 @Entity({ tableName: 'board-import-jobs' })
@@ -104,6 +101,6 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 		this.notes = props.notes;
 		this.failureReason = props.failureReason;
 		this.plan = props.plan;
-		this.checkpoints = props.checkpoints?.map((checkpoint) => new BoardImportCheckpointEmbeddable(checkpoint));
+		this.checkpoints = props.checkpoints;
 	}
 }

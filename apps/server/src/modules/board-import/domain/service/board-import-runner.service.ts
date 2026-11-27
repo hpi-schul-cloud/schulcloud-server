@@ -41,7 +41,7 @@ export class BoardImportRunnerService {
 	private async createPlan(job: BoardImportJob, signal: AbortSignal): Promise<BoardPlan> {
 		const board = await this.readSource(job, signal);
 		const { plan, notes } = this.boardImportPlannerService.plan(board);
-		await this.boardImportJobRepo.setPlan(job.id, plan, notes);
+		await this.boardImportJobRepo.setPlan(job.id, job.attempts, plan, notes);
 
 		return plan;
 	}

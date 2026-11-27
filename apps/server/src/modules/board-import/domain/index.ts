@@ -14,13 +14,11 @@ export {
 } from './interface';
 export { BoardImportJobService, BoardImportSourceRegistryService, BoardImportSourceService } from './service';
 export {
-	BOARD_PLAN_VERSION,
 	BoardImportCheckpoint,
 	BoardImportJobLogReason,
 	BoardImportJobStatus,
 	BoardImportNote,
 	BoardImportNoteType,
-	BoardImportProgress,
 	BoardImportSource,
 	BoardImportTarget,
 	BoardImportTargetType,

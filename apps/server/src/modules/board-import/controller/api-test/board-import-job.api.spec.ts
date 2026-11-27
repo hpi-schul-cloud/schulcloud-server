@@ -30,7 +30,6 @@ import {
 	type BoardImportPublicApiConfig,
 } from '../../board-import.config';
 import {
-	BOARD_PLAN_VERSION,
 	type BoardImportJob,
 	BoardImportJobLogReason,
 	BoardImportJobStatus,
@@ -38,14 +37,13 @@ import {
 	type BoardImportSource,
 	BoardImportSourceRegistryService,
 	BoardImportSourceService,
-	type BoardPlan,
 } from '../../domain';
 import { BoardImportSourceReaderRegistryService } from '../../domain/service/board-import-source-reader-registry.service';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
 import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
 import { BoardImportJobEntity, BoardImportNoteEmbeddable } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
-import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
+import { boardImportJobEntityFactory, boardImportJobFactory, boardPlanFactory } from '../../testing';
 
 const baseRouteName = 'board-import/jobs';
 
@@ -567,14 +565,12 @@ describe('Board Import Controller (API)', () => {
 		describe('when the job of the user is running with a plan and checkpoints', () => {
 			const setup = async () => {
 				const { loggedInClient, teacherUser } = await setupLoggedInClient();
-				const plan: BoardPlan = {
-					version: BOARD_PLAN_VERSION,
-					title: 'Board',
+				const plan = boardPlanFactory.build({
 					columns: [
 						{ title: 'First', cards: [{ title: 'Card', elements: [] }] },
 						{ title: 'Second', cards: [{ title: 'Card', elements: [] }] },
 					],
-				};
+				});
 				const entity = boardImportJobEntityFactory.build({
 					userId: new ObjectId(teacherUser.id),
 					status: BoardImportJobStatus.RUNNING,

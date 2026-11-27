@@ -3,26 +3,23 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import {
-	BOARD_PLAN_VERSION,
 	type BoardImportCheckpoint,
 	BoardImportJobLogReason,
+	BoardImportJobRejectedError,
 	BoardImportJobStatus,
 	BoardImportJobUnreadableError,
 	type BoardImportNote,
 	BoardImportNoteType,
-	type BoardPlan,
 	IntermediateElementType,
 	PlannedElementType,
 } from '../../domain';
-import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
+import { boardImportJobEntityFactory, boardImportJobFactory, boardPlanFactory } from '../../testing';
 import { BoardImportJobEntity } from '../entity';
 import { BoardImportJobMikroOrmRepo } from './board-import-job.repo';
 
 describe(BoardImportJobMikroOrmRepo.name, () => {
 	const newId = (): string => new ObjectId().toHexString();
-	const plan: BoardPlan = {
-		version: BOARD_PLAN_VERSION,
-		title: 'Board',
+	const plan = boardPlanFactory.build({
 		columns: [
 			{
 				title: 'Column',
@@ -30,7 +27,9 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			},
 			{ title: '', cards: [] },
 		],
-	};
+	});
+
+	const runningAttempt = { status: BoardImportJobStatus.RUNNING, attempts: 2 };
 
 	let module: TestingModule;
 	let em: EntityManager;
@@ -548,7 +547,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 	describe('setBoardId', () => {
 		describe('when the job exists', () => {
 			const setup = async () => {
-				const entity = boardImportJobEntityFactory.build();
+				const entity = boardImportJobEntityFactory.build(runningAttempt);
 				await em.persist(entity).flush();
 				em.clear();
 				const boardId = new ObjectId().toHexString();
@@ -559,7 +558,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			it('should store the board', async () => {
 				const { id, boardId } = await setup();
 
-				await repo.setBoardId(id, boardId);
+				await repo.setBoardId(id, runningAttempt.attempts, boardId);
 
 				const job = await repo.findById(id);
 				expect(job?.boardId).toEqual(boardId);
@@ -571,6 +570,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 		describe('when the job has a board with checkpoints', () => {
 			const setup = async () => {
 				const entity = boardImportJobEntityFactory.build({
+					...runningAttempt,
 					boardId: new ObjectId(),
 					plan,
 					checkpoints: [{ columnId: new ObjectId(), cardIds: [new ObjectId()] }],
@@ -584,7 +584,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			it('should remove the board and the checkpoints from the job', async () => {
 				const { id } = await setup();
 
-				await repo.resetBoard(id);
+				await repo.resetBoard(id, runningAttempt.attempts);
 
 				const job = await repo.findById(id);
 				expect(job?.boardId).toBeUndefined();
@@ -594,7 +594,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			it('should keep the plan of the job', async () => {
 				const { id } = await setup();
 
-				await repo.resetBoard(id);
+				await repo.resetBoard(id, runningAttempt.attempts);
 
 				const job = await repo.findById(id);
 				expect(job?.plan).toEqual(plan);
@@ -606,6 +606,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 		describe('when the job has notes from an attempt before', () => {
 			const setup = async () => {
 				const entity = boardImportJobEntityFactory.build({
+					...runningAttempt,
 					notes: [{ type: BoardImportNoteType.BOARD_TITLE_SHORTENED }],
 				});
 				await em.persist(entity).flush();
@@ -626,30 +627,12 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			it('should store the plan and replace the notes of the job', async () => {
 				const { id, notes } = await setup();
 
-				await repo.setPlan(id, plan, notes);
+				await repo.setPlan(id, runningAttempt.attempts, plan, notes);
 				em.clear();
 
 				const job = await repo.findById(id);
 				expect(job?.plan).toEqual(plan);
 				expect(job?.notes).toEqual(notes);
-			});
-		});
-
-		describe('when the job does not exist', () => {
-			const setup = () => {
-				const id = newId();
-				const notes: BoardImportNote[] = [{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT }];
-
-				return { id, notes };
-			};
-
-			it('should store nothing', async () => {
-				const { id, notes } = setup();
-
-				await repo.setPlan(id, plan, notes);
-
-				const job = await repo.findById(id);
-				expect(job).toBeNull();
 			});
 		});
 	});
@@ -660,6 +643,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const firstColumnId = new ObjectId();
 				const firstCardId = new ObjectId();
 				const entity = boardImportJobEntityFactory.build({
+					...runningAttempt,
 					checkpoints: [{ columnId: firstColumnId, cardIds: [firstCardId] }],
 				});
 				await em.persist(entity).flush();
@@ -676,7 +660,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			it('should add a checkpoint for the column after the other checkpoints', async () => {
 				const { id, columnId, expected } = await setup();
 
-				await repo.addColumnCheckpoint(id, columnId);
+				await repo.addColumnCheckpoint(id, runningAttempt.attempts, columnId);
 
 				const job = await repo.findById(id);
 				expect(job?.checkpoints).toEqual(expected);
@@ -685,7 +669,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 
 		describe('when the job has no checkpoints', () => {
 			const setup = async () => {
-				const entity = boardImportJobEntityFactory.build();
+				const entity = boardImportJobEntityFactory.build(runningAttempt);
 				await em.persist(entity).flush();
 				em.clear();
 				const columnId = newId();
@@ -696,7 +680,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			it('should add the first checkpoint', async () => {
 				const { id, columnId } = await setup();
 
-				await repo.addColumnCheckpoint(id, columnId);
+				await repo.addColumnCheckpoint(id, runningAttempt.attempts, columnId);
 
 				const job = await repo.findById(id);
 				expect(job?.checkpoints).toEqual([{ columnId, cardIds: [] }]);
@@ -711,6 +695,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				const secondColumnId = new ObjectId();
 				const firstCardId = new ObjectId();
 				const entity = boardImportJobEntityFactory.build({
+					...runningAttempt,
 					checkpoints: [
 						{ columnId: firstColumnId, cardIds: [] },
 						{ columnId: secondColumnId, cardIds: [firstCardId] },
@@ -731,10 +716,114 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 			it('should add the card to the checkpoint of the column, after its other cards', async () => {
 				const { id, columnIndex, cardId, expected } = await setup();
 
-				await repo.addCardCheckpoint(id, columnIndex, cardId);
+				await repo.addCardCheckpoint(id, runningAttempt.attempts, columnIndex, cardId);
 
 				const job = await repo.findById(id);
 				expect(job?.checkpoints).toEqual(expected);
+			});
+		});
+	});
+
+	describe('writes of an attempt', () => {
+		describe.each([
+			['setBoardId', (id: string, attempt: number) => repo.setBoardId(id, attempt, newId())],
+			['resetBoard', (id: string, attempt: number) => repo.resetBoard(id, attempt)],
+			['setPlan', (id: string, attempt: number) => repo.setPlan(id, attempt, plan, [])],
+			['addColumnCheckpoint', (id: string, attempt: number) => repo.addColumnCheckpoint(id, attempt, newId())],
+			['addCardCheckpoint', (id: string, attempt: number) => repo.addCardCheckpoint(id, attempt, 0, newId())],
+		])('%s', (_name, write) => {
+			const setupJob = async (status: BoardImportJobStatus, attemptsOfJob: number) => {
+				const boardId = new ObjectId();
+				const columnId = new ObjectId();
+				const entity = boardImportJobEntityFactory.build({
+					status,
+					attempts: attemptsOfJob,
+					boardId,
+					checkpoints: [{ columnId, cardIds: [] }],
+				});
+				await em.persist(entity).flush();
+				em.clear();
+				const expectedProps = {
+					boardId: boardId.toHexString(),
+					plan: undefined,
+					checkpoints: [{ columnId: columnId.toHexString(), cardIds: [] }],
+				};
+
+				return { id: entity.id, expectedProps };
+			};
+
+			const expectRejectedWithoutChange = async (
+				id: string,
+				attempt: number,
+				expectedProps: Record<string, unknown>
+			): Promise<void> => {
+				const error: unknown = await write(id, attempt).catch((e: unknown) => e);
+
+				const job = await repo.findById(id);
+				expect(error).toBeInstanceOf(BoardImportJobRejectedError);
+				expect(error).toMatchObject({ reason: BoardImportJobLogReason.OUTDATED_ATTEMPT });
+				expect(job?.getProps()).toMatchObject(expectedProps);
+			};
+
+			describe('when the job is running in a later attempt', () => {
+				const setup = async () => {
+					const attemptsOfJob = 2;
+					const attempt = 1;
+					const { id, expectedProps } = await setupJob(BoardImportJobStatus.RUNNING, attemptsOfJob);
+
+					return { id, attempt, expectedProps };
+				};
+
+				it('should reject the write and not change the job', async () => {
+					const { id, attempt, expectedProps } = await setup();
+
+					await expectRejectedWithoutChange(id, attempt, expectedProps);
+				});
+			});
+
+			describe('when the job has an end status', () => {
+				const setup = async () => {
+					const attempt = 1;
+					const { id, expectedProps } = await setupJob(BoardImportJobStatus.FAILED, attempt);
+
+					return { id, attempt, expectedProps };
+				};
+
+				it('should reject the write and not change the job', async () => {
+					const { id, attempt, expectedProps } = await setup();
+
+					await expectRejectedWithoutChange(id, attempt, expectedProps);
+				});
+			});
+		});
+	});
+
+	describe('startAttempt after writes of an attempt', () => {
+		describe('when the job has a plan and checkpoints', () => {
+			const setup = async () => {
+				const columnId = new ObjectId();
+				const cardId = new ObjectId();
+				const entity = boardImportJobEntityFactory.build({
+					...runningAttempt,
+					plan,
+					checkpoints: [{ columnId, cardIds: [cardId] }],
+				});
+				await em.persist(entity).flush();
+				em.clear();
+				const checkpoints: BoardImportCheckpoint[] = [
+					{ columnId: columnId.toHexString(), cardIds: [cardId.toHexString()] },
+				];
+
+				return { id: entity.id, checkpoints };
+			};
+
+			it('should return the job with its plan and checkpoints', async () => {
+				const { id, checkpoints } = await setup();
+
+				const job = await repo.startAttempt(id, new Date());
+
+				expect(job?.plan).toEqual(plan);
+				expect(job?.checkpoints).toEqual(checkpoints);
 			});
 		});
 	});

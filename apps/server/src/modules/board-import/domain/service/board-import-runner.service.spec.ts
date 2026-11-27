@@ -1,14 +1,8 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { boardImportJobFactory, intermediateBoardFactory } from '../../testing';
+import { boardImportJobFactory, boardPlanFactory, intermediateBoardFactory } from '../../testing';
 import { BoardImportJobRejectedError } from '../error';
-import {
-	BOARD_PLAN_VERSION,
-	BoardImportJobLogReason,
-	type BoardImportNote,
-	BoardImportNoteType,
-	type BoardPlan,
-} from '../type';
+import { BOARD_PLAN_VERSION, BoardImportJobLogReason, type BoardImportNote, BoardImportNoteType } from '../type';
 import { BoardImportExporterService } from './board-import-exporter.service';
 import { BoardImportPlannerService } from './board-import-planner.service';
 import { BoardImportRunnerService } from './board-import-runner.service';
@@ -63,7 +57,7 @@ describe(BoardImportRunnerService.name, () => {
 			const token = 'token';
 			const board = intermediateBoardFactory.build();
 
-			const plan: BoardPlan = { version: BOARD_PLAN_VERSION, title: board.title, columns: [] };
+			const plan = boardPlanFactory.build({ title: board.title });
 			const notes: BoardImportNote[] = [{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT }];
 
 			const reader = createMock<BoardImportSourceReader>();
@@ -114,7 +108,7 @@ describe(BoardImportRunnerService.name, () => {
 
 				await service.run(job, signal);
 
-				expect(repo.setPlan).toHaveBeenCalledWith(job.id, plan, notes);
+				expect(repo.setPlan).toHaveBeenCalledWith(job.id, job.attempts, plan, notes);
 				expect(repo.setPlan.mock.invocationCallOrder[0]).toBeLessThan(
 					exporterService.export.mock.invocationCallOrder[0]
 				);
@@ -131,7 +125,7 @@ describe(BoardImportRunnerService.name, () => {
 
 		describe('when the job has a plan from an attempt before', () => {
 			const setup = () => {
-				const plan: BoardPlan = { version: BOARD_PLAN_VERSION, title: 'Board', columns: [] };
+				const plan = boardPlanFactory.build();
 				const job = boardImportJobFactory.build({ plan });
 				const { signal } = new AbortController();
 
@@ -159,7 +153,7 @@ describe(BoardImportRunnerService.name, () => {
 
 		describe('when the stored plan of the job has another version', () => {
 			const setup = () => {
-				const plan: BoardPlan = { version: BOARD_PLAN_VERSION + 1, title: 'Board', columns: [] };
+				const plan = boardPlanFactory.build({ version: BOARD_PLAN_VERSION + 1 });
 				const job = boardImportJobFactory.build({ plan });
 				const { signal } = new AbortController();
 				const reason = BoardImportJobLogReason.PLAN_VERSION_NOT_SUPPORTED;

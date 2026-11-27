@@ -6,9 +6,3 @@ export interface BoardImportCheckpoint {
 	columnId: EntityId;
 	cardIds: EntityId[];
 }
-
-// Counted in columns and cards.
-export interface BoardImportProgress {
-	total: number;
-	imported: number;
-}

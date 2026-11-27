@@ -1,12 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { boardImportJobFactory } from '../../testing';
-import {
-	BOARD_PLAN_VERSION,
-	type BoardImportCheckpoint,
-	BoardImportJobLogReason,
-	BoardImportJobStatus,
-	type BoardPlan,
-} from '../type';
+import { boardImportJobFactory, boardPlanFactory } from '../../testing';
+import { BOARD_PLAN_VERSION, type BoardImportCheckpoint, BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportJob } from './board-import-job';
 
 describe(BoardImportJob.name, () => {
@@ -16,7 +10,7 @@ describe(BoardImportJob.name, () => {
 				const job = boardImportJobFactory.build({
 					startedAt: new Date(),
 					failureReason: BoardImportJobLogReason.MAX_ATTEMPTS,
-					plan: { version: BOARD_PLAN_VERSION, title: 'Board', columns: [] },
+					plan: boardPlanFactory.build(),
 					checkpoints: [{ columnId: new ObjectId().toHexString(), cardIds: [] }],
 				});
 				const props = job.getProps();
@@ -90,9 +84,7 @@ describe(BoardImportJob.name, () => {
 
 	describe('getProgress', () => {
 		const newId = (): string => new ObjectId().toHexString();
-		const plan: BoardPlan = {
-			version: BOARD_PLAN_VERSION,
-			title: 'Board',
+		const plan = boardPlanFactory.build({
 			columns: [
 				{
 					title: 'First',
@@ -104,7 +96,7 @@ describe(BoardImportJob.name, () => {
 				{ title: 'Second', cards: [{ title: 'Card 3', elements: [] }] },
 				{ title: 'Third', cards: [] },
 			],
-		};
+		});
 
 		describe('when the job has no plan', () => {
 			const setup = () => {

@@ -4,7 +4,8 @@ import { type EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import {
 	type BoardImportJob,
-	type BoardImportJobLogReason,
+	BoardImportJobLogReason,
+	BoardImportJobRejectedError,
 	type BoardImportJobRepo,
 	type BoardImportNote,
 	type BoardPlan,
@@ -13,6 +14,12 @@ import {
 } from '../../domain';
 import { BoardImportJobEntity, BoardImportNoteEmbeddable } from '../entity';
 import { BoardImportJobMapper } from '../mapper';
+
+interface AttemptUpdate {
+	$set?: Record<string, unknown>;
+	$unset?: Record<string, ''>;
+	$push?: Record<string, unknown>;
+}
 
 export class BoardImportJobMikroOrmRepo
 	extends BaseDomainObjectRepo<BoardImportJob, BoardImportJobEntity>
@@ -108,45 +115,43 @@ export class BoardImportJobMikroOrmRepo
 		return isFailed;
 	}
 
-	public async setBoardId(id: EntityId, boardId: EntityId): Promise<void> {
-		await this.em.nativeUpdate(BoardImportJobEntity, { id }, { boardId: new ObjectId(boardId), updatedAt: new Date() });
+	public async setBoardId(id: EntityId, attempts: number, boardId: EntityId): Promise<void> {
+		await this.updateInAttempt(id, attempts, { $set: { boardId: new ObjectId(boardId) } });
 	}
 
-	public async resetBoard(id: EntityId): Promise<void> {
-		await this.em
-			.getCollection(BoardImportJobEntity)
-			.updateOne(
-				{ _id: new ObjectId(id) },
-				{ $unset: { boardId: '', checkpoints: '' }, $set: { updatedAt: new Date() } }
-			);
+	public async resetBoard(id: EntityId, attempts: number): Promise<void> {
+		await this.updateInAttempt(id, attempts, { $unset: { boardId: '', checkpoints: '' } });
 	}
 
-	public async setPlan(id: EntityId, plan: BoardPlan, notes: BoardImportNote[]): Promise<void> {
+	public async setPlan(id: EntityId, attempts: number, plan: BoardPlan, notes: BoardImportNote[]): Promise<void> {
 		const storedNotes = notes.map((note) => new BoardImportNoteEmbeddable(note));
 
-		await this.em.getCollection(BoardImportJobEntity).updateOne(
-			{ _id: new ObjectId(id) },
-			{ $set: { plan, notes: storedNotes, updatedAt: new Date() } },
+		await this.updateInAttempt(id, attempts, { $set: { plan, notes: storedNotes } });
+	}
+
+	public async addColumnCheckpoint(id: EntityId, attempts: number, columnId: EntityId): Promise<void> {
+		const checkpoint = BoardImportJobMapper.mapCheckpointToEmbeddable({ columnId, cardIds: [] });
+
+		await this.updateInAttempt(id, attempts, { $push: { checkpoints: checkpoint } });
+	}
+
+	public async addCardCheckpoint(id: EntityId, attempts: number, columnIndex: number, cardId: EntityId): Promise<void> {
+		await this.updateInAttempt(id, attempts, {
+			$push: { [`checkpoints.${columnIndex}.cardIds`]: new ObjectId(cardId) },
+		});
+	}
+
+	private async updateInAttempt(id: EntityId, attempts: number, update: AttemptUpdate): Promise<void> {
+		const result = await this.em.getCollection(BoardImportJobEntity).updateOne(
+			{ _id: new ObjectId(id), status: BoardImportJobStatus.RUNNING, attempts },
+			{ ...update, $set: { ...update.$set, updatedAt: new Date() } },
 			// Without this option, the driver stores the fields that a note does not have as null.
 			{ ignoreUndefined: true }
 		);
-	}
 
-	public async addColumnCheckpoint(id: EntityId, columnId: EntityId): Promise<void> {
-		const checkpoint = BoardImportJobMapper.mapCheckpointToEmbeddable({ columnId, cardIds: [] });
-
-		await this.em
-			.getCollection(BoardImportJobEntity)
-			.updateOne({ _id: new ObjectId(id) }, { $push: { checkpoints: checkpoint }, $set: { updatedAt: new Date() } });
-	}
-
-	public async addCardCheckpoint(id: EntityId, columnIndex: number, cardId: EntityId): Promise<void> {
-		await this.em
-			.getCollection(BoardImportJobEntity)
-			.updateOne(
-				{ _id: new ObjectId(id) },
-				{ $push: { [`checkpoints.${columnIndex}.cardIds`]: new ObjectId(cardId) }, $set: { updatedAt: new Date() } }
-			);
+		if (result.matchedCount === 0) {
+			throw new BoardImportJobRejectedError(BoardImportJobLogReason.OUTDATED_ATTEMPT);
+		}
 	}
 
 	private mapEntityToDO(entity: BoardImportJobEntity): BoardImportJob {

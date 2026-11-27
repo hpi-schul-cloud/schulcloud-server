@@ -53,7 +53,7 @@ export class BoardImportExporterService {
 			);
 		}
 
-		await this.boardImportJobRepo.addColumnCheckpoint(job.id, column.id);
+		await this.boardImportJobRepo.addColumnCheckpoint(job.id, job.attempts, column.id);
 
 		return column.id;
 	}
@@ -76,7 +76,7 @@ export class BoardImportExporterService {
 		}
 
 		for (const [index, plannedElement] of plannedCard.elements.entries()) {
-			const elementId = card.elements[index].id;
+			const elementId = card.elements.at(index)?.id ?? (await this.createTextElement(card.id, session));
 
 			await session.call((token) =>
 				this.cardClient.updateCardElement(token, elementId, {
@@ -88,7 +88,15 @@ export class BoardImportExporterService {
 			);
 		}
 
-		await this.boardImportJobRepo.addCardCheckpoint(job.id, columnIndex, card.id);
+		await this.boardImportJobRepo.addCardCheckpoint(job.id, job.attempts, columnIndex, card.id);
+	}
+
+	private async createTextElement(cardId: EntityId, session: BoardImportUserSession): Promise<EntityId> {
+		const element = await session.call((token) =>
+			this.cardClient.createCardElement(token, cardId, { type: ContentElementType.RICH_TEXT })
+		);
+
+		return element.id;
 	}
 
 	private async findOrCreateBoard(
@@ -97,13 +105,13 @@ export class BoardImportExporterService {
 		plan: BoardPlan
 	): Promise<{ boardId: EntityId; checkpoints: BoardImportCheckpoint[] }> {
 		const { boardId: existingBoardId, checkpoints } = job;
-		if (existingBoardId !== undefined && (await this.hasBoard(existingBoardId, session))) {
-			return { boardId: existingBoardId, checkpoints };
-		}
-
-		// The user can delete the board between two attempts. Then the job starts again with a new board.
 		if (existingBoardId !== undefined) {
-			await this.boardImportJobRepo.resetBoard(job.id);
+			if (await this.hasBoard(existingBoardId, session)) {
+				return { boardId: existingBoardId, checkpoints };
+			}
+
+			// The user can delete the board between two attempts. Then the job starts again with a new board.
+			await this.boardImportJobRepo.resetBoard(job.id, job.attempts);
 		}
 
 		const boardId = await this.createBoard(job, session, plan);
@@ -141,7 +149,7 @@ export class BoardImportExporterService {
 			})
 		);
 
-		await this.boardImportJobRepo.setBoardId(job.id, board.id);
+		await this.boardImportJobRepo.setBoardId(job.id, job.attempts, board.id);
 
 		return board.id;
 	}
