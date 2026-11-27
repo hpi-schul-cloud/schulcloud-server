@@ -1,5 +1,6 @@
 import { intermediateBoardFactory } from '../../testing';
 import {
+	BOARD_PLAN_VERSION,
 	type BoardImportNote,
 	BoardImportNoteType,
 	type BoardPlan,
@@ -35,6 +36,7 @@ describe(BoardImportPlannerService.name, () => {
 					],
 				});
 				const expectedPlan: BoardPlan = {
+					version: BOARD_PLAN_VERSION,
 					title: 'Board',
 					columns: [
 						{
@@ -153,6 +155,7 @@ describe(BoardImportPlannerService.name, () => {
 					sections: [{ title: 'Section \n title', cards: [{ title: 'Card\n\n title\n', elements: [] }] }],
 				});
 				const expectedPlan: BoardPlan = {
+					version: BOARD_PLAN_VERSION,
 					title: 'Board title',
 					columns: [{ title: 'Section title', cards: [{ title: 'Card title', elements: [] }] }],
 				};

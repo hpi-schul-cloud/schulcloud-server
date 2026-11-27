@@ -1,6 +1,6 @@
 import { type EntityId } from '@shared/domain/types';
 import { type BoardImportJob } from '../do';
-import { type BoardImportJobLogReason, type BoardImportJobStatus, type BoardImportNote } from '../type';
+import { type BoardImportJobLogReason, type BoardImportJobStatus, type BoardImportNote, type BoardPlan } from '../type';
 
 export interface BoardImportJobRepo {
 	save(job: BoardImportJob): Promise<BoardImportJob>;
@@ -28,11 +28,23 @@ export interface BoardImportJobRepo {
 	// Returns false when the job has an end status.
 	failIfOpen(id: EntityId): Promise<boolean>;
 
-	setBoardId(id: EntityId, boardId: EntityId): Promise<void>;
+	// The writes below belong to one attempt. They apply only if the job is running in the given attempt, so that a
+	// worker with an older attempt cannot change the board data of a later attempt. If not, they throw
+	// BoardImportJobRejectedError and change nothing.
 
-	removeBoardId(id: EntityId): Promise<void>;
+	setBoardId(id: EntityId, attempts: number, boardId: EntityId): Promise<void>;
 
-	setNotes(id: EntityId, notes: BoardImportNote[]): Promise<void>;
+	// Removes the board and its checkpoints from the job. The plan stays.
+	resetBoard(id: EntityId, attempts: number): Promise<void>;
+
+	// Stores the plan and its notes in one database operation.
+	setPlan(id: EntityId, attempts: number, plan: BoardPlan, notes: BoardImportNote[]): Promise<void>;
+
+	// Adds the checkpoint of the next column of the plan.
+	addColumnCheckpoint(id: EntityId, attempts: number, columnId: EntityId): Promise<void>;
+
+	// Adds the next card to the checkpoint of the column at the given position.
+	addCardCheckpoint(id: EntityId, attempts: number, columnIndex: number, cardId: EntityId): Promise<void>;
 }
 
 export const BOARD_IMPORT_JOB_REPO = 'BOARD_IMPORT_JOB_REPO';

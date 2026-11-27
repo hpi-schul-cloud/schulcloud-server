@@ -4,6 +4,8 @@
 
 Accepted (2026-11-27)
 
+[0016](0016-checkpoints-and-board-plan-in-the-import-job.md) stores the board plan in the import job and gives it a version number (2026-11-27).
+
 ## Context
 
 Each source has its own data format ([0014](0014-one-module-for-each-source.md)). The board of the server has limits and rules: a maximum length of the board title, a fixed set of element types, a fixed set of card colours. Content of a source that does not fit must be shortened, replaced or left out, and the user must learn about it.

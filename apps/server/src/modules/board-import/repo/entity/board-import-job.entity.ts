@@ -2,7 +2,8 @@ import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { type EntityId } from '@shared/domain/types';
-import { BoardImportJobLogReason, BoardImportJobStatus, BoardImportTargetType } from '../../domain';
+import { BoardImportJobLogReason, BoardImportJobStatus, type BoardPlan, BoardImportTargetType } from '../../domain';
+import { BoardImportCheckpointEmbeddable } from './board-import-checkpoint.embeddable';
 import { BoardImportNoteEmbeddable } from './board-import-note.embeddable';
 
 export interface BoardImportJobEntityProps {
@@ -31,6 +32,10 @@ export interface BoardImportJobEntityProps {
 	notes?: BoardImportNoteEmbeddable[];
 
 	failureReason?: BoardImportJobLogReason;
+
+	plan?: BoardPlan;
+
+	checkpoints?: BoardImportCheckpointEmbeddable[];
 }
 
 @Entity({ tableName: 'board-import-jobs' })
@@ -72,6 +77,12 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 	@Enum({ items: () => BoardImportJobLogReason, nullable: true })
 	failureReason?: BoardImportJobLogReason;
 
+	@Property({ type: 'json', nullable: true })
+	plan?: BoardPlan;
+
+	@Embedded(() => BoardImportCheckpointEmbeddable, { array: true, nullable: true })
+	checkpoints?: BoardImportCheckpointEmbeddable[];
+
 	constructor(props: BoardImportJobEntityProps) {
 		super();
 		if (props.id) {
@@ -89,5 +100,7 @@ export class BoardImportJobEntity extends BaseEntityWithTimestamps {
 		this.boardId = props.boardId;
 		this.notes = props.notes;
 		this.failureReason = props.failureReason;
+		this.plan = props.plan;
+		this.checkpoints = props.checkpoints;
 	}
 }

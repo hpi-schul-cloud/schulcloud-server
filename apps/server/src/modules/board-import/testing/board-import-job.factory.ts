@@ -14,6 +14,7 @@ export const boardImportJobFactory = DomainObjectFactory.define<BoardImportJob, 
 			expiresAt: new Date(Date.now() + 60 * 60 * 1000),
 			attempts: 0,
 			notes: [],
+			checkpoints: [],
 		};
 
 		return props;

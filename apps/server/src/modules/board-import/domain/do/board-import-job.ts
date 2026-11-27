@@ -1,11 +1,15 @@
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { type EntityId } from '@shared/domain/types';
 import {
+	BOARD_PLAN_VERSION,
+	type BoardImportCheckpoint,
 	type BoardImportJobLogReason,
 	BoardImportJobStatus,
 	type BoardImportNote,
+	type BoardImportProgress,
 	type BoardImportSource,
 	type BoardImportTarget,
+	type BoardPlan,
 } from '../type';
 
 export interface BoardImportJobProps extends AuthorizableObject {
@@ -28,6 +32,10 @@ export interface BoardImportJobProps extends AuthorizableObject {
 	notes: BoardImportNote[];
 
 	failureReason?: BoardImportJobLogReason;
+
+	plan?: BoardPlan;
+
+	checkpoints: BoardImportCheckpoint[];
 }
 
 export class BoardImportJob extends DomainObject<BoardImportJobProps> {
@@ -69,6 +77,26 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 	get failureReason(): BoardImportJobLogReason | undefined {
 		return this.props.failureReason;
+	}
+
+	get plan(): BoardPlan | undefined {
+		return this.props.plan;
+	}
+
+	get checkpoints(): BoardImportCheckpoint[] {
+		return this.props.checkpoints;
+	}
+
+	public getProgress(): BoardImportProgress | undefined {
+		const { plan, checkpoints } = this.props;
+		if (plan?.version !== BOARD_PLAN_VERSION) {
+			return undefined;
+		}
+
+		const total = plan.columns.reduce((count, column) => count + 1 + column.cards.length, 0);
+		const imported = checkpoints.reduce((count, checkpoint) => count + 1 + checkpoint.cardIds.length, 0);
+
+		return { total, imported };
 	}
 
 	// The maximum duration counts from the first start. A job that did not start yet counts from now.
