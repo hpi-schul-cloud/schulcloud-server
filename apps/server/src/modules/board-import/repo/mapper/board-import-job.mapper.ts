@@ -17,6 +17,7 @@ export class BoardImportJobMapper {
 			startedAt: entity.startedAt,
 			boardId: entity.boardId?.toHexString(),
 			notes: (entity.notes ?? []).map((note) => BoardImportJobMapper.mapNoteToDO(note)),
+			failureReason: entity.failureReason,
 		});
 
 		return domainObject;
@@ -35,6 +36,7 @@ export class BoardImportJobMapper {
 			startedAt: domainObject.startedAt,
 			boardId: domainObject.boardId ? new ObjectId(domainObject.boardId) : undefined,
 			notes: domainObject.notes.map((note) => new BoardImportNoteEmbeddable(note)),
+			failureReason: domainObject.failureReason,
 		};
 
 		return props;

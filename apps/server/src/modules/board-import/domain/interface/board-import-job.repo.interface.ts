@@ -1,6 +1,6 @@
 import { type EntityId } from '@shared/domain/types';
 import { type BoardImportJob } from '../do';
-import { type BoardImportJobStatus, type BoardImportNote } from '../type';
+import { type BoardImportJobLogReason, type BoardImportJobStatus, type BoardImportNote } from '../type';
 
 export interface BoardImportJobRepo {
 	save(job: BoardImportJob): Promise<BoardImportJob>;
@@ -17,7 +17,8 @@ export interface BoardImportJobRepo {
 	closeAttempt(
 		id: EntityId,
 		attempts: number,
-		status: BoardImportJobStatus.FINISHED | BoardImportJobStatus.FAILED
+		status: BoardImportJobStatus.FINISHED | BoardImportJobStatus.FAILED,
+		failureReason?: BoardImportJobLogReason
 	): Promise<boolean>;
 
 	// Sets the job to failed only if it is still waiting. Returns false when the job has another status.

@@ -31,6 +31,7 @@ import {
 } from '../../board-import.config';
 import {
 	type BoardImportJob,
+	BoardImportJobLogReason,
 	BoardImportJobStatus,
 	BoardImportNoteType,
 	type BoardImportSource,
@@ -40,7 +41,7 @@ import {
 import { BoardImportSourceReaderRegistryService } from '../../domain/service/board-import-source-reader-registry.service';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
 import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
-import { BoardImportJobEntity } from '../../repo/entity';
+import { BoardImportJobEntity, BoardImportNoteEmbeddable } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
 
@@ -181,7 +182,7 @@ describe('Board Import Controller (API)', () => {
 				const response = await loggedInClient.post('', body);
 
 				expect(response.status).toEqual(201);
-				expect(response.body).toEqual({ id: expect.any(String), status });
+				expect(response.body).toEqual({ id: expect.any(String), status, notes: [] });
 			});
 
 			it('should store the job', async () => {
@@ -523,7 +524,66 @@ describe('Board Import Controller (API)', () => {
 				const response = await loggedInClient.get(entity.id);
 
 				expect(response.status).toEqual(200);
-				expect(response.body).toEqual({ id: entity.id, status: entity.status });
+				expect(response.body).toEqual({ id: entity.id, status: entity.status, notes: [] });
+			});
+		});
+
+		describe('when the job of the user is finished with notes', () => {
+			const setup = async () => {
+				const { loggedInClient, teacherUser } = await setupLoggedInClient();
+				const notes = [
+					{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT },
+					{
+						type: BoardImportNoteType.ELEMENT_LEFT_OUT,
+						sectionTitle: 'Section',
+						cardTitle: 'Card',
+						elementType: 'not-supported',
+						elementKind: 'contact',
+					},
+				];
+				const entity = boardImportJobEntityFactory.build({
+					userId: new ObjectId(teacherUser.id),
+					status: BoardImportJobStatus.FINISHED,
+					notes: notes.map((note) => new BoardImportNoteEmbeddable(note)),
+				});
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { loggedInClient, entity, notes };
+			};
+
+			it('should return the notes of the job', async () => {
+				const { loggedInClient, entity, notes } = await setup();
+
+				const response = await loggedInClient.get(entity.id);
+
+				expect(response.status).toEqual(200);
+				expect(response.body).toEqual({ id: entity.id, status: entity.status, notes });
+			});
+		});
+
+		describe('when the job of the user is failed', () => {
+			const setup = async () => {
+				const { loggedInClient, teacherUser } = await setupLoggedInClient();
+				const failureReason = BoardImportJobLogReason.SOURCE_NOT_READABLE;
+				const entity = boardImportJobEntityFactory.build({
+					userId: new ObjectId(teacherUser.id),
+					status: BoardImportJobStatus.FAILED,
+					failureReason,
+				});
+				await em.persist(entity).flush();
+				em.clear();
+
+				return { loggedInClient, entity, failureReason };
+			};
+
+			it('should return the reason of the failure', async () => {
+				const { loggedInClient, entity, failureReason } = await setup();
+
+				const response = await loggedInClient.get(entity.id);
+
+				expect(response.status).toEqual(200);
+				expect(response.body).toEqual({ id: entity.id, status: entity.status, failureReason, notes: [] });
 			});
 		});
 
@@ -897,6 +957,7 @@ describe('Board Import Worker (import as the user)', () => {
 
 			const failedJob = await waitForStatus(em, id, BoardImportJobStatus.FAILED);
 			expect(failedJob.attempts).toEqual(attempts);
+			expect(failedJob.failureReason).toEqual(BoardImportJobLogReason.SOURCE_NOT_READABLE);
 			expect(failedJob.boardId).toBeUndefined();
 			expect(boardsClient.createBoard).not.toHaveBeenCalled();
 		});

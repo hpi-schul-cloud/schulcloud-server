@@ -1,12 +1,15 @@
 import { boardImportJobFactory } from '../../testing';
-import { BoardImportJobStatus } from '../type';
+import { BoardImportJobLogReason, BoardImportJobStatus } from '../type';
 import { BoardImportJob } from './board-import-job';
 
 describe(BoardImportJob.name, () => {
 	describe('getters', () => {
 		describe('when the job is built', () => {
 			const setup = () => {
-				const job = boardImportJobFactory.build({ startedAt: new Date() });
+				const job = boardImportJobFactory.build({
+					startedAt: new Date(),
+					failureReason: BoardImportJobLogReason.MAX_ATTEMPTS,
+				});
 				const props = job.getProps();
 
 				return { job, props };
@@ -25,6 +28,7 @@ describe(BoardImportJob.name, () => {
 					attempts: job.attempts,
 					startedAt: job.startedAt,
 					notes: job.notes,
+					failureReason: job.failureReason,
 				};
 
 				expect(result).toEqual(props);

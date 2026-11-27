@@ -1,6 +1,12 @@
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { type EntityId } from '@shared/domain/types';
-import { type BoardImportNote, BoardImportJobStatus, type BoardImportSource, type BoardImportTarget } from '../type';
+import {
+	type BoardImportJobLogReason,
+	BoardImportJobStatus,
+	type BoardImportNote,
+	type BoardImportSource,
+	type BoardImportTarget,
+} from '../type';
 
 export interface BoardImportJobProps extends AuthorizableObject {
 	status: BoardImportJobStatus;
@@ -20,6 +26,8 @@ export interface BoardImportJobProps extends AuthorizableObject {
 	boardId?: EntityId;
 
 	notes: BoardImportNote[];
+
+	failureReason?: BoardImportJobLogReason;
 }
 
 export class BoardImportJob extends DomainObject<BoardImportJobProps> {
@@ -57,6 +65,10 @@ export class BoardImportJob extends DomainObject<BoardImportJobProps> {
 
 	get notes(): BoardImportNote[] {
 		return this.props.notes;
+	}
+
+	get failureReason(): BoardImportJobLogReason | undefined {
+		return this.props.failureReason;
 	}
 
 	// The maximum duration counts from the first start. A job that did not start yet counts from now.
