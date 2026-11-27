@@ -1,4 +1,3 @@
-export { BoardImportInstanceFeatures } from './board-import-instance-features';
 export { BoardImportNote, BoardImportNoteType } from './board-import-note';
 export { BoardImportJobLogReason } from './board-import-job-log-reason.enum';
 export { BoardImportJobStatus } from './board-import-job-status.enum';

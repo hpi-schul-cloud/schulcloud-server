@@ -22,7 +22,7 @@ const IMAGE_REQUEST_HEADERS = { 'User-Agent': 'Embed Request User Agent' };
 const IMAGE_FALLBACK_NAME = 'file';
 const IMAGE_OUTPUT_FORMAT = 'image/webp';
 
-// Builds the content of a link element with its preview. See ADR 0018.
+// Builds the content of a link element with its preview. See ADR 0017.
 // The preview is optional: without it, the link element has only the address.
 @Injectable()
 export class BoardImportLinkPreviewService {

@@ -1,7 +1,6 @@
 import { intermediateBoardFactory } from '../../testing';
 import {
 	BOARD_PLAN_VERSION,
-	type BoardImportInstanceFeatures,
 	type BoardImportNote,
 	BoardImportNoteType,
 	type BoardPlan,
@@ -18,7 +17,6 @@ import {
 
 describe(BoardImportPlannerService.name, () => {
 	const service = new BoardImportPlannerService();
-	const features: BoardImportInstanceFeatures = { linkElementEnabled: true };
 
 	describe('plan', () => {
 		describe('when the board has sections with cards and text', () => {
@@ -59,7 +57,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should plan one column for each section and one card for each card, in the order of the source', () => {
 				const { board, expectedPlan } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan).toEqual(expectedPlan);
 			});
@@ -67,7 +65,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should write no notes', () => {
 				const { board } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.notes).toEqual([]);
 			});
@@ -84,7 +82,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should keep the title and write no note', () => {
 				const { board, title } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan.title).toEqual(title);
 				expect(result.notes).toEqual([]);
@@ -103,7 +101,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should shorten the title to the maximum length', () => {
 				const { board, expectedTitle } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan.title).toEqual(expectedTitle);
 			});
@@ -111,7 +109,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should write a note', () => {
 				const { board, expectedNotes } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.notes).toEqual(expectedNotes);
 			});
@@ -128,7 +126,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should count each of these characters once and keep it whole', () => {
 				const { board, expectedTitle } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan.title).toEqual(expectedTitle);
 			});
@@ -144,7 +142,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should use the fallback title and write no note', () => {
 				const { board } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan.title).toEqual(BOARD_TITLE_FALLBACK);
 				expect(result.notes).toEqual([]);
@@ -169,7 +167,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should replace each line break with one space', () => {
 				const { board, expectedPlan } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan).toEqual(expectedPlan);
 			});
@@ -186,7 +184,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should keep the titles', () => {
 				const { board, title } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan.columns).toEqual([{ title, cards: [{ title, elements: [] }] }]);
 				expect(result.notes).toEqual([]);
@@ -204,7 +202,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should write a note', () => {
 				const { board, expectedNotes } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.notes).toEqual(expectedNotes);
 			});
@@ -233,7 +231,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should leave out the empty cards and keep the empty sections', () => {
 				const { board, expectedColumns } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan.columns).toEqual(expectedColumns);
 			});
@@ -241,7 +239,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should write no notes', () => {
 				const { board } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.notes).toEqual([]);
 			});
@@ -287,7 +285,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should plan only the other elements and leave out a card that has nothing left', () => {
 				const { board, expectedColumns } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.plan.columns).toEqual(expectedColumns);
 			});
@@ -295,7 +293,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should write a note with the place for each element that it leaves out', () => {
 				const { board, expectedNotes } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.notes).toEqual(expectedNotes);
 			});
@@ -343,7 +341,7 @@ describe(BoardImportPlannerService.name, () => {
 				it('should plan a link element at the position of the source', () => {
 					const { board, expectedElements } = setup();
 
-					const result = service.plan(board, features);
+					const result = service.plan(board);
 
 					expect(result.plan.columns[0].cards[0].elements).toEqual(expectedElements);
 				});
@@ -351,7 +349,7 @@ describe(BoardImportPlannerService.name, () => {
 				it('should write no notes', () => {
 					const { board } = setup();
 
-					const result = service.plan(board, features);
+					const result = service.plan(board);
 
 					expect(result.notes).toEqual([]);
 				});
@@ -375,7 +373,7 @@ describe(BoardImportPlannerService.name, () => {
 				it('should leave out the links', () => {
 					const { board, textElement } = setup();
 
-					const result = service.plan(board, features);
+					const result = service.plan(board);
 
 					expect(result.plan.columns[0].cards[0].elements).toEqual([textElement]);
 				});
@@ -383,41 +381,7 @@ describe(BoardImportPlannerService.name, () => {
 				it('should write a note with the place for each link', () => {
 					const { board, expectedNotes } = setup();
 
-					const result = service.plan(board, features);
-
-					expect(result.notes).toEqual(expectedNotes);
-				});
-			});
-
-			describe('when the link element is disabled in the instance', () => {
-				const setup = () => {
-					const { board, textElement, place } = setupBoard(['https://example.com/page?a=1&b="2"', 'ftp://example.com']);
-					const disabledFeatures: BoardImportInstanceFeatures = { linkElementEnabled: false };
-					const address = 'https://example.com/page?a=1&amp;b=%222%22';
-					const expectedElements = [
-						textElement,
-						{ type: PlannedElementType.TEXT, html: `<p><a href="${address}">${address}</a></p>` },
-					];
-					const expectedNotes: BoardImportNote[] = [
-						{ type: BoardImportNoteType.LINK_CREATED_AS_TEXT, ...place },
-						{ type: BoardImportNoteType.ELEMENT_LEFT_OUT, ...place, elementType: IntermediateElementType.LINK },
-					];
-
-					return { board, disabledFeatures, expectedElements, expectedNotes };
-				};
-
-				it('should plan a text element with the address for a link with a permitted protocol', () => {
-					const { board, disabledFeatures, expectedElements } = setup();
-
-					const result = service.plan(board, disabledFeatures);
-
-					expect(result.plan.columns[0].cards[0].elements).toEqual(expectedElements);
-				});
-
-				it('should write a note for the link that is text now and for the link that it leaves out', () => {
-					const { board, disabledFeatures, expectedNotes } = setup();
-
-					const result = service.plan(board, disabledFeatures);
+					const result = service.plan(board);
 
 					expect(result.notes).toEqual(expectedNotes);
 				});
@@ -448,7 +412,7 @@ describe(BoardImportPlannerService.name, () => {
 			it('should write the notes of the board before the notes of the cards', () => {
 				const { board, expectedTypes } = setup();
 
-				const result = service.plan(board, features);
+				const result = service.plan(board);
 
 				expect(result.notes.map((note) => note.type)).toEqual(expectedTypes);
 			});

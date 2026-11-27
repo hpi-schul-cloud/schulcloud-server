@@ -1,4 +1,4 @@
-# 0018 - The link preview comes from the services that the client uses
+# 0017 - The link preview comes from the services that the client uses
 
 ## Status
 

@@ -3,7 +3,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { lastValueFrom } from 'rxjs';
 import { BOARD_IMPORT_SERVER_API_CONFIG_TOKEN, BoardImportServerApiConfig } from '../../board-import.config';
-import { type BoardImportInstanceFeatures } from '../type';
 
 const REQUEST_TIMEOUT_IN_MS = 30000;
 
@@ -20,23 +19,6 @@ export class BoardImportServerClientService {
 		private readonly httpService: HttpService,
 		@Inject(BOARD_IMPORT_SERVER_API_CONFIG_TOKEN) private readonly config: BoardImportServerApiConfig
 	) {}
-
-	public async getInstanceFeatures(): Promise<BoardImportInstanceFeatures> {
-		const response = await lastValueFrom(
-			this.httpService.get<unknown>(`${this.config.basePath}/v3/config/public`, { timeout: REQUEST_TIMEOUT_IN_MS })
-		);
-		const linkElementEnabled = TypeGuard.getValueFromObjectKey(
-			response.data,
-			'FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED'
-		);
-		// A missing switch must not count as on or off, so the attempt fails.
-		if (!TypeGuard.isBoolean(linkElementEnabled)) {
-			throw new Error('The public config of the server has no switch for the link element');
-		}
-		const features: BoardImportInstanceFeatures = { linkElementEnabled };
-
-		return features;
-	}
 
 	public async getLinkMetaTags(jwt: string, url: string): Promise<BoardImportLinkMetaTags> {
 		const response = await lastValueFrom(

@@ -34,48 +34,6 @@ describe(BoardImportServerClientService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('getInstanceFeatures', () => {
-		describe('when the public config has the switch for the link element', () => {
-			const setup = () => {
-				const linkElementEnabled = false;
-				const data = { FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: linkElementEnabled };
-				const url = `${config.basePath}/v3/config/public`;
-
-				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data })));
-
-				return { linkElementEnabled, url };
-			};
-
-			it('should read the public config of the server', async () => {
-				const { url } = setup();
-
-				await service.getInstanceFeatures();
-
-				expect(httpService.get).toHaveBeenCalledWith(url, expect.anything());
-			});
-
-			it('should return the value of the switch', async () => {
-				const { linkElementEnabled } = setup();
-
-				const result = await service.getInstanceFeatures();
-
-				expect(result).toEqual({ linkElementEnabled });
-			});
-		});
-
-		describe('when the public config has no switch for the link element', () => {
-			const setup = () => {
-				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: 'not a config' })));
-			};
-
-			it('should reject', async () => {
-				setup();
-
-				await expect(service.getInstanceFeatures()).rejects.toThrow();
-			});
-		});
-	});
-
 	describe('getLinkMetaTags', () => {
 		describe('when the server returns the meta tags of the page', () => {
 			const setup = () => {

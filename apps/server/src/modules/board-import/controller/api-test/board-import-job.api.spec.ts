@@ -874,10 +874,6 @@ describe('Board Import Worker (import as the user)', () => {
 		serverClient = module.get(BoardImportServerClientService);
 	});
 
-	beforeEach(() => {
-		serverClient.getInstanceFeatures.mockResolvedValue({ linkElementEnabled: true });
-	});
-
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
