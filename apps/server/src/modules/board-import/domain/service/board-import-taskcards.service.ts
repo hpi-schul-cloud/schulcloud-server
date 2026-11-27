@@ -1,4 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { setTimeout as wait } from 'node:timers/promises';
 import { type BoardImportJob } from '../do';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
@@ -19,6 +20,8 @@ const BOARD_QUERY =
 const VISITOR_HEADER = 'x-token';
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 const BOARD_ERROR_CODE = 'BOARD_ERROR';
+// The source rejects the query itself. A new attempt sends the same query.
+const REQUEST_ERROR_CODES = new Set(['GRAPHQL_PARSE_FAILED', 'GRAPHQL_VALIDATION_FAILED', 'BAD_USER_INPUT']);
 const STATUS_OK: number = HttpStatus.OK;
 const FIRST_REDIRECT_STATUS: number = HttpStatus.AMBIGUOUS;
 // The source answers with a conflict when the visitor has the access already.
@@ -90,34 +93,38 @@ export class BoardImportTaskcardsService {
 			return body;
 		}
 
+		const errorCodes = this.getErrorCodes(answer);
+		if (!errorCodes.includes(BOARD_ERROR_CODE)) {
+			const isNotReadable = errorCodes.length === 0 || errorCodes.some((code) => REQUEST_ERROR_CODES.has(code));
+			throw isNotReadable ? this.notReadable() : this.temporaryError();
+		}
+
 		const retryDelayInMs = link.token === undefined ? undefined : BOARD_QUERY_RETRY_DELAYS_IN_MS.at(attempt);
-		if (retryDelayInMs === undefined || !this.isBoardError(answer)) {
+		if (retryDelayInMs === undefined) {
 			throw this.notReadable();
 		}
-		await this.wait(retryDelayInMs);
+		await wait(retryDelayInMs, undefined, { signal });
 		const bodyOfNextAttempt = await this.queryBoard(link, visitorId, signal, attempt + 1);
 
 		return bodyOfNextAttempt;
 	}
 
+	// An error in a nested field gives the board and an error entry for that field.
 	private hasBoard(answer: JsonObject): boolean {
-		const hasErrors = Array.isArray(answer.errors) && answer.errors.length > 0;
-		const hasBoard = !hasErrors && isJsonObject(answer.data) && isJsonObject(answer.data.board);
+		const hasBoard = isJsonObject(answer.data) && isJsonObject(answer.data.board);
 
 		return hasBoard;
 	}
 
-	private isBoardError(answer: JsonObject): boolean {
+	private getErrorCodes(answer: JsonObject): string[] {
 		const errors: unknown[] = Array.isArray(answer.errors) ? answer.errors : [];
-		const isBoardError = errors.some(
-			(error) =>
-				isJsonObject(error) &&
-				isJsonObject(error.extensions) &&
-				error.extensions.code === BOARD_ERROR_CODE &&
-				(error.message ?? '') === ''
+		const errorCodes = errors.map((error) =>
+			isJsonObject(error) && isJsonObject(error.extensions) && typeof error.extensions.code === 'string'
+				? error.extensions.code
+				: ''
 		);
 
-		return isBoardError;
+		return errorCodes;
 	}
 
 	private async postGraphql(
@@ -182,11 +189,5 @@ export class BoardImportTaskcardsService {
 		const error = new Error('TaskCards request failed');
 
 		return error;
-	}
-
-	private async wait(delayInMs: number): Promise<void> {
-		await new Promise((resolve) => {
-			setTimeout(resolve, delayInMs);
-		});
 	}
 }

@@ -23,7 +23,7 @@ export class BoardImportSourceService {
 			throw new BoardImportSourceUnknownLoggableException();
 		}
 
-		// The normalized link has only one reading, so a later request cannot go to another host than the checked one.
+		// A request of the worker can go to another host of the source. isLinkOfSource checks each of these requests.
 		const source: BoardImportSource = { type: sourceType, link: parsedLink.normalizedLink };
 
 		return source;

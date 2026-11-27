@@ -31,6 +31,7 @@ interface Hop {
 }
 
 const MILLISECONDS_PER_SECOND = 1000;
+const CONTENT_TYPE_HEADER = 'content-type';
 const REDIRECT_STATUSES = new Set<number>([
 	HttpStatus.MOVED_PERMANENTLY,
 	HttpStatus.FOUND,
@@ -161,8 +162,7 @@ export class BoardImportSourceHttpClientService {
 	private getRedirectHop(hop: Hop, status: number, location: string): Hop {
 		const url = this.parseUrl(location, hop.url);
 		const keepsMethod = METHOD_KEEPING_REDIRECT_STATUSES.has(status);
-		// A header of the caller can be a secret for one host, for example the visitor token.
-		const headers = url.host === hop.url.host ? hop.headers : {};
+		const headers = this.getRedirectHeaders(hop, url, keepsMethod);
 		const redirectHop: Hop = {
 			method: keepsMethod ? hop.method : 'GET',
 			url,
@@ -171,6 +171,20 @@ export class BoardImportSourceHttpClientService {
 		};
 
 		return redirectHop;
+	}
+
+	// A header of the caller can be a secret for one host, for example the visitor token.
+	private getRedirectHeaders(hop: Hop, url: URL, keepsBody: boolean): Record<string, string> {
+		if (url.host === hop.url.host) {
+			return hop.headers;
+		}
+
+		const contentTypeHeaders = Object.entries(hop.headers).filter(
+			([name]) => keepsBody && name.toLowerCase() === CONTENT_TYPE_HEADER
+		);
+		const headers = Object.fromEntries(contentTypeHeaders);
+
+		return headers;
 	}
 
 	private parseUrl(url: string, base?: URL): URL {

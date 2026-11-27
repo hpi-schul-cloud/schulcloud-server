@@ -31,6 +31,14 @@ describe('parseTaskcardsLink', () => {
 				expected: { boardId, token: undefined, baseUrl: 'https://www.taskcards.de' },
 			},
 			{
+				link: `https://taskcards.app/#/board/${boardId}`,
+				expected: { boardId, token: undefined, baseUrl: 'https://www.taskcards.de' },
+			},
+			{
+				link: `https://www.taskcards.app/#/board/${boardId}`,
+				expected: { boardId, token: undefined, baseUrl: 'https://www.taskcards.de' },
+			},
+			{
 				link: `https://bra.taskcards.app/#/board/${boardId}`,
 				expected: { boardId, token: undefined, baseUrl: 'https://bra.taskcards.app' },
 			},

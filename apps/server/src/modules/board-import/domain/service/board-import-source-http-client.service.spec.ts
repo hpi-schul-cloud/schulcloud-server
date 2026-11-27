@@ -271,21 +271,30 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the redirect target is another host of the source', () => {
-			const setup = () => {
-				const { request } = setupRequest();
+			const setup = (status: number) => {
+				const contentTypeHeader = { 'Content-Type': 'application/json' };
+				const { request } = setupRequest({ headers: { ...contentTypeHeader, 'x-token': 'visitor' } });
 				mockLinkChecks(true, true);
-				mockResponse(307, '', 'https://bra.taskcards.app/graphql');
+				mockResponse(status, '', 'https://bra.taskcards.app/graphql');
 				mockResponse(200, 'final');
 
-				return { request };
+				return { request, contentTypeHeader };
 			};
 
-			it('should not send the headers of the caller', async () => {
-				const { request } = setup();
+			it('should send only the content type of the caller with the kept body', async () => {
+				const { request, contentTypeHeader } = setup(307);
 
 				await service.request(request);
 
-				expect(getSentConfig(1)).toEqual(expect.objectContaining({ headers: {} }));
+				expect(getSentConfig(1)).toEqual(expect.objectContaining({ headers: contentTypeHeader, data: request.body }));
+			});
+
+			it('should send no header of the caller without the body', async () => {
+				const { request } = setup(302);
+
+				await service.request(request);
+
+				expect(getSentConfig(1)).toEqual(expect.objectContaining({ headers: {}, data: undefined }));
 			});
 		});
 
@@ -307,25 +316,23 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		});
 
 		describe('when the redirect target is not a link of the source', () => {
-			const setup = (location: string) => {
+			const setup = () => {
+				const location = 'https://evil.example/';
 				const { request } = setupRequest();
 				mockLinkChecks(true, false);
 				mockResponse(302, '', location);
 
-				return { request };
+				return { request, location };
 			};
 
-			it.each(['https://169.254.169.254/', 'http://www.taskcards.de/', 'https://evil.example/', 'https://api-svc/'])(
-				'should reject the redirect to "%s" and send no second request',
-				async (location: string) => {
-					const { request } = setup(location);
+			it('should check the redirect target and send no second request', async () => {
+				const { request, location } = setup();
 
-					await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
+				await expectRejected(request, BoardImportJobLogReason.SOURCE_LINK_REJECTED);
 
-					expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(location, request.sourceType);
-					expect(axiosInstance.request).toHaveBeenCalledTimes(1);
-				}
-			);
+				expect(sourceService.isLinkOfSource).toHaveBeenLastCalledWith(location, request.sourceType);
+				expect(axiosInstance.request).toHaveBeenCalledTimes(1);
+			});
 		});
 
 		describe('when the agent rejects an address of the host', () => {

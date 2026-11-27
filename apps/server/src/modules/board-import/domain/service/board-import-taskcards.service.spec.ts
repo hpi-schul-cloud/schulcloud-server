@@ -323,6 +323,76 @@ describe(BoardImportTaskcardsService.name, () => {
 			});
 		});
 
+		describe('when the board query gives an unknown GraphQL error', () => {
+			const setup = () => {
+				const { job, signal } = setupJobWithoutToken();
+				const body = JSON.stringify({
+					errors: [{ message: 'Internal error', extensions: { code: 'INTERNAL_SERVER_ERROR' } }],
+					data: null,
+				});
+				mockResponses({ status: 200, body: visitorBody }, { status: 200, body });
+
+				return { job, signal };
+			};
+
+			it('should throw an error that permits a new attempt', async () => {
+				const { job, signal } = setup();
+
+				const error = await readBoardError(job, signal);
+
+				expectTemporaryError(error);
+			});
+		});
+
+		describe('when the board query gives the board and an error of a nested field', () => {
+			const setup = () => {
+				const { job, signal } = setupJobWithoutToken();
+				const body = JSON.stringify({
+					errors: [{ message: 'Link failed', path: ['board', 'cards', 0, 'attachments', 0, 'downloadLink'] }],
+					data: { board: { id: boardId, cards: [] } },
+				});
+				mockResponses({ status: 200, body: visitorBody }, { status: 200, body });
+
+				return { job, signal, body };
+			};
+
+			it('should return the raw answer', async () => {
+				const { job, signal, body } = setup();
+
+				const result = await service.readBoard(job, signal);
+
+				expect(result).toBe(body);
+			});
+		});
+
+		describe('when the signal is aborted during the wait for the next board query', () => {
+			const setup = () => {
+				jest.useFakeTimers();
+				const { job } = setupJobWithToken();
+				const controller = new AbortController();
+				mockResponses(
+					{ status: 200, body: visitorBody },
+					{ status: 201, body: '' },
+					{ status: 200, body: notReadableBody }
+				);
+				const requestCount = 3;
+
+				return { job, controller, requestCount };
+			};
+
+			it('should stop the wait and send no further request', async () => {
+				const { job, controller, requestCount } = setup();
+
+				const promise = readBoardError(job, controller.signal);
+				await jest.advanceTimersByTimeAsync(0);
+				controller.abort();
+				const error = await promise;
+
+				expect(error).toHaveProperty('name', 'AbortError');
+				expect(httpClient.request).toHaveBeenCalledTimes(requestCount);
+			});
+		});
+
 		describe('when the board query gives no board and no error', () => {
 			const setup = () => {
 				const { job, signal } = setupJobWithoutToken();

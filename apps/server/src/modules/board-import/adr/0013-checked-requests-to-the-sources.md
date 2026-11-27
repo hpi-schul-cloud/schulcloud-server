@@ -30,7 +30,7 @@ Rejected alternatives:
 - The worker sends no token and no key of the SchulCloud to a source. It sends only what the source gives to a visitor.
 - The worker reads the source before it creates the board.
 - The rule for the host is one function of the module. The import API and the worker both use it.
-- A rejected URL, too many redirects, an answer above the size limit and a source that is not readable with the link set the job to `failed` at once. No board is created.
+- A rejected URL, too many redirects, an answer above the size limit and a source that is not readable with the link set the job to `failed` at once. The attempt creates no board.
 - A timeout, a network error and the statuses 408, 429 and 5xx fail the attempt. The broker delivers the message again after the retry delay ([0008](0008-retry-import-jobs-through-redelivery.md)). The client has no retry of its own.
 
 ## Consequences
@@ -39,5 +39,6 @@ Rejected alternatives:
 - A source whose host name resolves to a private address cannot be imported, also if only one of its addresses is private.
 - A redirect to a host that is not in the host list of the source fails the job. A new host of a source must be added to the list.
 - A source that is slow or not available uses the attempts of the job. After the last attempt, the job is `failed`.
+- A host name that does not resolve and a certificate error also use all attempts. A DNS error in the cluster can be temporary, so the client does not reject these errors at once.
 - The list of special address ranges comes from the library. The library gives no error code, so the client finds a rejected address and an answer above the size limit by the text of the error. Tests with real requests fail when an update of the library or of axios changes these texts.
 - The egress policy stays the second layer. It does not replace the check, and the check does not replace it.
