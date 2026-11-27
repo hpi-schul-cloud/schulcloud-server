@@ -27,11 +27,6 @@ export class BoardPublicApiConfig {
 	@IsBoolean()
 	public featureColumnBoardCollaborativeTextEditorEnabled = true;
 
-	@ConfigProperty('FEATURE_COLUMN_BOARD_SOCKET_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureColumnBoardSocketEnabled = false;
-
 	@ConfigProperty('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
