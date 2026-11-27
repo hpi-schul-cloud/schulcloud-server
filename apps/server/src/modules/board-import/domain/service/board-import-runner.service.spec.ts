@@ -1,6 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { boardImportJobFactory } from '../../testing';
+import { boardImportJobFactory, intermediateBoardFactory } from '../../testing';
 import { BoardImportPlaceholderBoardService } from './board-import-placeholder-board.service';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason } from '../type';
@@ -51,26 +51,26 @@ describe(BoardImportRunnerService.name, () => {
 			const job = boardImportJobFactory.build();
 			const { signal } = new AbortController();
 			const token = 'token';
-			const sourceResponse = '{"data":{"board":{}}}';
+			const board = intermediateBoardFactory.build();
 
 			const reader = createMock<BoardImportSourceReader>();
 
 			tokenService.createToken.mockResolvedValueOnce(token);
 			readerRegistry.findByType.mockReturnValueOnce(reader);
-			reader.readBoard.mockResolvedValueOnce(sourceResponse);
+			reader.readBoard.mockResolvedValueOnce(board);
 
-			return { job, signal, token, sourceResponse, reader };
+			return { job, signal, token, board, reader };
 		};
 
 		describe('when the board is written', () => {
 			const setup = () => {
-				const { job, signal, token, sourceResponse, reader } = setupRun();
+				const { job, signal, token, board, reader } = setupRun();
 
 				placeholderBoardService.write.mockImplementationOnce(async (_job, session) => {
 					await session.call(() => Promise.resolve());
 				});
 
-				return { job, signal, token, sourceResponse, reader };
+				return { job, signal, token, board, reader };
 			};
 
 			it('should write the board of the job with a token for the job', async () => {
@@ -82,14 +82,14 @@ describe(BoardImportRunnerService.name, () => {
 				expect(tokenService.createToken).toHaveBeenCalledWith(job);
 			});
 
-			it('should read the source before it writes the board with the answer of the source', async () => {
-				const { job, signal, sourceResponse, reader } = setup();
+			it('should read the source before it writes the board with the model as JSON', async () => {
+				const { job, signal, board, reader } = setup();
 
 				await service.run(job, signal);
 
 				expect(readerRegistry.findByType).toHaveBeenCalledWith(job.source.type);
 				expect(reader.readBoard).toHaveBeenCalledWith(job, signal);
-				expect(placeholderBoardService.write).toHaveBeenCalledWith(job, expect.anything(), sourceResponse);
+				expect(placeholderBoardService.write).toHaveBeenCalledWith(job, expect.anything(), JSON.stringify(board));
 				expect(reader.readBoard.mock.invocationCallOrder[0]).toBeLessThan(
 					placeholderBoardService.write.mock.invocationCallOrder[0]
 				);

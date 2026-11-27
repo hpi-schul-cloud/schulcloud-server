@@ -821,7 +821,7 @@ describe('Board Import Worker (import as the user)', () => {
 			expect(finishedJob.boardId?.toHexString()).toEqual(boardId);
 		});
 
-		it('should write the start of the answer of the source into the second card', async () => {
+		it('should write the start of the intermediate model into the second card', async () => {
 			const { id } = await setup();
 
 			await publishJob(amqpConnection, id);
@@ -833,7 +833,9 @@ describe('Board Import Worker (import as the user)', () => {
 				expect.anything(),
 				expect.objectContaining({
 					data: expect.objectContaining({
-						content: expect.objectContaining({ text: expect.stringContaining('<p>{\n\t&quot;data&quot;') }),
+						content: expect.objectContaining({
+							text: expect.stringContaining('<p>{&quot;version&quot;:1,&quot;source&quot;'),
+						}),
 					}),
 				})
 			);

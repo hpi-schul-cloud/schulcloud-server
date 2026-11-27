@@ -13,9 +13,15 @@ export {
 	BoardImportJob,
 	BoardImportJobLogReason,
 	BoardImportJobRejectedError,
+	BoardImportSource,
 	BoardImportSourceDefinition,
 	BoardImportSourceReader,
 	BoardImportSourceRegistryService,
+	IntermediateBoard,
+	IntermediateCard,
+	IntermediateElement,
+	IntermediateElementType,
+	IntermediateSection,
 } from './domain';
 export { BoardImportSourceHttpClientService } from './domain/service/board-import-source-http-client.service';
 export { BoardImportSourceReaderRegistryService } from './domain/service/board-import-source-reader-registry.service';

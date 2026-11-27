@@ -19,4 +19,9 @@ export {
 	BoardImportSource,
 	BoardImportTarget,
 	BoardImportTargetType,
+	IntermediateBoard,
+	IntermediateCard,
+	IntermediateElement,
+	IntermediateElementType,
+	IntermediateSection,
 } from './type';
