@@ -6,14 +6,17 @@ export {
 	BoardImportSourceDisabledLoggableException,
 	BoardImportSourceUnknownLoggableException,
 } from './error';
-export { BOARD_IMPORT_JOB_REPO, BoardImportJobRepo } from './interface';
-export { BoardImportJobService, BoardImportSourceService } from './service';
 export {
-	BOARD_IMPORT_SOURCE_SWITCH_KEYS,
+	BOARD_IMPORT_JOB_REPO,
+	BoardImportJobRepo,
+	BoardImportSourceDefinition,
+	BoardImportSourceReader,
+} from './interface';
+export { BoardImportJobService, BoardImportSourceRegistryService, BoardImportSourceService } from './service';
+export {
 	BoardImportJobLogReason,
 	BoardImportJobStatus,
 	BoardImportSource,
-	BoardImportSourceType,
 	BoardImportTarget,
 	BoardImportTargetType,
 } from './type';

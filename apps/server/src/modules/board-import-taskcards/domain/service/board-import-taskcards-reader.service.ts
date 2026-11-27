@@ -1,9 +1,14 @@
+import {
+	type BoardImportJob,
+	BoardImportJobLogReason,
+	BoardImportJobRejectedError,
+	BoardImportSourceHttpClientService,
+	type BoardImportSourceReader,
+	BoardImportSourceReaderRegistryService,
+} from '@modules/board-import';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { setTimeout as wait } from 'node:timers/promises';
-import { type BoardImportJob } from '../do';
-import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
-import { BoardImportSourceHttpClientService } from './board-import-source-http-client.service';
+import { BOARD_IMPORT_TASKCARDS_SOURCE_TYPE } from '../../board-import-taskcards.constants';
 import { parseTaskcardsLink, type TaskcardsLink } from './board-import-taskcards-link';
 
 const VISITOR_QUERY = 'mutation { createVisitor { id noActive } }';
@@ -36,8 +41,15 @@ const isJsonObject = (value: unknown): value is JsonObject =>
 
 // Reads a board the same way as the web app of TaskCards does for a visitor. TaskCards has no official interface.
 @Injectable()
-export class BoardImportTaskcardsService {
-	constructor(private readonly httpClient: BoardImportSourceHttpClientService) {}
+export class BoardImportTaskcardsReaderService implements BoardImportSourceReader {
+	public readonly type = BOARD_IMPORT_TASKCARDS_SOURCE_TYPE;
+
+	constructor(
+		private readonly httpClient: BoardImportSourceHttpClientService,
+		boardImportSourceReaderRegistryService: BoardImportSourceReaderRegistryService
+	) {
+		boardImportSourceReaderRegistryService.registerReader(this);
+	}
 
 	// Returns the raw answer of the board query. Rejects with BoardImportJobRejectedError when the board is not
 	// readable with the link, and with another error when a new attempt can help.
@@ -156,7 +168,7 @@ export class BoardImportTaskcardsService {
 			url,
 			headers,
 			body: JSON.stringify(payload),
-			sourceType: BoardImportSourceType.TASKCARDS,
+			sourceType: this.type,
 			signal,
 		});
 

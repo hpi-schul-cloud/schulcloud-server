@@ -1,10 +1,9 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
-import { type BoardImportSourceType } from '../type';
 
 export class BoardImportSourceDisabledLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly sourceType: BoardImportSourceType) {
+	constructor(private readonly sourceType: string) {
 		super(
 			{
 				type: 'BOARD_IMPORT_SOURCE_DISABLED',

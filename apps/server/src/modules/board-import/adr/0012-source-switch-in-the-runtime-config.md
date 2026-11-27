@@ -4,6 +4,8 @@
 
 Accepted (2026-11-26)
 
+The key of the switch is part of the definition of a source, see [0014](0014-one-module-for-each-source.md) (2026-11-26). The board import has no list of switch keys.
+
 ## Context
 
 The import reads boards from external sources through interfaces that are not official. A source can change, limit or block these requests at any time. Operations must then stop new imports from this source at once, without a deployment. The other sources must stay available.

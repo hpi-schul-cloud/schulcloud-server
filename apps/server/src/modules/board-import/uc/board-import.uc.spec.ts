@@ -5,7 +5,6 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { BOARD_IMPORT_PUBLIC_API_CONFIG_TOKEN, BoardImportPublicApiConfig } from '../board-import.config';
 import { RuntimeConfigService } from '@infra/runtime-config';
 import {
-	BOARD_IMPORT_SOURCE_SWITCH_KEYS,
 	BoardImportJobService,
 	BoardImportLinkInvalidLoggableException,
 	BoardImportSourceDisabledLoggableException,
@@ -173,10 +172,11 @@ describe(BoardImportUc.name, () => {
 		describe('when the source is switched on', () => {
 			const setup = () => {
 				const job = boardImportJobFactory.build();
-				const switchKey = BOARD_IMPORT_SOURCE_SWITCH_KEYS[job.source.type];
+				const switchKey = 'TEST_SOURCE_ENABLED';
 				config.featureBoardImportEnabled = true;
 
 				boardImportSourceService.resolveSource.mockReturnValueOnce(job.source);
+				boardImportSourceService.getSwitchKey.mockReturnValueOnce(switchKey);
 				runtimeConfigService.getBoolean.mockResolvedValueOnce(true);
 				boardImportJobService.create.mockResolvedValueOnce(job);
 
@@ -196,6 +196,7 @@ describe(BoardImportUc.name, () => {
 
 				await uc.startImport(job.userId, job.source.link, job.target);
 
+				expect(boardImportSourceService.getSwitchKey).toHaveBeenCalledWith(job.source.type);
 				expect(runtimeConfigService.getBoolean).toHaveBeenCalledWith(switchKey);
 			});
 

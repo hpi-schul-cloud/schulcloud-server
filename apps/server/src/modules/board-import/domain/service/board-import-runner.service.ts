@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { type BoardImportJob } from '../do';
-import { BoardImportSourceType } from '../type';
+import { BoardImportJobRejectedError } from '../error';
+import { BoardImportJobLogReason } from '../type';
 import { BoardImportPlaceholderBoardService } from './board-import-placeholder-board.service';
-import { BoardImportTaskcardsService } from './board-import-taskcards.service';
+import { BoardImportSourceReaderRegistryService } from './board-import-source-reader-registry.service';
 import { BoardImportTokenService } from './board-import-token.service';
 import { BoardImportUserSession } from './board-import-user-session';
 
@@ -11,7 +12,7 @@ export class BoardImportRunnerService {
 	constructor(
 		private readonly boardImportTokenService: BoardImportTokenService,
 		private readonly boardImportPlaceholderBoardService: BoardImportPlaceholderBoardService,
-		private readonly boardImportTaskcardsService: BoardImportTaskcardsService
+		private readonly boardImportSourceReaderRegistryService: BoardImportSourceReaderRegistryService
 	) {}
 
 	// The signal aborts when the run ends, also when the job reaches its maximum duration.
@@ -28,11 +29,12 @@ export class BoardImportRunnerService {
 	}
 
 	private async readSource(job: BoardImportJob, signal: AbortSignal): Promise<string> {
-		const readers: Record<BoardImportSourceType, () => Promise<string>> = {
-			[BoardImportSourceType.TASKCARDS]: () => this.boardImportTaskcardsService.readBoard(job, signal),
-		};
+		const reader = this.boardImportSourceReaderRegistryService.findByType(job.source.type);
+		if (!reader) {
+			throw new BoardImportJobRejectedError(BoardImportJobLogReason.SOURCE_UNKNOWN);
+		}
 
-		const sourceResponse = await readers[job.source.type]();
+		const sourceResponse = await reader.readBoard(job, signal);
 
 		return sourceResponse;
 	}

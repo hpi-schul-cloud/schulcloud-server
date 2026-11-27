@@ -7,7 +7,7 @@ import { createServer, type Server } from 'node:http';
 import { RequestFilteringHttpsAgent } from 'request-filtering-agent';
 import { BOARD_IMPORT_SOURCE_REQUEST_CONFIG_TOKEN, BoardImportSourceRequestConfig } from '../../board-import.config';
 import { BoardImportJobRejectedError } from '../error';
-import { BoardImportJobLogReason, BoardImportSourceType } from '../type';
+import { BoardImportJobLogReason } from '../type';
 import {
 	type BoardImportSourceRequest,
 	BoardImportSourceHttpClientService,
@@ -48,10 +48,10 @@ describe(BoardImportSourceHttpClientService.name, () => {
 	const setupRequest = (props: Partial<BoardImportSourceRequest> = {}) => {
 		const request: BoardImportSourceRequest = {
 			method: 'POST',
-			url: 'https://www.taskcards.de/graphql',
+			url: 'https://www.source.example/graphql',
 			headers: { 'x-token': 'visitor' },
 			body: '{"query":"q"}',
-			sourceType: BoardImportSourceType.TASKCARDS,
+			sourceType: 'test-source',
 			signal: new AbortController().signal,
 			...props,
 		};
@@ -189,7 +189,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		describe('when the source redirects with status 302 to the same host', () => {
 			const setup = () => {
 				const { request } = setupRequest();
-				const location = 'https://www.taskcards.de/other';
+				const location = 'https://www.source.example/other';
 				const finalResponse = { status: 200, body: 'final' };
 				mockLinkChecks(true, true);
 				mockResponse(302, '', location);
@@ -235,7 +235,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 			const setup = () => {
 				const { request } = setupRequest();
 				mockLinkChecks(true, true);
-				mockResponse(307, '', 'https://www.taskcards.de/other');
+				mockResponse(307, '', 'https://www.source.example/other');
 				mockResponse(200, 'final');
 
 				return { request };
@@ -253,7 +253,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 		describe('when the redirect target is a relative path', () => {
 			const setup = () => {
 				const { request } = setupRequest();
-				const resolvedUrl = 'https://www.taskcards.de/other';
+				const resolvedUrl = 'https://www.source.example/other';
 				mockLinkChecks(true, true);
 				mockResponse(308, '', '/other');
 				mockResponse(200, 'final');
@@ -275,7 +275,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 				const contentTypeHeader = { 'Content-Type': 'application/json' };
 				const { request } = setupRequest({ headers: { ...contentTypeHeader, 'x-token': 'visitor' } });
 				mockLinkChecks(true, true);
-				mockResponse(status, '', 'https://bra.taskcards.app/graphql');
+				mockResponse(status, '', 'https://bra.source.test/graphql');
 				mockResponse(200, 'final');
 
 				return { request, contentTypeHeader };
@@ -341,7 +341,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 				mockLinkChecks(true);
 				axiosInstance.request.mockRejectedValueOnce(
 					new AxiosError(
-						'DNS lookup 10.0.0.5(family:4, host:www.taskcards.de) is not allowed. Because, It is private IP address.'
+						'DNS lookup 10.0.0.5(family:4, host:www.source.example) is not allowed. Because, It is private IP address.'
 					)
 				);
 
@@ -450,7 +450,7 @@ describe(BoardImportSourceHttpClientService.name, () => {
 					expect(error).toBeInstanceOf(Error);
 					expect(error).not.toBeInstanceOf(BoardImportJobRejectedError);
 					expect(error).not.toBeInstanceOf(AxiosError);
-					expect(error).toEqual(expect.objectContaining({ message: expect.not.stringContaining('taskcards') }));
+					expect(error).toEqual(expect.objectContaining({ message: expect.not.stringContaining('source.example') }));
 					expect(error).not.toHaveProperty('cause');
 				}
 			);
@@ -540,7 +540,7 @@ describe(`${BoardImportSourceHttpClientService.name} with real requests`, () => 
 			method: 'POST',
 			url,
 			body: '{}',
-			sourceType: BoardImportSourceType.TASKCARDS,
+			sourceType: 'test-source',
 			signal: new AbortController().signal,
 		};
 		for (let i = 0; i < linkCheckCount; i += 1) {
