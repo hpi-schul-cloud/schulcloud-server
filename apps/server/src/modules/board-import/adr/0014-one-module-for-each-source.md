@@ -37,6 +37,6 @@ Rejected alternatives:
 - If the import API does not import a source, a link to this source gets the answer "unknown source".
 - If the worker has no reader for the source of a job, the job fails at once, without a new attempt. This also applies to jobs of a source that was removed.
 - If two sources have the same type, the app does not start. `board-import` does not check if the hosts of two sources overlap.
-- A missing import is not visible at compile time. Tests of the apps check that each source is registered.
-- `board-import` and a source module depend on each other: the source module uses the contract, and the app modules of `board-import` import the source module. Only the app modules have this dependency.
+- A missing import is not visible at compile time. The API tests of `board-import` check for each app that each source is registered. A new source adds its type to these checks.
+- `board-import` and a source module depend on each other: the source module uses the contract, and the app modules of `board-import` import the source module. Only the app modules and the API tests of `board-import` have this dependency.
 - The import API and the server load the file of the checked client through the facade of `board-import`, but do not create the client.

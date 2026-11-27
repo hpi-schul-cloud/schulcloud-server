@@ -28,7 +28,9 @@ export class BoardImportSourceService {
 	// Applies the same rules as resolveSource, for a URL that the worker gets from a source, for example a redirect.
 	public isLinkOfSource(link: string, sourceType: string): boolean {
 		const parsedLink = this.parseLink(link);
-		const isLinkOfSource = parsedLink !== undefined && this.findSourceType(parsedLink.host) === sourceType;
+		const boardHosts = this.boardImportSourceRegistryService.findByType(sourceType)?.boardHosts ?? [];
+		const isLinkOfSource =
+			parsedLink !== undefined && boardHosts.some((entry) => this.isHostInEntry(parsedLink.host, entry));
 
 		return isLinkOfSource;
 	}

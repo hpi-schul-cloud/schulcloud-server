@@ -23,6 +23,11 @@ describe(BoardImportSourceService.name, () => {
 		boardHosts: ['*.subdomains.example'],
 		switchKey: 'SUBDOMAIN_SOURCE_ENABLED',
 	};
+	const overlappingDefinition: BoardImportSourceDefinition = {
+		type: 'overlapping-source',
+		boardHosts: ['boards.source.example'],
+		switchKey: 'OVERLAPPING_SOURCE_ENABLED',
+	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -31,7 +36,9 @@ describe(BoardImportSourceService.name, () => {
 
 		service = module.get(BoardImportSourceService);
 		const registry = module.get(BoardImportSourceRegistryService);
-		[definition, otherDefinition, subdomainDefinition].forEach((source) => registry.registerSource(source));
+		[definition, otherDefinition, subdomainDefinition, overlappingDefinition].forEach((source) =>
+			registry.registerSource(source)
+		);
 	});
 
 	afterAll(async () => {
@@ -175,6 +182,22 @@ describe(BoardImportSourceService.name, () => {
 		describe('when the link is a valid link to a host of another source', () => {
 			it('should return false', () => {
 				const result = service.isLinkOfSource('https://other.example/graphql', definition.type);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when the host is also a host of a source that was registered before', () => {
+			it('should return true', () => {
+				const result = service.isLinkOfSource('https://boards.source.example/graphql', overlappingDefinition.type);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when no source with the type is registered', () => {
+			it('should return false', () => {
+				const result = service.isLinkOfSource('https://www.source.example/graphql', 'removed-source');
 
 				expect(result).toBe(false);
 			});

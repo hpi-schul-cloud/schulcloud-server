@@ -102,6 +102,17 @@ describe(BoardImportSourceRegistryService.name, () => {
 			});
 		});
 
+		describe('when a caller changes the registered definition', () => {
+			it('should throw an error', () => {
+				const { registry, definition } = setup();
+				registry.registerSource(definition);
+				const [storedDefinition] = registry.getAll();
+
+				expect(() => Array.prototype.push.call(storedDefinition.boardHosts, 'localhost')).toThrow(TypeError);
+				expect(() => Object.assign(storedDefinition, { switchKey: 'OTHER_KEY' })).toThrow(TypeError);
+			});
+		});
+
 		describe('when a source with the same type is registered already', () => {
 			it('should throw an error', () => {
 				const { registry, definition } = setup();

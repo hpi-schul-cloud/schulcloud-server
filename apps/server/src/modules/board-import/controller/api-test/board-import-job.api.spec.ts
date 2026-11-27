@@ -335,6 +335,20 @@ describe('Board Import Controller (API)', () => {
 			});
 		});
 
+		describe('when the registered sources are read', () => {
+			const setup = () => {
+				const sourceTypes = sourceRegistry.getAll().map((definition) => definition.type);
+
+				return { sourceTypes };
+			};
+
+			it('should contain the TaskCards source', () => {
+				const { sourceTypes } = setup();
+
+				expect(sourceTypes).toContain(BOARD_IMPORT_TASKCARDS_SOURCE_TYPE);
+			});
+		});
+
 		describe('when the switches of all sources are read', () => {
 			const setup = () => {
 				const switchKeys = sourceRegistry.getAll().map((definition) => definition.switchKey);

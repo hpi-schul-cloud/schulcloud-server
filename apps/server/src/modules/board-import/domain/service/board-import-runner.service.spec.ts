@@ -175,6 +175,7 @@ describe(BoardImportRunnerService.name, () => {
 				expect(placeholderBoardService.write).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('when no reader is registered for the source of the job', () => {
 			const setup = () => {
 				const job = boardImportJobFactory.build();
@@ -186,20 +187,13 @@ describe(BoardImportRunnerService.name, () => {
 				return { job, signal, reason };
 			};
 
-			it('should reject the job with the reason that the source is unknown', async () => {
+			it('should reject the job with the reason that the source is unknown and write no board', async () => {
 				const { job, signal, reason } = setup();
 
 				const error: unknown = await service.run(job, signal).catch((e: unknown) => e);
 
 				expect(error).toBeInstanceOf(BoardImportJobRejectedError);
 				expect(error).toMatchObject({ reason });
-			});
-
-			it('should write no board and create no token', async () => {
-				const { job, signal } = setup();
-
-				await service.run(job, signal).catch(() => undefined);
-
 				expect(placeholderBoardService.write).not.toHaveBeenCalled();
 				expect(tokenService.createToken).not.toHaveBeenCalled();
 			});
