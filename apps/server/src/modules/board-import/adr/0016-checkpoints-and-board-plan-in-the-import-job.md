@@ -21,7 +21,6 @@ A new attempt can find the parts that exist in two ways: it compares the board p
 - The exporter creates the columns and cards in the order of the plan. Thus the position of a checkpoint links it to its part of the plan. A new attempt creates only the parts that have no checkpoint.
 - The exporter does not compare the board with the plan. It only checks at the start of an attempt that the board of the job exists. If the board does not exist, the job starts again with a new board and without checkpoints.
 - The worker stores the board, the plan and the checkpoints only if the job is still running in the attempt of the worker (see [0008](0008-retry-import-jobs-through-redelivery.md)). A worker with an older attempt stops at its next write. Thus two attempts cannot mix their checkpoints.
-- The progress that the import API shows is not stored. The API calculates it from the stored plan and the checkpoints.
 
 ## Consequences
 
