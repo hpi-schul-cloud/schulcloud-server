@@ -5,4 +5,5 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
+export { cookieCredentialCsrfMiddleware } from './middleware/cookie-credential-csrf.middleware';
 export { ServerTestModule } from './server.app.module';

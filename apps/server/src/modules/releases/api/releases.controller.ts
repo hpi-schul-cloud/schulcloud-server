@@ -5,8 +5,11 @@ import {
 	ForbiddenException,
 	Get,
 	Header,
+	HttpCode,
+	HttpStatus,
 	NotFoundException,
 	Param,
+	Post,
 	Query,
 	StreamableFile,
 	UnauthorizedException,
@@ -47,7 +50,8 @@ export class ReleasesController {
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	@Get('fetch')
+	@Post('fetch')
+	@HttpCode(HttpStatus.OK)
 	public async fetchReleases(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.releasesUc.fetchReleases(currentUser.userId);
 	}
