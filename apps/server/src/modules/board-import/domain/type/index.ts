@@ -3,7 +3,6 @@ export { BoardImportJobStatus } from './board-import-job-status.enum';
 export { BoardImportSource } from './board-import-source';
 export { BoardImportTarget, BoardImportTargetType } from './board-import-target';
 export {
-	INTERMEDIATE_BOARD_VERSION,
 	IntermediateBoard,
 	IntermediateCard,
 	IntermediateElement,

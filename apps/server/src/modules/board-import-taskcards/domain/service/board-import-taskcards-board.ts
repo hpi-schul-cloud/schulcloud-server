@@ -2,7 +2,6 @@ import {
 	BoardImportJobLogReason,
 	BoardImportJobRejectedError,
 	type BoardImportSource,
-	INTERMEDIATE_BOARD_VERSION,
 	type IntermediateBoard,
 	type IntermediateCard,
 	type IntermediateElement,
@@ -127,7 +126,7 @@ export const mapTaskcardsBoard = (board: JsonObject, source: BoardImportSource):
 	}
 
 	const intermediateBoard: IntermediateBoard = {
-		version: INTERMEDIATE_BOARD_VERSION,
+		version: 1,
 		source: { ...source },
 		title: toText(board.name),
 		description: toText(board.description),

@@ -1,8 +1,5 @@
 import { type BoardImportSource } from './board-import-source';
 
-// Increase the version with each change of the model that a reader of a stored model must know.
-export const INTERMEDIATE_BOARD_VERSION = 1;
-
 export enum IntermediateElementType {
 	TEXT = 'text',
 	LINK = 'link',
@@ -63,7 +60,8 @@ export interface IntermediateSection {
 // The content of a source board, without the limits and rules of the target board. The order of the sections,
 // cards and elements is the order of the source.
 export interface IntermediateBoard {
-	version: number;
+	// The source states the version that it builds. Another version of the model is another type.
+	version: 1;
 	source: BoardImportSource;
 	title: string;
 	description: string;

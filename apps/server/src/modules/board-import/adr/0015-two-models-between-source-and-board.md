@@ -17,7 +17,8 @@ With one model between the source and the board, there are two bad options:
 
 The import uses two models and one conversion step between them.
 
-- The **intermediate model** describes the content of a source board. It is neutral: it contains no format of a source and no limit or rule of the board. A title can have any length, a card can be empty. It has a version number.
+- The **intermediate model** describes the content of a source board. It is neutral: it contains no format of a source and no limit or rule of the board. A title can have any length, a card can be empty.
+- The intermediate model has a version number. Each source module states the version that it builds. A new version is a new type next to the old one, so a source module can stay on an old version, and `board-import` selects the conversion by the version.
 - A source module converts its own format to the intermediate model, and does nothing else with the content. It does not decide if the import can create the content: a link or a file of the source is a link or a file in the model, also when the import cannot create it. Only content that the model has no type for becomes an element of the type "not supported", with a kind. The structure rules of a source, for example which part of the source becomes a section, stay in the source module.
 - The **board plan** describes the board that the import creates. It contains only content that the API of the board accepts.
 - The **planner** converts the intermediate model to the board plan. It is the only place that applies the limits and rules of the board. For each content that it shortens, replaces or leaves out, it writes an **import note**. A source module writes no import notes.

@@ -17,7 +17,6 @@ export {
 	BoardImportSourceDefinition,
 	BoardImportSourceReader,
 	BoardImportSourceRegistryService,
-	INTERMEDIATE_BOARD_VERSION,
 	IntermediateBoard,
 	IntermediateCard,
 	IntermediateElement,

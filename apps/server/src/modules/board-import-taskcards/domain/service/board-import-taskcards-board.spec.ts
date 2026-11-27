@@ -2,7 +2,6 @@ import {
 	BoardImportJobLogReason,
 	BoardImportJobRejectedError,
 	type BoardImportSource,
-	INTERMEDIATE_BOARD_VERSION,
 	type IntermediateElement,
 	IntermediateElementType,
 } from '@modules/board-import';
@@ -123,7 +122,7 @@ describe('mapTaskcardsBoard', () => {
 
 			expect(result).toEqual(
 				expect.objectContaining({
-					version: INTERMEDIATE_BOARD_VERSION,
+					version: 1,
 					source,
 					title: board.name,
 					description: board.description,
@@ -301,7 +300,7 @@ describe('mapTaskcardsBoard', () => {
 				],
 			};
 			const expectedBoard = {
-				version: INTERMEDIATE_BOARD_VERSION,
+				version: 1,
 				source,
 				title: '',
 				description: '',

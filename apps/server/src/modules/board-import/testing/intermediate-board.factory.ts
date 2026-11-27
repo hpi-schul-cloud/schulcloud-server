@@ -1,9 +1,9 @@
 import { Factory } from 'fishery';
-import { INTERMEDIATE_BOARD_VERSION, type IntermediateBoard, IntermediateElementType } from '../domain';
+import { type IntermediateBoard, IntermediateElementType } from '../domain';
 
 export const intermediateBoardFactory = Factory.define<IntermediateBoard>(({ sequence }) => {
 	const board: IntermediateBoard = {
-		version: INTERMEDIATE_BOARD_VERSION,
+		version: 1,
 		source: { type: 'test-source', link: `https://source.example/board/${sequence}` },
 		title: `Board ${sequence}`,
 		description: '',
