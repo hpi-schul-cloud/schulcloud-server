@@ -63,6 +63,20 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 		return { token, session };
 	};
 
+	const sourceResponse = '{"data":{"board":{"id":"1"}}}';
+
+	const mockSourceCard = () => {
+		const sourceCardId = new ObjectId().toHexString();
+		const sourceElementId = new ObjectId().toHexString();
+
+		columnClient.createCard.mockResolvedValueOnce(createMock<CardResponse>({ id: sourceCardId, elements: [] }));
+		cardClient.createCardElement.mockResolvedValueOnce(
+			createMock<CardControllerCreateElement201Response>({ id: sourceElementId })
+		);
+
+		return { sourceCardId, sourceElementId };
+	};
+
 	const setupIds = () => {
 		const boardId = new ObjectId().toHexString();
 		const columnId = new ObjectId().toHexString();
@@ -95,6 +109,8 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<CardControllerCreateElement201Response>({ id: elementId })
 				);
 
+				mockSourceCard();
+
 				return {
 					job,
 					session,
@@ -113,7 +129,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create the board in the target as the user', async () => {
 				const { job, session, token, boardParams } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(boardsClient.createBoard).toHaveBeenCalledWith(token, boardParams);
 			});
@@ -121,7 +137,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should store the board in the job', async () => {
 				const { job, session, boardId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, boardId);
 			});
@@ -129,7 +145,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create a column, a card and a text element as the user', async () => {
 				const { job, session, token, boardId, columnId, cardId, cardParams, createElementParams } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(boardsClient.createBoardColumn).toHaveBeenCalledWith(token, boardId);
 				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, cardParams);
@@ -139,7 +155,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should write the link of the job as text into the element', async () => {
 				const { job, session, token, elementId, elementParams } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, elementParams);
 			});
@@ -147,7 +163,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should not read the new board', async () => {
 				const { job, session } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(boardsClient.getBoardSkeletonById).not.toHaveBeenCalled();
 				expect(cardClient.getAllBoardCardsByIds).not.toHaveBeenCalled();
@@ -167,13 +183,15 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<CardControllerCreateElement201Response>({ id: elementId })
 				);
 
+				mockSourceCard();
+
 				return { job, session, token, boardId, elementId };
 			};
 
 			it('should create no second board and add the missing parts', async () => {
 				const { job, session, token, boardId, elementId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(boardsClient.createBoard).not.toHaveBeenCalled();
 				expect(boardsClient.createBoardColumn).toHaveBeenCalledWith(token, boardId);
@@ -181,7 +199,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			});
 		});
 
-		describe('when the job has a complete board from an attempt before', () => {
+		describe('when the job has a board with only the first card from an attempt before', () => {
 			const setup = () => {
 				const { token, session } = setupSession();
 				const { boardId, columnId, cardId, elementId } = setupIds();
@@ -195,37 +213,157 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 						data: [{ elements: [{ id: elementId, type: ContentElementType.RICH_TEXT }] }],
 					})
 				);
+				const { sourceCardId, sourceElementId } = mockSourceCard();
 
-				return { job, session, token, boardId, cardId, elementId };
+				return { job, session, token, boardId, columnId, cardId, elementId, sourceCardId, sourceElementId };
 			};
 
 			it('should read the board of the job', async () => {
 				const { job, session, token, boardId, cardId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(boardsClient.getBoardSkeletonById).toHaveBeenCalledWith(token, boardId);
 				expect(cardClient.getAllBoardCardsByIds).toHaveBeenCalledWith(token, [cardId]);
 			});
 
-			it('should create no second board and no second part', async () => {
+			it('should create no second board and no second column', async () => {
 				const { job, session } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(boardsClient.createBoard).not.toHaveBeenCalled();
 				expect(repo.setBoardId).not.toHaveBeenCalled();
+				expect(boardsClient.createBoardColumn).not.toHaveBeenCalled();
+			});
+
+			it('should create only the second card', async () => {
+				const { job, session, token, columnId, sourceCardId } = setup();
+
+				await service.write(job, session, sourceResponse);
+
+				expect(columnClient.createCard).toHaveBeenCalledTimes(1);
+				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, {});
+				expect(cardClient.createCardElement).toHaveBeenCalledTimes(1);
+				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, sourceCardId, expect.anything());
+			});
+
+			it('should write the texts into the existing element and the new element', async () => {
+				const { job, session, token, elementId, sourceElementId } = setup();
+
+				await service.write(job, session, sourceResponse);
+
+				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
+				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, sourceElementId, expect.anything());
+			});
+		});
+
+		describe('when the job has a complete board from an attempt before', () => {
+			const setup = () => {
+				const { token, session } = setupSession();
+				const { boardId, columnId, cardId, elementId } = setupIds();
+				const sourceCardId = new ObjectId().toHexString();
+				const sourceElementId = new ObjectId().toHexString();
+				const job = boardImportJobFactory.build({ boardId });
+
+				boardsClient.getBoardSkeletonById.mockResolvedValueOnce(
+					createMock<BoardResponse>({ columns: [{ id: columnId, cards: [{ cardId }, { cardId: sourceCardId }] }] })
+				);
+				cardClient.getAllBoardCardsByIds.mockResolvedValueOnce(
+					createMock<CardListResponse>({
+						data: [{ elements: [{ id: elementId, type: ContentElementType.RICH_TEXT }] }],
+					})
+				);
+				cardClient.getAllBoardCardsByIds.mockResolvedValueOnce(
+					createMock<CardListResponse>({
+						data: [{ elements: [{ id: sourceElementId, type: ContentElementType.RICH_TEXT }] }],
+					})
+				);
+
+				return { job, session, token, sourceCardId, elementId, sourceElementId };
+			};
+
+			it('should read both cards', async () => {
+				const { job, session, token, sourceCardId } = setup();
+
+				await service.write(job, session, sourceResponse);
+
+				expect(cardClient.getAllBoardCardsByIds).toHaveBeenLastCalledWith(token, [sourceCardId]);
+			});
+
+			it('should create no second part', async () => {
+				const { job, session } = setup();
+
+				await service.write(job, session, sourceResponse);
+
+				expect(boardsClient.createBoard).not.toHaveBeenCalled();
 				expect(boardsClient.createBoardColumn).not.toHaveBeenCalled();
 				expect(columnClient.createCard).not.toHaveBeenCalled();
 				expect(cardClient.createCardElement).not.toHaveBeenCalled();
 			});
 
-			it('should write the text into the existing element', async () => {
-				const { job, session, token, elementId } = setup();
+			it('should write the texts into the existing elements', async () => {
+				const { job, session, token, elementId, sourceElementId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
+				expect(cardClient.updateCardElement).toHaveBeenCalledTimes(2);
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
+				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, sourceElementId, expect.anything());
+			});
+		});
+
+		describe('when the answer of the source is written into the second card', () => {
+			const setup = (response: string, expectedText: string) => {
+				const { token, session } = setupSession();
+				const { boardId, columnId, cardId, elementId } = setupIds();
+				const job = boardImportJobFactory.build();
+
+				boardsClient.createBoard.mockResolvedValueOnce({ id: boardId });
+				boardsClient.createBoardColumn.mockResolvedValueOnce(createMock<ColumnResponse>({ id: columnId, cards: [] }));
+				columnClient.createCard.mockResolvedValueOnce(createMock<CardResponse>({ id: cardId, elements: [] }));
+				cardClient.createCardElement.mockResolvedValueOnce(
+					createMock<CardControllerCreateElement201Response>({ id: elementId })
+				);
+				const { sourceElementId } = mockSourceCard();
+				const elementParams = {
+					data: { type: 'richText', content: { text: expectedText, inputFormat: 'richTextCk5' } },
+				};
+
+				return { job, session, token, response, sourceElementId, elementParams };
+			};
+
+			it('should write the answer as escaped text', async () => {
+				const { job, session, token, response, sourceElementId, elementParams } = setup(
+					'{"description":"<script>alert(1)</script> & more"}',
+					'<p>{&quot;description&quot;:&quot;&lt;script&gt;alert(1)&lt;/script&gt; &amp; more&quot;}</p>'
+				);
+
+				await service.write(job, session, response);
+
+				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, elementParams);
+			});
+
+			it('should cut a long answer to 2000 characters before the escape', async () => {
+				const { job, session, token, response, sourceElementId, elementParams } = setup(
+					`${'a'.repeat(1999)}<${'b'.repeat(100)}`,
+					`<p>${'a'.repeat(1999)}&lt;</p>`
+				);
+
+				await service.write(job, session, response);
+
+				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, elementParams);
+			});
+
+			it('should not cut between the two parts of one character', async () => {
+				const { job, session, token, response, sourceElementId, elementParams } = setup(
+					`${'a'.repeat(1999)}\u{1F600}b`,
+					`<p>${'a'.repeat(1999)}</p>`
+				);
+
+				await service.write(job, session, response);
+
+				expect(cardClient.updateCardElement).toHaveBeenLastCalledWith(token, sourceElementId, elementParams);
 			});
 		});
 
@@ -245,13 +383,15 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<CardControllerCreateElement201Response>({ id: elementId })
 				);
 
+				mockSourceCard();
+
 				return { job, session, token, columnId, newCardId, elementId };
 			};
 
 			it('should create a new card and write the text into its element', async () => {
 				const { job, session, token, columnId, newCardId, elementId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(columnClient.createCard).toHaveBeenCalledWith(token, columnId, {});
 				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, newCardId, expect.anything());
@@ -278,13 +418,15 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<CardControllerCreateElement201Response>({ id: elementId })
 				);
 
+				mockSourceCard();
+
 				return { job, session, token, cardId, elementId, otherElementId };
 			};
 
 			it('should create a text element and write the text into it', async () => {
 				const { job, session, token, cardId, elementId, otherElementId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, cardId, expect.anything());
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
@@ -310,13 +452,15 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 					createMock<CardControllerCreateElement201Response>({ id: elementId })
 				);
 
+				mockSourceCard();
+
 				return { job, session, token, newBoardId, elementId };
 			};
 
 			it('should remove the board from the job', async () => {
 				const { job, session } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(repo.removeBoardId).toHaveBeenCalledWith(job.id);
 			});
@@ -324,7 +468,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should create and store a new board', async () => {
 				const { job, session, token, newBoardId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(boardsClient.createBoard).toHaveBeenCalledWith(token, expect.anything());
 				expect(repo.setBoardId).toHaveBeenCalledWith(job.id, newBoardId);
@@ -334,7 +478,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should write the text into the new element', async () => {
 				const { job, session, token, elementId } = setup();
 
-				await service.write(job, session);
+				await service.write(job, session, sourceResponse);
 
 				expect(cardClient.updateCardElement).toHaveBeenCalledWith(token, elementId, expect.anything());
 			});
@@ -356,7 +500,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should pass the error and keep the board in the job', async () => {
 				const { job, session, error } = setup();
 
-				await expect(service.write(job, session)).rejects.toBe(error);
+				await expect(service.write(job, session, sourceResponse)).rejects.toBe(error);
 
 				expect(repo.removeBoardId).not.toHaveBeenCalled();
 				expect(boardsClient.createBoard).not.toHaveBeenCalled();
@@ -377,7 +521,7 @@ describe(BoardImportPlaceholderBoardService.name, () => {
 			it('should pass the error and store no board', async () => {
 				const { job, session, error } = setup();
 
-				await expect(service.write(job, session)).rejects.toBe(error);
+				await expect(service.write(job, session, sourceResponse)).rejects.toBe(error);
 
 				expect(repo.setBoardId).not.toHaveBeenCalled();
 			});

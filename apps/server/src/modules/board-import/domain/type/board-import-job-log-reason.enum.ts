@@ -9,4 +9,8 @@ export enum BoardImportJobLogReason {
 	ACCOUNT_NOT_FOUND = 'account-not-found',
 	ACCOUNT_DEACTIVATED = 'account-deactivated',
 	BOARD_API_FORBIDDEN = 'board-api-forbidden',
+	SOURCE_LINK_REJECTED = 'source-link-rejected',
+	SOURCE_NOT_READABLE = 'source-not-readable',
+	SOURCE_RESPONSE_TOO_LARGE = 'source-response-too-large',
+	SOURCE_TOO_MANY_REDIRECTS = 'source-too-many-redirects',
 }

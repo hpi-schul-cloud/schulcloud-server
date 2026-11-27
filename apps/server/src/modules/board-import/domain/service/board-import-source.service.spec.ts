@@ -132,4 +132,36 @@ describe(BoardImportSourceService.name, () => {
 			});
 		});
 	});
+
+	describe('isLinkOfSource', () => {
+		describe('when the link is a valid link to a host of the source', () => {
+			it.each(['https://www.taskcards.de/graphql', 'https://bra.taskcards.app/api/boards'])(
+				'should return true for "%s"',
+				(link: string) => {
+					const result = service.isLinkOfSource(link, BoardImportSourceType.TASKCARDS);
+
+					expect(result).toBe(true);
+				}
+			);
+		});
+
+		describe('when the link is not a valid link to a host of the source', () => {
+			it.each([
+				'http://www.taskcards.de/graphql',
+				'https://evil.example/graphql',
+				'https://taskcards.de.evil.example/',
+				'https://127.0.0.1/',
+				'https://[::1]/',
+				'https://169.254.169.254/',
+				'https://api-svc/',
+				'https://user:pw@www.taskcards.de/',
+				'https://www.taskcards.de:8443/',
+				'not a link',
+			])('should return false for "%s"', (link: string) => {
+				const result = service.isLinkOfSource(link, BoardImportSourceType.TASKCARDS);
+
+				expect(result).toBe(false);
+			});
+		});
+	});
 });

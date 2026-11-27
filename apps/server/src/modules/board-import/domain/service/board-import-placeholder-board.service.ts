@@ -17,7 +17,12 @@ import { type BoardImportUserSession } from './board-import-user-session';
 
 const BOARD_TITLE = 'Import';
 
-// Placeholder for the import steps: one board with one column and one card that shows the link of the job.
+// Only the start of the answer is shown, as a proof that the worker did read the source.
+const SOURCE_RESPONSE_MAX_LENGTH = 2000;
+const HIGH_SURROGATE_AT_END = /[\uD800-\uDBFF]$/;
+
+// Placeholder for the import steps: one board with one column and two cards. The first card shows the link of the job,
+// the second card shows the start of the answer of the source.
 @Injectable()
 export class BoardImportPlaceholderBoardService {
 	constructor(
@@ -28,10 +33,23 @@ export class BoardImportPlaceholderBoardService {
 	) {}
 
 	// Each part is created only if it does not exist, so a new attempt continues the board of the attempt before.
-	public async write(job: BoardImportJob, session: BoardImportUserSession): Promise<void> {
+	public async write(job: BoardImportJob, session: BoardImportUserSession, sourceResponse: string): Promise<void> {
 		const { boardId, columns } = await this.findOrCreateBoard(job, session);
 		const column = columns[0] ?? (await session.call((token) => this.boardsClient.createBoardColumn(token, boardId)));
-		const card = await this.findOrCreateCard(column, session);
+		const sourceResponseStart = sourceResponse.slice(0, SOURCE_RESPONSE_MAX_LENGTH).replace(HIGH_SURROGATE_AT_END, '');
+
+		await this.writeTextCard(column, 0, job.source.link, session);
+		await this.writeTextCard(column, 1, sourceResponseStart, session);
+	}
+
+	// The text is escaped, so the server stores it as plain text and its sanitizer does not change it.
+	private async writeTextCard(
+		column: ColumnResponse,
+		index: number,
+		plainText: string,
+		session: BoardImportUserSession
+	): Promise<void> {
+		const card = await this.findOrCreateCard(column, index, session);
 		const textElement = card.elements.find((element) => element.type === ContentElementType.RICH_TEXT);
 		const elementId =
 			textElement?.id ??
@@ -41,7 +59,7 @@ export class BoardImportPlaceholderBoardService {
 				)
 			).id;
 
-		const text = `<p>${escape(job.source.link)}</p>`;
+		const text = `<p>${escape(plainText)}</p>`;
 		await session.call((token) =>
 			this.cardClient.updateCardElement(token, elementId, {
 				data: { type: ContentElementType.RICH_TEXT, content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 } },
@@ -92,18 +110,23 @@ export class BoardImportPlaceholderBoardService {
 		return isNotFound;
 	}
 
-	private async findOrCreateCard(column: ColumnResponse, session: BoardImportUserSession): Promise<CardResponse> {
-		const existingCard = await this.findFirstCard(column, session);
+	private async findOrCreateCard(
+		column: ColumnResponse,
+		index: number,
+		session: BoardImportUserSession
+	): Promise<CardResponse> {
+		const existingCard = await this.findCard(column, index, session);
 		const card = existingCard ?? (await session.call((token) => this.columnClient.createCard(token, column.id, {})));
 
 		return card;
 	}
 
-	private async findFirstCard(
+	private async findCard(
 		column: ColumnResponse,
+		index: number,
 		session: BoardImportUserSession
 	): Promise<CardResponse | undefined> {
-		const cardId = column.cards[0]?.cardId;
+		const cardId = column.cards[index]?.cardId;
 
 		if (cardId === undefined) {
 			return undefined;
