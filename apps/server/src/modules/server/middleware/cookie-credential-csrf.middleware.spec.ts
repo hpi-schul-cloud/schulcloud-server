@@ -143,192 +143,209 @@ describe('cookieCredentialCsrfMiddleware', () => {
 	describe('when the request is cookie-credentialed', () => {
 		const cookie = 'jwt=token';
 
-		it('denies cross-site and same-site unsafe methods', () => {
-			for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {
-				deny(createRequest({ method, headers: { cookie, 'sec-fetch-site': 'cross-site' } }));
+		describe('when Sec-Fetch-Site is present', () => {
+			const unsafeMethods = ['POST', 'PUT', 'PATCH', 'DELETE'] as const;
+			const deniedSites = ['cross-site', 'same-site'] as const;
+			const denied = unsafeMethods.flatMap((method) =>
+				deniedSites.map((fetchSite) => {
+					return { method, fetchSite };
+				})
+			);
+
+			it.each(denied)('denies cookie $method when Sec-Fetch-Site is $fetchSite', ({ method, fetchSite }) => {
+				deny(createRequest({ method, headers: { cookie, 'sec-fetch-site': fetchSite } }));
+			});
+
+			it.each(['same-origin', 'none'])('allows POST when Sec-Fetch-Site is %s', (fetchSite) => {
+				allow(createRequest({ method: 'POST', headers: { cookie, 'sec-fetch-site': fetchSite } }));
+			});
+
+			it('denies an unexpected Sec-Fetch-Site value', () => {
+				deny(createRequest({ method: 'POST', headers: { cookie, 'sec-fetch-site': 'unknown' } }));
+			});
+
+			it('still checks a non-bearer authorization scheme', () => {
+				deny(
+					createRequest({
+						method: 'POST',
+						headers: { cookie, authorization: 'Basic abc', 'sec-fetch-site': 'cross-site' },
+					})
+				);
+			});
+		});
+
+		describe('when Sec-Fetch-Site is absent', () => {
+			describe('Origin', () => {
+				it('allows an Origin with the same scheme and host', () => {
+					allow(
+						createRequest({
+							method: 'POST',
+							headers: { cookie, host: 'app.example', origin: 'https://app.example' },
+						})
+					);
+				});
+
+				it('denies a foreign Origin', () => {
+					deny(
+						createRequest({
+							method: 'POST',
+							headers: { cookie, host: 'app.example', origin: 'https://evil.example' },
+						})
+					);
+				});
+
+				it('does not accept a matching Referer when Origin is foreign', () => {
+					deny(
+						createRequest({
+							method: 'POST',
+							headers: {
+								cookie,
+								host: 'app.example',
+								origin: 'https://evil.example',
+								referer: 'https://app.example/board',
+							},
+						})
+					);
+				});
+
+				it('denies an opaque or unparseable Origin', () => {
+					deny(createRequest({ method: 'POST', headers: { cookie, host: 'app.example', origin: 'null' } }));
+				});
+
+				it('treats default ports as the same host', () => {
+					allow(
+						createRequest({
+							method: 'POST',
+							headers: { cookie, host: 'app.example:443', origin: 'https://app.example' },
+						})
+					);
+				});
+
+				it('denies a different port or scheme', () => {
+					deny(
+						createRequest({
+							method: 'POST',
+							headers: { cookie, host: 'app.example:4444', origin: 'https://app.example' },
+						})
+					);
+					next.mockClear();
+					deny(
+						createRequest({
+							method: 'POST',
+							protocol: 'http',
+							headers: { cookie, host: 'app.example', origin: 'https://app.example' },
+						})
+					);
+				});
+
+				it('denies when the request host is missing', () => {
+					deny(createRequest({ method: 'POST', headers: { cookie, origin: 'https://app.example' } }));
+				});
+			});
+
+			describe('Referer', () => {
+				it('allows a Referer with the same scheme and host when Origin is absent', () => {
+					allow(
+						createRequest({
+							method: 'POST',
+							headers: { cookie, host: 'app.example', referer: 'https://app.example/board?tab=1' },
+						})
+					);
+				});
+
+				it('denies a foreign Referer', () => {
+					deny(
+						createRequest({
+							method: 'POST',
+							headers: { cookie, host: 'app.example', referer: 'https://evil.example/board' },
+						})
+					);
+				});
+
+				it('accepts the referrer header spelling', () => {
+					allow(
+						createRequest({
+							method: 'POST',
+							headers: { cookie, host: 'app.example', referrer: 'https://app.example/board' },
+						})
+					);
+				});
+			});
+
+			it('denies a request with neither Origin nor Referer', () => {
+				deny(createRequest({ method: 'POST', headers: { cookie, host: 'app.example' } }));
+			});
+		});
+
+		describe('when the method is a safe read', () => {
+			it('allows an ordinary cookie GET', () => {
+				allow(createRequest({ method: 'GET', path: '/pseudonyms/username/opaque', headers: { cookie } }));
+			});
+
+			it('allows a cookie GET for the root path', () => {
+				allow(createRequest({ method: 'GET', path: '/', headers: { cookie } }));
+			});
+
+			it('ignores HEAD and OPTIONS outside the protected list', () => {
+				allow(
+					createRequest({
+						method: 'HEAD',
+						path: '/pseudonyms/username/opaque',
+						headers: { cookie, 'sec-fetch-site': 'cross-site' },
+					})
+				);
 				next.mockClear();
-				deny(createRequest({ method, headers: { cookie, 'sec-fetch-site': 'same-site' } }));
-				next.mockClear();
-			}
+				allow(createRequest({ method: 'OPTIONS', headers: { cookie, 'sec-fetch-site': 'cross-site' } }));
+			});
 		});
 
-		it('allows same-origin and user-agent initiated unsafe methods', () => {
-			allow(createRequest({ method: 'POST', headers: { cookie, 'sec-fetch-site': 'same-origin' } }));
-			next.mockClear();
-			allow(createRequest({ method: 'POST', headers: { cookie, 'sec-fetch-site': 'none' } }));
-		});
+		describe('when the path is a protected GET', () => {
+			it.each([
+				['/collaborative-text-editor/course/parent-1', 'cross-site', false],
+				['/collaborative-text-editor/course/parent-1/', 'same-origin', true],
+				['/api/v3/collaborative-text-editor/course/parent-1', 'cross-site', false],
+				['/tools/context/tool-1/launch', 'cross-site', false],
+				['/tools/context/tool-1/launch', 'same-origin', true],
+				['/api/v3/tools/context/tool-1/launch/', 'none', true],
+				['/tools/context/tool-1/launch/extra', 'cross-site', true],
+				['/COLLABORATIVE-TEXT-EDITOR/course/parent-1', 'cross-site', false],
+				['/api/v3/Tools/Context/tool-1/Launch', 'cross-site', false],
+				['/API/V3/collaborative-text-editor/course/parent-1', 'same-origin', true],
+			])('protects GET %s when Sec-Fetch-Site is %s (allowed=%s)', (path, fetchSite, allowed) => {
+				const request = createRequest({
+					method: 'GET',
+					path,
+					headers: { cookie, 'sec-fetch-site': fetchSite },
+				});
 
-		it('denies an unexpected Sec-Fetch-Site value', () => {
-			deny(createRequest({ method: 'POST', headers: { cookie, 'sec-fetch-site': 'unknown' } }));
-		});
+				if (allowed) {
+					allow(request);
+					return;
+				}
 
-		it('falls back to Origin when Sec-Fetch-Site is absent', () => {
-			allow(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, host: 'app.example', origin: 'https://app.example' },
-				})
-			);
-			next.mockClear();
-			deny(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, host: 'app.example', origin: 'https://evil.example' },
-				})
-			);
-		});
+				deny(request);
+			});
 
-		it('does not accept a matching Referer when Origin is foreign', () => {
-			deny(
-				createRequest({
-					method: 'POST',
-					headers: {
-						cookie,
-						host: 'app.example',
-						origin: 'https://evil.example',
-						referer: 'https://app.example/board',
-					},
-				})
-			);
-		});
-
-		it('uses Referer when Origin is absent', () => {
-			allow(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, host: 'app.example', referer: 'https://app.example/board?tab=1' },
-				})
-			);
-			next.mockClear();
-			deny(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, host: 'app.example', referer: 'https://evil.example/board' },
-				})
-			);
-		});
-
-		it('accepts the referrer header spelling', () => {
-			allow(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, host: 'app.example', referrer: 'https://app.example/board' },
-				})
-			);
-		});
-
-		it('denies a request with neither Origin nor Referer', () => {
-			deny(createRequest({ method: 'POST', headers: { cookie, host: 'app.example' } }));
-		});
-
-		it('denies an opaque or unparseable Origin', () => {
-			deny(createRequest({ method: 'POST', headers: { cookie, host: 'app.example', origin: 'null' } }));
-		});
-
-		it('treats default ports as the same host', () => {
-			allow(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, host: 'app.example:443', origin: 'https://app.example' },
-				})
-			);
-		});
-
-		it('denies a different port or scheme', () => {
-			deny(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, host: 'app.example:4444', origin: 'https://app.example' },
-				})
-			);
-			next.mockClear();
-			deny(
-				createRequest({
-					method: 'POST',
-					protocol: 'http',
-					headers: { cookie, host: 'app.example', origin: 'https://app.example' },
-				})
-			);
-		});
-
-		it('denies when the request host is missing', () => {
-			deny(createRequest({ method: 'POST', headers: { cookie, origin: 'https://app.example' } }));
-		});
-
-		it('allows an ordinary cookie GET', () => {
-			allow(createRequest({ method: 'GET', path: '/pseudonyms/username/opaque', headers: { cookie } }));
-		});
-
-		it('allows a cookie GET for the root path', () => {
-			allow(createRequest({ method: 'GET', path: '/', headers: { cookie } }));
-		});
-
-		it('ignores safe methods other than the listed GETs and their HEAD', () => {
-			allow(
-				createRequest({
+			it.each([
+				['/collaborative-text-editor/course/parent-1', 'cross-site', false],
+				['/collaborative-text-editor/course/parent-1', 'same-origin', true],
+				['/TOOLS/CONTEXT/tool-1/LAUNCH', 'cross-site', false],
+				['/tools/context/tool-1/launch', 'same-origin', true],
+				['/pseudonyms/username/opaque', 'cross-site', true],
+			])('protects HEAD %s when Sec-Fetch-Site is %s (allowed=%s)', (path, fetchSite, allowed) => {
+				const request = createRequest({
 					method: 'HEAD',
-					path: '/pseudonyms/username/opaque',
-					headers: { cookie, 'sec-fetch-site': 'cross-site' },
-				})
-			);
-			next.mockClear();
-			allow(createRequest({ method: 'OPTIONS', headers: { cookie, 'sec-fetch-site': 'cross-site' } }));
-		});
+					path,
+					headers: { cookie, 'sec-fetch-site': fetchSite },
+				});
 
-		it.each([
-			['/collaborative-text-editor/course/parent-1', 'cross-site', false],
-			['/collaborative-text-editor/course/parent-1/', 'same-origin', true],
-			['/api/v3/collaborative-text-editor/course/parent-1', 'cross-site', false],
-			['/tools/context/tool-1/launch', 'cross-site', false],
-			['/tools/context/tool-1/launch', 'same-origin', true],
-			['/api/v3/tools/context/tool-1/launch/', 'none', true],
-			['/tools/context/tool-1/launch/extra', 'cross-site', true],
-			['/COLLABORATIVE-TEXT-EDITOR/course/parent-1', 'cross-site', false],
-			['/api/v3/Tools/Context/tool-1/Launch', 'cross-site', false],
-			['/API/V3/collaborative-text-editor/course/parent-1', 'same-origin', true],
-		])('protects state-changing GET %s when Sec-Fetch-Site is %s (allowed=%s)', (path, fetchSite, allowed) => {
-			const request = createRequest({
-				method: 'GET',
-				path,
-				headers: { cookie, 'sec-fetch-site': fetchSite },
+				if (allowed) {
+					allow(request);
+					return;
+				}
+
+				deny(request);
 			});
-
-			if (allowed) {
-				allow(request);
-				return;
-			}
-
-			deny(request);
-		});
-
-		it.each([
-			['/collaborative-text-editor/course/parent-1', 'cross-site', false],
-			['/collaborative-text-editor/course/parent-1', 'same-origin', true],
-			['/TOOLS/CONTEXT/tool-1/LAUNCH', 'cross-site', false],
-			['/tools/context/tool-1/launch', 'same-origin', true],
-			['/pseudonyms/username/opaque', 'cross-site', true],
-		])('protects HEAD %s when Sec-Fetch-Site is %s (allowed=%s)', (path, fetchSite, allowed) => {
-			const request = createRequest({
-				method: 'HEAD',
-				path,
-				headers: { cookie, 'sec-fetch-site': fetchSite },
-			});
-
-			if (allowed) {
-				allow(request);
-				return;
-			}
-
-			deny(request);
-		});
-
-		it('still checks a non-bearer authorization scheme', () => {
-			deny(
-				createRequest({
-					method: 'POST',
-					headers: { cookie, authorization: 'Basic abc', 'sec-fetch-site': 'cross-site' },
-				})
-			);
 		});
 	});
 });
@@ -367,103 +384,92 @@ describe('CookieCredentialCsrfMiddleware on a Nest app', () => {
 			protectedGetCalls = 0;
 		});
 
-		it('denies a cross-site cookie POST before the handler runs', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.post('/items')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'cross-site')
-				.send({ name: 'board' });
+		describe('generated request matrix', () => {
+			const unsafeMethods = ['post', 'put', 'patch', 'delete'] as const;
+			const deniedSites = ['cross-site', 'same-site'] as const;
+			const denied = unsafeMethods.flatMap((method) =>
+				deniedSites.map((fetchSite) => {
+					return { method, fetchSite };
+				})
+			);
 
-			expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			expect(response.body).toEqual(expect.objectContaining({ message: COOKIE_CREDENTIAL_CSRF_MESSAGE }));
-			expect(createCalls).toBe(0);
-		});
+			it.each(denied)('denies cookie $method when Sec-Fetch-Site is $fetchSite', async ({ method, fetchSite }) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					[method]('/items')
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', fetchSite)
+					.send({});
 
-		it('denies a same-site cookie POST', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.post('/items')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'same-site');
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				expect(response.body).toEqual(expect.objectContaining({ message: COOKIE_CREDENTIAL_CSRF_MESSAGE }));
+				expect(createCalls).toBe(0);
+			});
 
-			expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			expect(createCalls).toBe(0);
-		});
+			it.each(['same-origin', 'none'])('allows cookie POST when Sec-Fetch-Site is %s', async (fetchSite) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					.post('/items')
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', fetchSite)
+					.send({});
 
-		it('allows a same-origin cookie POST', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.post('/items')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'same-origin')
-				.send({});
+				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(createCalls).toBe(1);
+			});
 
-			expect(response.status).toBe(HttpStatus.CREATED);
-			expect(createCalls).toBe(1);
-		});
+			it('allows a bearer POST when Sec-Fetch-Site is cross-site', async () => {
+				const response = await supertest(app.getHttpServer() as Server)
+					.post('/items')
+					.set('Authorization', 'Bearer token')
+					.set('Sec-Fetch-Site', 'cross-site')
+					.send({});
 
-		it('allows a bearer POST when Sec-Fetch-Site is cross-site', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.post('/items')
-				.set('Authorization', 'Bearer token')
-				.set('Sec-Fetch-Site', 'cross-site')
-				.send({});
+				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(createCalls).toBe(1);
+			});
 
-			expect(response.status).toBe(HttpStatus.CREATED);
-			expect(createCalls).toBe(1);
-		});
+			it('allows an ordinary cookie GET', async () => {
+				const response = await supertest(app.getHttpServer() as Server)
+					.get('/items')
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', 'cross-site');
 
-		it('allows an ordinary cookie GET', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.get('/items')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'cross-site');
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(createCalls).toBe(0);
+			});
 
-			expect(response.status).toBe(HttpStatus.OK);
-		});
+			const protectedPaths = [
+				'/collaborative-text-editor/course/parent-1',
+				'/COLLABORATIVE-TEXT-EDITOR/course/parent-1',
+				'/tools/context/tool-1/launch',
+			];
+			const protectedReads = (['get', 'head'] as const).flatMap((method) =>
+				protectedPaths.map((path) => {
+					return { method, path };
+				})
+			);
 
-		it('denies a cross-site collaborative-text-editor GET and allows a same-origin one', async () => {
-			const denied = await supertest(app.getHttpServer() as Server)
-				.get('/collaborative-text-editor/course/parent-1')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'cross-site');
+			it.each(protectedReads)('denies a cross-site cookie $method of $path', async ({ method, path }) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					[method](path)
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', 'cross-site');
 
-			expect(denied.status).toBe(HttpStatus.FORBIDDEN);
-			expect(protectedGetCalls).toBe(0);
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				if (method !== 'head') {
+					expect(response.body).toEqual(expect.objectContaining({ message: COOKIE_CREDENTIAL_CSRF_MESSAGE }));
+				}
+				expect(protectedGetCalls).toBe(0);
+			});
 
-			const allowed = await supertest(app.getHttpServer() as Server)
-				.get('/collaborative-text-editor/course/parent-1')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'same-origin');
+			it.each(protectedReads)('allows a same-origin cookie $method of $path', async ({ method, path }) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					[method](path)
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', 'same-origin');
 
-			expect(allowed.status).toBe(HttpStatus.OK);
-			expect(protectedGetCalls).toBe(1);
-		});
-
-		it('denies a mixed-case cross-site GET before the handler runs', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.get('/COLLABORATIVE-TEXT-EDITOR/course/parent-1')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'cross-site');
-
-			expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			expect(protectedGetCalls).toBe(0);
-		});
-
-		it('denies a cross-site HEAD to the collaborative-text-editor route before the handler runs', async () => {
-			const denied = await supertest(app.getHttpServer() as Server)
-				.head('/collaborative-text-editor/course/parent-1')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'cross-site');
-
-			expect(denied.status).toBe(HttpStatus.FORBIDDEN);
-			expect(protectedGetCalls).toBe(0);
-
-			const allowed = await supertest(app.getHttpServer() as Server)
-				.head('/collaborative-text-editor/course/parent-1')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'same-origin');
-
-			expect(allowed.status).toBe(HttpStatus.OK);
-			expect(protectedGetCalls).toBe(1);
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(protectedGetCalls).toBe(1);
+			});
 		});
 	});
 
