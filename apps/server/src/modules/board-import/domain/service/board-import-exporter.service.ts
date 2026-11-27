@@ -17,7 +17,7 @@ import { type BoardImportUserSession } from './board-import-user-session';
 
 // Creates the board of a board plan through the API of the board. See ADR 0015.
 // The columns, cards and elements are created in the order of the plan, and a part is created only if the board has
-// no part at its position. Thus a new attempt continues the board of the attempt before.
+// no usable part at its position. Thus a new attempt continues the board of the attempt before.
 @Injectable()
 export class BoardImportExporterService {
 	constructor(
@@ -53,9 +53,11 @@ export class BoardImportExporterService {
 
 		for (const [index, plannedCard] of plannedColumn.cards.entries()) {
 			const cardId = column.cards[index]?.cardId;
+			// A card that cannot be read is replaced at its position, so the cards keep the order of the plan.
+			const position = cardId === undefined ? undefined : index;
 			const card =
 				(cardId === undefined ? undefined : cardsById.get(cardId)) ??
-				(await this.createCard(column.id, plannedCard, session));
+				(await this.createCard(column.id, plannedCard, position, session));
 
 			await this.exportCard(card, plannedCard, session);
 		}
@@ -71,13 +73,7 @@ export class BoardImportExporterService {
 		}
 
 		for (const [index, plannedElement] of plannedCard.elements.entries()) {
-			const elementId =
-				card.elements[index]?.id ??
-				(
-					await session.call((token) =>
-						this.cardClient.createCardElement(token, card.id, { type: ContentElementType.RICH_TEXT })
-					)
-				).id;
+			const elementId = await this.findOrCreateTextElement(card, index, session);
 
 			await session.call((token) =>
 				this.cardClient.updateCardElement(token, elementId, {
@@ -90,16 +86,37 @@ export class BoardImportExporterService {
 		}
 	}
 
+	// The user can change the board between two attempts. An element of another type stays, and the text element is
+	// created before it.
+	private async findOrCreateTextElement(
+		card: CardResponse,
+		index: number,
+		session: BoardImportUserSession
+	): Promise<EntityId> {
+		const element = card.elements.at(index);
+		if (element?.type === ContentElementType.RICH_TEXT) {
+			return element.id;
+		}
+
+		const toPosition = element === undefined ? undefined : index;
+		const createdElement = await session.call((token) =>
+			this.cardClient.createCardElement(token, card.id, { type: ContentElementType.RICH_TEXT, toPosition })
+		);
+
+		return createdElement.id;
+	}
+
 	// The card is created with its empty elements, so each element needs only one more request.
 	// All elements of the plan are text elements.
 	private async createCard(
 		columnId: EntityId,
 		plannedCard: PlannedCard,
+		position: number | undefined,
 		session: BoardImportUserSession
 	): Promise<CardResponse> {
 		const requiredEmptyElements = plannedCard.elements.map(() => ContentElementType.RICH_TEXT);
 		const card = await session.call((token) =>
-			this.columnClient.createCard(token, columnId, { requiredEmptyElements })
+			this.columnClient.createCard(token, columnId, { requiredEmptyElements, position })
 		);
 
 		return card;

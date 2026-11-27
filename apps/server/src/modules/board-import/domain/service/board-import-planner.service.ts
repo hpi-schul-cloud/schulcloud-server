@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { sanitizeRichText } from '@shared/controller/transformer';
 import {
 	type BoardImportNote,
 	BoardImportNoteType,
@@ -19,7 +20,6 @@ export const BOARD_TITLE_MAX_LENGTH = 100;
 export const BOARD_TITLE_FALLBACK = 'Import';
 
 const LINE_BREAKS = /\s*[\r\n]+\s*/g;
-const HIGH_SURROGATE_AT_END = /[\uD800-\uDBFF]$/;
 
 export interface BoardImportPlanResult {
 	plan: BoardPlan;
@@ -48,15 +48,18 @@ export class BoardImportPlannerService {
 
 	private planBoardTitle(sourceTitle: string, notes: BoardImportNote[]): string {
 		const title = this.toSingleLine(sourceTitle);
-		if (title === '') {
+		// The board API removes HTML from the title and rejects a title that is empty after that.
+		if (sanitizeRichText(title).trim() === '') {
 			return BOARD_TITLE_FALLBACK;
 		}
-		if (title.length <= BOARD_TITLE_MAX_LENGTH) {
+		// The board API counts a surrogate pair as one character.
+		const characters = Array.from(title);
+		if (characters.length <= BOARD_TITLE_MAX_LENGTH) {
 			return title;
 		}
 
 		notes.push({ type: BoardImportNoteType.BOARD_TITLE_SHORTENED });
-		const shortTitle = title.slice(0, BOARD_TITLE_MAX_LENGTH).replace(HIGH_SURROGATE_AT_END, '').trimEnd();
+		const shortTitle = characters.slice(0, BOARD_TITLE_MAX_LENGTH).join('').trimEnd();
 
 		return shortTitle;
 	}

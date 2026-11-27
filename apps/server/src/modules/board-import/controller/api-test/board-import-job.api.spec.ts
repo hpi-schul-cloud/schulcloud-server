@@ -7,6 +7,7 @@ import {
 	type CardResponse,
 	ColumnClientAdapter,
 	type ColumnResponse,
+	ContentElementType,
 } from '@infra/common-cartridge-clients';
 import { ConfigurationModule } from '@infra/configuration';
 import { RuntimeConfigService } from '@infra/runtime-config';
@@ -800,7 +801,10 @@ describe('Board Import Worker (import as the user)', () => {
 			);
 			columnClient.createCard.mockImplementation((_token, _columnId, params) => {
 				const elements = (params.requiredEmptyElements ?? []).map(() =>
-					createMock<CardResponse['elements'][number]>({ id: new ObjectId().toHexString() })
+					createMock<CardResponse['elements'][number]>({
+						id: new ObjectId().toHexString(),
+						type: ContentElementType.RICH_TEXT,
+					})
 				);
 				const card = createMock<CardResponse>({ id: new ObjectId().toHexString(), title: undefined, elements });
 
@@ -808,6 +812,7 @@ describe('Board Import Worker (import as the user)', () => {
 			});
 			mockSource('board-pinboard.json');
 
+			const expectedBoardTitle = 'Test Pinboard';
 			const expectedColumnTitles = ['Green', 'Yellow', 'Red', 'No color'];
 			const expectedCardTitles = ['FWU', 'Rich text', 'Foobar', 'Collapsed ugly card', 'Video call', 'PDF'];
 			const expectedLastText = 'Picture + colors changed';
@@ -820,6 +825,7 @@ describe('Board Import Worker (import as the user)', () => {
 				id: entity.id,
 				boardId,
 				expectedClaims,
+				expectedBoardTitle,
 				expectedColumnTitles,
 				expectedCardTitles,
 				expectedLastText,
@@ -840,14 +846,14 @@ describe('Board Import Worker (import as the user)', () => {
 		});
 
 		it('should create the columns, cards and texts of the source board', async () => {
-			const { id, expectedColumnTitles, expectedCardTitles, expectedLastText } = await setup();
+			const { id, expectedBoardTitle, expectedColumnTitles, expectedCardTitles, expectedLastText } = await setup();
 
 			await publishJob(amqpConnection, id);
 
 			await waitForStatus(em, id, BoardImportJobStatus.FINISHED);
 			expect(boardsClient.createBoard).toHaveBeenCalledWith(
 				expect.anything(),
-				expect.objectContaining({ title: 'Test Pinboard' })
+				expect.objectContaining({ title: expectedBoardTitle })
 			);
 			expect(columnClient.updateBoardColumnTitle.mock.calls.map((call) => call[2].title)).toEqual(expectedColumnTitles);
 			expect(cardClient.updateCardTitle.mock.calls.map((call) => call[2].title)).toEqual(expectedCardTitles);

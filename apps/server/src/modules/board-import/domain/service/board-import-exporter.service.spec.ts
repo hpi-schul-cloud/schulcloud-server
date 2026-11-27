@@ -9,14 +9,16 @@ import {
 	type CardResponse,
 	ColumnClientAdapter,
 	type ColumnResponse,
+	ContentElementType,
 } from '@infra/common-cartridge-clients';
 import { HttpStatus } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { InputFormat } from '@shared/domain/types';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { boardImportJobFactory } from '../../testing';
 import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
-import { BoardImportTargetType, type BoardPlan, PlannedElementType } from '../type';
+import { BoardImportTargetType, type BoardPlan, type PlannedCard, PlannedElementType } from '../type';
 import { BoardImportExporterService } from './board-import-exporter.service';
 import { type BoardImportUserSession } from './board-import-user-session';
 
@@ -73,15 +75,24 @@ describe(BoardImportExporterService.name, () => {
 		return column;
 	};
 
-	const buildCard = (title: string | undefined, elementIds: string[], id = newId()): CardResponse => {
-		const elements = elementIds.map((elementId) => createMock<CardResponse['elements'][number]>({ id: elementId }));
+	const buildCard = (
+		title: string | undefined,
+		elementIds: string[],
+		id = newId(),
+		type: ContentElementType = ContentElementType.RICH_TEXT
+	): CardResponse => {
+		const elements = elementIds.map((elementId) =>
+			createMock<CardResponse['elements'][number]>({ id: elementId, type })
+		);
 		const card = createMock<CardResponse>({ id, title, elements });
 
 		return card;
 	};
 
 	const textParams = (html: string) => {
-		return { data: { type: 'richText', content: { text: html, inputFormat: 'richTextCk5' } } };
+		return {
+			data: { type: ContentElementType.RICH_TEXT, content: { text: html, inputFormat: InputFormat.RICH_TEXT_CK5 } },
+		};
 	};
 
 	const plan: BoardPlan = {
@@ -106,6 +117,12 @@ describe(BoardImportExporterService.name, () => {
 			},
 		],
 	};
+
+	const [firstPlannedColumn, secondPlannedColumn] = plan.columns;
+	const [plannedCard1, plannedCard2] = firstPlannedColumn.cards;
+	const [plannedCard3] = secondPlannedColumn.cards;
+	const [plannedText1, plannedText2] = plannedCard1.elements;
+	const [plannedText3] = plannedCard3.elements;
 
 	describe('export', () => {
 		describe('when the job has no board', () => {
@@ -152,8 +169,8 @@ describe(BoardImportExporterService.name, () => {
 				expect(boardsClient.createBoardColumn).toHaveBeenCalledTimes(2);
 				expect(boardsClient.createBoardColumn).toHaveBeenCalledWith(token, boardId);
 				expect(columnClient.updateBoardColumnTitle.mock.calls).toEqual([
-					[token, firstColumn.id, { title: 'First' }],
-					[token, secondColumn.id, { title: 'Second' }],
+					[token, firstColumn.id, { title: firstPlannedColumn.title }],
+					[token, secondColumn.id, { title: secondPlannedColumn.title }],
 				]);
 			});
 
@@ -163,9 +180,13 @@ describe(BoardImportExporterService.name, () => {
 				await service.export(job, session, plan);
 
 				expect(columnClient.createCard.mock.calls).toEqual([
-					[token, firstColumn.id, { requiredEmptyElements: ['richText', 'richText'] }],
+					[
+						token,
+						firstColumn.id,
+						{ requiredEmptyElements: [ContentElementType.RICH_TEXT, ContentElementType.RICH_TEXT] },
+					],
 					[token, firstColumn.id, { requiredEmptyElements: [] }],
-					[token, secondColumn.id, { requiredEmptyElements: ['richText'] }],
+					[token, secondColumn.id, { requiredEmptyElements: [ContentElementType.RICH_TEXT] }],
 				]);
 			});
 
@@ -175,9 +196,9 @@ describe(BoardImportExporterService.name, () => {
 				await service.export(job, session, plan);
 
 				expect(cardClient.updateCardTitle.mock.calls).toEqual([
-					[token, card1.id, { title: 'Card 1' }],
-					[token, card2.id, { title: 'Card 2' }],
-					[token, card3.id, { title: 'Card 3' }],
+					[token, card1.id, { title: plannedCard1.title }],
+					[token, card2.id, { title: plannedCard2.title }],
+					[token, card3.id, { title: plannedCard3.title }],
 				]);
 			});
 
@@ -187,9 +208,9 @@ describe(BoardImportExporterService.name, () => {
 				await service.export(job, session, plan);
 
 				expect(cardClient.updateCardElement.mock.calls).toEqual([
-					[token, card1.elements[0].id, textParams('<p>Text 1</p>')],
-					[token, card1.elements[1].id, textParams('<p>Text 2</p>')],
-					[token, card3.elements[0].id, textParams('<p>Text 3</p>')],
+					[token, card1.elements[0].id, textParams(plannedText1.html)],
+					[token, card1.elements[1].id, textParams(plannedText2.html)],
+					[token, card3.elements[0].id, textParams(plannedText3.html)],
 				]);
 				expect(cardClient.createCardElement).not.toHaveBeenCalled();
 			});
@@ -258,8 +279,8 @@ describe(BoardImportExporterService.name, () => {
 				const { token, session } = setupSession();
 				const boardId = newId();
 				const job = boardImportJobFactory.build({ boardId });
-				const card1 = buildCard('Card 1', [newId()]);
-				const firstColumn = buildColumn('First', [card1.id]);
+				const card1 = buildCard(plannedCard1.title, [newId()]);
+				const firstColumn = buildColumn(firstPlannedColumn.title, [card1.id]);
 				const newElementId = newId();
 				const card2 = buildCard(undefined, []);
 				const secondColumn = buildColumn('');
@@ -299,7 +320,7 @@ describe(BoardImportExporterService.name, () => {
 				expect(boardsClient.createBoardColumn.mock.calls).toEqual([[token, boardId]]);
 				expect(columnClient.createCard.mock.calls).toEqual([
 					[token, firstColumn.id, { requiredEmptyElements: [] }],
-					[token, secondColumn.id, { requiredEmptyElements: ['richText'] }],
+					[token, secondColumn.id, { requiredEmptyElements: [ContentElementType.RICH_TEXT] }],
 				]);
 			});
 
@@ -308,10 +329,12 @@ describe(BoardImportExporterService.name, () => {
 
 				await service.export(job, session, plan);
 
-				expect(columnClient.updateBoardColumnTitle.mock.calls).toEqual([[token, secondColumn.id, { title: 'Second' }]]);
+				expect(columnClient.updateBoardColumnTitle.mock.calls).toEqual([
+					[token, secondColumn.id, { title: secondPlannedColumn.title }],
+				]);
 				expect(cardClient.updateCardTitle.mock.calls).toEqual([
-					[token, card2.id, { title: 'Card 2' }],
-					[token, card3.id, { title: 'Card 3' }],
+					[token, card2.id, { title: plannedCard2.title }],
+					[token, card3.id, { title: plannedCard3.title }],
 				]);
 			});
 
@@ -320,11 +343,13 @@ describe(BoardImportExporterService.name, () => {
 
 				await service.export(job, session, plan);
 
-				expect(cardClient.createCardElement.mock.calls).toEqual([[token, card1.id, { type: 'richText' }]]);
+				expect(cardClient.createCardElement.mock.calls).toEqual([
+					[token, card1.id, { type: ContentElementType.RICH_TEXT }],
+				]);
 				expect(cardClient.updateCardElement.mock.calls).toEqual([
-					[token, card1.elements[0].id, textParams('<p>Text 1</p>')],
-					[token, newElementId, textParams('<p>Text 2</p>')],
-					[token, card3.elements[0].id, textParams('<p>Text 3</p>')],
+					[token, card1.elements[0].id, textParams(plannedText1.html)],
+					[token, newElementId, textParams(plannedText2.html)],
+					[token, card3.elements[0].id, textParams(plannedText3.html)],
 				]);
 			});
 		});
@@ -333,27 +358,70 @@ describe(BoardImportExporterService.name, () => {
 			const setup = () => {
 				const { token, session } = setupSession();
 				const job = boardImportJobFactory.build({ boardId: newId() });
-				const column = buildColumn('Column', [newId()]);
-				const card = buildCard(undefined, []);
+				const plannedCard: PlannedCard = { title: 'Card', elements: [] };
 				const planWithOneCard: BoardPlan = {
 					title: 'Board',
-					columns: [{ title: 'Column', cards: [{ title: 'Card', elements: [] }] }],
+					columns: [{ title: 'Column', cards: [plannedCard] }],
 				};
+				const column = buildColumn(planWithOneCard.columns[0].title, [newId()]);
+				const card = buildCard(undefined, []);
+				const position = 0;
 
 				boardsClient.getBoardSkeletonById.mockResolvedValueOnce(createMock<BoardResponse>({ columns: [column] }));
 				cardClient.getAllBoardCardsByIds.mockResolvedValueOnce(createMock<CardListResponse>({ data: [] }));
 				columnClient.createCard.mockResolvedValueOnce(card);
 
-				return { token, session, job, column, card, planWithOneCard };
+				return { token, session, job, column, card, plannedCard, planWithOneCard, position };
 			};
 
-			it('should create a new card', async () => {
-				const { token, session, job, column, card, planWithOneCard } = setup();
+			it('should create a new card at the position of the card', async () => {
+				const { token, session, job, column, card, plannedCard, planWithOneCard, position } = setup();
 
 				await service.export(job, session, planWithOneCard);
 
-				expect(columnClient.createCard).toHaveBeenCalledWith(token, column.id, { requiredEmptyElements: [] });
-				expect(cardClient.updateCardTitle).toHaveBeenCalledWith(token, card.id, { title: 'Card' });
+				expect(columnClient.createCard).toHaveBeenCalledWith(token, column.id, { requiredEmptyElements: [], position });
+				expect(cardClient.updateCardTitle).toHaveBeenCalledWith(token, card.id, { title: plannedCard.title });
+			});
+		});
+
+		describe('when an element of a card of the board is not a text element', () => {
+			const setup = () => {
+				const { token, session } = setupSession();
+				const job = boardImportJobFactory.build({ boardId: newId() });
+				const plannedCard: PlannedCard = {
+					title: 'Card',
+					elements: [{ type: PlannedElementType.TEXT, html: '<p>Text</p>' }],
+				};
+				const planWithOneCard: BoardPlan = {
+					title: 'Board',
+					columns: [{ title: 'Column', cards: [plannedCard] }],
+				};
+				const card = buildCard(plannedCard.title, [newId()], newId(), ContentElementType.LINK);
+				const column = buildColumn(planWithOneCard.columns[0].title, [card.id]);
+				const newElementId = newId();
+				const toPosition = 0;
+
+				boardsClient.getBoardSkeletonById.mockResolvedValueOnce(createMock<BoardResponse>({ columns: [column] }));
+				cardClient.getAllBoardCardsByIds.mockResolvedValueOnce(createMock<CardListResponse>({ data: [card] }));
+				cardClient.createCardElement.mockResolvedValueOnce(
+					createMock<CardControllerCreateElement201Response>({ id: newElementId })
+				);
+
+				return { token, session, job, card, plannedCard, planWithOneCard, newElementId, toPosition };
+			};
+
+			it('should create a text element before the other element and write the text into it', async () => {
+				const { token, session, job, card, plannedCard, planWithOneCard, newElementId, toPosition } = setup();
+
+				await service.export(job, session, planWithOneCard);
+
+				expect(cardClient.createCardElement).toHaveBeenCalledWith(token, card.id, {
+					type: ContentElementType.RICH_TEXT,
+					toPosition,
+				});
+				expect(cardClient.updateCardElement.mock.calls).toEqual([
+					[token, newElementId, textParams(plannedCard.elements[0].html)],
+				]);
 			});
 		});
 

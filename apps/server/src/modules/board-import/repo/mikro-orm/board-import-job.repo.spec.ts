@@ -10,7 +10,7 @@ import {
 	IntermediateElementType,
 } from '../../domain';
 import { boardImportJobEntityFactory, boardImportJobFactory } from '../../testing';
-import { BoardImportJobEntity, BoardImportNoteEmbeddable } from '../entity';
+import { BoardImportJobEntity } from '../entity';
 import { BoardImportJobMikroOrmRepo } from './board-import-job.repo';
 
 describe(BoardImportJobMikroOrmRepo.name, () => {
@@ -531,7 +531,7 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 		describe('when the job has notes from an attempt before', () => {
 			const setup = async () => {
 				const entity = boardImportJobEntityFactory.build({
-					notes: [new BoardImportNoteEmbeddable({ type: BoardImportNoteType.BOARD_TITLE_SHORTENED })],
+					notes: [{ type: BoardImportNoteType.BOARD_TITLE_SHORTENED }],
 				});
 				await em.persist(entity).flush();
 				em.clear();
@@ -560,10 +560,17 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 		});
 
 		describe('when the job does not exist', () => {
-			it('should store nothing', async () => {
+			const setup = () => {
 				const id = new ObjectId().toHexString();
+				const notes: BoardImportNote[] = [{ type: BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT }];
 
-				await repo.setNotes(id, []);
+				return { id, notes };
+			};
+
+			it('should store nothing', async () => {
+				const { id, notes } = setup();
+
+				await repo.setNotes(id, notes);
 
 				const job = await repo.findById(id);
 				expect(job).toBeNull();

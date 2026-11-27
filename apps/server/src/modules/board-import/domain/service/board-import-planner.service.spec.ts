@@ -112,15 +112,15 @@ describe(BoardImportPlannerService.name, () => {
 			});
 		});
 
-		describe('when the cut of a long title is in the middle of a character', () => {
+		describe('when a long title has characters of two UTF-16 code units', () => {
 			const setup = () => {
-				const expectedTitle = 'a'.repeat(BOARD_TITLE_MAX_LENGTH - 1);
-				const board = intermediateBoardFactory.build({ title: `${expectedTitle}😀 more` });
+				const expectedTitle = '😀'.repeat(BOARD_TITLE_MAX_LENGTH);
+				const board = intermediateBoardFactory.build({ title: `${expectedTitle}😀` });
 
 				return { board, expectedTitle };
 			};
 
-			it('should remove the character', () => {
+			it('should count each of these characters once and keep it whole', () => {
 				const { board, expectedTitle } = setup();
 
 				const result = service.plan(board);
@@ -129,7 +129,7 @@ describe(BoardImportPlannerService.name, () => {
 			});
 		});
 
-		describe.each(['', ' \n '])('when the title of the board is %j', (title) => {
+		describe.each(['', ' \n ', '<Mathe>'])('when the title of the board is %j', (title) => {
 			const setup = () => {
 				const board = intermediateBoardFactory.build({ title });
 
