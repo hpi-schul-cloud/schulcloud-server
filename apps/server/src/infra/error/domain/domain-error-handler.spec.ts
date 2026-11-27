@@ -1,6 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
-import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { Logger, LoggingUtils } from '@infra/logger';
+import { BadRequestException, HttpStatus, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { type HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common/error';
@@ -10,7 +10,16 @@ import util from 'node:util';
 import { AxiosErrorLoggable } from '../loggable';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
+import { createLogFormat } from '../../logger/log-format';
 import { DomainErrorHandler } from './domain-error-handler';
+
+// The finished line as the Nest logger writes it (winston stores it under the MESSAGE symbol).
+const renderLogLine = (loggable: Loggable): string => {
+	const entry = { level: 'error', ...LoggingUtils.createMessageWithContext(loggable) };
+	const result = createLogFormat().transform(entry) as unknown as Record<symbol, unknown>;
+
+	return String(result[Symbol.for('message')]);
+};
 
 class SampleLoggableException extends BadRequestException implements Loggable {
 	constructor(private readonly testData: string) {
@@ -256,6 +265,74 @@ describe('GlobalErrorFilter', () => {
 						query: { ids: ['a', 'b'] },
 					},
 				},
+			});
+		});
+
+		describe('when the url path contains a secret', () => {
+			const setupSecretRequest = (url: string, params: Record<string, string>) => {
+				const error = new Error('test');
+				const request = { method: 'GET', url, params, query: { accessToken: 'queryToken' } };
+				const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
+
+				return { error, context };
+			};
+
+			it.each([
+				['/sharetoken/secretShareToken', { token: 'secretShareToken' }, '/sharetoken/***', { token: '***' }],
+				[
+					'/registrations/by-secret/secretRegistration',
+					{ registrationSecret: 'secretRegistration' },
+					'/registrations/by-secret/***',
+					{ registrationSecret: '***' },
+				],
+			])('should log %s without the secret', (url, params, expectedUrl, expectedParams) => {
+				const { error, context } = setupSecretRequest(url, params);
+
+				domainErrorHandler.execHttpContext(error, context);
+
+				const loggable = logger.error.mock.calls[0][0];
+				expect(loggable.getLogMessage()).toMatchObject({
+					data: { request: { endpoint: expectedUrl, params: expectedParams } },
+				});
+				// What the logger writes: neither the path secret nor the query secret.
+				const line = renderLogLine(loggable);
+				expect(line).not.toContain(Object.values(params)[0]);
+				expect(line).not.toContain('queryToken');
+				expect(line).toContain(`"endpoint":"${expectedUrl}"`);
+			});
+		});
+
+		describe('when nest throws its 404 for an unknown route with a secret in the url', () => {
+			it('should write a log line without the secret', () => {
+				// The exact error Nest's RoutesResolver throws: `Cannot ${method} ${url}` with the original url.
+				const error = new NotFoundException('Cannot POST /api/v3/sharetoken/secretShareToken');
+				const request = { method: 'POST', url: '/sharetoken/secretShareToken', params: {}, query: {} };
+				const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
+
+				domainErrorHandler.execHttpContext(error, context);
+
+				const line = renderLogLine(logger.error.mock.calls[0][0]);
+				expect(line).not.toContain('secretShareToken');
+				expect(line).toContain('Cannot POST /api/v3/sharetoken/***');
+				expect(error.message).toBe('Cannot POST /api/v3/sharetoken/secretShareToken');
+			});
+		});
+
+		describe('when the query contains room invitation link ids', () => {
+			it('should log neither the url nor the query with the ids', () => {
+				const error = new Error('test');
+				const request = {
+					method: 'DELETE',
+					url: '/room-invitation-links?roomInvitationLinkIds=secretLinkA&roomInvitationLinkIds=secretLinkB',
+					params: {},
+					query: { roomInvitationLinkIds: ['secretLinkA', 'secretLinkB'] },
+				};
+				const context = createMock<HttpArgumentsHost>({ getRequest: () => request });
+
+				domainErrorHandler.execHttpContext(error, context);
+
+				const line = renderLogLine(logger.error.mock.calls[0][0]);
+				expect(line).not.toContain('secretLink');
 			});
 		});
 	});

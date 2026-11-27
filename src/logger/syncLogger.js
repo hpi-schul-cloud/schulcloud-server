@@ -2,15 +2,34 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const winston = require('winston');
 
 const { format } = winston;
-const { createLogger } = require('./utils');
+const { createLogger, maskSensitiveData, redactUrlSecretsInLine } = require('./utils');
 const { ENVIRONMENTS } = require('../../config/environments');
 
 const getDevelopFormat = () =>
-	format.combine(format.errors({ stack: true }), format.timestamp(), format.prettyPrint({ depth: 5, colorize: true }));
+	format.combine(
+		format.errors({ stack: true }),
+		format.timestamp(),
+		maskSensitiveData(),
+		format.prettyPrint({ depth: 5, colorize: true }),
+		redactUrlSecretsInLine()
+	);
 
-const getProductionFormat = () => format.combine(format.errors({ stack: true }), format.timestamp(), format.json());
+const getProductionFormat = () =>
+	format.combine(
+		format.errors({ stack: true }),
+		format.timestamp(),
+		maskSensitiveData(),
+		format.json(),
+		redactUrlSecretsInLine()
+	);
 
-const getTestFormat = () => format.combine(format.prettyPrint({ depth: 1, colorize: true }));
+const getTestFormat = () =>
+	format.combine(
+		format.errors({ stack: true }),
+		maskSensitiveData(),
+		format.prettyPrint({ depth: 1, colorize: true }),
+		redactUrlSecretsInLine()
+	);
 
 let selectedFormat;
 switch (Configuration.get('NODE_ENV')) {

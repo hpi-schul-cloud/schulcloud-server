@@ -40,6 +40,9 @@ let config: Config.InitialOptions = {
 		'^@modules/(.*)$': '<rootDir>/apps/server/src/modules/$1',
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@testing/(.*)$': '<rootDir>/apps/server/src/testing/$1',
+		// Legacy feathers code requires compiled Nest code from dist (e.g. src/logger). Jest has no build, it uses the sources,
+		// which are then the same module instances the Nest code under test uses (e.g. the SecretRegistry).
+		'^(?:\\.\\./)+dist/apps/server/(.*)$': '<rootDir>/apps/server/src/$1',
 	},
 	maxWorkers: (() => {
 		const envValue = process.env.JEST_MAX_WORKERS;

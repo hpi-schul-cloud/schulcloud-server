@@ -435,6 +435,17 @@ describe(LoggingUtils.name, () => {
 				expect(render(result)).toContain("url: 'https://idp.example.org/token'");
 			});
 
+			it('should redact camelCase PIN query parameters of the axios request url', () => {
+				const axiosError = buildAxiosError('https://api.example.org/verify?userPin=4711&pinCode=0815&page=2');
+				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
+
+				const output = render(LoggingUtils.createMessageWithContext(loggable));
+
+				expect(output).not.toContain('4711');
+				expect(output).not.toContain('0815');
+				expect(output).toContain('page=2');
+			});
+
 			it('should redact the signature and access key of a presigned S3 url (signature version 4)', () => {
 				const axiosError = buildAxiosError(
 					'https://bucket.s3.example.org/file.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLEKEY%2F20261119%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Expires=300&X-Amz-Signature=0123456789abcdef'
@@ -557,37 +568,35 @@ describe(LoggingUtils.name, () => {
 				});
 			});
 
-			it('should resolve a relative axios url against its base url', () => {
-				const axiosError = buildAxiosError('/token?access_token=abc123secret');
-				if (axiosError.config) {
-					axiosError.config.baseURL = 'https://idp.example.org/api';
+			it.each([
+				{
+					description: 'resolve a relative axios url against its base url',
+					url: '/token?access_token=abc123secret',
+					baseURL: 'https://idp.example.org/api',
+					expected: "url: 'https://idp.example.org/api/token?access_token=[REDACTED]'",
+				},
+				{
+					description: 'join base url and relative url with exactly one slash',
+					url: '/token',
+					baseURL: 'https://idp.example.org/api///',
+					expected: "url: 'https://idp.example.org/api/token'",
+				},
+				{
+					description: 'keep a relative axios url without base url relative',
+					url: '/token?access_token=abc123secret',
+					baseURL: undefined,
+					expected: "url: '/token?access_token=[REDACTED]'",
+				},
+			])('should $description', ({ url, baseURL, expected }) => {
+				const axiosError = buildAxiosError(url);
+				if (axiosError.config && baseURL) {
+					axiosError.config.baseURL = baseURL;
 				}
 				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
 
 				const result = LoggingUtils.createMessageWithContext(loggable);
 
-				expect(render(result)).toContain("url: 'https://idp.example.org/api/token?access_token=[REDACTED]'");
-			});
-
-			it('should join base url and relative url with exactly one slash', () => {
-				const axiosError = buildAxiosError('/token');
-				if (axiosError.config) {
-					axiosError.config.baseURL = 'https://idp.example.org/api///';
-				}
-				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
-
-				const result = LoggingUtils.createMessageWithContext(loggable);
-
-				expect(render(result)).toContain("url: 'https://idp.example.org/api/token'");
-			});
-
-			it('should keep a relative axios url without base url relative', () => {
-				const axiosError = buildAxiosError('/token?access_token=abc123secret');
-				const loggable = new SampleLoggable({ error: axiosError, type: 'Unhandled or Unknown Error' });
-
-				const result = LoggingUtils.createMessageWithContext(loggable);
-
-				expect(render(result)).toContain("url: '/token?access_token=[REDACTED]'");
+				expect(render(result)).toContain(expected);
 			});
 
 			it('should keep an absolute axios url on a host similar to the placeholder', () => {
@@ -676,6 +685,81 @@ describe(LoggingUtils.name, () => {
 			const result = LoggingUtils.redactSensitiveValue({ forcePasswordChange: true });
 
 			expect(result).toEqual({ forcePasswordChange: true });
+		});
+
+		it('should mask password and credential fields with the name part anywhere in the name', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				passwordHash: 'hash-value-123456',
+				credentialsId: 'credentials-id-123456',
+			});
+
+			expect(result).toEqual({
+				passwordHash: '[REDACTED]',
+				credentialsId: '[REDACTED]',
+			});
+		});
+
+		it('should redact password, credential and PIN values completely', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				password: 'Sommer2026!x',
+				newPasswort: 'Basic sommer-2026-passwort',
+				clientCredentials: 'client-credential-value',
+				registrationPins: 'pin-value-123456',
+			});
+
+			expect(result).toEqual({
+				password: '[REDACTED]',
+				newPasswort: '[REDACTED]',
+				clientCredentials: '[REDACTED]',
+				registrationPins: '[REDACTED]',
+			});
+		});
+
+		it('should redact one-time tokens under neutral names completely', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				resetId: 'recovery-token-123456789',
+				importHash: 'import-hash-123456789',
+			});
+
+			expect(result).toEqual({ resetId: '[REDACTED]', importHash: '[REDACTED]' });
+		});
+
+		it('should keep the first and last characters of tokens, secrets, keys and cookies', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				accessToken: 'access-token-123456',
+				clientSecret: 'client-secret-123456',
+				apiKey: 'api-key-value-123456',
+				cookie: 'session-cookie-123456',
+				authorization: 'Bearer bearer-token-123456',
+			});
+
+			expect(result).toEqual({
+				accessToken: 'acce...56 [REDACTED]',
+				clientSecret: 'clie...56 [REDACTED]',
+				apiKey: 'api-...56 [REDACTED]',
+				cookie: 'sess...56 [REDACTED]',
+				authorization: 'Bearer bear...56 [REDACTED]',
+			});
+		});
+	});
+
+	describe('when a field name points to a PIN', () => {
+		it('should mask PIN fields but keep fields that only contain the letters', () => {
+			const result = LoggingUtils.redactSensitiveValue({
+				pin: 1234,
+				userPin: '5678',
+				isPinned: false,
+				pinnedAt: '2026-11-24',
+				hasPin: true,
+			});
+
+			expect(result).toEqual({
+				pin: '[REDACTED]',
+				userPin: '[REDACTED]',
+				isPinned: false,
+				pinnedAt: '2026-11-24',
+				hasPin: true,
+			});
 		});
 	});
 

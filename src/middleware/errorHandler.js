@@ -15,12 +15,14 @@ const { API_VALIDATION_ERROR_TYPE } = require('../errors/commonErrorTypes');
 
 const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
 const logger = require('../logger');
+const { isSensitiveName } = require('../../dist/apps/server/infra/logger/sensitive-value');
+const { redactSecretsInText } = require('../../dist/apps/server/infra/logger/url-path-secrets');
 
 const MAX_LEVEL_FILTER = 12;
 
 const getRequestInfo = (req) => {
 	const info = {
-		url: req.originalUrl,
+		url: redactSecretsInText(req.originalUrl),
 		data: req.body,
 		method: req.method,
 	};
@@ -59,7 +61,7 @@ const getRequestInfo = (req) => {
 const getErrorLogData = (error) => {
 	let errorLogData;
 	if (isApplicationError(error) || isFeatherError(error)) {
-		// Application and Feathers Errors - sanitized by filterSecrets
+		// Application and Feathers Errors - the log entry is masked by createLogEntry
 		// type is override by logger for logging type
 		errorLogData = { ...error, errorType: error.type };
 		// nested in errors
@@ -80,94 +82,231 @@ const skipErrorLogging = (error) =>
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
 		if (skipErrorLogging(error)) {
-			logger.debug(error);
+			logger.debug(createLogEntry(() => error, error));
 			logger.warning(error.name);
 			return next(error);
 		}
 
-		const errorLogData = getErrorLogData(error);
-		const requestInfo = getRequestInfo(req);
-
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
-		logger.error({ ...errorLogData, ...requestInfo });
+		// The masking works on a copy of the log entry and does not change the error or the request. Unchanged from
+		// before: filterSecrets filters the secret query of req.originalUrl, and cleanupIncomingMessage in
+		// getErrorLogData converts error.errors.response in place.
+		const logEntry = createLogEntry(() => {
+			const errorLogData = getErrorLogData(error);
+			const requestInfo = getRequestInfo(req);
+
+			return { ...errorLogData, ...requestInfo };
+		}, error);
+		logger.error(logEntry);
 	}
 	return next(error);
 };
 
-// map to lower case and test as lower case
-const secretDataKeys = (() =>
-	[
-		'headers',
-		'password',
-		'passwort',
-		'new_password',
-		'new-password',
-		'oauth-password',
-		'current-password',
-		'passwort_1',
-		'passwort_2',
-		'password_1',
-		'password_2',
-		'password-1',
-		'password-2',
-		'password_verification',
-		'password_control',
-		'PASSWORD_HASH',
-		'password_new',
-		'accessToken',
-		'ticket',
-		'firstName',
-		'lastName',
-		'email',
-		'birthday',
-		'description',
-		'gradeComment',
-		'_csrf',
-		'searchUserPassword',
-		'authorization',
-		'student-email',
-		'toHash',
-	].map((k) => k.toLocaleLowerCase()))();
+// Personal data and other Feathers-only fields, deliberately not in the shared secret rule (isSensitiveName),
+// so that the Nest logger keeps logging them. Passwords, tokens, authorization and the like come from isSensitiveName.
+// Compared in lower case.
+const additionalSecretDataKeys = [
+	'headers',
+	'ticket',
+	'firstName',
+	'lastName',
+	'email',
+	'birthday',
+	'description',
+	'gradeComment',
+	'_csrf',
+	'student-email',
+	'toHash',
+].map((k) => k.toLocaleLowerCase());
+
+// Only values of these keys are masked as an email address (som****@example.org); other secrets become '<secret>'.
+const emailDataKeys = ['email', 'student-email'];
+
+const isSecretDataKey = (key) => isSensitiveName(key) || additionalSecretDataKeys.includes(key.toLocaleLowerCase());
+
+const maskEmail = (value) => {
+	const [local, domain] = value.split('@');
+	if (local.length > 3) {
+		return `${local.slice(0, 3)}${'*'.repeat(local.length - 3)}@${domain}`;
+	}
+
+	return `${'*'.repeat(local.length)}@${domain}`;
+};
 
 const filterSecretValue = (key, value) => {
-	if (secretDataKeys.includes(key.toLocaleLowerCase())) {
-		// E-Mail-Maskierung, falls value eine E-Mail-Adresse ist
-		if (typeof value === 'string' && /^[^@\s]{3,}[^@\s]*@[^@\s]+\.[^@\s]+$/.test(value)) {
-			// Split in local und domain
-			const [local, domain] = value.split('@');
-			if (local.length > 3) {
-				const masked = local.slice(0, 3) + '*'.repeat(local.length - 3);
-				return masked + '@' + domain;
-			} else {
-				// Weniger als 3 Zeichen vor dem @, alles maskieren
-				return '*'.repeat(local.length) + '@' + domain;
-			}
-		}
-		return '<secret>';
+	// Booleans are not masked: they cannot hold a credential and flags such as forcePasswordChange must stay readable.
+	if (!isSecretDataKey(key) || typeof value === 'boolean') {
+		return value;
 	}
-	return value;
+
+	const isEmailKey = emailDataKeys.includes(key.toLocaleLowerCase());
+	if (isEmailKey && typeof value === 'string' && /^[^@\s]{3,}[^@\s]*@[^@\s]+\.[^@\s]+$/.test(value)) {
+		return maskEmail(value);
+	}
+
+	return '<secret>';
 };
 
-const filterDeep = (newData, level = 0) => {
-	if (level > MAX_LEVEL_FILTER) {
-		return '<max level exceeded>';
+// Same prototype, own enumerable fields; an Error also keeps its name, message and stack.
+const shallowCopy = (value) => {
+	if (Array.isArray(value)) {
+		return [...value];
 	}
 
-	if (typeof newData === 'object' && newData !== null) {
-		Object.entries(newData).forEach(([key, value]) => {
-			const newValue = filterSecretValue(key, value);
-			if (typeof newValue === 'string') {
-				newData[key] = newValue;
-			} else {
-				filterDeep(value, level + 1);
-			}
+	const copy = Object.create(Object.getPrototypeOf(value));
+	const keys = value instanceof Error ? ['name', 'message', 'stack', ...Object.keys(value)] : Object.keys(value);
+	keys.forEach((key) => {
+		const descriptor = Object.getOwnPropertyDescriptor(value, key);
+		if (descriptor) {
+			// A data property in any case: the value is read once, getters of the original are not copied.
+			Object.defineProperty(copy, key, {
+				value: value[key],
+				enumerable: descriptor.enumerable,
+				writable: true,
+				configurable: true,
+			});
+		}
+	});
+
+	return copy;
+};
+
+const DEPTH_MARKER = '<max level exceeded>';
+
+const isPlainObject = (value) => {
+	const prototype = Object.getPrototypeOf(value);
+
+	return prototype === Object.prototype || prototype === null;
+};
+
+const isObjectId = (value) => value._bsontype === 'ObjectId';
+
+const isBinary = (value) =>
+	value instanceof ArrayBuffer ||
+	(typeof SharedArrayBuffer !== 'undefined' && value instanceof SharedArrayBuffer) ||
+	ArrayBuffer.isView(value);
+
+const getClassName = (value) => {
+	const { constructor } = Object.getPrototypeOf(value);
+
+	return typeof constructor === 'function' && constructor.name ? constructor.name : 'Object';
+};
+
+/**
+ * Objects that are not walked field by field: request, response, socket, agent, stream or cookie jar objects
+ * are large and hold raw header strings (ClientRequest._header, IncomingMessage.rawHeaders) with credentials.
+ * Returns the value to log instead, or undefined for plain objects, arrays and errors, which are masked.
+ */
+const summarizeObject = (value) => {
+	if (Array.isArray(value) || value instanceof Error || isPlainObject(value)) {
+		return undefined;
+	}
+	// Logged as before: as an ISO date and as the hex id.
+	if (value instanceof Date || isObjectId(value)) {
+		return value;
+	}
+	if (isBinary(value)) {
+		return `[Binary ${value.byteLength} bytes]`;
+	}
+
+	return `[${getClassName(value)}]`;
+};
+
+/**
+ * Returns the value with secrets replaced. Only plain objects, arrays and errors are walked; other objects
+ * are summarized (summarizeObject). An object that contains a secret is copied, never changed:
+ * the same objects are used elsewhere (reused request options, cookie jars).
+ * An object without secrets is returned as it is.
+ * Each original object gets one copy per log entry (state), so an object reachable on several paths
+ * (axios error.config === error.response.config) is masked the same on all of them, and cycles end.
+ */
+const maskValue = (value, level, state) => {
+	if (typeof value !== 'object' || value === null) {
+		return value;
+	}
+	const summary = summarizeObject(value);
+	if (summary !== undefined) {
+		return summary;
+	}
+	if (level > MAX_LEVEL_FILTER) {
+		return DEPTH_MARKER;
+	}
+	// A copy cut at the depth limit is only reused on a path at least as deep; a shallower path masks it again.
+	const cached = state.done.get(value);
+	if (cached && (!state.truncated.has(value) || cached.level <= level)) {
+		return cached.result;
+	}
+	// A cycle back to an object that is still being masked points to its copy, which is filled below.
+	if (state.inProgress.has(value)) {
+		const pending = state.inProgress.get(value);
+		pending.copy = pending.copy || shallowCopy(value);
+		return pending.copy;
+	}
+
+	const pending = {};
+	state.inProgress.set(value, pending);
+	const changes = [];
+	let truncated = false;
+	Object.entries(value).forEach(([key, item]) => {
+		const maskedItem = filterSecretValue(key, item);
+		const newItem = maskedItem !== item ? maskedItem : maskValue(item, level + 1, state);
+		if (typeof item === 'object' && item !== null && (newItem === DEPTH_MARKER || state.truncated.has(item))) {
+			truncated = true;
+		}
+		if (newItem !== item) {
+			changes.push([key, newItem]);
+		}
+	});
+	state.inProgress.delete(value);
+	if (truncated) {
+		state.truncated.add(value);
+	} else {
+		state.truncated.delete(value);
+	}
+
+	let result = value;
+	if (changes.length > 0 || pending.copy) {
+		result = pending.copy || shallowCopy(value);
+		changes.forEach(([key, newItem]) => {
+			result[key] = newItem;
 		});
 	}
-	return newData;
+	state.done.set(value, { result, level });
+
+	return result;
 };
 
-const filter = (data) => filterDeep({ ...data });
+// One masking pass over everything that is logged.
+const maskLogEntry = (entry) =>
+	maskValue(entry, 0, { done: new WeakMap(), inProgress: new WeakMap(), truncated: new WeakSet() });
+
+const readSafely = (read) => {
+	try {
+		return read();
+	} catch {
+		return undefined;
+	}
+};
+
+/**
+ * Builds and masks the log entry and never throws: if that fails (e.g. a getter that throws),
+ * only the error name and message are logged, never the unmasked data.
+ */
+const createLogEntry = (buildEntry, error) => {
+	try {
+		return maskLogEntry(buildEntry());
+	} catch {
+		const name = readSafely(() => error.name);
+		const message = readSafely(() => error.message);
+
+		return {
+			name: typeof name === 'string' ? name : undefined,
+			message: typeof message === 'string' ? message : undefined,
+			maskingFailed: true,
+		};
+	}
+};
 
 const secretQueryKeys = (() => ['accessToken', 'access_token'].map((k) => k.toLocaleLowerCase()))();
 const filterQuery = (url) => {
@@ -184,49 +323,30 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
-/**
- * Filters sensitive data from known nested properties of an error object
- * (options, response, response.request). Does not recurse into arbitrary structures.
- * @param {Object} errorObj - The error object to filter
- */
-const filterErrorObject = (errorObj) => {
-	if (!errorObj || typeof errorObj !== 'object') {
-		return;
-	}
-
-	if (errorObj.options) {
-		errorObj.options = filter(errorObj.options);
-	}
-	if (errorObj.response) {
-		errorObj.response = filter(errorObj.response);
-		if (errorObj.response.request) {
-			errorObj.response.request = filter(errorObj.response.request);
-		}
-	}
-};
+// The params of application errors are returned to the client (validation_errors, assertion_errors).
+// They were masked before the response was built; this keeps that, without changing the error.
+const maskedResponseParams = new WeakMap();
 
 // important that it is not added it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
 		// req.url = filterQuery(req.url);
 		req.originalUrl = filterQuery(req.originalUrl);
-		req.headers = filter(req.headers);
-		req.body = filter(req.body);
-		error.data = filter(error.data);
-		error.options = filter(error.options);
-		error.params = filter(error.params);
-		// Filter sensitive data from error.response (e.g., from request-promise errors)
-		filterErrorObject(error);
-		// Filter nested error objects (e.g., StatusCodeError wraps error in error.error)
-		if (error.error && typeof error.error === 'object') {
-			// Use filterDeep directly to preserve Error prototype chain
-			// (e.g., SilentError instances need instanceof checks later)
-			filterDeep(error.error);
-			filterErrorObject(error.error);
+		if (typeof error === 'object') {
+			let params;
+			try {
+				params = maskLogEntry({ ...error.params });
+			} catch {
+				// Never return unmasked params to the client. An empty object keeps the type clients expect.
+				params = {};
+			}
+			maskedResponseParams.set(error, params);
 		}
 	}
 	return next(error);
 };
+
+const getResponseParams = (error) => (maskedResponseParams.has(error) ? maskedResponseParams.get(error) : error.params);
 
 const createErrorDetailTO = (code, type, title, message, customFields = {}) => ({
 	code,
@@ -244,13 +364,13 @@ const getErrorResponseFromBusinessError = (error) => {
 	if (error instanceof BusinessError) {
 		if (error instanceof ValidationError) {
 			code = 400;
-			Object.assign(customFields, { validation_errors: error.params });
+			Object.assign(customFields, { validation_errors: getResponseParams(error) });
 		}
 	} else if (error instanceof TechnicalError) {
 		if (error instanceof DocumentNotFound) {
 			code = 404;
 		} else if (error instanceof AssertionError) {
-			Object.assign(customFields, { assertion_errors: error.params });
+			Object.assign(customFields, { assertion_errors: getResponseParams(error) });
 		}
 	}
 
@@ -314,3 +434,4 @@ const errorHandler = (app) => {
 	app.use(getErrorResponse);
 };
 module.exports = errorHandler;
+module.exports.isSecretDataKey = isSecretDataKey;

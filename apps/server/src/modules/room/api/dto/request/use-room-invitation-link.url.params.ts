@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PrivacyProtect } from '@shared/controller/validator';
 import { Matches } from 'class-validator';
 
 const ROOM_INVITATION_CREDENTIAL_PATTERN = /^(?:[A-Za-z0-9_-]{21}|[a-fA-F0-9]{24})(?![\s\S])/;
 
 export class UseRoomInvitationLinkUrlParams {
+	@PrivacyProtect()
 	@Matches(ROOM_INVITATION_CREDENTIAL_PATTERN)
 	@ApiProperty({
 		description:
