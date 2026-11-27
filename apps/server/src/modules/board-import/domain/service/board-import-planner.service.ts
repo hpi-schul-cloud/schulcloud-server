@@ -22,6 +22,7 @@ export const BOARD_TITLE_FALLBACK = 'Import';
 
 const LINE_BREAKS = /\s*[\r\n]+\s*/g;
 const LINK_PROTOCOLS = new Set(['http:', 'https:', 'mailto:']);
+const LEADING_PROTOCOL = /^([a-z][a-z\d+.-]*:\/\/|mailto:)/i;
 
 export interface BoardImportPlanResult {
 	plan: BoardPlan;
@@ -109,7 +110,7 @@ export class BoardImportPlannerService {
 	// An address without a protocol gets https, as in the link element of the client.
 	private toLinkUrl(sourceUrl: string): string | undefined {
 		const trimmedUrl = sourceUrl.trim();
-		const hasProtocol = trimmedUrl.includes('://') || /^mailto:/i.test(trimmedUrl);
+		const hasProtocol = LEADING_PROTOCOL.test(trimmedUrl);
 		const completeUrl = hasProtocol ? trimmedUrl : `https://${trimmedUrl}`;
 		if (!URL.canParse(completeUrl)) {
 			return undefined;

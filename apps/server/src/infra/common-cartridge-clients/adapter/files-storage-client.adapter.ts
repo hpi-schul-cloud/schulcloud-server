@@ -11,7 +11,13 @@ import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	InternalFilesStorageClientConfig,
 } from '../common-cartridge-clients.configs';
-import { FileApi, FileRecordParentType, FileRecordResponse, FileUrlParams, StorageLocation } from '../fs-generated';
+import {
+	FileApi,
+	FileRecordParentType,
+	FileRecordResponse,
+	type FileUrlParams,
+	StorageLocation,
+} from '../fs-generated';
 import { GenericFileStorageLoggable } from '../loggables';
 import { AdapterUtils } from './adapter.utils';
 

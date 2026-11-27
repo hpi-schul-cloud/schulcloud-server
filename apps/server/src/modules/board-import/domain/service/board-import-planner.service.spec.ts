@@ -326,6 +326,7 @@ describe(BoardImportPlannerService.name, () => {
 						'http://example.com',
 						'mailto:teacher@example.com',
 						' www.example.com/page ',
+						'example.com/redirect?to=https://example.org',
 					]);
 					const expectedElements = [
 						textElement,
@@ -333,6 +334,7 @@ describe(BoardImportPlannerService.name, () => {
 						{ type: PlannedElementType.LINK, url: 'http://example.com/' },
 						{ type: PlannedElementType.LINK, url: 'mailto:teacher@example.com' },
 						{ type: PlannedElementType.LINK, url: 'https://www.example.com/page' },
+						{ type: PlannedElementType.LINK, url: 'https://example.com/redirect?to=https://example.org' },
 					];
 
 					return { board, expectedElements };

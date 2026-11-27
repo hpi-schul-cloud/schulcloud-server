@@ -57,19 +57,20 @@ describe(BoardImportLinkPreviewService.name, () => {
 			session.call.mockImplementation((request) => request(token));
 			const elementId = new ObjectId().toHexString();
 			const url = 'https://example.com/page';
+			const imageFileName = 'preview.png';
 			const metaTags = {
 				title: 'Page',
 				description: 'Description',
-				originalImageUrl: 'https://example.com/images/preview.png',
+				originalImageUrl: `https://example.com/images/${imageFileName}`,
 			};
 			const metaTagsResponse: MetaTagExtractorResponse = { ...metaTags, url, type: MetaDataEntityType.EXTERNAL };
 			const fileRecordId = new ObjectId().toHexString();
-			const fileRecordUrl = `/api/v3/file/download/${fileRecordId}/preview.png`;
+			const fileRecordUrl = `/api/v3/file/download/${fileRecordId}/${imageFileName}`;
 			const fileRecord = createMock<FileRecordResponse>({
 				url: fileRecordUrl,
 				previewStatus: PreviewStatus.PREVIEW_POSSIBLE,
 			});
-			const imageUrl = `/api/v3/file/preview/${fileRecordId}/preview.png?outputFormat=image/webp`;
+			const imageUrl = `/api/v3/file/preview/${fileRecordId}/${imageFileName}?outputFormat=image/webp`;
 			const contentWithoutPreview = { url, title: '', description: '', imageUrl: '', originalImageUrl: '' };
 			const contentWithoutImage = { ...metaTags, url, imageUrl: '' };
 
@@ -79,6 +80,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 				session,
 				elementId,
 				url,
+				imageFileName,
 				metaTags,
 				metaTagsResponse,
 				fileRecordUrl,
@@ -114,7 +116,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 			});
 
 			it('should store the preview image as a file of the link element in the school of the user', async () => {
-				const { payload, token, session, elementId, url, metaTags } = setup();
+				const { payload, token, session, elementId, url, imageFileName, metaTags } = setup();
 
 				await service.buildLinkContent(elementId, url, session);
 
@@ -124,7 +126,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 					StorageLocation.SCHOOL,
 					elementId,
 					FileRecordParentType.BOARDNODES,
-					{ url: metaTags.originalImageUrl, fileName: 'preview.png', headers: expect.any(Object) }
+					{ url: metaTags.originalImageUrl, fileName: imageFileName, headers: expect.any(Object) }
 				);
 			});
 
