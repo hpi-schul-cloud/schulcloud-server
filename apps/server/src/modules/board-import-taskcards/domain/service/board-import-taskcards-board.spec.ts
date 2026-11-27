@@ -10,9 +10,8 @@ import { BOARD_IMPORT_TASKCARDS_SOURCE_TYPE } from '../../board-import-taskcards
 import { readTaskcardsFixture } from '../../testing';
 import {
 	mapTaskcardsBoard,
-	TASKCARDS_NOT_SUPPORTED_REASON,
+	TASKCARDS_NOT_SUPPORTED_KIND_CONTACT,
 	TASKCARDS_SECTION_TITLE_FOR_CARDS_WITHOUT_LIST,
-	TaskcardsNotSupportedKind,
 } from './board-import-taskcards-board';
 import { isJsonObject, type JsonObject } from './taskcards-json';
 
@@ -22,8 +21,10 @@ describe('mapTaskcardsBoard', () => {
 		link: 'https://www.taskcards.de/#/board/793bed21-a8ac-4a26-910e-2c3305ac6c0d',
 	};
 
-	const notSupported = (kind: TaskcardsNotSupportedKind): IntermediateElement => {
-		return { type: IntermediateElementType.NOT_SUPPORTED, kind, reason: TASKCARDS_NOT_SUPPORTED_REASON };
+	const file = (name: string, mimeType: string, sizeInBytes: number, id: string): IntermediateElement => {
+		const url = `https://taskcards.s3.hidrive.strato.com/attachments/${id}`;
+
+		return { type: IntermediateElementType.FILE, name, url, mimeType, sizeInBytes };
 	};
 
 	const text = (html: string): IntermediateElement => {
@@ -59,13 +60,23 @@ describe('mapTaskcardsBoard', () => {
 				{
 					title: 'Green',
 					color: '#3cdd3c',
-					cards: [{ title: '', color: '#93ec93', elements: [notSupported(TaskcardsNotSupportedKind.ATTACHMENT)] }],
+					cards: [
+						{
+							title: '',
+							color: '#93ec93',
+							elements: [file('img1.jpg', 'image/jpeg', 133462, '6ea14b97-3630-49ed-a923-3c70e36ea2c8')],
+						},
+					],
 				},
 				{
 					title: 'Yellow',
 					color: '#dddd3c',
 					cards: [
-						{ title: 'FWU', color: '#ecec93', elements: [notSupported(TaskcardsNotSupportedKind.LINK)] },
+						{
+							title: 'FWU',
+							color: '#ecec93',
+							elements: [{ type: IntermediateElementType.LINK, url: 'https://fwu.de' }],
+						},
 						{ title: 'Rich text', color: '#ecec93', elements: [text(richTextHtml)] },
 					],
 				},
@@ -77,7 +88,10 @@ describe('mapTaskcardsBoard', () => {
 						{
 							title: 'Collapsed ugly card',
 							color: '#dd3c3c',
-							elements: [text('Picture + colors changed'), notSupported(TaskcardsNotSupportedKind.ATTACHMENT)],
+							elements: [
+								text('Picture + colors changed'),
+								file('img1.jpg', 'image/jpeg', 133462, '1b0bf8d0-3cad-4957-b031-dcf8d7d01594'),
+							],
 						},
 					],
 				},
@@ -88,9 +102,13 @@ describe('mapTaskcardsBoard', () => {
 						{
 							title: 'Video call',
 							color: '#ffffff',
-							elements: [notSupported(TaskcardsNotSupportedKind.VIDEO_CONFERENCE)],
+							elements: [{ type: IntermediateElementType.VIDEO_CONFERENCE }],
 						},
-						{ title: 'PDF', color: '#ffffff', elements: [notSupported(TaskcardsNotSupportedKind.ATTACHMENT)] },
+						{
+							title: 'PDF',
+							color: '#ffffff',
+							elements: [file('FWU Katalog.pdf', 'application/pdf', 10288802, 'b49a53ac-2a25-46b7-8925-19c365f3dff8')],
+						},
 					],
 				},
 			];
@@ -125,6 +143,7 @@ describe('mapTaskcardsBoard', () => {
 	describe('when a card has all kinds of content', () => {
 		const setup = () => {
 			const description = '<b>Text</b>';
+			const link = 'https://example.com';
 			const board = {
 				type: 0,
 				lists: [{ id: 'list', name: 'List', position: 0 }],
@@ -132,27 +151,42 @@ describe('mapTaskcardsBoard', () => {
 					{
 						title: 'Card',
 						description,
-						link: 'https://example.com',
+						link,
 						videoConference: 'Moderator',
 						enableContract: true,
-						attachments: [{ id: 'a1' }, { id: 'a2' }],
+						attachments: [
+							{ filename: 'a.pdf', length: 'unknown' },
+							{ filename: 'b.pdf', downloadLink: '' },
+						],
 						kanbanPosition: { listId: 'list', position: 0 },
 					},
 				],
 			};
 			const expectedElements = [
-				notSupported(TaskcardsNotSupportedKind.VIDEO_CONFERENCE),
+				{ type: IntermediateElementType.VIDEO_CONFERENCE },
 				text(description),
-				notSupported(TaskcardsNotSupportedKind.LINK),
-				notSupported(TaskcardsNotSupportedKind.ATTACHMENT),
-				notSupported(TaskcardsNotSupportedKind.ATTACHMENT),
-				notSupported(TaskcardsNotSupportedKind.CONTACT),
+				{ type: IntermediateElementType.LINK, url: link },
+				{
+					type: IntermediateElementType.FILE,
+					name: 'a.pdf',
+					url: undefined,
+					mimeType: undefined,
+					sizeInBytes: undefined,
+				},
+				{
+					type: IntermediateElementType.FILE,
+					name: 'b.pdf',
+					url: undefined,
+					mimeType: undefined,
+					sizeInBytes: undefined,
+				},
+				{ type: IntermediateElementType.NOT_SUPPORTED, kind: TASKCARDS_NOT_SUPPORTED_KIND_CONTACT },
 			];
 
 			return { board, expectedElements };
 		};
 
-		it('should return the description as text and each other content as not supported, in a fixed order', () => {
+		it('should return one element for each content, in a fixed order, and the contact function as not supported', () => {
 			const { board, expectedElements } = setup();
 
 			const result = mapTaskcardsBoard(board, source);

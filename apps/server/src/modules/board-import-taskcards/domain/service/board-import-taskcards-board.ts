@@ -15,14 +15,7 @@ const PINBOARD_TYPE = 0;
 const NO_VIDEO_CONFERENCE = 'None';
 export const TASKCARDS_SECTION_TITLE_FOR_CARDS_WITHOUT_LIST = 'Ohne Spalte';
 
-export const TASKCARDS_NOT_SUPPORTED_REASON = 'not-imported-yet';
-
-export enum TaskcardsNotSupportedKind {
-	VIDEO_CONFERENCE = 'video-conference',
-	LINK = 'link',
-	ATTACHMENT = 'attachment',
-	CONTACT = 'contact',
-}
+export const TASKCARDS_NOT_SUPPORTED_KIND_CONTACT = 'contact';
 
 const toText = (value: unknown): string => (typeof value === 'string' ? value : '');
 
@@ -35,11 +28,20 @@ const toObjects = (value: unknown): JsonObject[] => (Array.isArray(value) ? valu
 
 const byPosition = <T extends { position: number }>(a: T, b: T): number => a.position - b.position;
 
-const notSupported = (kind: TaskcardsNotSupportedKind): IntermediateElement => {
+// The source gives the size as text.
+const toSize = (value: unknown): number | undefined => {
+	const size = typeof value === 'string' && value !== '' ? Number(value) : NaN;
+
+	return Number.isFinite(size) ? size : undefined;
+};
+
+const mapAttachment = (attachment: JsonObject): IntermediateElement => {
 	const element: IntermediateElement = {
-		type: IntermediateElementType.NOT_SUPPORTED,
-		kind,
-		reason: TASKCARDS_NOT_SUPPORTED_REASON,
+		type: IntermediateElementType.FILE,
+		name: toText(attachment.filename),
+		url: toOptionalText(attachment.downloadLink),
+		mimeType: toOptionalText(attachment.mimetype),
+		sizeInBytes: toSize(attachment.length),
 	};
 
 	return element;
@@ -49,19 +51,20 @@ const mapElements = (card: JsonObject): IntermediateElement[] => {
 	const elements: IntermediateElement[] = [];
 	const videoConference = toText(card.videoConference);
 	const description = toText(card.description);
+	const link = toText(card.link);
 
 	if (videoConference !== '' && videoConference !== NO_VIDEO_CONFERENCE) {
-		elements.push(notSupported(TaskcardsNotSupportedKind.VIDEO_CONFERENCE));
+		elements.push({ type: IntermediateElementType.VIDEO_CONFERENCE });
 	}
 	if (description.trim() !== '') {
 		elements.push({ type: IntermediateElementType.TEXT, html: description });
 	}
-	if (toText(card.link).trim() !== '') {
-		elements.push(notSupported(TaskcardsNotSupportedKind.LINK));
+	if (link.trim() !== '') {
+		elements.push({ type: IntermediateElementType.LINK, url: link });
 	}
-	toObjects(card.attachments).forEach(() => elements.push(notSupported(TaskcardsNotSupportedKind.ATTACHMENT)));
+	elements.push(...toObjects(card.attachments).map(mapAttachment));
 	if (card.enableContract === true) {
-		elements.push(notSupported(TaskcardsNotSupportedKind.CONTACT));
+		elements.push({ type: IntermediateElementType.NOT_SUPPORTED, kind: TASKCARDS_NOT_SUPPORTED_KIND_CONTACT });
 	}
 
 	return elements;

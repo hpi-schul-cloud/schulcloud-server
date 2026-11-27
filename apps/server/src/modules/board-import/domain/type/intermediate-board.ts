@@ -5,6 +5,9 @@ export const INTERMEDIATE_BOARD_VERSION = 1;
 
 export enum IntermediateElementType {
 	TEXT = 'text',
+	LINK = 'link',
+	FILE = 'file',
+	VIDEO_CONFERENCE = 'video-conference',
 	NOT_SUPPORTED = 'not-supported',
 }
 
@@ -14,14 +17,36 @@ interface IntermediateTextElement {
 	html: string;
 }
 
-// Content of the source that the model cannot express. The source decides the values of kind and reason.
+interface IntermediateLinkElement {
+	type: IntermediateElementType.LINK;
+	url: string;
+}
+
+// The model holds no file content. The URL points to the file in the source.
+interface IntermediateFileElement {
+	type: IntermediateElementType.FILE;
+	name: string;
+	url?: string;
+	mimeType?: string;
+	sizeInBytes?: number;
+}
+
+interface IntermediateVideoConferenceElement {
+	type: IntermediateElementType.VIDEO_CONFERENCE;
+}
+
+// Content of the source that the model has no type for. The source decides the value of kind.
 interface IntermediateNotSupportedElement {
 	type: IntermediateElementType.NOT_SUPPORTED;
 	kind: string;
-	reason: string;
 }
 
-export type IntermediateElement = IntermediateTextElement | IntermediateNotSupportedElement;
+export type IntermediateElement =
+	| IntermediateTextElement
+	| IntermediateLinkElement
+	| IntermediateFileElement
+	| IntermediateVideoConferenceElement
+	| IntermediateNotSupportedElement;
 
 export interface IntermediateCard {
 	title: string;
