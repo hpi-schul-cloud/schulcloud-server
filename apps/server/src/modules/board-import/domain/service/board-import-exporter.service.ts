@@ -13,10 +13,8 @@ import { BOARD_IMPORT_JOB_REPO, type BoardImportJobRepo } from '../interface';
 import { type BoardImportCheckpoint, type BoardPlan, type PlannedCard, type PlannedColumn } from '../type';
 import { type BoardImportUserSession } from './board-import-user-session';
 
-// Creates the board of a board plan through the API of the board. See ADR 0015 and ADR 0016.
-// The columns and cards are created in the order of the plan. Each column and each card that is complete gets a
-// checkpoint in the job, and a part with a checkpoint is not created again. Thus a new attempt continues the board of
-// the attempt before.
+// Creates the board of a board plan through the API of the board, and continues it from the checkpoints of the job.
+// See ADR 0015 and ADR 0016.
 @Injectable()
 export class BoardImportExporterService {
 	constructor(
@@ -106,7 +104,7 @@ export class BoardImportExporterService {
 	): Promise<{ boardId: EntityId; checkpoints: BoardImportCheckpoint[] }> {
 		const { boardId: existingBoardId, checkpoints } = job;
 		if (existingBoardId !== undefined) {
-			if (await this.hasBoard(existingBoardId, session)) {
+			if (await this.boardExists(existingBoardId, session)) {
 				return { boardId: existingBoardId, checkpoints };
 			}
 
@@ -119,7 +117,7 @@ export class BoardImportExporterService {
 		return { boardId, checkpoints: [] };
 	}
 
-	private async hasBoard(boardId: EntityId, session: BoardImportUserSession): Promise<boolean> {
+	private async boardExists(boardId: EntityId, session: BoardImportUserSession): Promise<boolean> {
 		try {
 			await session.call((token) => this.boardsClient.getBoardSkeletonById(token, boardId));
 

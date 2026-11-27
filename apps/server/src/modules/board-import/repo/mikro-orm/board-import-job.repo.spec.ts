@@ -341,6 +341,34 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 				});
 			}
 		);
+
+		describe('when the job has a plan and checkpoints', () => {
+			const setup = async () => {
+				const columnId = new ObjectId();
+				const cardId = new ObjectId();
+				const entity = boardImportJobEntityFactory.build({
+					...runningAttempt,
+					plan,
+					checkpoints: [{ columnId, cardIds: [cardId] }],
+				});
+				await em.persist(entity).flush();
+				em.clear();
+				const checkpoints: BoardImportCheckpoint[] = [
+					{ columnId: columnId.toHexString(), cardIds: [cardId.toHexString()] },
+				];
+
+				return { id: entity.id, checkpoints };
+			};
+
+			it('should return the job with its plan and checkpoints', async () => {
+				const { id, checkpoints } = await setup();
+
+				const job = await repo.startAttempt(id, new Date());
+
+				expect(job?.plan).toEqual(plan);
+				expect(job?.checkpoints).toEqual(checkpoints);
+			});
+		});
 	});
 
 	describe('closeAttempt', () => {
@@ -794,36 +822,6 @@ describe(BoardImportJobMikroOrmRepo.name, () => {
 
 					await expectRejectedWithoutChange(id, attempt, expectedProps);
 				});
-			});
-		});
-	});
-
-	describe('startAttempt after writes of an attempt', () => {
-		describe('when the job has a plan and checkpoints', () => {
-			const setup = async () => {
-				const columnId = new ObjectId();
-				const cardId = new ObjectId();
-				const entity = boardImportJobEntityFactory.build({
-					...runningAttempt,
-					plan,
-					checkpoints: [{ columnId, cardIds: [cardId] }],
-				});
-				await em.persist(entity).flush();
-				em.clear();
-				const checkpoints: BoardImportCheckpoint[] = [
-					{ columnId: columnId.toHexString(), cardIds: [cardId.toHexString()] },
-				];
-
-				return { id: entity.id, checkpoints };
-			};
-
-			it('should return the job with its plan and checkpoints', async () => {
-				const { id, checkpoints } = await setup();
-
-				const job = await repo.startAttempt(id, new Date());
-
-				expect(job?.plan).toEqual(plan);
-				expect(job?.checkpoints).toEqual(checkpoints);
 			});
 		});
 	});
