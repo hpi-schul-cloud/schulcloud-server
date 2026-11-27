@@ -34,47 +34,6 @@ describe('cookie credential CSRF (API)', () => {
 				return { method, fetchSite };
 			})
 		);
-
-		it.each(denied)('denies cookie $method when Sec-Fetch-Site is $fetchSite', async ({ method, fetchSite }) => {
-			const response = await supertest(app.getHttpServer() as Server)
-				[method]('/')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', fetchSite)
-				.send({});
-
-			expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			expect(response.body).toEqual(expect.objectContaining({ message: COOKIE_CREDENTIAL_CSRF_MESSAGE }));
-		});
-
-		it.each(['same-origin', 'none'])('does not block cookie POST when Sec-Fetch-Site is %s', async (fetchSite) => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.post('/')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', fetchSite)
-				.send({});
-
-			expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
-		});
-
-		it('does not block a bearer POST when Sec-Fetch-Site is cross-site', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.post('/')
-				.set('Authorization', 'Bearer token')
-				.set('Sec-Fetch-Site', 'cross-site')
-				.send({});
-
-			expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
-		});
-
-		it('does not block an ordinary cookie GET', async () => {
-			const response = await supertest(app.getHttpServer() as Server)
-				.get('/config/public')
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'cross-site');
-
-			expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
-		});
-
 		const protectedPaths = [
 			'/collaborative-text-editor/course/parent-1',
 			'/COLLABORATIVE-TEXT-EDITOR/course/parent-1',
@@ -86,25 +45,67 @@ describe('cookie credential CSRF (API)', () => {
 			})
 		);
 
-		it.each(protectedReads)('denies a cross-site cookie $method of $path', async ({ method, path }) => {
-			const response = await supertest(app.getHttpServer() as Server)
-				[method](path)
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'cross-site');
+		describe('Sec-Fetch-Site', () => {
+			it.each(denied)('denies cookie $method for Sec-Fetch-Site $fetchSite', async ({ method, fetchSite }) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					[method]('/')
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', fetchSite)
+					.send({});
 
-			expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			if (method !== 'head') {
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				expect(response.body).toEqual(expect.objectContaining({ message: COOKIE_CREDENTIAL_CSRF_MESSAGE }));
-			}
-		});
+			});
 
-		it.each(protectedReads)('does not block a same-origin cookie $method of $path', async ({ method, path }) => {
-			const response = await supertest(app.getHttpServer() as Server)
-				[method](path)
-				.set('Cookie', 'jwt=token')
-				.set('Sec-Fetch-Site', 'same-origin');
+			it.each(['same-origin', 'none'])('does not block cookie POST for Sec-Fetch-Site %s', async (fetchSite) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					.post('/')
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', fetchSite)
+					.send({});
 
-			expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
+				expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
+			});
+
+			it('does not block a cross-site bearer POST', async () => {
+				const response = await supertest(app.getHttpServer() as Server)
+					.post('/')
+					.set('Authorization', 'Bearer token')
+					.set('Sec-Fetch-Site', 'cross-site')
+					.send({});
+
+				expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
+			});
+
+			it('does not block an ordinary cookie GET', async () => {
+				const response = await supertest(app.getHttpServer() as Server)
+					.get('/config/public')
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', 'cross-site');
+
+				expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
+			});
+
+			it.each(protectedReads)('denies a cross-site cookie $method of $path', async ({ method, path }) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					[method](path)
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', 'cross-site');
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				if (method !== 'head') {
+					expect(response.body).toEqual(expect.objectContaining({ message: COOKIE_CREDENTIAL_CSRF_MESSAGE }));
+				}
+			});
+
+			it.each(protectedReads)('does not block a same-origin cookie $method of $path', async ({ method, path }) => {
+				const response = await supertest(app.getHttpServer() as Server)
+					[method](path)
+					.set('Cookie', 'jwt=token')
+					.set('Sec-Fetch-Site', 'same-origin');
+
+				expect(response.status).not.toBe(HttpStatus.FORBIDDEN);
+			});
 		});
 	});
 });
