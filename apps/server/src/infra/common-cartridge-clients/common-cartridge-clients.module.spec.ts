@@ -9,6 +9,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
+	MetaTagsClientAdapter,
 } from './adapter';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -25,6 +26,7 @@ import {
 	CourseRoomsApi,
 	CoursesApi,
 	LessonApi,
+	MetaTagExtractorApi,
 } from './generated';
 
 @Configuration()
@@ -60,15 +62,21 @@ describe(CommonCartridgeClientsModule.name, () => {
 		expect(module).toBeDefined();
 	});
 
-	it.each([BoardApi, BoardCardApi, BoardColumnApi, BoardElementApi, CourseRoomsApi, CoursesApi, LessonApi])(
-		'should use the configured API host for %p',
-		(apiConstructor) => {
-			const config = module.get<InternalCommonCartridgeClientsConfig>('CC_CLIENT_CONFIG');
-			const client = module.get(apiConstructor);
+	it.each([
+		BoardApi,
+		BoardCardApi,
+		BoardColumnApi,
+		BoardElementApi,
+		CourseRoomsApi,
+		CoursesApi,
+		LessonApi,
+		MetaTagExtractorApi,
+	])('should use the configured API host for %p', (apiConstructor) => {
+		const config = module.get<InternalCommonCartridgeClientsConfig>('CC_CLIENT_CONFIG');
+		const client = module.get(apiConstructor);
 
-			expect(Reflect.get(client, 'basePath')).toBe(`${config.basePath}/v3`);
-		}
-	);
+		expect(Reflect.get(client, 'basePath')).toBe(`${config.basePath}/v3`);
+	});
 
 	it('should use the configured file-storage host', () => {
 		const config = module.get<InternalFilesStorageClientConfig>(FILE_STORAGE_CLIENT_CONFIG_TOKEN);
@@ -107,6 +115,11 @@ describe(CommonCartridgeClientsModule.name, () => {
 		it('should resolve CourseRoomsClientAdapter', async () => {
 			const adapter = await module.resolve(CourseRoomsClientAdapter);
 			expect(adapter).toBeInstanceOf(CourseRoomsClientAdapter);
+		});
+
+		it('should resolve MetaTagsClientAdapter', async () => {
+			const adapter = await module.resolve(MetaTagsClientAdapter);
+			expect(adapter).toBeInstanceOf(MetaTagsClientAdapter);
 		});
 
 		it('should resolve FilesStorageClientAdapter', async () => {

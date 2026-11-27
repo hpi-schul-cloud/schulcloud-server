@@ -4,6 +4,9 @@ import {
 	FileRecordParentType,
 	type FileRecordResponse,
 	FilesStorageClientAdapter,
+	MetaDataEntityType,
+	type MetaTagExtractorResponse,
+	MetaTagsClientAdapter,
 	PreviewStatus,
 	StorageLocation,
 } from '@infra/common-cartridge-clients';
@@ -16,27 +19,26 @@ import jwt from 'jsonwebtoken';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason } from '../type';
 import { BoardImportLinkPreviewService } from './board-import-link-preview.service';
-import { BoardImportServerClientService } from './board-import-server-client.service';
 import { type BoardImportUserSession } from './board-import-user-session';
 
 describe(BoardImportLinkPreviewService.name, () => {
 	let module: TestingModule;
 	let service: BoardImportLinkPreviewService;
 	let filesStorageClient: DeepMocked<FilesStorageClientAdapter>;
-	let serverClient: DeepMocked<BoardImportServerClientService>;
+	let metaTagsClient: DeepMocked<MetaTagsClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardImportLinkPreviewService,
 				{ provide: FilesStorageClientAdapter, useValue: createMock<FilesStorageClientAdapter>() },
-				{ provide: BoardImportServerClientService, useValue: createMock<BoardImportServerClientService>() },
+				{ provide: MetaTagsClientAdapter, useValue: createMock<MetaTagsClientAdapter>() },
 			],
 		}).compile();
 
 		service = module.get(BoardImportLinkPreviewService);
 		filesStorageClient = module.get(FilesStorageClientAdapter);
-		serverClient = module.get(BoardImportServerClientService);
+		metaTagsClient = module.get(MetaTagsClientAdapter);
 	});
 
 	afterAll(async () => {
@@ -60,6 +62,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 				description: 'Description',
 				originalImageUrl: 'https://example.com/images/preview.png',
 			};
+			const metaTagsResponse: MetaTagExtractorResponse = { ...metaTags, url, type: MetaDataEntityType.EXTERNAL };
 			const fileRecordId = new ObjectId().toHexString();
 			const fileRecordUrl = `/api/v3/file/download/${fileRecordId}/preview.png`;
 			const fileRecord = createMock<FileRecordResponse>({
@@ -77,6 +80,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 				elementId,
 				url,
 				metaTags,
+				metaTagsResponse,
 				fileRecordUrl,
 				fileRecord,
 				imageUrl,
@@ -95,7 +99,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 			const setup = () => {
 				const data = setupLink();
 
-				serverClient.getLinkMetaTags.mockResolvedValueOnce(data.metaTags);
+				metaTagsClient.getMetaTags.mockResolvedValueOnce(data.metaTagsResponse);
 				filesStorageClient.uploadFromUrl.mockResolvedValueOnce(data.fileRecord);
 
 				return data;
@@ -106,7 +110,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 
 				await service.buildLinkContent(elementId, url, session);
 
-				expect(serverClient.getLinkMetaTags).toHaveBeenCalledWith(token, url);
+				expect(metaTagsClient.getMetaTags).toHaveBeenCalledWith(token, url);
 			});
 
 			it('should store the preview image as a file of the link element in the school of the user', async () => {
@@ -158,7 +162,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 				const { title, description } = data.metaTags;
 				const expectedContent = { ...data.contentWithoutPreview, title, description };
 
-				serverClient.getLinkMetaTags.mockResolvedValueOnce({ title, description });
+				metaTagsClient.getMetaTags.mockResolvedValueOnce({ ...data.metaTagsResponse, originalImageUrl: undefined });
 
 				return { ...data, expectedContent };
 			};
@@ -177,7 +181,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 			const setup = () => {
 				const data = setupLink();
 
-				serverClient.getLinkMetaTags.mockRejectedValueOnce(buildError(HttpStatus.INTERNAL_SERVER_ERROR));
+				metaTagsClient.getMetaTags.mockRejectedValueOnce(buildError(HttpStatus.INTERNAL_SERVER_ERROR));
 
 				return data;
 			};
@@ -196,7 +200,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 			const setup = () => {
 				const data = setupLink();
 
-				serverClient.getLinkMetaTags.mockResolvedValueOnce(data.metaTags);
+				metaTagsClient.getMetaTags.mockResolvedValueOnce(data.metaTagsResponse);
 				filesStorageClient.uploadFromUrl.mockRejectedValueOnce(buildError(HttpStatus.UNPROCESSABLE_ENTITY));
 
 				return data;
@@ -219,7 +223,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 					previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
 				});
 
-				serverClient.getLinkMetaTags.mockResolvedValueOnce(data.metaTags);
+				metaTagsClient.getMetaTags.mockResolvedValueOnce(data.metaTagsResponse);
 				filesStorageClient.uploadFromUrl.mockResolvedValueOnce(fileRecord);
 
 				return data;
@@ -258,7 +262,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 				const data = setupLink();
 				const error = buildError(HttpStatus.UNAUTHORIZED);
 
-				serverClient.getLinkMetaTags.mockRejectedValueOnce(error);
+				metaTagsClient.getMetaTags.mockRejectedValueOnce(error);
 
 				return { ...data, error };
 			};
@@ -292,7 +296,7 @@ describe(BoardImportLinkPreviewService.name, () => {
 				const data = setupLink();
 				const error = new Error('aborted');
 
-				serverClient.getLinkMetaTags.mockRejectedValueOnce(error);
+				metaTagsClient.getMetaTags.mockRejectedValueOnce(error);
 
 				return { ...data, error };
 			};

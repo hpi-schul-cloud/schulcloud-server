@@ -4,7 +4,6 @@ import { JwtIssuerModule } from '@infra/jwt-issuer';
 import { LoggerModule } from '@infra/logger';
 import { AccountModule } from '@modules/account';
 import { UserModule } from '@modules/user';
-import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { BoardImportJobConsumer } from './amqp/board-import-job.consumer';
 import { BoardImportAmqpModule } from './board-import-amqp.module';
@@ -21,7 +20,6 @@ import { BoardImportJobProcessService } from './domain/service/board-import-job-
 import { BoardImportExporterService } from './domain/service/board-import-exporter.service';
 import { BoardImportPlannerService } from './domain/service/board-import-planner.service';
 import { BoardImportRunnerService } from './domain/service/board-import-runner.service';
-import { BoardImportServerClientService } from './domain/service/board-import-server-client.service';
 import { BoardImportTokenService } from './domain/service/board-import-token.service';
 import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 
@@ -35,8 +33,6 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		AccountModule,
 		JwtIssuerModule,
 		CommonCartridgeClientsModule.register(BOARD_IMPORT_SERVER_API_CONFIG_TOKEN, BoardImportServerApiConfig),
-		ConfigurationModule.register(BOARD_IMPORT_SERVER_API_CONFIG_TOKEN, BoardImportServerApiConfig),
-		HttpModule,
 	],
 	providers: [
 		{
@@ -48,7 +44,6 @@ import { BoardImportJobMikroOrmRepo } from './repo/mikro-orm';
 		BoardImportTokenService,
 		BoardImportPlannerService,
 		BoardImportExporterService,
-		BoardImportServerClientService,
 		BoardImportLinkPreviewService,
 		BoardImportJobConsumer,
 	],

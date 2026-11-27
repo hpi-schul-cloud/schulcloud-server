@@ -3,6 +3,8 @@ import {
 	FileRecordParentType,
 	FilesStorageClientAdapter,
 	type LinkElementContentBody,
+	type MetaTagExtractorResponse,
+	MetaTagsClientAdapter,
 	PreviewStatus,
 	StorageLocation,
 } from '@infra/common-cartridge-clients';
@@ -12,11 +14,12 @@ import { isAxiosError } from 'axios';
 import { basename } from 'node:path';
 import { BoardImportJobRejectedError } from '../error';
 import { BoardImportJobLogReason } from '../type';
-import { type BoardImportLinkMetaTags, BoardImportServerClientService } from './board-import-server-client.service';
 import { type BoardImportUserSession } from './board-import-user-session';
 
+type LinkMetaTags = Pick<MetaTagExtractorResponse, 'title' | 'description' | 'originalImageUrl'>;
+
 const PREVIEW_PROTOCOLS = new Set(['http:', 'https:']);
-const NO_META_TAGS: BoardImportLinkMetaTags = { title: '', description: '' };
+const NO_META_TAGS: LinkMetaTags = { title: '', description: '' };
 // The link element of the client loads the preview image with the same values.
 const IMAGE_REQUEST_HEADERS = { 'User-Agent': 'Embed Request User Agent' };
 const IMAGE_FALLBACK_NAME = 'file';
@@ -28,7 +31,7 @@ const IMAGE_OUTPUT_FORMAT = 'image/webp';
 export class BoardImportLinkPreviewService {
 	constructor(
 		private readonly filesStorageClient: FilesStorageClientAdapter,
-		private readonly serverClient: BoardImportServerClientService
+		private readonly metaTagsClient: MetaTagsClientAdapter
 	) {}
 
 	public async buildLinkContent(
@@ -37,20 +40,19 @@ export class BoardImportLinkPreviewService {
 		session: BoardImportUserSession
 	): Promise<LinkElementContentBody['content']> {
 		const { title, description, originalImageUrl } = await this.findMetaTags(url, session);
-		const imageUrl =
-			originalImageUrl === undefined ? undefined : await this.findImageUrl(elementId, originalImageUrl, session);
+		const imageUrl = originalImageUrl ? await this.findImageUrl(elementId, originalImageUrl, session) : undefined;
 		const content = { url, title, description, imageUrl: imageUrl ?? '', originalImageUrl: originalImageUrl ?? '' };
 
 		return content;
 	}
 
-	private async findMetaTags(url: string, session: BoardImportUserSession): Promise<BoardImportLinkMetaTags> {
+	private async findMetaTags(url: string, session: BoardImportUserSession): Promise<LinkMetaTags> {
 		if (!PREVIEW_PROTOCOLS.has(new URL(url).protocol)) {
 			return NO_META_TAGS;
 		}
 
 		const metaTags = await this.callOptional(() =>
-			session.call((token) => this.serverClient.getLinkMetaTags(token, url))
+			session.call((token) => this.metaTagsClient.getMetaTags(token, url))
 		);
 
 		return metaTags ?? NO_META_TAGS;

@@ -13,6 +13,7 @@ export {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
+	MetaTagsClientAdapter,
 } from './adapter';
 export {
 	FileRecordParentType,
@@ -56,6 +57,8 @@ export {
 	LinkElementContent,
 	LinkElementContentBody,
 	LinkElementResponse,
+	MetaDataEntityType,
+	MetaTagExtractorResponse,
 	RichTextElementContent,
 	RichTextElementContentBody,
 	RichTextElementResponse,

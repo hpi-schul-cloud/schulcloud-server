@@ -9,6 +9,8 @@ import {
 	type ColumnResponse,
 	ContentElementType,
 	FilesStorageClientAdapter,
+	MetaDataEntityType,
+	MetaTagsClientAdapter,
 } from '@infra/common-cartridge-clients';
 import { ConfigurationModule } from '@infra/configuration';
 import { RuntimeConfigService } from '@infra/runtime-config';
@@ -41,7 +43,6 @@ import {
 } from '../../domain';
 import { BoardImportSourceReaderRegistryService } from '../../domain/service/board-import-source-reader-registry.service';
 import { BoardImportRunnerService } from '../../domain/service/board-import-runner.service';
-import { BoardImportServerClientService } from '../../domain/service/board-import-server-client.service';
 import { BoardImportSourceHttpClientService } from '../../domain/service/board-import-source-http-client.service';
 import { BoardImportJobEntity, BoardImportNoteEmbeddable } from '../../repo/entity';
 import { type BoardImportJobResponse } from '../dto';
@@ -834,7 +835,7 @@ describe('Board Import Worker (import as the user)', () => {
 	let columnClient: DeepMocked<ColumnClientAdapter>;
 	let cardClient: DeepMocked<CardClientAdapter>;
 	let sourceHttpClient: DeepMocked<BoardImportSourceHttpClientService>;
-	let serverClient: DeepMocked<BoardImportServerClientService>;
+	let metaTagsClient: DeepMocked<MetaTagsClientAdapter>;
 
 	const { link, type: sourceType } = taskcardsSource;
 	const mockSource = (boardFixture: string): void => {
@@ -857,8 +858,8 @@ describe('Board Import Worker (import as the user)', () => {
 			.useValue(createMock<CardClientAdapter>())
 			.overrideProvider(BoardImportSourceHttpClientService)
 			.useValue(createMock<BoardImportSourceHttpClientService>())
-			.overrideProvider(BoardImportServerClientService)
-			.useValue(createMock<BoardImportServerClientService>())
+			.overrideProvider(MetaTagsClientAdapter)
+			.useValue(createMock<MetaTagsClientAdapter>())
 			.overrideProvider(FilesStorageClientAdapter)
 			.useValue(createMock<FilesStorageClientAdapter>())
 			.compile();
@@ -871,7 +872,7 @@ describe('Board Import Worker (import as the user)', () => {
 		columnClient = module.get(ColumnClientAdapter);
 		cardClient = module.get(CardClientAdapter);
 		sourceHttpClient = module.get(BoardImportSourceHttpClientService);
-		serverClient = module.get(BoardImportServerClientService);
+		metaTagsClient = module.get(MetaTagsClientAdapter);
 	});
 
 	afterEach(() => {
@@ -912,7 +913,13 @@ describe('Board Import Worker (import as the user)', () => {
 			});
 			mockSource('board-pinboard.json');
 			const linkTitle = 'FWU';
-			serverClient.getLinkMetaTags.mockResolvedValueOnce({ title: linkTitle, description: '' });
+			const linkUrl = 'https://fwu.de/';
+			metaTagsClient.getMetaTags.mockResolvedValueOnce({
+				url: linkUrl,
+				title: linkTitle,
+				description: '',
+				type: MetaDataEntityType.EXTERNAL,
+			});
 
 			const expectedBoardTitle = 'Test Pinboard';
 			const expectedColumnTitles = ['Green', 'Yellow', 'Red', 'No color'];
@@ -922,7 +929,7 @@ describe('Board Import Worker (import as the user)', () => {
 				BoardImportNoteType.BOARD_DESCRIPTION_LEFT_OUT,
 				...Array<BoardImportNoteType>(4).fill(BoardImportNoteType.ELEMENT_LEFT_OUT),
 			];
-			const expectedLink = { url: 'https://fwu.de/', title: linkTitle };
+			const expectedLink = { url: linkUrl, title: linkTitle };
 
 			return {
 				id: entity.id,

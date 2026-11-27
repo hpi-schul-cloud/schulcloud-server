@@ -9,6 +9,7 @@ api/board-element-api.ts
 api/course-rooms-api.ts
 api/courses-api.ts
 api/lesson-api.ts
+api/meta-tag-extractor-api.ts
 base.ts
 common.ts
 configuration.ts
@@ -65,6 +66,7 @@ models/file-folder-content-body.ts
 models/file-folder-element-content-body.ts
 models/file-folder-element-content.ts
 models/file-folder-element-response.ts
+models/get-meta-tag-data-body.ts
 models/h5p-element-content.ts
 models/h5p-element-response.ts
 models/index.ts
@@ -79,6 +81,8 @@ models/link-element-content.ts
 models/link-element-response.ts
 models/material-response.ts
 models/media-line-response-elements-inner.ts
+models/meta-data-entity-type.ts
+models/meta-tag-extractor-response.ts
 models/move-card-body-params.ts
 models/rename-body-params.ts
 models/rich-text-content-body.ts

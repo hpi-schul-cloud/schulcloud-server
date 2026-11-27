@@ -12,6 +12,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
+	MetaTagsClientAdapter,
 } from './adapter';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -29,6 +30,7 @@ import {
 	CourseRoomsApi,
 	CoursesApi,
 	LessonApi,
+	MetaTagExtractorApi,
 } from './generated';
 
 const httpAgent = new http.Agent({ keepAlive: false });
@@ -134,6 +136,19 @@ export class CommonCartridgeClientsModule {
 				inject: [configInjectionToken],
 			},
 			{
+				provide: MetaTagExtractorApi,
+				useFactory: (config: InternalCommonCartridgeClientsConfig): MetaTagExtractorApi => {
+					const { basePath } = config;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+						baseOptions,
+					});
+
+					return new MetaTagExtractorApi(configuration);
+				},
+				inject: [configInjectionToken],
+			},
+			{
 				provide: FileApi,
 				useFactory: (config: InternalFilesStorageClientConfig): FileApi => {
 					const { basePath } = config;
@@ -156,6 +171,7 @@ export class CommonCartridgeClientsModule {
 			LessonClientAdapter,
 			CourseRoomsClientAdapter,
 			FilesStorageClientAdapter,
+			MetaTagsClientAdapter,
 		];
 
 		const providers = [...apis, ...adapters];
