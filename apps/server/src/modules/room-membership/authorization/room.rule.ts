@@ -143,20 +143,20 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		return true;
 	}
 
-	// archived rooms are read-only for content, but their members can still be managed
-	private isMemberManagement(requiredPermissions: Permission[]): boolean {
-		return requiredPermissions.some((permission) => MEMBER_MANAGEMENT_PERMISSIONS.includes(permission));
-	}
-
-	private hasAccessToSchool(user: User, schoolId: string): boolean {
-		const primarySchoolId = user.school.id;
+	public hasAccessToSchool(user: User, schoolId: string): boolean {
+		const primarySchoolId = user.school?.id;
 		const secondarySchools = user.secondarySchools ?? [];
 		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
 
-		const allSchools = [primarySchoolId, ...secondarySchoolIds];
+		const allSchools = [primarySchoolId, ...secondarySchoolIds].filter(Boolean);
 		const includesSchool = allSchools.includes(schoolId);
 
 		return includesSchool;
+	}
+
+	// archived rooms are read-only for content, but their members can still be managed
+	private isMemberManagement(requiredPermissions: Permission[]): boolean {
+		return requiredPermissions.some((permission) => MEMBER_MANAGEMENT_PERMISSIONS.includes(permission));
 	}
 
 	private hasRequiredRoomPermissions(roomPermissionsOfUser: Permission[], requiredPermissions: Permission[]): boolean {
